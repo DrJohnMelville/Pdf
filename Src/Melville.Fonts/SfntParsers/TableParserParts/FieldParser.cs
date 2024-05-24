@@ -1,46 +1,26 @@
 ﻿using System.Buffers;
+using System.Buffers.Binary;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.InteropServices.JavaScript;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
-internal static class FieldParser
+internal static partial class FieldParser
 {
-    public static void Read(ref SequenceReader<byte> reader, out uint output) =>
-        output = reader.ReadBigEndianUint32();
-    public static void Read(ref SequenceReader<byte> reader, out ushort output) =>
-        output = reader.ReadBigEndianUint16();
+    public static void Read<T>(ref SequenceReader<byte> reader, out T output) 
+        where T : IBinaryInteger<T> =>
+        reader.TryReadBigEndian(out output);
 
-    public static async ValueTask ReadAsync(PipeReader reader, byte[] offsets)
-    {
-        var buffers = await reader.ReadAtLeastAsync(offsets.Length).CA();
-        ReadFrom(reader, buffers, offsets);
-    }
+    [MacroItem("ushort")]
+    [MacroItem("uint")]
+    [MacroCode(NumberArrayReader.NumberArrayImplementation)]
+    public static  ValueTask ReadAsync(PipeReader reader, Memory<byte> offsets) =>
+        NumberArrayReader.ReadAsync(reader, offsets);
 
-    private static void ReadFrom(PipeReader reader, ReadResult buffers, byte[] offsets)
-    {
-        var seqReader = new SequenceReader<byte>(buffers.Buffer);
-        seqReader.TryCopyTo(offsets);
-        reader.AdvanceTo(seqReader.Position);
-    }
-
-    public static async ValueTask ReadAsync(PipeReader reader, uint[] offsets)
-    {
-        var buffers = await reader.ReadAtLeastAsync(4 * offsets.Length).CA();
-        ReadFrom(reader, buffers, offsets);
-    }
-
-    private static void ReadFrom(PipeReader reader, ReadResult buffers, uint[] offsets)
-    {
-        var seqReader = new SequenceReader<byte>(buffers.Buffer);
-        for (int i = 0; i < offsets.Length; i++)
-        {
-            offsets[i] = seqReader.ReadBigEndianUint32();
-        }
-        reader.AdvanceTo(seqReader.Position);
-    }
 
     public static async ValueTask<T> ReadFromAsync<T>(PipeReader reader) where T : IGeneratedParsable<T>
     {

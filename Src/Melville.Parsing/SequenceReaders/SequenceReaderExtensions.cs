@@ -1,10 +1,10 @@
 ﻿using System.Buffers;
+using System.Numerics;
 using Melville.INPC;
 
 namespace Melville.Parsing.SequenceReaders;
 
-/// <summary>
-/// Extension methods to read a variety of binary number formats from a SequenceReader.
+/// <summary> Extension methods to read a variety of binary number formats from a SequenceReader.
 /// </summary>
 [MacroItem("byte", "Uint8", 1)]
 [MacroItem("sbyte", "Int8", 1)]
@@ -33,13 +33,7 @@ namespace Melville.Parsing.SequenceReaders;
         /// <returns>True if there are enough bytes to read.  False otherwise.</returns>
         public static bool TryReadBigEndian~1~(this ref SequenceReader<byte> reader, out ~0~ ret) 
         {
-             if (TryReadBigEndian(ref reader, out var inner, ~2~))
-            {
-                ret = (~0~)inner;
-                return true;
-            }
-            ret = 0;
-            return false;
+            return reader.TryReadBigEndian(out ret);
         }
 
         """)]
@@ -47,6 +41,10 @@ namespace Melville.Parsing.SequenceReaders;
 
 public static  partial class SequenceReaderExtensions
 {
+    public static bool TryReadBigEndian<T>(this ref SequenceReader<byte> reader, out T value)
+        where T : IBinaryInteger<T> =>
+        GenericIntReader<T>.TryReadBigEndian(ref reader, out value);
+    
     /// <summary>
     /// Attempts to read a big endian value of a given number of bytes into a ulong. 
     /// </summary>

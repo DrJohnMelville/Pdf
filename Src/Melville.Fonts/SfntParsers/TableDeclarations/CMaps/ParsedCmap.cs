@@ -34,7 +34,7 @@ public class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables): 
         return tag switch
         {
             0 =>  await CmapFormat0Parser.ParseAsync(input),
-//            2 => await CmapFormat2Parser.ParseAsync(input),
+            2 => await CmapFormat2Parser.ParseAsync(input),
             _ => throw new InvalidDataException($"Unknown Cmap format {tag}")
         };
     }

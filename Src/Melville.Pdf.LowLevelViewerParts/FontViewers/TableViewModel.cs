@@ -11,7 +11,6 @@ public partial class TableViewModel
 {
     [FromConstructor] public SFnt font;
     [FromConstructor] public TableRecord Record { get; }
-    private bool loadCalled;
 
     public string Title => Record.TableName;
     public string? ToolTip => Record.ToString();

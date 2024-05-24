@@ -6,9 +6,7 @@ internal class SingleArrayCmap<T>(int bytesNeeded, uint firstIndex, T[] array) :
     ICmapImplementation where T : IBinaryInteger<T>, IConvertible
 {
     public IEnumerable<(int Bytes, uint Character, uint Glyph)> AllMappings() =>
-        array
-            .Select((t, i) => (bytesNeeded, (uint)(i + firstIndex), t.ToUInt32(null)))
-            .Where(i=>i.Item3 > 0);
+        array.Select((t, i) => (bytesNeeded, (uint)(i + firstIndex), t.ToUInt32(null)));
 
     public bool TryMap(int bytes, uint character, out uint glyph)
     { 

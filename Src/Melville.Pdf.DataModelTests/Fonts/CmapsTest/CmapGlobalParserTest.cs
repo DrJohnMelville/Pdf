@@ -12,9 +12,9 @@ namespace Melville.Pdf.DataModelTests.Fonts.CmapsTest;
 public class CmapGlobalParserTest
 {
     [Fact]
-    public async Task ParseRootCmap()
+    public async Task ParseRootCmapAsync()
     {
-        var cmap = await ParseCmap("""
+        var cmap = await ParseCmapAsync("""
             0000 0002
             0001 0002 0000FFFF
             0003 0005 DEADBEEF
@@ -29,12 +29,12 @@ public class CmapGlobalParserTest
         cmap.Tables[1].Offset.Should().Be(0xDEADBEEF);
     }
 
-    private static async ValueTask<ParsedCmap> ParseCmap(string data) => 
+    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data) => 
         (ParsedCmap) await
         new CmapParser(MultiplexSourceFactory.Create(data.BitsFromHex())).ParseCmapTableAsync();
 
     [Fact]
-    public async Task ParseType1Cmap()
+    public async Task ParseType1CmapAsync()
     {
         var select = "0000 0001"+
                       "0000 0001 0000000C" + // headder
@@ -42,7 +42,7 @@ public class CmapGlobalParserTest
                       Enumerable.Range(0,256)
                           .Select(i=>i%2 ==0?i:(2*i)+1)
                           .Select(i=> $"{(byte)i:X2}").ConcatenateStrings();
-        var cmap = await ParseCmap(select);
+        var cmap = await ParseCmapAsync(select);
 
         var subTable = await cmap.GetSubtableAsync(cmap.Tables[0]);
 
