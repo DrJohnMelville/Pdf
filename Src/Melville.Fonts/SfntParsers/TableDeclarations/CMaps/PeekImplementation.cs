@@ -7,7 +7,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 internal static class PeekImplementation
 {
-    public static async ValueTask<ulong> PeekTag(this PipeReader reader, int bytes)
+    public static async ValueTask<ulong> PeekTagAsync(this PipeReader reader, int bytes)
     {
         var result = await reader.ReadAtLeastAsync(bytes).CA();
         var ret = PeekAtBytes(result.Buffer, bytes);

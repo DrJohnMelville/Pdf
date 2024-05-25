@@ -20,7 +20,7 @@ public static class RootFontParser
     public static async Task<IReadOnlyList<IGenericFont>> ParseAsync(IMultiplexSource src)
     {
         var pipe = src.ReadPipeFrom(0);
-        var tag = await pipe.PeekTag(4).CA();
+        var tag = await pipe.PeekTagAsync(4).CA();
         return await ParseFontTypeAsync(src, tag).CA();
     }
 

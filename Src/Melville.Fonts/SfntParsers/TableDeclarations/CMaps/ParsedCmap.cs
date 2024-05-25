@@ -5,24 +5,10 @@ using Melville.Parsing.MultiplexSources;
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 
-/// <summary>
-/// This class represents a Cmap from a font file.  You can inspect the tables available and
-/// request one
-/// </summary>
-/// <param name="source">MultiplexSource containing the Cmap</param>
-/// <param name="subtables">The CmapTables used</param>
-public class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables): ICMapSource
+internal class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables): ICMapSource
 {
-    /// <summary>
-    /// CMaps offered by this font
-    /// </summary>
     public IReadOnlyList<CmapTablePointer> Tables => subtables;
 
-    /// <summary>
-    /// Retrieve a CMapImplementation for the given subtable pointer
-    /// </summary>
-    /// <param name="pointer">A pointer from the Tables array to a subtable</param>
-    /// <returns>An ICMapImplementation that executes the given cmap</returns>
     public ValueTask<ICmapImplementation> GetSubtableAsync(CmapTablePointer pointer)
     {
         return GetSubtableAsync(source.ReadPipeFrom(pointer.Offset));
@@ -30,12 +16,20 @@ public class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables): 
 
     private async ValueTask<ICmapImplementation> GetSubtableAsync(PipeReader input)
     {
-        var tag = await input.PeekTag(2).CA();
+        var tag = await input.PeekTagAsync(2).CA();
         return tag switch
         {
             0 =>  await CmapFormat0Parser.ParseAsync(input).CA(),
             2 => await CmapFormat2Parser.ParseAsync(input).CA(),
             4 => await CmapFormat4Parser.ParseAsync(input).CA(),
+            6 => await CmapFormat6Parser.ParseAsync(input).CA(),
+            8 => throw new NotSupportedException("""
+            Type 8 true type CMAPs are discouraged by the spec and not supported by this library.
+            I cannot find a type 8 CMAP for testing.  If you hit this bug, send me the file
+            and I will support reading it.
+            """),
+            10 => await CmapFormat10Parser.ParseAsync(input).CA(),
+            12 => await CmapFormat12Parser.ParseAsync(input).CA(),
             _ => throw new InvalidDataException($"Unknown Cmap format {tag}")
         };
     }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Linq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Integration;
@@ -30,6 +31,22 @@ public class TTCmap0406
         var map = await LoadCmapByIndexAsync(0);
         map.AllMappings().Where(i=>i.Glyph > 0).Should()
             .BeEquivalentTo(testCases.Select(i => (2, i.Character, i.Glyph)));
+    }
+    [Fact]
+    public async Task Type6CmapAsync()
+    {
+        var map = await LoadCmapByIndexAsync(1);
+        foreach (var (character, glyph) in testCases.Where(i=>i.Character<127))
+        {
+            map.Map(character).Should().Be(glyph);
+        }
+    }
+    [Fact]
+    public async Task Type6CmapEnumerateAsync()
+    {
+        var map = await LoadCmapByIndexAsync(1);
+        map.AllMappings().Should().AllSatisfy(i => testCases.Contains(
+            ((ushort)i.Character, (ushort)i.Glyph)));
     }
 
     private readonly (ushort Character, ushort Glyph)[] testCases =

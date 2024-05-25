@@ -14,6 +14,8 @@ internal readonly partial struct CmapFormat4Parser
     [SFntField] private readonly ushort entrySelector;
     [SFntField] private readonly ushort rangeShift;
     [SFntField("SegCount + 1")] private readonly ushort[] endCode;
+    // The spec has a 2 byte padding field in here.  I just read it onto the end of the
+    // endCode array, where it does not cause any problems.
     [SFntField("SegCount")] private readonly ushort[] startCode;
     [SFntField("SegCount")] private readonly short[] idDelta;
     [SFntField("SegCount")] private readonly ushort[] idRangeOffset;
