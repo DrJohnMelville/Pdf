@@ -11,8 +11,8 @@ public class TTCmap02
 {
     private static Task<IGenericFont> loadedFont = IntegrationFontLoader.LoadAsync();
 
-    private async Task<ICmapImplementation?> LoadCmapByIndexAsync(int index) => 
-        await (await loadedFont).CmapByIndexAsync(index);
+    private async Task<ICmapImplementation> LoadCmapByIndexAsync(int index) => 
+        (await (await loadedFont).CmapByIndexAsync(index))!;
 
     [Fact]
     public async Task Type0CmapAsync()

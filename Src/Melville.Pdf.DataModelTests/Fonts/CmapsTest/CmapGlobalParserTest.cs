@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
@@ -199,4 +201,22 @@ public class CmapGlobalParserTest
             (4, 0x72, 0x43),
         ]);
     }
+
+    [Fact]
+    public async Task ParseType14Cmap()
+    {
+        await using var select = GetPeerFile("CmapFromCambriaFont.dat");
+        var cmap = (await new CmapParser(MultiplexSourceFactory.Create(select))
+            .ParseCmapTableAsync());
+        var subtable = await cmap.GetByIndexAsync(1);
+
+        subtable.AllMappings().Should().AllSatisfy(i =>
+        {
+            subtable.TryMap(i.Bytes, i.Character, out var glyph);
+            glyph.Should().Be(i.Glyph);
+        });
+
+    }
+
+    private Stream GetPeerFile(string file, [CallerFilePath] string inputPath = "") => File.OpenRead(Path.Join(Path.GetDirectoryName(inputPath), file));
 }

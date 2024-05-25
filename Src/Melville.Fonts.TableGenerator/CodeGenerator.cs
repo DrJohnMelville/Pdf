@@ -113,6 +113,7 @@ namespace Melville.Fonts.TableGenerator
                 "short" => 2,
                 "ulong" => 8,
                 "long" => 8,
+                "global::Melville.Fonts.SfntParsers.TableParserParts.UInt24" => 3,
                 var x => throw new NotImplementedException($"cannot size type {x}")
             };
         }

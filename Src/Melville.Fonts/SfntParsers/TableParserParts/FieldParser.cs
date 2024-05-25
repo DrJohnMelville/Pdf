@@ -9,11 +9,16 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
+
 internal static partial class FieldParser
 {
     public static void Read<T>(ref SequenceReader<byte> reader, out T output) 
         where T : IBinaryInteger<T> =>
         reader.TryReadBigEndian(out output);
+
+    public static void Read(ref SequenceReader<byte> reader, out UInt24 output) =>
+        UInt24.TryReadBigEndian(ref reader, out output);
+
 
     [MacroItem("ushort")]
     [MacroItem("short")]

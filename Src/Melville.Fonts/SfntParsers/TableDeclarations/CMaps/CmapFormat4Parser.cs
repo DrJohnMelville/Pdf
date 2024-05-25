@@ -22,8 +22,10 @@ internal readonly partial struct CmapFormat4Parser
     [SFntField("GlyphIdArrayLength")] private readonly ushort[] glyphIdArray;
 
     private int SegCount => segCountX2 / 2;
-    private int GlyphIdArrayLength => length - (this.GetStaticSize() + 2 + (8*SegCount));
-    
+    private int GlyphIdArrayLength => (length - SizePriorToGlyphArray())/2;
+
+    private int SizePriorToGlyphArray() => (this.GetStaticSize() + 2 + (8*SegCount));
+
     public static async ValueTask<ICmapImplementation> ParseAsync(PipeReader input) => 
             (await FieldParser.ReadFromAsync<CmapFormat4Parser>(input).CA())
             .CreateImplementation();
