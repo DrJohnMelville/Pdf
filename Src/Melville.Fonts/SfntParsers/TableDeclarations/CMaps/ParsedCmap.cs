@@ -29,7 +29,7 @@ internal class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables)
             and I will support reading it.
             """),
             10 => await CmapFormat10Parser.ParseAsync(input).CA(),
-            12 => await CmapFormat12Parser.ParseAsync(input).CA(),
+            12 or 13 => await CmapFormat12Parser.ParseAsync(input).CA(),
             _ => throw new InvalidDataException($"Unknown Cmap format {tag}")
         };
     }

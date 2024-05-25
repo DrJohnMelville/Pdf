@@ -126,7 +126,7 @@ namespace Melville.Fonts.TableGenerator
                 using Melville.Parsing.AwaitConfiguration;
                 namespace {{classSymbol.ContainingNamespace}};
 
-                {{$"{tds.Modifiers} {tds.Keyword} {tds.Identifier}"}}: {{InterfaceName()}}
+                {{$"{tds.Modifiers} {tds.Keyword} {tds.Identifier}{tds.TypeParameterList}"}}: {{InterfaceName()}}
                 {
                 """);
         }
