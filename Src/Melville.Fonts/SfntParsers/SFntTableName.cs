@@ -14,4 +14,9 @@ public class SFntTableName
     /// Table name 'head'
     /// </summary>
     public const uint Head = 0x68656164;
+
+    /// <summary>
+    /// Table name 'hhea'
+    /// </summary>
+    public const uint HorizontalHeadder = 0x68686561;
 }

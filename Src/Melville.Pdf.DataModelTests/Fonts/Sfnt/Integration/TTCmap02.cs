@@ -93,4 +93,30 @@ public class TTCmap02
         head.IndexToLocFormat.Should().Be(1);
         head.GlyphDataFormat.Should().Be(0);
     }
+
+    [Fact]
+    public async Task LoadHorizontaHeaderTableAsync()
+    {
+        var hhea = await ((SFnt)(await loadedFont)).HorizontalHeaderTableAsync();
+
+        hhea.MajorVersion.Should().Be(1);
+        hhea.MinorVersion.Should().Be(0);
+        hhea.Ascender.Should().Be(1854);
+        hhea.Descender.Should().Be(-434);
+        hhea.LineGap.Should().Be(67);
+        hhea.AdvanceWidthMax.Should().Be(4096);
+        hhea.MinLeftSideBearing.Should().Be(-1361);
+        hhea.MinRightSideBearing.Should().Be(-1414);
+        hhea.XMaxExtent.Should().Be(4096);
+        hhea.CaretSlopeRise.Should().Be(1);
+        hhea.CaretSlopeRun.Should().Be(0);
+        hhea.CaretOffset.Should().Be(0);
+        hhea.Reserved1.Should().Be(0);
+        hhea.Reserved2.Should().Be(0);
+        hhea.Reserved3.Should().Be(0);
+        hhea.Reserved4.Should().Be(0);
+        hhea.MetricDataFormat.Should().Be(0);
+        hhea.NumberOfHMetrics.Should().Be(4502);
+
+    }
 }

@@ -2,6 +2,7 @@
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
+using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Hacks;
 using Melville.INPC;
@@ -45,22 +46,26 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        FindTable(SFntTableName.CMap) is {} table ? 
            TableLoader.LoadCmap(source.OffsetFrom(table.Offset))
            : new(new ParsedCmap(source, []));
-
-   private TableRecord? FindTable(uint tag)
-   {
-        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
-        return index < 0 ? null : tables[index];
-   }
-
-
+    
    /// <summary>
    /// Get a parsed header table from the SFnt
    /// </summary>
    /// <returns>The header table from the font.</returns>
-   public async ValueTask<ParsedHead> HeadTableAsync()  => 
-       FindTable(SFntTableName.Head) is {} table ? 
-              await FieldParser.ReadFromAsync<ParsedHead>(source.ReadPipeFrom(table.Offset)).CA()
-              :  new ParsedHead();
-       
+   public ValueTask<ParsedHead> HeadTableAsync() =>
+       LoadTableAsync<ParsedHead>(SFntTableName.Head);
+
+   public async ValueTask<ParsedHorizontalHeader> HorizontalHeaderTableAsync() =>
+       await LoadTableAsync<ParsedHorizontalHeader>(SFntTableName.HorizontalHeadder);
+
+   private ValueTask<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
+       FindTable(tag) is {} table ? 
+           FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset))
+           : new(null);
+
+   private TableRecord? FindTable(uint tag)
+   {
+       var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
+       return index < 0 ? null : tables[index];
+   }
 
 }
