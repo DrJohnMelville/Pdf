@@ -114,6 +114,7 @@ namespace Melville.Fonts.TableGenerator
                 "ulong" => 8,
                 "long" => 8,
                 "global::Melville.Fonts.SfntParsers.TableParserParts.UInt24" => 3,
+                "global::Melville.Fonts.SfntParsers.TableParserParts.FixedPoint<int, long, Melville.Fonts.SfntParsers.TableParserParts.Fixed16>" => 4,
                 var x => throw new NotImplementedException($"cannot size type {x}")
             };
         }

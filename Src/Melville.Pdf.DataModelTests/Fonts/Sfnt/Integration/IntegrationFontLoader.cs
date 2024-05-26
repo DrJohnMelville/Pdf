@@ -5,7 +5,7 @@ using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.MultiplexSources;
 
-namespace Melville.Pdf.DataModelTests.Fonts.Integration
+namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Integration
 {
     public static class IntegrationFontLoader
     {

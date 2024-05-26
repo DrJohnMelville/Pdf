@@ -19,6 +19,15 @@ internal static partial class FieldParser
     public static void Read(ref SequenceReader<byte> reader, out UInt24 output) =>
         UInt24.TryReadBigEndian(ref reader, out output);
 
+    public static void Read<TStorage, TCompute, TConfig>(
+        ref SequenceReader<byte> reader, out FixedPoint<TStorage, TCompute, TConfig> output) where TStorage : IBinaryInteger<TStorage>
+        where TCompute : IBinaryInteger<TCompute>
+        where TConfig : IFixedPointConfig<TStorage, TCompute>
+    {
+        reader.TryReadBigEndian(out TStorage value);
+        output = new FixedPoint<TStorage, TCompute, TConfig>(value);
+    }
+
 
     [MacroItem("ushort")]
     [MacroItem("short")]

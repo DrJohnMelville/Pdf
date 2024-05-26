@@ -17,11 +17,11 @@ internal readonly partial struct CmapFormat14Parser
         var header = await FieldParser.ReadFromAsync<CmapFormat14Parser>(
             input.ReadPipeFrom(0)).CA();
 
-        return await header.CreateImplementation(input).CA();
+        return await header.CreateImplementationAsync(input).CA();
        
     }
 
-    private async ValueTask<CmapFormat14Implementation> CreateImplementation(
+    private async ValueTask<CmapFormat14Implementation> CreateImplementationAsync(
         IMultiplexSource input)
     {
         var selectors = new VariantSelection[numVarSelectorRecords];
@@ -43,20 +43,20 @@ internal readonly partial struct VariantSelectorRecord
     public async ValueTask<VariantSelection> CreateVariantSelectionAsync(IMultiplexSource input)
     {
         var defaults = defaultUVSOffset is > 0?
-                await LoadDefaultTable(input.ReadPipeFrom(defaultUVSOffset)).CA():[];
+                await LoadDefaultTableAsync(input.ReadPipeFrom(defaultUVSOffset)).CA():[];
         var mappings = nonDefaultUVSOffset is > 0?
-                await LoadNonDefaultTable(input.ReadPipeFrom(nonDefaultUVSOffset)).CA():[];
+                await LoadNonDefaultTableAsync(input.ReadPipeFrom(nonDefaultUVSOffset)).CA():[];
         return new VariantSelection(
             varSelector, defaults, mappings);
     }
 
 
-    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTable(PipeReader pipe)
+    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTableAsync(PipeReader pipe)
     {
         var record = await FieldParser.ReadFromAsync<DefaultUvsTableRecord>(pipe).CA();
         return record.unicodeValueRanges;
     }
-    private async ValueTask<UvsMapping[]> LoadNonDefaultTable(PipeReader readPipeFrom)
+    private async ValueTask<UvsMapping[]> LoadNonDefaultTableAsync(PipeReader readPipeFrom)
     {
         var record = await FieldParser.ReadFromAsync<NonDefaultUvsTableRecord>(
             readPipeFrom).CA();

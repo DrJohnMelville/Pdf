@@ -36,4 +36,9 @@ public readonly partial struct TableRecord
     /// Expresses the Tag field as a 4 character title
     /// </summary>
     public string TableName => Tag.AsTag();
+
+    public readonly struct Searcher(uint tag) : IComparable<TableRecord>
+    {
+        public int CompareTo(TableRecord other) => tag.CompareTo(other.Tag);
+    }
 }

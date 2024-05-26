@@ -9,4 +9,9 @@ public class SFntTableName
     /// Table name 'cmap'
     /// </summary>
     public const uint CMap = 0x636d6170;
+
+    /// <summary>
+    /// Table name 'head'
+    /// </summary>
+    public const uint Head = 0x68656164;
 }

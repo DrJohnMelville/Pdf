@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
+using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -17,11 +19,13 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     /// <inheritdoc />
     public void Dispose() => source.Dispose();
-   
+
+    [FromConstructor] private readonly TableRecord[] tables;
+
     /// <summary>
-   /// These are the tables that make up the font.
-   /// </summary>
-   [FromConstructor] public IReadOnlyList<TableRecord> Tables { get; }
+    /// These are the tables that make up the font.
+    /// </summary>
+    public IReadOnlyList<TableRecord> Tables => tables;
 
    /// <summary>
    /// Load a font table as an array of bytes.  This is used by the font viewer in the tools. 
@@ -37,14 +41,26 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    }
 
    /// <inheritdoc />
-   public override ValueTask<ICMapSource> ParseCMapsAsync()
-   {
-       foreach (var table in Tables)
-       {
-           if (table.Tag is SFntTableName.CMap) return 
-               new CmapParser(source.OffsetFrom(table.Offset)).ParseCmapTableAsync();
-       }
+   public override ValueTask<ICMapSource> ParseCMapsAsync() =>
+       FindTable(SFntTableName.CMap) is {} table ? 
+           new CmapParser(source.OffsetFrom(table.Offset)).ParseCmapTableAsync()
+           : new(new ParsedCmap(source, []));
 
-       return new(new ParsedCmap(source, []));
+   private TableRecord? FindTable(uint tag)
+   {
+        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
+        return index < 0 ? null : tables[index];
    }
+
+
+   /// <summary>
+   /// Get a parsed header table from the SFnt
+   /// </summary>
+   /// <returns>The header table from the font.</returns>
+   public async ValueTask<ParsedHead> HeadTableAsync()  => 
+       FindTable(SFntTableName.Head) is {} table ? 
+              await FieldParser.ReadFromAsync<ParsedHead>(source.ReadPipeFrom(table.Offset)).CA()
+              :  new ParsedHead();
+       
+
 }

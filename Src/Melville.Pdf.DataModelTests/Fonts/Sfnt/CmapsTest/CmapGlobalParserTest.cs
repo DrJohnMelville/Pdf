@@ -9,7 +9,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Fonts.CmapsTest;
+namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CmapsTest;
 
 public class CmapGlobalParserTest
 {
@@ -31,19 +31,19 @@ public class CmapGlobalParserTest
         cmap.Tables[1].Offset.Should().Be(0xDEADBEEF);
     }
 
-    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data) => 
-        (ParsedCmap) await
+    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data) =>
+        (ParsedCmap)await
         new CmapParser(MultiplexSourceFactory.Create(data.BitsFromHex())).ParseCmapTableAsync();
 
     [Fact]
     public async Task ParseType1CmapAsync()
     {
-        var select = "0000 0001"+
+        var select = "0000 0001" +
                       "0000 0001 0000000C" + // headder
                       "0000 0106 0000 " +
-                      Enumerable.Range(0,256)
-                          .Select(i=>i%2 ==0?i:(2*i)+1)
-                          .Select(i=> $"{(byte)i:X2}").ConcatenateStrings();
+                      Enumerable.Range(0, 256)
+                          .Select(i => i % 2 == 0 ? i : 2 * i + 1)
+                          .Select(i => $"{(byte)i:X2}").ConcatenateStrings();
         var cmap = await ParseCmapAsync(select);
 
         var subTable = await cmap.GetSubtableAsync(cmap.Tables[0]);
@@ -68,7 +68,7 @@ public class CmapGlobalParserTest
     [Fact]
     public async Task ParstType10CmapAsync()
     {
-        var select = "0000 0001"+
+        var select = "0000 0001" +
                      "0000 0001 0000000C" + // headder
                      "000A 0000 00000020 00000000 00000020 00000003 0003 0004 0005 ";
         var cmap = await ParseCmapAsync(select);
@@ -203,11 +203,11 @@ public class CmapGlobalParserTest
     }
 
     [Fact]
-    public async Task ParseType14Cmap()
+    public async Task ParseType14CmapAsync()
     {
         await using var select = GetPeerFile("CmapFromCambriaFont.dat");
-        var cmap = (await new CmapParser(MultiplexSourceFactory.Create(select))
-            .ParseCmapTableAsync());
+        var cmap = await new CmapParser(MultiplexSourceFactory.Create(select))
+            .ParseCmapTableAsync();
         var subtable = await cmap.GetByIndexAsync(1);
 
         subtable.AllMappings().Should().AllSatisfy(i =>

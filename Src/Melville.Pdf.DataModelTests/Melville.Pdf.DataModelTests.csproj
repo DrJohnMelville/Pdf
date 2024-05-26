@@ -47,6 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Fonts\TableParserPartsTest\" />
 		<Folder Include="ImageExtractors\" />
 		<Folder Include="Postscript.Interpreter\Tokenizers\" />
 		<Folder Include="Standard\S7_6Encryption\S7_6_3_4PasswordAlgorithms\V6Algorithms\NewFolder\" />
