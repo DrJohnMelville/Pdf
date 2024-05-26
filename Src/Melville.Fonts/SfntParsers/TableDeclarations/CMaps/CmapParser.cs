@@ -36,20 +36,3 @@ public interface ICmapImplementation
         return ret;
     }
 }
-
-/// <summary>
-/// Read a Cmap Table
-/// </summary>
-/// <param name="source">The IMultiplexSource that holds the cmap data</param>
-public readonly struct CmapParser(IMultiplexSource source)
-{
-    /// <summary>
-    /// Read a ParsedCmap from the source.
-    /// </summary>
-    /// <returns>A, ICMapSource representing this table.</returns>
-    public async ValueTask<ICMapSource> ParseCmapTableAsync()
-    {
-        var table = await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA();
-        return new ParsedCmap(source, table.Tables);
-    }
-}

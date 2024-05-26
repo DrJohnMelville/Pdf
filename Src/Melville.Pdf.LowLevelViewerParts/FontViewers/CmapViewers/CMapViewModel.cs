@@ -13,7 +13,7 @@ public partial class CMapViewModel (ICMapSource cmap, int index)
         get
         {
             var (platform, encoding) = cmap.GetPlatformEncoding(index);
-            return $"{platform}:{encoding}";
+            return $"{CmapPlatFormAndEncodingNames.PlatformName(platform)}({platform}): {CmapPlatFormAndEncodingNames.EncodingName(platform, encoding)} ({encoding})";
         }
     }
 

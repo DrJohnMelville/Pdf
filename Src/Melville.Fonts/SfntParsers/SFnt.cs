@@ -43,7 +43,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    /// <inheritdoc />
    public override ValueTask<ICMapSource> ParseCMapsAsync() =>
        FindTable(SFntTableName.CMap) is {} table ? 
-           new CmapParser(source.OffsetFrom(table.Offset)).ParseCmapTableAsync()
+           TableLoader.LoadCmap(source.OffsetFrom(table.Offset))
            : new(new ParsedCmap(source, []));
 
    private TableRecord? FindTable(uint tag)

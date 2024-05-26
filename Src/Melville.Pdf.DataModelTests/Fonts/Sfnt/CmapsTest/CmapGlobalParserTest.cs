@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Linq;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
@@ -33,7 +34,7 @@ public class CmapGlobalParserTest
 
     private static async ValueTask<ParsedCmap> ParseCmapAsync(string data) =>
         (ParsedCmap)await
-        new CmapParser(MultiplexSourceFactory.Create(data.BitsFromHex())).ParseCmapTableAsync();
+        TableLoader.LoadCmap(MultiplexSourceFactory.Create(data.BitsFromHex()));
 
     [Fact]
     public async Task ParseType1CmapAsync()
@@ -206,8 +207,7 @@ public class CmapGlobalParserTest
     public async Task ParseType14CmapAsync()
     {
         await using var select = GetPeerFile("CmapFromCambriaFont.dat");
-        var cmap = await new CmapParser(MultiplexSourceFactory.Create(select))
-            .ParseCmapTableAsync();
+        var cmap = await TableLoader.LoadCmap(MultiplexSourceFactory.Create(select));
         var subtable = await cmap.GetByIndexAsync(1);
 
         subtable.AllMappings().Should().AllSatisfy(i =>

@@ -47,5 +47,4 @@ public interface ICMapSource
     /// <param name="index">The index of the subtable to get information from</param>
     /// <returns>The platform and encoding values for the indicated CMap</returns>
     (int platform, int encoding) GetPlatformEncoding(int index);
-
 }

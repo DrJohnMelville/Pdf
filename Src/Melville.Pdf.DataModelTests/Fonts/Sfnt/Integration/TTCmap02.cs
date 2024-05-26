@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Integration;
@@ -77,10 +79,10 @@ public class TTCmap02
         head.FontRevision.ToString().Should().Be("7");
         head.CheckSumAdjustment.Should().Be(0xECA2BCD2);
         head.MagicNumber.Should().Be(0x5F0F3CF5);
-        head.Flags.Should().Be(0x081b);
+        head.Flags.Should().Be((HeaderFlags)0x081b);
         head.UnitsPerEm.Should().Be(0x800);
-        head.Created.Should().Be(0x00000000a2e3272a);
-        head.Modified.Should().Be(0x00000000d684e4ec);
+        head.Created.Should().Be(new DateTime(1904,1,1).AddSeconds(0x00000000a2e3272a));
+        head.Modified.Should().Be(new DateTime(1904,1,1).AddSeconds(0x00000000d684e4ec));
         head.XMin.Should().Be(-1361);
         head.YMin.Should().Be(-665);
         head.XMax.Should().Be(4096);
