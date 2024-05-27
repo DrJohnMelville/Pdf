@@ -7,6 +7,7 @@ using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
+using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.MultiplexSources;
@@ -25,6 +26,7 @@ public static class SpecialTableParser
             SFntTableName.CMap => ParseCmapAsync(data),
             SFntTableName.Head => ParseHeadAsync(data),
             SFntTableName.HorizontalHeadder => ParseHorizontalHeader(data),
+            SFntTableName.MaximumProfile => ParsedMaximumsProfile(data),
             _ => new(new ByteStringViewModel(data))
         };
 
@@ -38,16 +40,21 @@ public static class SpecialTableParser
 
     private static async ValueTask<object> ParseHeadAsync(byte[] data)
     {
-        var head = await TableLoader.LoadHead(MultiplexSourceFactory.Create(data));
-        return new CompositeTableViewModel(
-            [new HeadViewModel(head), new ByteStringViewModel(data)]);
+        var head = new HeadViewModel(await TableLoader.LoadHead(MultiplexSourceFactory.Create(data)));
+        return TwoTabModel(head, data);
     }
+
+    private static CompositeTableViewModel TwoTabModel(object head, byte[] data) =>
+        new([head, new ByteStringViewModel(data)]);
 
     private static async ValueTask<object> ParseHorizontalHeader(byte[] data)
     {
-        var header = await TableLoader.LoadHorizontalHeader(MultiplexSourceFactory.Create(data));
-        return new CompositeTableViewModel(
-            [new HorizontalHeaderViewModel(header), new ByteStringViewModel(data)]);
+        return TwoTabModel(
+            new HorizontalHeaderViewModel(await TableLoader.LoadHorizontalHeader(MultiplexSourceFactory.Create(data))),
+            data);;
     }
 
+    private static async ValueTask<object> ParsedMaximumsProfile(byte[] data) =>
+        TwoTabModel(
+            new MaximumsViewModel(await TableLoader.LoadMaximumProfile(MultiplexSourceFactory.Create(data))), data);
 }

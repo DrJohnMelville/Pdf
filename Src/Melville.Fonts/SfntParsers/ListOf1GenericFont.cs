@@ -24,5 +24,5 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
     public IGenericFont this[int index] => this;
 
     /// <inheritdoc />
-    public abstract ValueTask<ICMapSource> ParseCMapsAsync();
+    public abstract Task<ICMapSource> ParseCMapsAsync();
 }

@@ -12,7 +12,7 @@ public interface IGenericFont
     /// <summary>
     /// Load the CMaps for a font.
     /// </summary>
-    ValueTask<ICMapSource> ParseCMapsAsync();
+    Task<ICMapSource> ParseCMapsAsync();
 }
 
 /// <summary>

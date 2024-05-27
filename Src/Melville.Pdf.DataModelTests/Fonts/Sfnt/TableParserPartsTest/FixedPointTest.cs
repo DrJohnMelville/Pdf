@@ -2,7 +2,7 @@
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Fonts.TableParserPartsTest;
+namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.TableParserPartsTest;
 
 public class FixedPointTest
 {

@@ -19,4 +19,9 @@ public class SFntTableName
     /// Table name 'hhea'
     /// </summary>
     public const uint HorizontalHeadder = 0x68686561;
+
+    /// <summary>
+    /// Table name 'maxp'
+    /// </summary>
+    public const uint MaximumProfile = 0x6D617870;
 }
