@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections;
 using System.Configuration;
 using System.IO;
 using System.IO.Pipelines;
@@ -15,44 +16,52 @@ using Melville.Pdf.LowLevelViewerParts.FontViewers.CmapViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.HeadViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.MetricViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 public static class SpecialTableParser
 {
-    public static ValueTask<object> ParseAsync(uint tag, byte[] data) =>
+    public static async ValueTask<object> ParseAsync(TableRecord record, SFnt font)
+    {
+
+        var byteModel = new ByteStringViewModel(await font.GetTableBytesAsync(record));
+        var special = await ParseAsync(record.Tag, font);
+
+        return special switch
+        {
+            IEnumerable enumerable => new CompositeTableViewModel([..enumerable, byteModel]),
+            { } x => new CompositeTableViewModel(new object[] {x, byteModel}),
+            _ => byteModel
+        };
+    }
+
+    private static ValueTask<object?> ParseAsync(uint tag, SFnt font) =>
         tag switch
         {
-            SFntTableName.CMap => ParseCmapAsync(data),
-            SFntTableName.Head => ParseHeadAsync(data),
-            SFntTableName.HorizontalHeadder => ParseHorizontalHeaderAsync(data),
-            SFntTableName.MaximumProfile => ParsedMaximumsProfileAsync(data),
-            _ => new(new ByteStringViewModel(data))
+            SFntTableName.CMap => ParseCmapAsync(font),
+            SFntTableName.Head => ParseHeadAsync(font),
+            SFntTableName.HorizontalHeadder => ParseHorizontalHeaderAsync(font),
+            SFntTableName.MaximumProfile => ParsedMaximumsProfileAsync(font),
+            SFntTableName.HorizontalMetrics => ParseHorizontalMetrics(font),
+            _ => new ValueTask<object?>((object?)null)
         };
 
-    private static async ValueTask<object> ParseCmapAsync(byte[] data)
+    private static async ValueTask<object?> ParseCmapAsync(SFnt font)
     {
-        var cmap = await TableLoader.LoadCmapAsync(MultiplexSourceFactory.Create(data));
-        return new CompositeTableViewModel(Enumerable.Range(0, cmap.Count)
-            .Select(i => new CMapViewModel(cmap, i) as object)
-            .Append(new ByteStringViewModel(data)).ToArray());
+        var cmap = await font.ParseCMapsAsync();
+        return Enumerable.Range(0, cmap.Count)
+            .Select(i => new CMapViewModel(cmap, i) as object);
     }
+    private static async ValueTask<object?> ParseHeadAsync(SFnt font) => 
+        new HeadViewModel(await font.HeadTableAsync());
 
-    private static async ValueTask<object> ParseHeadAsync(byte[] data)
-    {
-        var head = new HeadViewModel(await TableLoader.LoadHeadAsync(MultiplexSourceFactory.Create(data)));
-        return TwoTabModel(head, data);
-    }
+    private static async ValueTask<object?> ParseHorizontalHeaderAsync(SFnt font) =>
+            new HorizontalHeaderViewModel(await font.HorizontalHeaderTableAsync());
 
-    private static CompositeTableViewModel TwoTabModel(object head, byte[] data) =>
-        new([head, new ByteStringViewModel(data)]);
+    private static async ValueTask<object?> ParsedMaximumsProfileAsync(SFnt font) =>
+            new MaximumsViewModel(await font.MaximumProfileTableAsync());
 
-    private static async ValueTask<object> ParseHorizontalHeaderAsync(byte[] data) =>
-        TwoTabModel(
-            new HorizontalHeaderViewModel(await TableLoader.LoadHorizontalHeaderAsync(MultiplexSourceFactory.Create(data))),
-            data);
-
-    private static async ValueTask<object> ParsedMaximumsProfileAsync(byte[] data) =>
-        TwoTabModel(
-            new MaximumsViewModel(await TableLoader.LoadMaximumProfileAsync(MultiplexSourceFactory.Create(data))), data);
+    private static async ValueTask<object?> ParseHorizontalMetrics(SFnt font) =>
+        new HorizontalMetricsViewModel(await font.HorizontalMetrics());
 }

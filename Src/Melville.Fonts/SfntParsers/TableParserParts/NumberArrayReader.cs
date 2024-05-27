@@ -22,7 +22,7 @@ internal static class NumberArrayReader
         reader.AdvanceTo(seqReader.Position);
     }
 
-    public static async ValueTask ReadAsBytesAsync<T>(PipeReader reader, T[] offsets) where T : unmanaged
+    internal static async ValueTask ReadAsBytesAsync<T>(PipeReader reader, T[] offsets) where T : unmanaged
     {
         var buffers = await reader.ReadAtLeastAsync(offsets.Length * GetSize<T>()).CA();
         ReadFrom(reader, buffers, MemoryMarshal.Cast<T, byte>(offsets.AsSpan()));

@@ -18,6 +18,5 @@ public partial class TableViewModel
     private readonly LoadOnce<object> details = new(LoadingTableViewModel.Instance);
     public object Details => details.GetValue(this, LoadTableAsync);
 
-    private async ValueTask<object> LoadTableAsync() => 
-        await SpecialTableParser.ParseAsync(Record.Tag, await font.GetTableBytesAsync(Record));
+    private ValueTask<object> LoadTableAsync() => SpecialTableParser.ParseAsync(Record, font);
 }

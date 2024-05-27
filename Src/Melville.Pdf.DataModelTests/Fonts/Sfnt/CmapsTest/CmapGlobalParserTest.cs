@@ -3,9 +3,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Linq;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
@@ -32,9 +34,12 @@ public class CmapGlobalParserTest
         cmap.Tables[1].Offset.Should().Be(0xDEADBEEF);
     }
 
-    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data) =>
-        (ParsedCmap)await
-        TableLoader.LoadCmapAsync(MultiplexSourceFactory.Create(data.BitsFromHex()));
+    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data)
+    {
+        IMultiplexSource source = MultiplexSourceFactory.Create(data.BitsFromHex());
+        return (ParsedCmap)new ParsedCmap(source,
+            (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA()).Tables);
+    }
 
     [Fact]
     public async Task ParseType1CmapAsync()
@@ -207,7 +212,9 @@ public class CmapGlobalParserTest
     public async Task ParseType14CmapAsync()
     {
         await using var select = GetPeerFile("CmapFromCambriaFont.dat");
-        var cmap = await TableLoader.LoadCmapAsync(MultiplexSourceFactory.Create(select));
+        IMultiplexSource source = MultiplexSourceFactory.Create(select);
+        var cmap = (ICMapSource)new ParsedCmap(source,
+            (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA()).Tables);
         var subtable = await cmap.GetByIndexAsync(1);
 
         subtable.AllMappings().Should().AllSatisfy(i =>

@@ -24,4 +24,9 @@ public class SFntTableName
     /// Table name 'maxp'
     /// </summary>
     public const uint MaximumProfile = 0x6D617870;
+
+    /// <summary>
+    /// Table name 'htmx"
+    /// </summary>
+    public const uint HorizontalMetrics = 0x686D7478;
 }

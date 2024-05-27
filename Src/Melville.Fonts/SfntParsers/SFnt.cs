@@ -50,10 +50,13 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
    /// <inheritdoc />
    public override Task<ICMapSource> ParseCMapsAsync() =>
-       cache.GetTable(SFntTableName.CMap, ()=>
-       FindTable(SFntTableName.CMap) is {} table ? 
-           TableLoader.LoadCmapAsync(source.OffsetFrom(table.Offset)).AsTask()
-           : Task.FromResult<ICMapSource>(new ParsedCmap(source, [])));
+       cache.GetTable(SFntTableName.CMap, async ()=>
+       {
+           return FindTable(SFntTableName.CMap) is { } table
+               ? ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
+                   (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(table.Offset)).CA()).Tables))
+               : new ParsedCmap(source, []);
+       });
     
    /// <summary>
    /// Get a parsed header table from the SFnt
@@ -79,6 +82,25 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
                new MaxpParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask():
                Task.FromResult(new ParsedMaximums(0)));
 
+   public async Task<ParsedHorizontalMetrics> HorizontalMetrics() =>
+       await cache.GetTable(SFntTableName.HorizontalMetrics, () =>
+           new DelayTaskStart<ParsedHorizontalMetrics>(CreateHorizontalMetrics));
+       //to create a ParseHorizontalMetrics table, we need to load the
+       //maximums table and the horizontal header table we delay the starting of this task
+       // until we are outside of the critical section for cache.GetTable this make sure we
+       // do not deadlock on the cache access method.
+
+   private async Task<ParsedHorizontalMetrics> CreateHorizontalMetrics()
+   {
+       if (FindTable(SFntTableName.HorizontalMetrics) is not { } table)
+           return new ParsedHorizontalMetrics([], 0);
+
+       var horizontalHeader = await HorizontalHeaderTableAsync().CA();
+       var maximums = await MaximumProfileTableAsync().CA();
+       return await new HorizontalMetricsParser(source.ReadPipeFrom(table.Offset),
+           horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs).ParseAsync().CA();
+   }
+
    private Task<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
        cache.GetTable(tag, ()=>
        FindTable(tag) is {} table ? 
@@ -90,4 +112,11 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
        return index < 0 ? null : tables[index];
    }
+}
+
+internal class DelayTaskStart<T>(Func<Task<T>> operation)
+{
+    private readonly Lazy<Task<T>> task = new(operation);
+
+    public TaskAwaiter<T> GetAwaiter() => task.Value.GetAwaiter();
 }
