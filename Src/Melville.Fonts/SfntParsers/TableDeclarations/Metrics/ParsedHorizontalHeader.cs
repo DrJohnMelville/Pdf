@@ -7,6 +7,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 /// </summary>
 public partial class ParsedHorizontalHeader
 {
+    /// <summary>
+    /// Create an empty ParsedHorizontal Header.
+    /// </summary>
     public ParsedHorizontalHeader(){}
 
     /// <summary>

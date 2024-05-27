@@ -7,6 +7,10 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 /// </summary>
 public partial class ParsedMaximums
 {
+    /// <summary>
+    /// Create a short form ParsedMaximums
+    /// </summary>
+    /// <param name="numGlyphs">The number of glyphs in the font.</param>
     public ParsedMaximums(ushort numGlyphs)
     {
         Version = 0x00005000;

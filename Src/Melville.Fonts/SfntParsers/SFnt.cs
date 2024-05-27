@@ -17,11 +17,17 @@ namespace Melville.Fonts.SfntParsers;
 /// </summary>
 public partial class SFnt : ListOf1GenericFont, IDisposable
 {
+    /// <summary>
+    /// A MultiplexSource to get font data from.
+    /// </summary>
     [FromConstructor] private IMultiplexSource source;
     private readonly TableCache cache = new();
     /// <inheritdoc />
     public void Dispose() => source.Dispose();
 
+    /// <summary>
+    /// The TableRecords that describe locations of tables in the font data
+    /// </summary>
     [FromConstructor] private readonly TableRecord[] tables;
 
     /// <summary>
@@ -46,7 +52,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    public override Task<ICMapSource> ParseCMapsAsync() =>
        cache.GetTable(SFntTableName.CMap, ()=>
        FindTable(SFntTableName.CMap) is {} table ? 
-           TableLoader.LoadCmap(source.OffsetFrom(table.Offset)).AsTask()
+           TableLoader.LoadCmapAsync(source.OffsetFrom(table.Offset)).AsTask()
            : Task.FromResult<ICMapSource>(new ParsedCmap(source, [])));
     
    /// <summary>
@@ -77,7 +83,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        cache.GetTable(tag, ()=>
        FindTable(tag) is {} table ? 
            FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
-           : new(null));
+           : Task.FromResult(new T()));
 
    private TableRecord? FindTable(uint tag)
    {  

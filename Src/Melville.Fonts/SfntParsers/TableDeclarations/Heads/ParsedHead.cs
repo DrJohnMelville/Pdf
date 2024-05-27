@@ -7,6 +7,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 /// </summary>
 public partial class ParsedHead
 {
+    /// <summary>
+    /// Create an empty ParsedHead record
+    /// </summary>
     public ParsedHead()
     {
     }

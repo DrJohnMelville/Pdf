@@ -18,7 +18,7 @@ public static class TableLoader
     /// Load the CMAP table from a byte strea,
     /// </summary>
     /// <param name="source">The source information for the table</param>
-    public static async ValueTask<ICMapSource> LoadCmap(IMultiplexSource source) =>
+    public static async ValueTask<ICMapSource> LoadCmapAsync(IMultiplexSource source) =>
         new ParsedCmap(source,
             (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA()).Tables);
 
@@ -26,17 +26,21 @@ public static class TableLoader
     /// Load the head table from a byte stream
     /// </summary>
     /// <param name="source">The source information for the table</param>
-    public static async ValueTask<ParsedHead> LoadHead(IMultiplexSource source) =>
+    public static async ValueTask<ParsedHead> LoadHeadAsync(IMultiplexSource source) =>
         await FieldParser.ReadFromAsync<ParsedHead>(source.ReadPipeFrom(0)).CA();
 
     /// <summary>
     /// Load the hhea table from a byte stream
     /// </summary>
     /// <param name="source">The source information for the table</param>
-    public static ValueTask<ParsedHorizontalHeader> LoadHorizontalHeader(
-        IMultiplexSource create) =>
-        FieldParser.ReadFromAsync<ParsedHorizontalHeader>(create.ReadPipeFrom(0));
+    public static ValueTask<ParsedHorizontalHeader> LoadHorizontalHeaderAsync(
+        IMultiplexSource source) =>
+        FieldParser.ReadFromAsync<ParsedHorizontalHeader>(source.ReadPipeFrom(0));
 
-    public static ValueTask<ParsedMaximums> LoadMaximumProfile(IMultiplexSource create) => 
+    /// <summary>
+    /// Load the maximum profile table from a byte stream
+    /// </summary>
+    /// <param name="create">Source to read the table from</param>
+    public static ValueTask<ParsedMaximums> LoadMaximumProfileAsync(IMultiplexSource create) => 
         new MaxpParser(create.ReadPipeFrom(0)).ParseAsync();
 }

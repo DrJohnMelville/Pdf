@@ -10,14 +10,14 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class MaximumProfileReaderTest
 {
-    private static async Task<ParsedMaximums> ReadMaximumTable(string data) =>
+    private static async Task<ParsedMaximums> ReadMaximumTableAsync(string data) =>
         await new MaxpParser(PipeReader.Create(new MemoryStream(data.BitsFromHex())))
             .ParseAsync();
 
     [Fact]
-    public async Task ReadVersion0_5()
+    public async Task ReadVersion0_5Async()
     {
-        var maxp = await ReadMaximumTable("""
+        var maxp = await ReadMaximumTableAsync("""
             00005000 0033
             """);
 
@@ -26,9 +26,9 @@ public class MaximumProfileReaderTest
     }
 
     [Fact]
-    public async Task ReadVersion1_0()
+    public async Task ReadVersion1_0Async()
     {
-        var maxp = await ReadMaximumTable("""
+        var maxp = await ReadMaximumTableAsync("""
             00010000 0001 0002 0003 0004 0005 0006 0007 0008 0009 000A 000B 000C 000D 000E
             """);
 

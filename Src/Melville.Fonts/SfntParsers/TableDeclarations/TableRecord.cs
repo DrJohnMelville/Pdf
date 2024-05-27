@@ -37,7 +37,7 @@ public readonly partial struct TableRecord
     /// </summary>
     public string TableName => Tag.AsTag();
 
-    public readonly struct Searcher(uint tag) : IComparable<TableRecord>
+    internal readonly struct Searcher(uint tag) : IComparable<TableRecord>
     {
         public int CompareTo(TableRecord other) => tag.CompareTo(other.Tag);
     }

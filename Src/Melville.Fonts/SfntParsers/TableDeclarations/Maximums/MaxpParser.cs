@@ -11,7 +11,7 @@ internal readonly struct MaxpParser(PipeReader source)
 {
     public async ValueTask<ParsedMaximums> ParseAsync() =>
         TryReadShortForm(source, await source.ReadAtLeastAsync(6).CA()) 
-        ?? await ReadLongForm(source).CA();
+        ?? await ReadLongFormAsync(source).CA();
 
     private ParsedMaximums? TryReadShortForm(PipeReader source, ReadResult readResult)
     {
@@ -26,6 +26,6 @@ internal readonly struct MaxpParser(PipeReader source)
         return null;
     }
 
-    private ValueTask<ParsedMaximums> ReadLongForm(PipeReader source) => 
+    private ValueTask<ParsedMaximums> ReadLongFormAsync(PipeReader source) => 
         FieldParser.ReadFromAsync<ParsedMaximums>(source);
 }

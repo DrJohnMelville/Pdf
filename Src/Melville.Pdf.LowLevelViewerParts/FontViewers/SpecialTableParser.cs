@@ -25,14 +25,14 @@ public static class SpecialTableParser
         {
             SFntTableName.CMap => ParseCmapAsync(data),
             SFntTableName.Head => ParseHeadAsync(data),
-            SFntTableName.HorizontalHeadder => ParseHorizontalHeader(data),
-            SFntTableName.MaximumProfile => ParsedMaximumsProfile(data),
+            SFntTableName.HorizontalHeadder => ParseHorizontalHeaderAsync(data),
+            SFntTableName.MaximumProfile => ParsedMaximumsProfileAsync(data),
             _ => new(new ByteStringViewModel(data))
         };
 
     private static async ValueTask<object> ParseCmapAsync(byte[] data)
     {
-        var cmap = await TableLoader.LoadCmap(MultiplexSourceFactory.Create(data));
+        var cmap = await TableLoader.LoadCmapAsync(MultiplexSourceFactory.Create(data));
         return new CompositeTableViewModel(Enumerable.Range(0, cmap.Count)
             .Select(i => new CMapViewModel(cmap, i) as object)
             .Append(new ByteStringViewModel(data)).ToArray());
@@ -40,21 +40,19 @@ public static class SpecialTableParser
 
     private static async ValueTask<object> ParseHeadAsync(byte[] data)
     {
-        var head = new HeadViewModel(await TableLoader.LoadHead(MultiplexSourceFactory.Create(data)));
+        var head = new HeadViewModel(await TableLoader.LoadHeadAsync(MultiplexSourceFactory.Create(data)));
         return TwoTabModel(head, data);
     }
 
     private static CompositeTableViewModel TwoTabModel(object head, byte[] data) =>
         new([head, new ByteStringViewModel(data)]);
 
-    private static async ValueTask<object> ParseHorizontalHeader(byte[] data)
-    {
-        return TwoTabModel(
-            new HorizontalHeaderViewModel(await TableLoader.LoadHorizontalHeader(MultiplexSourceFactory.Create(data))),
-            data);;
-    }
-
-    private static async ValueTask<object> ParsedMaximumsProfile(byte[] data) =>
+    private static async ValueTask<object> ParseHorizontalHeaderAsync(byte[] data) =>
         TwoTabModel(
-            new MaximumsViewModel(await TableLoader.LoadMaximumProfile(MultiplexSourceFactory.Create(data))), data);
+            new HorizontalHeaderViewModel(await TableLoader.LoadHorizontalHeaderAsync(MultiplexSourceFactory.Create(data))),
+            data);
+
+    private static async ValueTask<object> ParsedMaximumsProfileAsync(byte[] data) =>
+        TwoTabModel(
+            new MaximumsViewModel(await TableLoader.LoadMaximumProfileAsync(MultiplexSourceFactory.Create(data))), data);
 }
