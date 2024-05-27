@@ -41,6 +41,13 @@ namespace Melville.Parsing.SequenceReaders;
 
 public static  partial class SequenceReaderExtensions
 {
+    /// <summary>
+    /// Read any Binary Integer type in big endian format
+    /// </summary>
+    /// <typeparam name="T">The type of number to read</typeparam>
+    /// <param name="reader">The sequence reader to take bytes from.</param>
+    /// <param name="value">Out variable that receives the output</param>
+    /// <returns>True if the read is successdful, false if there is not enough data.</returns>
     public static bool TryReadBigEndian<T>(this ref SequenceReader<byte> reader, out T value)
         where T : IBinaryInteger<T> =>
         GenericIntReader<T>.TryReadBigEndian(ref reader, out value);

@@ -4,6 +4,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
+using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Hacks;
 using Melville.INPC;
@@ -73,24 +74,21 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        LoadTableAsync<ParsedHorizontalHeader>(SFntTableName.HorizontalHeadder);
 
    /// <summary>
-   /// Load the maximums table from the parser
+   /// Load the maximums table from the font
    /// </summary>
-   /// <returns></returns>
    public Task<ParsedMaximums> MaximumProfileTableAsync() =>
        cache.GetTable(SFntTableName.MaximumProfile, () => 
            FindTable(SFntTableName.MaximumProfile) is {} table?
                new MaxpParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask():
                Task.FromResult(new ParsedMaximums(0)));
 
-   public async Task<ParsedHorizontalMetrics> HorizontalMetrics() =>
-       await cache.GetTable(SFntTableName.HorizontalMetrics, () =>
-           new DelayTaskStart<ParsedHorizontalMetrics>(CreateHorizontalMetrics));
-       //to create a ParseHorizontalMetrics table, we need to load the
-       //maximums table and the horizontal header table we delay the starting of this task
-       // until we are outside of the critical section for cache.GetTable this make sure we
-       // do not deadlock on the cache access method.
+   /// <summary>
+   /// Get the horizontal metrics table from the font
+   /// </summary>
+   public Task<ParsedHorizontalMetrics> HorizontalMetricsAsync() =>
+       DelayedLoadTableAsync(SFntTableName.HorizontalMetrics, CreateHorizontalMetricsAsync);
 
-   private async Task<ParsedHorizontalMetrics> CreateHorizontalMetrics()
+   private async Task<ParsedHorizontalMetrics> CreateHorizontalMetricsAsync()
    {
        if (FindTable(SFntTableName.HorizontalMetrics) is not { } table)
            return new ParsedHorizontalMetrics([], 0);
@@ -101,17 +99,41 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
            horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs).ParseAsync().CA();
    }
 
+   /// <summary>
+   /// Parse the GlyphLocations table from the font
+   /// </summary>
+   /// <returns>An interface that can retrieve the offset and length of a glyph.</returns>
+   public Task<IGlyphLocationSource?> GlyphLocationsAsync() =>
+       DelayedLoadTableAsync(SFntTableName.GlyphLocations, CreateGlyphLocationsAsync);
+
+   private async Task<IGlyphLocationSource?> CreateGlyphLocationsAsync()
+   {
+       var maximums = await MaximumProfileTableAsync().CA();
+       var head = await HeadTableAsync().CA();
+       return FindTable(SFntTableName.GlyphLocations) is { } table
+           ? await new LocationTableParser(
+                   source.ReadPipeFrom(table.Offset), maximums.NumGlyphs, head.IndexToLocFormat)
+               .ParseAsync().CA()
+           : null;
+   }
+
+   private async Task<T> DelayedLoadTableAsync<T>(uint tag, Func<Task<T>> method) =>
+       await cache.GetTable(tag, ()=>
+           new DelayTaskStart<T>(method));
+
+   
    private Task<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
        cache.GetTable(tag, ()=>
-       FindTable(tag) is {} table ? 
-           FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
-           : Task.FromResult(new T()));
+           FindTable(tag) is {} table ? 
+               FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
+               : Task.FromResult(new T()));
 
    private TableRecord? FindTable(uint tag)
    {  
        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
        return index < 0 ? null : tables[index];
    }
+
 }
 
 internal class DelayTaskStart<T>(Func<Task<T>> operation)

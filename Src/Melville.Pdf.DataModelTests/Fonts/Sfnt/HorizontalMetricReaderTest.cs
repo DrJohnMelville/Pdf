@@ -11,17 +11,16 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 public class HorizontalMetricReaderTest
 {
     [Fact]
-    public async Task ReadHMetrics()
+    public async Task ReadHMetricsAsync()
     {
         // 3 hMetrics and 2 left side bearings
-        var array = """
+        var data = MultiplexSourceFactory.Create("""
             0001 0002
             0003 0004
             0005 0006
             0007
             0008
-            """.BitsFromHex();
-        var data = MultiplexSourceFactory.Create(array);
+            """.BitsFromHex());
 
         var metrics = await new HorizontalMetricsParser(data.ReadPipeFrom(0), 3, 5).ParseAsync();
 

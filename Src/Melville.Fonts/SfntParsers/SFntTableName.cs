@@ -29,4 +29,9 @@ public class SFntTableName
     /// Table name 'htmx"
     /// </summary>
     public const uint HorizontalMetrics = 0x686D7478;
+
+    /// <summary>
+    /// Table name 'loca'
+    /// </summary>
+    public const uint GlyphLocations = 0x6C6F6361;
 }

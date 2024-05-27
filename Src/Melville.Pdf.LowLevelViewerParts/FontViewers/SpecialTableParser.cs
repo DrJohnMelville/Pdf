@@ -3,6 +3,7 @@ using System.Collections;
 using System.Configuration;
 using System.IO;
 using System.IO.Pipelines;
+using System.Printing;
 using System.Runtime.InteropServices.ComTypes;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
@@ -12,7 +13,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.MultiplexSources;
-using Melville.Pdf.LowLevelViewerParts.FontViewers.CmapViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.HeadViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.MetricViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
@@ -43,7 +43,8 @@ public static class SpecialTableParser
             SFntTableName.Head => ParseHeadAsync(font),
             SFntTableName.HorizontalHeadder => ParseHorizontalHeaderAsync(font),
             SFntTableName.MaximumProfile => ParsedMaximumsProfileAsync(font),
-            SFntTableName.HorizontalMetrics => ParseHorizontalMetrics(font),
+            SFntTableName.HorizontalMetrics => ParseHorizontalMetricsAsync(font),
+            SFntTableName.GlyphLocations => ParseLocationsAsync(font),
             _ => new ValueTask<object?>((object?)null)
         };
 
@@ -51,8 +52,9 @@ public static class SpecialTableParser
     {
         var cmap = await font.ParseCMapsAsync();
         return Enumerable.Range(0, cmap.Count)
-            .Select(i => new CMapViewModel(cmap, i) as object);
+            .Select(i => new MultiStringViewModel(()=> PrintCmap.PrintCMap(cmap, i), PrintCmap.CmapName(cmap, i)) as object);
     }
+
     private static async ValueTask<object?> ParseHeadAsync(SFnt font) => 
         new HeadViewModel(await font.HeadTableAsync());
 
@@ -62,6 +64,38 @@ public static class SpecialTableParser
     private static async ValueTask<object?> ParsedMaximumsProfileAsync(SFnt font) =>
             new MaximumsViewModel(await font.MaximumProfileTableAsync());
 
-    private static async ValueTask<object?> ParseHorizontalMetrics(SFnt font) =>
-        new HorizontalMetricsViewModel(await font.HorizontalMetrics());
+    private static ValueTask<object?> ParseHorizontalMetricsAsync(SFnt font) =>
+        new(new MultiStringViewModel(async ()=> await Metrics(await font.HorizontalMetricsAsync()), "Horizontal Metrics"));
+
+    public static ValueTask<IReadOnlyList<string>> Metrics(ParsedHorizontalMetrics metrics)
+    {
+        var ret = new List<string>(metrics.HMetrics.Length + metrics.LeftSideBearings.Length + 1);
+        int glyph = 0;
+        ushort lastWidth = 0;
+        foreach (var metric in metrics.HMetrics)
+        {
+            lastWidth = metric.AdvanceWidth;
+            ret.Add($"0x{glyph++:X} => ({lastWidth}, {metric.LeftSideBearing})");
+        }
+        ret.Add("Implicit Metrics");
+        foreach (var bearing in metrics.LeftSideBearings)
+        {
+            ret.Add($"{glyph++:X} => ({lastWidth}, {bearing})");
+            
+        }
+        return new (ret);
+    }
+
+    private static ValueTask<object?> ParseLocationsAsync(SFnt font) => new(new MultiStringViewModel(() => PrintGlyphLocations(font), "Glyph Locations"));
+
+    private static async ValueTask<IReadOnlyList<string>> PrintGlyphLocations(SFnt font)
+    {
+        var table = await font.GlyphLocationsAsync();
+        return Enumerable.Range(0, table.TotalGlyphs)
+            .Select(i =>
+            {
+                var loc = table.GetLocation((uint)i);
+                return $"{i:X} = ({loc.Offset}, {loc.Length})";
+            }).ToList();
+    }
 }

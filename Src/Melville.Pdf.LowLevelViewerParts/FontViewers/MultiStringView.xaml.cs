@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Melville.Pdf.LowLevelViewerParts.FontViewers.CmapViewers
+namespace Melville.Pdf.LowLevelViewerParts.FontViewers
 {
     /// <summary>
-    /// Interaction logic for CMapView.xaml
+    /// Interaction logic for MultiStringView.xaml
     /// </summary>
-    public partial class CMapView : UserControl
+    public partial class MultiStringView : UserControl
     {
-        public CMapView()
+        public MultiStringView()
         {
             InitializeComponent();
         }
