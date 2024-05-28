@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Binary;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using Melville.Parsing.AwaitConfiguration;
@@ -33,8 +34,20 @@ internal static class NumberArrayReader
         public static async ValueTask ReadAsync(PipeReader reader, ~0~[] offsets)
         {
             await NumberArrayReader.ReadAsBytesAsync(reader, offsets).CA();
+            TryReverseEndianness(offsets);
+        }
+        private static void TryReverseEndianness(Span<~0~> data)
+        {
             if (global::System.BitConverter.IsLittleEndian)
-                BinaryPrimitives.ReverseEndianness(offsets, offsets);
+                BinaryPrimitives.ReverseEndianness(data, data);
+        }
+        
+        public static void Read(ref SequenceReader<byte> reader, scoped Span<~0~> data)
+        {
+            var span = global::System.Runtime.InteropServices.MemoryMarshal.Cast<~0~, byte>(data);
+            reader.TryCopyTo(span);
+            reader.Advance(span.Length);
+            TryReverseEndianness(data);
         }
         """;
 }

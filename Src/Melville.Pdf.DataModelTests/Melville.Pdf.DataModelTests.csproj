@@ -47,6 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Fonts\Sfnt\TrueTypeOutlines\" />
 		<Folder Include="Fonts\Sfnt\TableParserPartsTest\" />
 		<Folder Include="ImageExtractors\" />
 		<Folder Include="Postscript.Interpreter\Tokenizers\" />

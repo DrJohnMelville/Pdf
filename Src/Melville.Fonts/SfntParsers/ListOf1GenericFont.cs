@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 namespace Melville.Fonts.SfntParsers;
@@ -24,5 +25,8 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
     public IGenericFont this[int index] => this;
 
     /// <inheritdoc />
-    public abstract Task<ICMapSource> ParseCMapsAsync();
+    public abstract ValueTask<ICMapSource> GetCmapSourceAsync();
+
+    /// <inheritdoc />
+    public abstract ValueTask<IGlyphSource> GetGlyphSourceAsync();
 }

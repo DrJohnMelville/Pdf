@@ -50,14 +50,14 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    }
 
    /// <inheritdoc />
-   public override Task<ICMapSource> ParseCMapsAsync() =>
-       cache.GetTable(SFntTableName.CMap, async ()=>
+   public override ValueTask<ICMapSource> GetCmapSourceAsync() =>
+       new(cache.GetTable(SFntTableName.CMap, async ()=>
        {
            return FindTable(SFntTableName.CMap) is { } table
                ? ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
                    (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(table.Offset)).CA()).Tables))
                : new ParsedCmap(source, []);
-       });
+       }));
     
    /// <summary>
    /// Get a parsed header table from the SFnt
@@ -115,6 +115,19 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
                    source.ReadPipeFrom(table.Offset), maximums.NumGlyphs, head.IndexToLocFormat)
                .ParseAsync().CA()
            : null;
+   }
+
+   /// <inheritdoc />
+   public override ValueTask<IGlyphSource> GetGlyphSourceAsync() => 
+        new(DelayedLoadTableAsync(SFntTableName.GlyphData, LoadGlyphSource));
+
+   private async Task<IGlyphSource> LoadGlyphSource()
+   {
+       if (FindTable(SFntTableName.GlyphData) is not { } table)
+           throw new NotImplementedException("Right now only truetype outlines are supported");
+
+       var loc = await GlyphLocationsAsync().CA();
+       return new TrueTypeGlyphSource(loc, source.OffsetFrom(table.Offset));
    }
 
    private async Task<T> DelayedLoadTableAsync<T>(uint tag, Func<Task<T>> method) =>

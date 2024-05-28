@@ -13,6 +13,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.MultiplexSources;
+using Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.HeadViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.MetricViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
@@ -24,10 +25,13 @@ public static class SpecialTableParser
 {
     public static async ValueTask<object> ParseAsync(TableRecord record, SFnt font)
     {
+        if (record.Tag == SFntTableName.GlyphData)
+        {
+            return new GlyphsViewModel(await font.GetGlyphSourceAsync());
+        }
 
         var byteModel = new ByteStringViewModel(await font.GetTableBytesAsync(record));
         var special = await ParseAsync(record.Tag, font);
-
         return special switch
         {
             IEnumerable enumerable => new CompositeTableViewModel([..enumerable, byteModel]),
@@ -50,7 +54,7 @@ public static class SpecialTableParser
 
     private static async ValueTask<object?> ParseCmapAsync(SFnt font)
     {
-        var cmap = await font.ParseCMapsAsync();
+        var cmap = await font.GetCmapSourceAsync();
         return Enumerable.Range(0, cmap.Count)
             .Select(i => new MultiStringViewModel(()=> PrintCmap.PrintCMap(cmap, i), PrintCmap.CmapName(cmap, i)) as object);
     }

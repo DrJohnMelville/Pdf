@@ -34,4 +34,9 @@ public class SFntTableName
     /// Table name 'loca'
     /// </summary>
     public const uint GlyphLocations = 0x6C6F6361;
+
+    /// <summary>
+    /// Table name 'glyf'
+    /// </summary>
+    public const uint GlyphData = 0x676C7966;
 }

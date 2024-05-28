@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Integration
 
         public static async ValueTask<ICmapImplementation?> CmapByIndexAsync(
             this IGenericFont font, int index) =>
-            await (await font.ParseCMapsAsync()).GetByIndexAsync(index);
+            await (await font.GetCmapSourceAsync()).GetByIndexAsync(index);
 
 
     }

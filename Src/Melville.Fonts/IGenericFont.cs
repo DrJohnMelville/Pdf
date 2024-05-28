@@ -1,6 +1,4 @@
-﻿using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-
-namespace Melville.Fonts;
+﻿namespace Melville.Fonts;
 
 /// <summary>
 /// This is the generic interface that all fonts parsed by this parser return.  This is
@@ -12,39 +10,29 @@ public interface IGenericFont
     /// <summary>
     /// Load the CMaps for a font.
     /// </summary>
-    Task<ICMapSource> ParseCMapsAsync();
+    ValueTask<ICMapSource> GetCmapSourceAsync();
+
+    /// <summary>
+    /// This retrieves the IGlyphSource for the font.
+    /// </summary>
+    ValueTask<IGlyphSource> GetGlyphSourceAsync();
 }
 
 /// <summary>
-/// This interface represents the CMaps or character to glyph mappings available within
-/// a font.
+/// This interface is used to retrieve individual glyphs from the font file  
 /// </summary>
-public interface ICMapSource
+public interface IGlyphSource
 {
     /// <summary>
-    /// Number of CMaps supported
+    /// The number of glyphs in the font.
     /// </summary>
-    int Count { get; }
+    int GlyphCount { get; }
+}
 
-    /// <summary>
-    /// Load a CMap implementation by index.
-    /// </summary>
-    /// <param name="index">The index of the desired Cmap</param>
-    /// <returns>An object that implements the given CMAP</returns>
-    ValueTask<ICmapImplementation> GetByIndexAsync(int index);
+/// <summary>
+/// This represents the countours of a single glyph.
+/// </summary>
+public interface IGlyphPainter
+{
 
-    /// <summary>
-    /// Load a CMap implementation by platform and encoding
-    /// </summary>
-    /// <param name="platform">The Platform encoding that was desired</param>
-    /// <param name="encoding">The desired encoding for the platform</param>
-    /// <returns>An object that implements the given CMAP, or null if there is none</returns>
-    ValueTask<ICmapImplementation?> GetByPlatformEncodingAsync(int platform, int encoding);
-
-    /// <summary>
-    /// Get the platform and encoding for a given subtable.
-    /// </summary>
-    /// <param name="index">The index of the subtable to get information from</param>
-    /// <returns>The platform and encoding values for the indicated CMap</returns>
-    (int platform, int encoding) GetPlatformEncoding(int index);
 }
