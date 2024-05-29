@@ -8,7 +8,6 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
-
 public readonly struct TrueTypeGlyphParser(
     IGlyphSource trueTypeGlyphSource, 
     ReadOnlySequence<byte> slice, 
@@ -23,18 +22,22 @@ public readonly struct TrueTypeGlyphParser(
         ReadBoundingBox(ref reader); 
         if (numberOfContours < 0)
         {
-            return DrawCompositeGlyphAsync(reader);
+            return DrawCompositeGlyphAsync(ref reader);
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
         target.EndGlyph(level);
         return ValueTask.CompletedTask;
     }
-    private ValueTask DrawCompositeGlyphAsync(SequenceReader<byte> reader)
+    private ValueTask DrawCompositeGlyphAsync(ref SequenceReader<byte> reader)
     {
+        while (DrawSingleCompositeGlyph(ref reader)) ;
+    }
 
-#warning implement composite glyphs
-        throw new NotImplementedException("CompositeGlyphs not implemented");
+    private bool DrawSingleCompositeGlyph(ref SequenceReader<byte> reader)
+    {
+        var flags = (CmpositeGlyphFlags)reader.ReadBigEndianUint16();
+
     }
 
     private void DrawSimpleGlyph(ref SequenceReader<byte> reader, int numberOfContours)
@@ -153,39 +156,18 @@ public readonly struct TrueTypeGlyphParser(
 
 }
 
-[Flags]
-public enum GlyphFlags : byte
+internal enum CmpositeGlyphFlags : ushort
 {
-    OnCurve = 0x01,
-    XShortVector = 0x02,
-    YShortVector = 0x04,
-    Repeat = 0x08,
-    XIsSame = 0x10,
-    YIsSame = 0x20,
-    Overlapping = 0x40,
-    Reserved = 0x80
-}
-
-public static class GlyphFlagOperations
-{
-    public static bool Check(this GlyphFlags flags, GlyphFlags check) => 
-        (flags & check) != 0;
-    public static int ComputePointSizeAndSign(this GlyphFlags flag, GlyphFlags shortFlag, GlyphFlags isSameFlag) =>
-        (flag.Check(shortFlag), flag.Check(isSameFlag)) switch
-        {
-            (false, true) => 0,
-            (false, false) => 2,
-            (true, true) => 1,
-            (true, false) => -1,
-        };
-
-    public static SequenceReader<T> Slice<T>(
-        this SequenceReader<T> reader, int initialPosition, int size) 
-        where T: unmanaged, IEquatable<T> =>
-        new SequenceReader<T>(reader.UnreadSequence.Slice(initialPosition, size));
-
-    public static SequenceReader<T> Slice<T>(
-        this SequenceReader<T> reader, int initialPosition) 
-        where T: unmanaged, IEquatable<T> =>
-        new SequenceReader<T>(reader.UnreadSequence.Slice(initialPosition));
+    Arg1And2AreWords = 0x0001,
+    ArgsAreXYValues = 0x0002,
+    RoundXYToGrid = 0x0004,
+    WeHaveAScale = 0x0008,
+    MoreComponents = 0x0020,
+    WeHaveAnXAndYScale = 0x0040,
+    WeHaveATwoByTwo = 0x0080,
+    WeHaveInstructions = 0x0100,
+    UseMyMetrics = 0x0200,
+    OverlapCompound = 0x0400,
+    ScaledComponentOffset = 0x0800,
+    UnscaledComponentOffset = 0x1000,
 }

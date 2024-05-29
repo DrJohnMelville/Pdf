@@ -174,3 +174,8 @@ public class TrueTypeGlyphParserTest
     }
 
 }
+
+public class GlyphRecorderTest
+{
+
+}
