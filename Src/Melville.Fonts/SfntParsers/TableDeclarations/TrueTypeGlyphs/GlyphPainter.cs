@@ -6,12 +6,11 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 public interface ITrueTypePointTarget
 {
-    void BeginGlyph(int level, short minX, short minY, short maxX, short maxY, in Matrix3x2 transform);
-    void AddPoint(double x, double y, bool onCurve, bool isContourStart, bool isContourEnd);
-    void EndGlyph(int level);
+    void AddPoint(Vector2 point, bool onCurve, bool isContourStart, bool isContourEnd);
+    void AddPhantomPoint(Vector2 point);
 }
 
-public partial class TrueTypeGlyphSource: IGlyphSource
+public class TrueTypeGlyphSource: IGlyphSource
 {
     private readonly IGlyphLocationSource index;
     private readonly IMultiplexSource glyphDataOrigin;

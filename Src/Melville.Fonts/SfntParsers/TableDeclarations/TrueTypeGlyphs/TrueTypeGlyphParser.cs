@@ -26,18 +26,11 @@ public readonly struct TrueTypeGlyphParser(
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
-        target.EndGlyph(level);
         return ValueTask.CompletedTask;
     }
     private ValueTask DrawCompositeGlyphAsync(ref SequenceReader<byte> reader)
     {
-        while (DrawSingleCompositeGlyph(ref reader)) ;
-    }
-
-    private bool DrawSingleCompositeGlyph(ref SequenceReader<byte> reader)
-    {
-        var flags = (CmpositeGlyphFlags)reader.ReadBigEndianUint16();
-
+        throw new NotImplementedException("composite glyphs are not implemented");
     }
 
     private void DrawSimpleGlyph(ref SequenceReader<byte> reader, int numberOfContours)
@@ -52,7 +45,6 @@ public readonly struct TrueTypeGlyphParser(
     {
         Span<short> points = stackalloc short[4];
         FieldParser.Read(ref reader, points);
-        target.BeginGlyph(level, points[0], points[1], points[2], points[3], matrix);
     }
 
     private static void SkipInstructions(ref SequenceReader<byte> reader) => 
@@ -135,7 +127,7 @@ public readonly struct TrueTypeGlyphParser(
     private void ReportPoint(int xPos, int yPos, bool first, bool isEnd, bool onCurve)
     {
         var final = Vector2.Transform(new Vector2(xPos, yPos), matrix);
-        target.AddPoint(final.X, final.Y, onCurve, first, isEnd);
+        target.AddPoint(final, onCurve, first, isEnd);
     }
 
     private static GlyphFlags ReadFlag(ref SequenceReader<byte> reader)

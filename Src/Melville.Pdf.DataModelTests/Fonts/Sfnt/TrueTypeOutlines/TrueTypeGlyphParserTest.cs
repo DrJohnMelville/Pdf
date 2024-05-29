@@ -32,12 +32,12 @@ public class TrueTypeGlyphParserTest
         var parser = this.CreateParser(source, Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(10, 20, true, true, false));
-        target.Verify(i=>i.AddPoint(10, 21, true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 21), true, false, true));
     }
 
     [Fact]
-    public Task HasInstructionsToSkipOver() =>
+    public Task HasInstructionsToSkipOverAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" + 
                        "0001" + 
@@ -48,7 +48,7 @@ public class TrueTypeGlyphParserTest
     );
 
     [Fact]
-    public Task UseZeroChangeBit() =>
+    public Task UseZeroChangeBitAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" + 
                        "0001" + 
@@ -59,7 +59,7 @@ public class TrueTypeGlyphParserTest
     );
 
     [Fact]
-    public Task UseShortPositiveVectors() =>
+    public Task UseShortPositiveVectorsAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" +  
                        "0001" + 
@@ -80,11 +80,11 @@ public class TrueTypeGlyphParserTest
                                        "0014 0001", Matrix3x2.CreateScale(3,2));
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(30, 40, true, true, false));
-        target.Verify(i=>i.AddPoint(30, 42, true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(30, 40), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(30, 42), true, false, true));
     }
     [Fact]
-    public async Task NegativeShortVectors()
+    public async Task NegativeShortVectorsAsync()
     {
         var parser = this.CreateParser("0001" + 
                                        "0000 0000 0000 0000" +  
@@ -96,24 +96,8 @@ public class TrueTypeGlyphParserTest
                                 , Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(10, 20, true, true, false));
-        target.Verify(i=>i.AddPoint(8, 19, true, false, true));
-    }
-
-    [Fact]
-    public async Task ShowBoundingBoxAsync()
-    {
-        var mat = Matrix3x2.CreateScale(3,2);
-        var parser = this.CreateParser("0001" + 
-                                       "0001 0002 0003 0004" +
-                                       "0001" +
-                                       "0005 0000000000" +                                        "01 01" +  // two flags values on the point, long vectors 
-                                       "000A 0000" + 
-                                       "0014 0001", mat);
-        await parser.DrawGlyphAsync();
-
-        target.Verify(i=>i.BeginGlyph(0, 1, 2, 3, 4, mat));
-        target.Verify(i=>i.EndGlyph(0));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(8, 19), true, false, true));
     }
 
     [Fact]
@@ -128,11 +112,11 @@ public class TrueTypeGlyphParserTest
                                        "0014 0001 0001 0003 0004", Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(10, 20, true, true, false));
-        target.Verify(i=>i.AddPoint(10, 21, true, false, false));
-        target.Verify(i=>i.AddPoint(10, 22, true, false, false));
-        target.Verify(i=>i.AddPoint(10, 25, true, false, false));
-        target.Verify(i=>i.AddPoint(10, 29, true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 21), true, false, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 22), true, false, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 25), true, false, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
     
     [Fact]
@@ -147,11 +131,11 @@ public class TrueTypeGlyphParserTest
                                        "0014 0001 0001 0003 0004", Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(10, 20, true, true, false));
-        target.Verify(i=>i.AddPoint(10, 21, true, false, false));
-        target.Verify(i=>i.AddPoint(10, 22, true, false, true));
-        target.Verify(i=>i.AddPoint(10, 25, true, true, false));
-        target.Verify(i=>i.AddPoint(10, 29, true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 21), true, false, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 22), true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 25), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
 
     [Fact]
@@ -166,16 +150,11 @@ public class TrueTypeGlyphParserTest
                                        "0014 0001 0001 0003 0004", Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        target.Verify(i=>i.AddPoint(10, 20, false, true, false));
-        target.Verify(i=>i.AddPoint(10, 21, true, false, false));
-        target.Verify(i=>i.AddPoint(10, 22, true, false, true));
-        target.Verify(i=>i.AddPoint(10, 25, true, true, false));
-        target.Verify(i=>i.AddPoint(10, 29, true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), false, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 21), true, false, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 22), true, false, true));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 25), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
-
-}
-
-public class GlyphRecorderTest
-{
 
 }
