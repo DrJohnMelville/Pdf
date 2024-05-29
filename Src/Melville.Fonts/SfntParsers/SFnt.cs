@@ -127,7 +127,8 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
            throw new NotImplementedException("Right now only truetype outlines are supported");
 
        var loc = await GlyphLocationsAsync().CA();
-       return new TrueTypeGlyphSource(loc, source.OffsetFrom(table.Offset));
+       var head = await HeadTableAsync().CA();
+       return new TrueTypeGlyphSource(loc, source.OffsetFrom(table.Offset), head.UnitsPerEm);
    }
 
    private async Task<T> DelayedLoadTableAsync<T>(uint tag, Func<Task<T>> method) =>

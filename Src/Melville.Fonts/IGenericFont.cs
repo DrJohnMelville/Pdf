@@ -28,11 +28,3 @@ public interface IGlyphSource
     /// </summary>
     int GlyphCount { get; }
 }
-
-/// <summary>
-/// This represents the countours of a single glyph.
-/// </summary>
-public interface IGlyphPainter
-{
-
-}

@@ -9,13 +9,20 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 
 public partial class GlyphsViewModel
 {
-    [FromConstructor] private IGlyphSource glyphSource;
-    [AutoNotify] private IList<GlyphPointViewModel>? points;
+    [FromConstructor] public IGlyphSource GlyphSource { get; }
+    [AutoNotify] private RecordedGlyph glyph = new();
+    [AutoNotify] private IList<GlyphPointViewModel>? renderedPoints;
+    [AutoNotify] private bool unitSquare = true;
+    [AutoNotify] private bool boundingBox = true;
+    [AutoNotify] private bool points = true;
+    [AutoNotify] private bool vectors = true;
+    [AutoNotify] private bool outline = true;
+    [AutoNotify] private bool fill = true;
 
     partial void OnConstructed()
     {
         PageSelector.MinPage = 0;
-        PageSelector.MaxPage = glyphSource.GlyphCount;
+        PageSelector.MaxPage = GlyphSource.GlyphCount;
         PageSelector.WhenMemberChanges(nameof(PageSelector.Page), LoadNewGlyph);
         LoadNewGlyph();
     }
@@ -25,22 +32,16 @@ public partial class GlyphsViewModel
     private async void LoadNewGlyph()
     {
         var target = new GlyphPointRecorder();
-        if (glyphSource is TrueTypeGlyphSource ttgs)
+        if (GlyphSource is TrueTypeGlyphSource ttgs)
+        {
             await ttgs.ParsePointsAsync((uint)PageSelector.Page,target, Matrix3x2.Identity);
-        Points = target.Points;
-    }
-}
+            var newGlyph = new RecordedGlyph();
+            await ttgs.ParsePointsAsync((uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
+            Glyph = newGlyph;
+        }
 
-public class GlyphPointRecorder : ITrueTypePointTarget
-{
-    public List<GlyphPointViewModel> Points { get; }  = new();
-    public void AddPoint(double x, double y, bool onCurve, bool isContourStart, bool isContourEnd)
-    {
-        Points.Add(new(x, y, StatusString(onCurve, isContourStart, isContourEnd)));
+        RenderedPoints = target.Points;
     }
-
-    private string StatusString(bool onCurve, bool isContourStart, bool isContourEnd) =>
-      (onCurve ? "On " : "") + (isContourStart ? "Start" : "") + (isContourEnd ? "End" : "");
 }
 
 public record GlyphPointViewModel(double X, double Y, string Type);

@@ -1,6 +1,8 @@
 ﻿using System.Buffers;
+using System.Net.Sockets;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;
 
@@ -11,18 +13,21 @@ public readonly struct TrueTypeGlyphParser(
     IGlyphSource trueTypeGlyphSource, 
     ReadOnlySequence<byte> slice, 
     ITrueTypePointTarget target,
-    Matrix3x2 matrix)
+    Matrix3x2 matrix,
+    int level)
 {
     public ValueTask DrawGlyphAsync()
     {
         var reader = new SequenceReader<byte>(slice);
         int numberOfContours = reader.ReadBigEndianInt16();
+        ReadBoundingBox(ref reader); 
         if (numberOfContours < 0)
         {
             return DrawCompositeGlyphAsync(reader);
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
+        target.EndGlyph(level);
         return ValueTask.CompletedTask;
     }
     private ValueTask DrawCompositeGlyphAsync(SequenceReader<byte> reader)
@@ -34,14 +39,18 @@ public readonly struct TrueTypeGlyphParser(
 
     private void DrawSimpleGlyph(ref SequenceReader<byte> reader, int numberOfContours)
     {
-        SkipBoundingBox(ref reader); 
         Span<ushort> contourEnds = stackalloc ushort[numberOfContours];
         FieldParser.Read(ref reader, contourEnds);
         SkipInstructions(ref reader);
         DrawPoints(ref reader, contourEnds);
     }
 
-    private static void SkipBoundingBox(ref SequenceReader<byte> reader) => reader.Advance(8);
+    private void ReadBoundingBox(ref SequenceReader<byte> reader)
+    {
+        Span<short> points = stackalloc short[4];
+        FieldParser.Read(ref reader, points);
+        target.BeginGlyph(level, points[0], points[1], points[2], points[3], matrix);
+    }
 
     private static void SkipInstructions(ref SequenceReader<byte> reader) => 
         reader.Advance(reader.ReadBigEndianUint16());
@@ -95,10 +104,11 @@ public readonly struct TrueTypeGlyphParser(
 
             for (int i = 0; i < repeats; i++)
             {
+                var onCurve = instruction.Check(GlyphFlags.OnCurve);
                 xPos += GetCoordinate(ref xs, xOp);
                 yPos += GetCoordinate(ref ys, yOp);
                 bool isEnd = contourEnds[currentContour] == points;
-                ReportPoint(xPos, yPos, first, isEnd, instruction.Check(GlyphFlags.OnCurve));
+                ReportPoint(xPos, yPos, first, isEnd, onCurve);
                 if (isEnd)
                 {
                     currentContour++;
@@ -136,7 +146,7 @@ public readonly struct TrueTypeGlyphParser(
     {
         0 => 0,
         1 => xs.ReadBigEndianUint8(),
-        -1 => -xs.ReadBigEndianInt8(),
+        -1 => -xs.ReadBigEndianUint8(),
         2 => xs.ReadBigEndianInt16(),
         _ => throw new InvalidOperationException("Invalid xOp")
     };
