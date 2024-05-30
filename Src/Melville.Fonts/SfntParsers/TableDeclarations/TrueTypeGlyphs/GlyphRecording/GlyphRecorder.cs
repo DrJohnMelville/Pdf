@@ -1,23 +1,26 @@
-﻿using System.Numerics;
-using Melville.INPC;
+﻿using System.Collections;
+using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
-internal interface IRecorderAllocator
+/// <summary>
+/// This class can record and replay the points from a glyph.  When paired with GlyphRecorderFactory
+/// it can do so with amortized zero allocations.
+/// </summary>
+/// <param name="allocator">An interface to get buffers from the allocator</param>
+public class GlyphRecorder :
+    ITrueTypePointTarget, IReadOnlyList<CapturedPoint>
 {
-    CapturedPoint[] Allocate(int size);
-    void Free(CapturedPoint[] data);
-}
+    private readonly IRecorderAllocator allocator;
 
-internal class GlyphRecorder(IRecorderAllocator allocator) : ITrueTypePointTarget
-{
+    internal GlyphRecorder(IRecorderAllocator allocator) => this.allocator = allocator;
+
     private CapturedPoint[] data = [];
-    public int Count { get; private set; } = 0;
 
-    public void BeginGlyph(short minX, short minY, short maxX, short maxY, in Matrix3x2 transform)
-    {
-    }
 
+    #region Recording
+
+    /// <inheritdoc />
     public void AddPoint(Vector2 p, bool onCurve, bool isContourStart, bool isContourEnd) =>
         AppendPoint(p,
             PackFlags(onCurve, isContourStart, isContourEnd));
@@ -28,12 +31,9 @@ internal class GlyphRecorder(IRecorderAllocator allocator) : ITrueTypePointTarge
         (isContourStart ? CapturedPointFlags.Start : 0) |
         (isContourEnd ? CapturedPointFlags.End : 0);
 
+    /// <inheritdoc />
     public void AddPhantomPoint(Vector2 point) =>
         AppendPoint(point, CapturedPointFlags.Phantom);
-
-    public void EndGlyph(int level)
-    {
-    }
 
     private void AppendPoint(in Vector2 point, CapturedPointFlags flags)
     {
@@ -41,22 +41,32 @@ internal class GlyphRecorder(IRecorderAllocator allocator) : ITrueTypePointTarge
         data[Count++] = new CapturedPoint(point, flags);
     }
 
+    #endregion
+
+    #region Buffer management
+
     private void EnsureSpace(int size)
     {
         if (size < data.Length) return;
         var newData = allocator.Allocate(Math.Max(50, size * 2));
-        data.CopyTo(newData, 0);
+        data.AsSpan().CopyTo(newData);
         allocator.Free(data);
         data = newData;
     }
 
-    private void Reset()
+    internal void Reset()
     {
         Count = 0;
         allocator.Free(data);
         data = [];
     }
 
+    #endregion
+
+    /// <summary>
+    /// Replay the point sequence into a new point target.
+    /// </summary>
+    /// <param name="target">The target to play the points into</param>
     public void Replay(ITrueTypePointTarget target)
     {
         foreach (var item in data.AsSpan(0, Count))
@@ -74,19 +84,27 @@ internal class GlyphRecorder(IRecorderAllocator allocator) : ITrueTypePointTarge
             }
         }
     }
-}
 
-internal readonly partial struct CapturedPoint
+    #region IReadOnlyList members
+
+    /// <inheritdoc />
+    public int Count { get; private set; } = 0;
+
+    /// <inheritdoc />
+    public IEnumerator<CapturedPoint> GetEnumerator()
     {
-        [FromConstructor] public Vector2 Point { get; }
-        [FromConstructor] public CapturedPointFlags Flags { get; }
+        for (int i = 0; i < Count; i++)
+        {
+            yield return data[i];
+        }
     }
 
-    [Flags]
-    internal enum CapturedPointFlags : byte
-    {
-        OnCurve = 0x01,
-        Start = 0x02,
-        End = 0x04,
-        Phantom = 0x08,
-    } 
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <inheritdoc />
+    public CapturedPoint this[int index] => 
+        ((uint)index) < Count ? data[index]: 
+            throw new ArgumentOutOfRangeException("Index out of used range");
+
+    #endregion
+}

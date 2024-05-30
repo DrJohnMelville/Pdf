@@ -2,15 +2,17 @@
 using System.Windows;
 using System.Windows.Media;
 using Melville.Fonts;
+using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.INPC;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 
-[MacroItem("RecordedGlyph", "Glyph")]
+[MacroItem("GlyphRecorder", "Glyph")]
 [MacroItem("bool", "UnitSquare")]
 [MacroItem("bool", "BoundingBox")]
 [MacroItem("bool", "Points")]
-[MacroItem("bool", "Vectors")]
+[MacroItem("bool", "ControlPoints")]
+[MacroItem("bool", "PhantomPoints")]
 [MacroItem("bool", "Outline")]
 [MacroItem("bool", "Fill")]
 [MacroCode("""
@@ -38,12 +40,15 @@ public partial class GlyphRenderer : FrameworkElement
 
         var scaled = new ScaledDrawContext(drawingContext, matrix);
 
-        Glyph?.Paint(scaled, 
+        new GlyphDesignPainter(scaled, 
             UnitSquare ? new Pen(Brushes.LightGray, 1): null, 
             BoundingBox ? new Pen(Brushes.LightBlue, 1) : null,
-            Points ? Brushes.Red: null, 
+            Points ? Brushes.Red: null,
+            ControlPoints ? Brushes.Blue : null,
+            PhantomPoints ? Brushes.Green : null,
             Outline ? new Pen(Brushes.Black, 1)  : null, 
-            Fill ? Brushes.Black : null);
+            Fill ? Brushes.Black : null,
+            Glyph).Paint();
     }
 
     private float ComputeZoomFactor() => (float)(Math.Min(ActualHeight, ActualWidth) * 0.8);
@@ -51,7 +56,7 @@ public partial class GlyphRenderer : FrameworkElement
 
 public readonly struct ScaledDrawContext(DrawingContext dc, Matrix3x2 transform)
 {
-    public void DrawRectangle(Brush brush, Pen pen, Rect rect)
+    public void DrawRectangle(Brush? brush, Pen? pen, Rect rect)
     {
         var geometry = new GeometryGroup();
         geometry.Children.Add(TransformedLineGeometry(
@@ -88,17 +93,10 @@ public readonly struct ScaledDrawContext(DrawingContext dc, Matrix3x2 transform)
         dc.DrawLine(bBoxPen, new Point(p1.X, p1.Y), new Point(p2.X, p2.Y));
     }
 
-    public void DrawPoint(Brush? pointBrush, double pointX, double pointY, bool pointOnCurve)
+    public void DrawPoint(Brush? pointBrush, double pointX, double pointY)
     {
         var center = TransfomToVector(pointX, pointY);
-        if (pointOnCurve)
-        {
             dc.DrawEllipse(pointBrush, null, new Point(center.X, center.Y), 2.5, 2.5);
-        }
-        else
-        {
-            dc.DrawRectangle(pointBrush, null, new Rect(center.X-2.5, center.Y-2.5, 5, 5));
-        }
     }
 
     public PathFigure MoveTo(double x, double y)

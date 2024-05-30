@@ -35,6 +35,20 @@ public class GlyphRecorderTest
         target.Verify(i=>i.AddPoint(new Vector2(1,2), true, true, false));
         target.Verify(i=>i.AddPoint(new Vector2(10,20), true, false, true));
     }
+
+    [Fact]
+    public void Replay150Points ()
+    {
+        for (int i = 0; i < 150; i++)
+        {
+            sut.AddPoint(new Vector2(i, i), true, true, true);
+        }
+        sut.Replay(target.Object);
+        for (int i = 0; i < 150; i++)
+        {
+            target.Verify(j=>j.AddPoint(new Vector2(i, i), true, true, true));
+        }
+    }
 }
 
 [StaticSingleton]

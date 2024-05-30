@@ -17,7 +17,17 @@
             <ColumnDefinition Width="6*" />
         </Grid.ColumnDefinitions>
         <viewFrames:ViewFrame HorizontalAlignment="Center" Content="{Binding PageSelector}" />
-        <DataGrid Grid.Row="1" ItemsSource="{Binding RenderedPoints}" IsReadOnly="True" Margin="0 0 5 0" />
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Glyph}" IsReadOnly="True" Margin="0 0 5 0"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="X" Binding="{Binding X}" />
+                <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
+                <DataGridCheckBoxColumn Header="OnCurve" Binding="{Binding OnCurve, Mode=OneWay}" />
+                <DataGridCheckBoxColumn Header="Begin" Binding="{Binding Begin, Mode=OneWay}" />
+                <DataGridCheckBoxColumn Header="End" Binding="{Binding End, Mode=OneWay}" />
+                <DataGridCheckBoxColumn Header="Phantom" Binding="{Binding Phantom, Mode=OneWay}" />
+             </DataGrid.Columns>
+        </DataGrid>
         <GridSplitter Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" />
         <DockPanel Grid.Row="1" Grid.Column="1">
             <WrapPanel DockPanel.Dock="Bottom">
@@ -29,7 +39,8 @@
                 <CheckBox IsChecked="{Binding UnitSquare}">Unit Square</CheckBox>
                 <CheckBox IsChecked="{Binding BoundingBox}">Bounding Box</CheckBox>
                 <CheckBox IsChecked="{Binding Points}">Points</CheckBox>
-                <CheckBox IsChecked="{Binding Vectors}">Vectors</CheckBox>
+                <CheckBox IsChecked="{Binding ControlPoints}">Control Points</CheckBox>
+                <CheckBox IsChecked="{Binding PhantomPoints}">Phantom Points</CheckBox>
                 <CheckBox IsChecked="{Binding Outline}">Outline</CheckBox>
                 <CheckBox IsChecked="{Binding Fill}">Fill</CheckBox>
             </WrapPanel>
@@ -37,7 +48,8 @@
                                  UnitSquare="{Binding UnitSquare}"
                                  BoundingBox="{Binding BoundingBox}"
                                  Points="{Binding Points}"
-                                 Vectors="{Binding Vectors}"
+                                 ControlPoints="{Binding ControlPoints}"
+                                 PhantomPoints="{Binding PhantomPoints}"
                                  Outline="{Binding Outline}"
                                  Fill="{Binding Fill}"/>
         </DockPanel>

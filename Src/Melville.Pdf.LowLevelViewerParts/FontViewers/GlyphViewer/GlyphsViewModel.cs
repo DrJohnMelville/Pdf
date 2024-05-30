@@ -10,14 +10,14 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 public partial class GlyphsViewModel
 {
     [FromConstructor] public IGlyphSource GlyphSource { get; }
-    [AutoNotify] private RecordedGlyph glyph = new();
-    [AutoNotify] private IList<GlyphPointViewModel>? renderedPoints;
+    [AutoNotify] private GlyphRecorder glyph = GlyphRecorderFactory.GetRecorder();
     [AutoNotify] private bool unitSquare = true;
     [AutoNotify] private bool boundingBox = true;
     [AutoNotify] private bool points = true;
-    [AutoNotify] private bool vectors = true;
+    [AutoNotify] private bool controlPoints = true;
+    [AutoNotify] private bool phantomPoints = true;
     [AutoNotify] private bool outline = true;
-    [AutoNotify] private bool fill = true;
+    [AutoNotify] private bool fill = false;
 
     partial void OnConstructed()
     {
@@ -31,16 +31,13 @@ public partial class GlyphsViewModel
 
     private async void LoadNewGlyph()
     {
-        var target = new GlyphPointRecorder();
         if (GlyphSource is TrueTypeGlyphSource ttgs)
         {
-            await ttgs.ParsePointsAsync((uint)PageSelector.Page,target, Matrix3x2.Identity);
-            var newGlyph = new RecordedGlyph();
+            var newGlyph = GlyphRecorderFactory.GetRecorder();
             await ttgs.ParsePointsAsync((uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
+            GlyphRecorderFactory.ReturnRecorder(Glyph);
             Glyph = newGlyph;
         }
-
-        RenderedPoints = target.Points;
     }
 }
 
