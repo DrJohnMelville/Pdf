@@ -85,6 +85,29 @@ public class GlyphRecorder :
         }
     }
 
+    /// <summary>
+    /// Replay the point sequence into a new point target.
+    /// </summary>
+    /// <param name="target">The target to play the points into</param>
+    /// <param name="transform">A transform to apply to each point during playback</param>
+    public void Replay(ITrueTypePointTarget target, Matrix3x2 transform)
+    {
+        foreach (var item in data.AsSpan(0, Count))
+        {
+            if (item.Flags.HasFlag(CapturedPointFlags.Phantom))
+            {
+                target.AddPhantomPoint(Vector2.Transform(item.Point, transform));
+            }
+            else
+            {
+                target.AddPoint(Vector2.Transform(item.Point, transform),
+                    item.Flags.HasFlag(CapturedPointFlags.OnCurve),
+                    item.Flags.HasFlag(CapturedPointFlags.Start),
+                    item.Flags.HasFlag(CapturedPointFlags.End));
+            }
+        }
+    }
+
     #region IReadOnlyList members
 
     /// <inheritdoc />

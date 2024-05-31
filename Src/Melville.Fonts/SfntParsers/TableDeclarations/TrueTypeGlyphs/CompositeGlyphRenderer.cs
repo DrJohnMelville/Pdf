@@ -20,18 +20,18 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             var reader = new SequenceReader<byte>(source);
             var flags = (CompositeGlyphFlags)reader.ReadBigEndianUint16();
             var subGlyph = reader.ReadBigEndianUint16();
-            var (xOffset, yOffset, parentpoint, childPoint) = ReadOffsets(ref reader, flags);
+            var (xOffset, yOffset, parentPoint, childPoint) = ReadOffsets(ref reader, flags);
 
             var subGlyphTransform = ParseTransform(ref reader, flags, xOffset, yOffset);
-            return DrawUnalignedGlyphAsync(subGlyph, subGlyphTransform, 
-                NextGlyphSequence(flags, reader));
-        }
 
-        private static ReadOnlySequence<byte> NextGlyphSequence(
-            CompositeGlyphFlags flags, SequenceReader<byte> reader)
-        {
-            return flags.HasMoreGlyphs()?reader.UnreadSequence:
-                new ReadOnlySequence<byte>([]);
+            TrySkipInstructions(ref reader, flags);
+
+            var nextGlyphSequence = NextGlyphSequence(flags, reader);
+
+            if (parentPoint is 0xFFFF && childPoint is 0xFFFF )
+            return DrawUnalignedGlyphAsync(subGlyph, subGlyphTransform, nextGlyphSequence);
+            return DrawAlignedGlyphAsync(subGlyph, subGlyphTransform, nextGlyphSequence,
+                parentPoint, childPoint);
         }
 
         private (int xOffset, int yOffset, ushort parentpoint, ushort childpoint) ReadOffsets(
@@ -51,8 +51,14 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
                     x = reader.ReadBigEndianInt16();
                     y = reader.ReadBigEndianInt16();
                     break;
-                default:
-                    throw new NotImplementedException("Point alignment not implemented yet");
+                case (false, false):
+                    parentPoint = reader.ReadBigEndianUint8();
+                    childPoint = reader.ReadBigEndianUint8();
+                    break;
+                case (false, true):
+                    parentPoint = reader.ReadBigEndianUint16();
+                    childPoint = reader.ReadBigEndianUint16();
+                    break;
             }
 
             return (x,y,parentPoint, childPoint);
@@ -82,6 +88,20 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             };
 
 
+        private static ReadOnlySequence<byte> NextGlyphSequence(
+            CompositeGlyphFlags flags, SequenceReader<byte> reader)
+        {
+            return flags.HasMoreGlyphs()?reader.UnreadSequence:
+                new ReadOnlySequence<byte>([]);
+        }
+
+        private void TrySkipInstructions(ref SequenceReader<byte> reader, CompositeGlyphFlags flags)
+        {
+            if (!flags.HasInstructions()) return;
+            reader.Advance(reader.ReadBigEndianUint16());
+        }
+
+
         private async ValueTask DrawUnalignedGlyphAsync(
             ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlySequence<byte> nextBytes)
         {
@@ -104,6 +124,24 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             scratchRecorder.Replay(finalTarget);
             GlyphRecorderFactory.ReturnRecorder(scratchRecorder);
             phantomPoints.Draw(finalTarget);
+        }
+
+        private async ValueTask DrawAlignedGlyphAsync(
+            ushort subGlyph, Matrix3x2 transform, ReadOnlySequence<byte> next, 
+            ushort parentIndex, ushort childIndex)
+        {
+            var childTarget = GlyphRecorderFactory.GetRecorder();
+            await subGlyphRenderer.RenderGlyphInFontUnits(subGlyph, childTarget, transform).CA();
+
+            var parentPoint = scratchRecorder[parentIndex];
+            var childPoint = childTarget[childIndex];
+            var correction = Matrix3x2.CreateTranslation(parentPoint.X - childPoint.X,
+                parentPoint.Y - childPoint.Y);
+
+            childTarget.Replay(scratchRecorder, correction);
+            GlyphRecorderFactory.ReturnRecorder(childTarget);
+
+            await FinishSubglyph(next).CA();
         }
     }
 }

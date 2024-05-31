@@ -25,6 +25,8 @@ internal static class CompostieGlyphFlagCheckers
         (f & CompositeGlyphFlags.ArgsAreXYValues) != 0;
     public static bool HasMoreGlyphs(this CompositeGlyphFlags f) =>
         (f & CompositeGlyphFlags.MoreComponents) != 0;
+    public static bool HasInstructions(this CompositeGlyphFlags f) =>
+        (f & CompositeGlyphFlags.WeHaveInstructions) != 0;
 
     public static CompositeGlyphFlags ScaleSelector(this CompositeGlyphFlags f) =>
         f & (CompositeGlyphFlags.WeHaveAScale | 

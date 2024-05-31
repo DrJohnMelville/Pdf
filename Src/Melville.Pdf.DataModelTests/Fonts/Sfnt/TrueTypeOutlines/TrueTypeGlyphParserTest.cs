@@ -19,7 +19,7 @@ public class TrueTypeGlyphParserTest
 
     public TrueTypeGlyphParserTest()
     {
-        glyphSource.Setup(i => i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(),
+        glyphSource.Setup(i => i.RenderGlyphInFontUnits(It.IsAny<uint>(), It.IsAny<ITrueTypePointTarget>(),
             It.IsAny<Matrix3x2>())).Returns(
             (uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix) =>
             {
@@ -323,5 +323,48 @@ public class TrueTypeGlyphParserTest
 
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
     }
+    [Fact]
+    public async Task SkipSomeInstructionsAsync()
+    {
+        var parser = CreateParser("FFFF" + 
+                                  "0000 0000 0000 0000" + 
+                                  "0122 0004" +  
+                                  "05 FF" + 
+                                  "0008 00000000 00000000" + // instructions to skip
+                                  "0002 0004" + 
+                                  "05 FF"   
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
 
+        target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task Render2PointAlignedGlyphs()
+    {
+        var parser = CreateParser("FFFF" + 
+                                  "0000 0000 0000 0000" + 
+                                  "0022 0004" +  
+                                  "05 FF" + 
+                                  "0000 0344" + // two different points get unified.
+                                  "00 00"   
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
+    }
+    [Fact]
+    public async Task Render2PointAlignedGlyphsLongForm()
+    {
+        var parser = CreateParser("FFFF" + 
+                                  "0000 0000 0000 0000" + 
+                                  "0022 0004" +  
+                                  "05 FF" + 
+                                  "0001 0344" + // two different points get unified.
+                                  "0000 0000"   
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
+    }
 }
