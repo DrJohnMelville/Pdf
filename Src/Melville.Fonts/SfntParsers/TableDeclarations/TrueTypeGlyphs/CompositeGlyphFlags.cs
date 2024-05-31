@@ -23,6 +23,8 @@ internal static class CompostieGlyphFlagCheckers
         (f & CompositeGlyphFlags.Arg1And2AreWords) != 0;
     public static bool ArgsAreXYOffsets(this CompositeGlyphFlags f) =>
         (f & CompositeGlyphFlags.ArgsAreXYValues) != 0;
+    public static bool HasMoreGlyphs(this CompositeGlyphFlags f) =>
+        (f & CompositeGlyphFlags.MoreComponents) != 0;
 
     public static CompositeGlyphFlags ScaleSelector(this CompositeGlyphFlags f) =>
         f & (CompositeGlyphFlags.WeHaveAScale | 

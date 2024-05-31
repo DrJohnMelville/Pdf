@@ -23,7 +23,15 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             var (xOffset, yOffset, parentpoint, childPoint) = ReadOffsets(ref reader, flags);
 
             var subGlyphTransform = ParseTransform(ref reader, flags, xOffset, yOffset);
-            return DrawUnalignedGlyphAsync(subGlyph, subGlyphTransform, new ReadOnlySequence<byte>([]));
+            return DrawUnalignedGlyphAsync(subGlyph, subGlyphTransform, 
+                NextGlyphSequence(flags, reader));
+        }
+
+        private static ReadOnlySequence<byte> NextGlyphSequence(
+            CompositeGlyphFlags flags, SequenceReader<byte> reader)
+        {
+            return flags.HasMoreGlyphs()?reader.UnreadSequence:
+                new ReadOnlySequence<byte>([]);
         }
 
         private (int xOffset, int yOffset, ushort parentpoint, ushort childpoint) ReadOffsets(
@@ -75,11 +83,20 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 
 
         private async ValueTask DrawUnalignedGlyphAsync(
-            ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlySequence<byte> readOnlySequence)
+            ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlySequence<byte> nextBytes)
         {
             await subGlyphRenderer.RenderGlyphInFontUnits(
                 subGlyph, scratchRecorder, subGlyphTransform*transform).CA();
+            await FinishSubglyph(nextBytes).CA();
+        }
+
+        private ValueTask FinishSubglyph(ReadOnlySequence<byte> nextBytes)
+        {
+            if (nextBytes.Length > 0)
+                return DrawAsync(nextBytes);
+
             FinalizeGlyph();
+            return ValueTask.CompletedTask;
         }
 
         private void FinalizeGlyph()

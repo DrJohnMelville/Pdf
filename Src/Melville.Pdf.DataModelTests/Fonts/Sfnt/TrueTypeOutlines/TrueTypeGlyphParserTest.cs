@@ -309,5 +309,19 @@ public class TrueTypeGlyphParserTest
             new Matrix3x2(-2, 1.75f, 0, -2, 0, 0)));
 
     }
+    [Fact]
+    public async Task Render2GlyphsAsync()
+    {
+        var parser = CreateParser("FFFF" + 
+                                  "0000 0000 0000 0000" + 
+                                  "0022 0004" +  
+                                  "05 FF" + 
+                                  "0002 0004" + // two identical points except repeat flag. 
+                                  "05 FF"   
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
+    }
 
 }
