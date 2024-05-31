@@ -3,35 +3,38 @@ using System.Net.Sockets;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
+using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
-public readonly struct TrueTypeGlyphParser(
-    IGlyphSource trueTypeGlyphSource, 
-    ReadOnlySequence<byte> slice, 
+internal readonly struct TrueTypeGlyphParser(
+    ISubGlyphRenderer innerRenderer,
+    ReadOnlySequence<byte> slice,
     ITrueTypePointTarget target,
     Matrix3x2 matrix,
-    int level)
+    HorizontalMetric horizontalMetric)
 {
     public ValueTask DrawGlyphAsync()
     {
         var reader = new SequenceReader<byte>(slice);
         int numberOfContours = reader.ReadBigEndianInt16();
-        ReadBoundingBox(ref reader); 
+        PhantomPoints boundingBox = new();
+        ReadBoundingBox(ref reader, ref boundingBox);
         if (numberOfContours < 0)
         {
-            return DrawCompositeGlyphAsync(ref reader);
+            return new CompositeGlyphRenderer(innerRenderer, target, boundingBox, matrix)
+                .DrawAsync(reader.UnreadSequence);
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
+        boundingBox.Draw(target);
         return ValueTask.CompletedTask;
     }
-    private ValueTask DrawCompositeGlyphAsync(ref SequenceReader<byte> reader)
-    {
-        throw new NotImplementedException("composite glyphs are not implemented");
-    }
+
+    #region Simple Glyph Rendering
 
     private void DrawSimpleGlyph(ref SequenceReader<byte> reader, int numberOfContours)
     {
@@ -41,21 +44,32 @@ public readonly struct TrueTypeGlyphParser(
         DrawPoints(ref reader, contourEnds);
     }
 
-    private void ReadBoundingBox(ref SequenceReader<byte> reader)
+    private void ReadBoundingBox(ref SequenceReader<byte> reader, ref PhantomPoints points)
     {
-        Span<short> points = stackalloc short[4];
-        FieldParser.Read(ref reader, points);
+        Span<short> boundingBox = stackalloc short[4];
+        FieldParser.Read(ref reader, boundingBox);
+        var leftExtent = boundingBox[0] - horizontalMetric.LeftSideBearing;
+        points[0] = TransformPoint(leftExtent, 0);
+        points[1] = TransformPoint(leftExtent + horizontalMetric.AdvanceWidth, 0);
+
+        // these next two should eventually reference the vmtx table, but I do not parse that yet
+        // so I am just using the bounding box for now.
+        points[2] = TransformPoint(0, boundingBox[3]);
+        points[3] = TransformPoint(0, boundingBox[1]);
     }
 
-    private static void SkipInstructions(ref SequenceReader<byte> reader) => 
+    private Vector2 TransformPoint(int xPos, int yPos) =>
+        Vector2.Transform(new Vector2(xPos, yPos), matrix);
+
+    private static void SkipInstructions(ref SequenceReader<byte> reader) =>
         reader.Advance(reader.ReadBigEndianUint16());
 
     private void DrawPoints(ref SequenceReader<byte> reader, scoped ReadOnlySpan<ushort> contourEnds)
     {
         // notice that we copy the reader each time below to get three different readers
         var (instructionBytes, xBytes) = CountDataBytes(reader, contourEnds[^1]);
-        ExecuteInstructionSequence(reader, 
-            reader.Slice(instructionBytes, xBytes), 
+        ExecuteInstructionSequence(reader,
+            reader.Slice(instructionBytes, xBytes),
             reader.Slice(instructionBytes + xBytes),
             contourEnds);
     }
@@ -73,15 +87,16 @@ public readonly struct TrueTypeGlyphParser(
 
             var repeat = ReadRepeatCount(ref reader, flag);
 
-            xBytesConsumed += Math.Abs(xDelta)* repeat;
+            xBytesConsumed += Math.Abs(xDelta) * repeat;
             pointsSimulated += repeat;
         }
-        return((int)
+
+        return ((int)
             reader.Sequence.Slice(initialPosition, reader.Position).Length, xBytesConsumed);
     }
 
     private void ExecuteInstructionSequence(
-        SequenceReader<byte> instructions, SequenceReader<byte> xs, SequenceReader<byte> ys, 
+        SequenceReader<byte> instructions, SequenceReader<byte> xs, SequenceReader<byte> ys,
         ReadOnlySpan<ushort> contourEnds)
     {
         int xPos = 0;
@@ -120,15 +135,12 @@ public readonly struct TrueTypeGlyphParser(
     }
 
     private static int ReadRepeatCount(ref SequenceReader<byte> instructions, GlyphFlags instruction) =>
-        (instruction.Check(GlyphFlags.Repeat)) ?
-            (1+instructions.ReadBigEndianUint8()) 
+        (instruction.Check(GlyphFlags.Repeat))
+            ? (1 + instructions.ReadBigEndianUint8())
             : 1;
 
-    private void ReportPoint(int xPos, int yPos, bool first, bool isEnd, bool onCurve)
-    {
-        var final = Vector2.Transform(new Vector2(xPos, yPos), matrix);
-        target.AddPoint(final, onCurve, first, isEnd);
-    }
+    private void ReportPoint(int xPos, int yPos, bool first, bool isEnd, bool onCurve) =>
+        target.AddPoint(TransformPoint(xPos, yPos), onCurve, first, isEnd);
 
     private static GlyphFlags ReadFlag(ref SequenceReader<byte> reader)
     {
@@ -146,20 +158,5 @@ public readonly struct TrueTypeGlyphParser(
         _ => throw new InvalidOperationException("Invalid xOp")
     };
 
-}
-
-internal enum CmpositeGlyphFlags : ushort
-{
-    Arg1And2AreWords = 0x0001,
-    ArgsAreXYValues = 0x0002,
-    RoundXYToGrid = 0x0004,
-    WeHaveAScale = 0x0008,
-    MoreComponents = 0x0020,
-    WeHaveAnXAndYScale = 0x0040,
-    WeHaveATwoByTwo = 0x0080,
-    WeHaveInstructions = 0x0100,
-    UseMyMetrics = 0x0200,
-    OverlapCompound = 0x0400,
-    ScaledComponentOffset = 0x0800,
-    UnscaledComponentOffset = 0x1000,
+    #endregion
 }

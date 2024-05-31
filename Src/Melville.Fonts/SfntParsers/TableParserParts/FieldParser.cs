@@ -9,7 +9,6 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
-
 internal static partial class FieldParser
 {
     public static void Read<T>(ref SequenceReader<byte> reader, out T output) 

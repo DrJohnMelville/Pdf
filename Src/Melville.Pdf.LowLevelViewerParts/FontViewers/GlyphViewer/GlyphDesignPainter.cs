@@ -58,6 +58,7 @@ public class GlyphDesignPainter (
         var geometry = new PathGeometry();
         foreach (var point in points)
         {
+            if (point.IsPhantom) continue;
             if (point.Begin)
             {
                 drawer = new SplineDrawer(dc, point);

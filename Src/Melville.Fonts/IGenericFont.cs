@@ -1,4 +1,7 @@
-﻿namespace Melville.Fonts;
+﻿using System.Numerics;
+using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
+
+namespace Melville.Fonts;
 
 /// <summary>
 /// This is the generic interface that all fonts parsed by this parser return.  This is
@@ -27,4 +30,5 @@ public interface IGlyphSource
     /// The number of glyphs in the font.
     /// </summary>
     int GlyphCount { get; }
+
 }

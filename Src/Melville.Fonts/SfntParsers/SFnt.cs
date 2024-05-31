@@ -128,7 +128,9 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
        var loc = await GlyphLocationsAsync().CA();
        var head = await HeadTableAsync().CA();
-       return new TrueTypeGlyphSource(loc, source.OffsetFrom(table.Offset), head.UnitsPerEm);
+       var hMetrics = await HorizontalMetricsAsync().CA();
+       return new TrueTypeGlyphSource(
+           loc, source.OffsetFrom(table.Offset), head.UnitsPerEm, hMetrics);
    }
 
    private async Task<T> DelayedLoadTableAsync<T>(uint tag, Func<Task<T>> method) =>

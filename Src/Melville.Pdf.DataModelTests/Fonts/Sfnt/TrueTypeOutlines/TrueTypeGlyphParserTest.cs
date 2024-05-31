@@ -1,7 +1,9 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Melville.Fonts;
+using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.SharpFont.PostScript.Internal;
@@ -12,12 +14,24 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.TrueTypeOutlines;
 
 public class TrueTypeGlyphParserTest
 {
-    private readonly Mock<IGlyphSource> glyphSource = new();
+    private readonly Mock<ISubGlyphRenderer> glyphSource = new();
     private readonly Mock<ITrueTypePointTarget> target = new();
+
+    public TrueTypeGlyphParserTest()
+    {
+        glyphSource.Setup(i => i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(),
+            It.IsAny<Matrix3x2>())).Returns(
+            (uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix) =>
+            {
+                target.AddPoint(new Vector2(glyph, glyph), true, true, false);
+                return ValueTask.CompletedTask;
+            });
+
+    }
 
     private TrueTypeGlyphParser CreateParser(string hex, Matrix3x2 matrix) =>
         new(glyphSource.Object, new ReadOnlySequence<byte>(hex.BitsFromHex()),
-            target.Object, matrix,0);
+            target.Object, matrix, new HorizontalMetric(514, 17));
 
     [Theory]
     [InlineData("0001" + // 1 contour
@@ -101,6 +115,28 @@ public class TrueTypeGlyphParserTest
     }
 
     [Fact]
+    public async Task PhantomPointsAsync()
+    {
+        var parser = this.CreateParser("0001" + 
+                                       "0008 000A 000B 000C" +  
+                                       "0001" + 
+                                       "0000" + 
+                                       "37 07" +  // Short vectors 
+                                       "0A 02" + //2 x values
+                                       "14 01" // 2 y values
+                                , Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
+        target.Verify(i=>i.AddPoint(new Vector2(8, 19), true, false, true));
+
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(-9,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(514-9,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0x0C)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0x0A)));
+    }
+
+    [Fact]
     public async Task RepeatAFlagAsync()
     {
         var parser = this.CreateParser("0001" +
@@ -155,6 +191,123 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(10, 22), true, false, true));
         target.Verify(i=>i.AddPoint(new Vector2(10, 25), true, true, false));
         target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
+    }
+
+    [Fact]
+    public async Task SimpleCompositeParseAsync()
+    {
+        var parser = this.CreateParser("FFFF" + // -1 countours = compositeGlyph
+                                       "0000 0000 0000 0000" + // bounding Box
+                                       "0002 0004" +  // flags and the subglyph number
+                                       "05 FF"  // x and y of the4 subglyph offser
+                                        ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        // simple parsing test
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            Matrix3x2.CreateTranslation(5,-1)));
+
+        // verify rendering completed by verifying the phantom points
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(-17,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(497,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0)), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task CompositeWithWordOffsetsAsync()
+    {
+        var parser = this.CreateParser("FFFF" + 
+                                       "0000 0000 0000 0000" + 
+                                       "0003 0004" +  
+                                       "0005 FFFF"  // x and y of the4 subglyph offser
+                                        ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        // simple parsing test
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            Matrix3x2.CreateTranslation(5,-1)));
+
+        // verify rendering completed by verifying the phantom points
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(-17,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(497,0)));
+        target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0)), Times.Exactly(2));
+    }
+    [Fact]
+    public async Task InnerGlyphGetsDrawnAsync()
+    {
+        var parser = CreateParser("FFFF" + 
+                                  "0000 0000 0000 0000" + 
+                                  "0002 0004" +  
+                                  "05 FF"  // 
+                                   ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false));
+    }
+    [Theory]
+    [InlineData("10")]
+    [InlineData("00")]
+    [InlineData("18")]
+    public async Task SimpleScaleWithParentOffdetAsync(string scaleOffsetBytes)
+    {
+        var parser = this.CreateParser("FFFF" + 
+                                       "0000 0000 0000 0000" + 
+                                       $"{scaleOffsetBytes}0A 0004" +  
+                                       "05 FF" +
+                                       "8000" // scale
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            Matrix3x2.CreateScale(-2)*Matrix3x2.CreateTranslation(5,-1)));
+
+    }
+    [Fact]
+    public async Task SimpleScaleWithGlyphOffdetAsync()
+    {
+        var parser = this.CreateParser("FFFF" + 
+                                       "0000 0000 0000 0000" + 
+                                       "080A 0004" +  
+                                       "05 FF" +
+                                       "8000" // scale
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            Matrix3x2.CreateTranslation(5,-1)*Matrix3x2.CreateScale(-2)));
+
+    }
+    [Fact]
+    public async Task XYScaleAsync()
+    {
+        var parser = this.CreateParser("FFFF" + 
+                                       "0000 0000 0000 0000" + 
+                                       "1042 0004" +  
+                                       "00 00" +
+                                       "8000 7000" // scale
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        // simple parsing test
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            Matrix3x2.CreateScale(-2, 1.75f)));
+
+    }
+    [Fact]
+    public async Task TwoByTwoScaleAsync()
+    {
+        var parser = this.CreateParser("FFFF" + 
+                                       "0000 0000 0000 0000" + 
+                                       "1082 0004" +  
+                                       "00 00" +
+                                       "8000 7000 0000 8000" // scale
+            ,Matrix3x2.Identity);
+        await parser.DrawGlyphAsync();
+
+        // simple parsing test
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+            new Matrix3x2(-2, 1.75f, 0, -2, 0, 0)));
+
     }
 
 }

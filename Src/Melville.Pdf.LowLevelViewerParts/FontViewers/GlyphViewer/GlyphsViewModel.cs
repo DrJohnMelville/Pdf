@@ -34,7 +34,7 @@ public partial class GlyphsViewModel
         if (GlyphSource is TrueTypeGlyphSource ttgs)
         {
             var newGlyph = GlyphRecorderFactory.GetRecorder();
-            await ttgs.ParsePointsAsync((uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
+            await ttgs.RenderGlyphInEmUnits((uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
             GlyphRecorderFactory.ReturnRecorder(Glyph);
             Glyph = newGlyph;
         }
