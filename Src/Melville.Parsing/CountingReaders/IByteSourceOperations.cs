@@ -25,4 +25,21 @@ public static class IByteSourceOperations
             source.MarkSequenceAsExamined();
         }
     }
+
+    public static async ValueTask SkipForwardToAsync(this IByteSource source, long position)
+    {
+        if (position < source.Position)
+            throw new InvalidOperationException("Cannot jump backward");
+        while (source.Position < position)
+        {
+            var result = await source.ReadAsync().CA();
+            var needed = position  - source.Position;
+            source.AdvanceTo(needed>result.Buffer.Length?
+                result.Buffer.End:
+                result.Buffer.GetPosition(needed));
+        }
+    }
+
+    public static ValueTask SkipOverAsync(this IByteSource source, int bytes) =>
+        source.SkipForwardToAsync(source.Position + bytes);
 }
