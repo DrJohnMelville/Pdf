@@ -1,7 +1,7 @@
 ﻿namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 [Flags]
-public enum GlyphFlags : byte
+internal enum GlyphFlags : byte
 {
     OnCurve = 0x01,
     XShortVector = 0x02,
@@ -13,7 +13,7 @@ public enum GlyphFlags : byte
     Reserved = 0x80
 }
 
-public static class GlyphFlagOperations
+internal static class GlyphFlagOperations
 {
     public static bool Check(this GlyphFlags flags, GlyphFlags check) =>
         (flags & check) != 0;

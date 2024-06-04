@@ -3,12 +3,21 @@ using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 
-internal ref struct SplineDrawer(ScaledDrawContext dc, CapturedPoint initialPoint)
+internal ref struct SplineDrawer
 {
-    CapturedPoint lastPoint = initialPoint;
-    private CapturedPoint lastLinePoint = initialPoint;
+    CapturedPoint lastPoint;
     private bool lastOnCurve = true;
-    PathFigure figure = dc.MoveTo(initialPoint.Point.X, initialPoint.Point.Y);
+    PathFigure figure;
+    private readonly ScaledDrawContext dc;
+    private readonly CapturedPoint initialPoint;
+
+    public SplineDrawer(ScaledDrawContext dc, CapturedPoint initialPoint)
+    {
+        this.dc = dc;
+        this.initialPoint = initialPoint;
+        lastPoint = initialPoint;
+        figure = dc.MoveTo(initialPoint.Point.X, initialPoint.Point.Y);
+    }
 
     public void AddPoint(in CapturedPoint point)
     {
@@ -29,7 +38,7 @@ internal ref struct SplineDrawer(ScaledDrawContext dc, CapturedPoint initialPoin
             DrawSplineTo(point);
         }
 
-        lastLinePoint = lastPoint = point;
+        lastPoint = point;
         lastOnCurve = true;
     }
 
@@ -40,8 +49,6 @@ internal ref struct SplineDrawer(ScaledDrawContext dc, CapturedPoint initialPoin
             var midpoint = 
                 new CapturedPoint((point.Point + lastPoint.Point)/2, CapturedPointFlags.OnCurve);
             DrawSplineTo(midpoint);
-            ;
-            lastLinePoint = midpoint;
         }
 
         lastPoint = point;

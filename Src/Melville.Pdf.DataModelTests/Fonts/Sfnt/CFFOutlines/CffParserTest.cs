@@ -26,7 +26,7 @@ public class CffParserTest
     private readonly IMultiplexSource source = MultiplexSourceFactory.Create(
         CffData.BitsFromHex());
     [Fact]
-    public async Task ParseCFFStream()
+    public async Task ParseCFFStreamAsync()
     {
         var table = await new CffGlyphSourceParser(source).ParseAsync();
         table.GlyphCount.Should().Be(2);

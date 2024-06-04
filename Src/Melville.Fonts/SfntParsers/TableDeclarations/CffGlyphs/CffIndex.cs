@@ -31,7 +31,7 @@ internal readonly partial struct CffIndex
 
     private uint FirstItemOffset() => (Length + 1) * offsetSize;
 
-    internal async ValueTask SkipReaderOver(IByteSource source)
+    internal async ValueTask SkipReaderOverAsync(IByteSource source)
     {
         await source.SkipOverAsync((int)Length*offsetSize).CA();
         var end = await source.ReadBigEndianUintAsync(offsetSize).CA();
@@ -39,13 +39,12 @@ internal readonly partial struct CffIndex
     }
 }
 
-internal class CFFIndexParser(IMultiplexSource root, IByteSource pipe)
+internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
 {
     public async ValueTask<CffIndex> ParseAsync()
     {
         var data = await pipe.ReadAtLeastAsync(3).CA();
         var ret = ParseData(data.Buffer);
-        await ret.SkipReaderOver(pipe).CA();
         return ret;
     }
 

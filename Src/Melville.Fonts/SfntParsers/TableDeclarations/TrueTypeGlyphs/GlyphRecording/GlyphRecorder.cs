@@ -7,7 +7,6 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 /// This class can record and replay the points from a glyph.  When paired with GlyphRecorderFactory
 /// it can do so with amortized zero allocations.
 /// </summary>
-/// <param name="allocator">An interface to get buffers from the allocator</param>
 public class GlyphRecorder :
     ITrueTypePointTarget, IReadOnlyList<CapturedPoint>
 {

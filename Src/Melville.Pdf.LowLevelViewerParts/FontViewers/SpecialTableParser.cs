@@ -56,7 +56,7 @@ public static class SpecialTableParser
     {
         var cmap = await font.GetCmapSourceAsync();
         return Enumerable.Range(0, cmap.Count)
-            .Select(i => new MultiStringViewModel(()=> PrintCmap.PrintCMap(cmap, i), PrintCmap.CmapName(cmap, i)) as object);
+            .Select(i => new MultiStringViewModel(()=> PrintCmap.PrintCMapAsync(cmap, i), PrintCmap.CmapName(cmap, i)) as object);
     }
 
     private static async ValueTask<object?> ParseHeadAsync(SFnt font) => 
@@ -69,9 +69,9 @@ public static class SpecialTableParser
             new MaximumsViewModel(await font.MaximumProfileTableAsync());
 
     private static ValueTask<object?> ParseHorizontalMetricsAsync(SFnt font) =>
-        new(new MultiStringViewModel(async ()=> await Metrics(await font.HorizontalMetricsAsync()), "Horizontal Metrics"));
+        new(new MultiStringViewModel(async ()=> await MetricsAsync(await font.HorizontalMetricsAsync()), "Horizontal Metrics"));
 
-    public static ValueTask<IReadOnlyList<string>> Metrics(ParsedHorizontalMetrics metrics)
+    public static ValueTask<IReadOnlyList<string>> MetricsAsync(ParsedHorizontalMetrics metrics)
     {
         var ret = new List<string>(metrics.HMetrics.Length + metrics.LeftSideBearings.Length + 1);
         int glyph = 0;
@@ -90,11 +90,12 @@ public static class SpecialTableParser
         return new (ret);
     }
 
-    private static ValueTask<object?> ParseLocationsAsync(SFnt font) => new(new MultiStringViewModel(() => PrintGlyphLocations(font), "Glyph Locations"));
+    private static ValueTask<object?> ParseLocationsAsync(SFnt font) => new(new MultiStringViewModel(() => PrintGlyphLocationsAsync(font), "Glyph Locations"));
 
-    private static async ValueTask<IReadOnlyList<string>> PrintGlyphLocations(SFnt font)
+    private static async ValueTask<IReadOnlyList<string>> PrintGlyphLocationsAsync(SFnt font)
     {
         var table = await font.GlyphLocationsAsync();
+        if (table is null) return [];
         return Enumerable.Range(0, table.TotalGlyphs)
             .Select(i =>
             {

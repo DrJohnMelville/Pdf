@@ -119,14 +119,16 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
    /// <inheritdoc />
    public override ValueTask<IGlyphSource> GetGlyphSourceAsync() => 
-        new(DelayedLoadTableAsync(SFntTableName.GlyphData, LoadGlyphSource));
+        new(DelayedLoadTableAsync(SFntTableName.GlyphData, LoadGlyphSourceAsync));
 
-   private async Task<IGlyphSource> LoadGlyphSource()
+   private async Task<IGlyphSource> LoadGlyphSourceAsync()
    {
        if (FindTable(SFntTableName.GlyphData) is not { } table)
            throw new NotImplementedException("Right now only truetype outlines are supported");
 
        var loc = await GlyphLocationsAsync().CA();
+       if (loc is null) 
+           throw new InvalidDataException("GlyphLoc table is require for truetype outlines");
        var head = await HeadTableAsync().CA();
        var hMetrics = await HorizontalMetricsAsync().CA();
        return new TrueTypeGlyphSource(

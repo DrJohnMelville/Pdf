@@ -3,11 +3,19 @@ using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
+/// <summary>
+/// This is a rental facility for GlyphRecorders.  This is needed too get amortized,
+/// allocation free renderiing of the composite glyphs.
+/// </summary>
 public static class GlyphRecorderFactory
 {
     private static readonly GlyphRecorder[] recorders = new GlyphRecorder[20];
     private static int count = 0;
 
+    /// <summary>
+    /// Rent a glyphrecorder from the pool.
+    /// </summary>
+    /// <returns>An initalized GlyphRecorder that is empty and ready to use.</returns>
     public static GlyphRecorder GetRecorder()
     {
         lock (recorders)
@@ -20,6 +28,11 @@ public static class GlyphRecorderFactory
         }
     }
 
+    /// <summary>
+    /// Return a glyphrecorder to the rental pool.  Consumer muse not access the
+    /// recorder after it is returned.
+    /// </summary>
+    /// <param name="recorder">The recorder to return.</param>
     public static void ReturnRecorder(GlyphRecorder recorder)
     {
         lock (recorders)

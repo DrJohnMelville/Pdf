@@ -105,12 +105,12 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         private async ValueTask DrawUnalignedGlyphAsync(
             ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlySequence<byte> nextBytes)
         {
-            await subGlyphRenderer.RenderGlyphInFontUnits(
+            await subGlyphRenderer.RenderGlyphInFontUnitsAsync(
                 subGlyph, scratchRecorder, subGlyphTransform*transform).CA();
-            await FinishSubglyph(nextBytes).CA();
+            await FinishSubglyphAsync(nextBytes).CA();
         }
 
-        private ValueTask FinishSubglyph(ReadOnlySequence<byte> nextBytes)
+        private ValueTask FinishSubglyphAsync(ReadOnlySequence<byte> nextBytes)
         {
             if (nextBytes.Length > 0)
                 return DrawAsync(nextBytes);
@@ -131,7 +131,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             ushort parentIndex, ushort childIndex)
         {
             var childTarget = GlyphRecorderFactory.GetRecorder();
-            await subGlyphRenderer.RenderGlyphInFontUnits(subGlyph, childTarget, transform).CA();
+            await subGlyphRenderer.RenderGlyphInFontUnitsAsync(subGlyph, childTarget, transform).CA();
 
             var parentPoint = scratchRecorder[parentIndex];
             var childPoint = childTarget[childIndex];
@@ -141,7 +141,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             childTarget.Replay(scratchRecorder, correction);
             GlyphRecorderFactory.ReturnRecorder(childTarget);
 
-            await FinishSubglyph(next).CA();
+            await FinishSubglyphAsync(next).CA();
         }
     }
 }

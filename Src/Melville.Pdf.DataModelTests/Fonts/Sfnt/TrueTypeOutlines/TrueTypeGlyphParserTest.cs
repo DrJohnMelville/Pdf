@@ -19,7 +19,7 @@ public class TrueTypeGlyphParserTest
 
     public TrueTypeGlyphParserTest()
     {
-        glyphSource.Setup(i => i.RenderGlyphInFontUnits(It.IsAny<uint>(), It.IsAny<ITrueTypePointTarget>(),
+        glyphSource.Setup(i => i.RenderGlyphInFontUnitsAsync(It.IsAny<uint>(), It.IsAny<ITrueTypePointTarget>(),
             It.IsAny<Matrix3x2>())).Returns(
             (uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix) =>
             {
@@ -204,7 +204,7 @@ public class TrueTypeGlyphParserTest
         await parser.DrawGlyphAsync();
 
         // simple parsing test
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             Matrix3x2.CreateTranslation(5,-1)));
 
         // verify rendering completed by verifying the phantom points
@@ -224,7 +224,7 @@ public class TrueTypeGlyphParserTest
         await parser.DrawGlyphAsync();
 
         // simple parsing test
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             Matrix3x2.CreateTranslation(5,-1)));
 
         // verify rendering completed by verifying the phantom points
@@ -258,7 +258,7 @@ public class TrueTypeGlyphParserTest
             ,Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             Matrix3x2.CreateScale(-2)*Matrix3x2.CreateTranslation(5,-1)));
 
     }
@@ -273,7 +273,7 @@ public class TrueTypeGlyphParserTest
             ,Matrix3x2.Identity);
         await parser.DrawGlyphAsync();
 
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             Matrix3x2.CreateTranslation(5,-1)*Matrix3x2.CreateScale(-2)));
 
     }
@@ -289,7 +289,7 @@ public class TrueTypeGlyphParserTest
         await parser.DrawGlyphAsync();
 
         // simple parsing test
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             Matrix3x2.CreateScale(-2, 1.75f)));
 
     }
@@ -305,7 +305,7 @@ public class TrueTypeGlyphParserTest
         await parser.DrawGlyphAsync();
 
         // simple parsing test
-        glyphSource.Verify(i=>i.RenderGlyphInFontUnits(4, It.IsAny<ITrueTypePointTarget>(), 
+        glyphSource.Verify(i=>i.RenderGlyphInFontUnitsAsync(4, It.IsAny<ITrueTypePointTarget>(), 
             new Matrix3x2(-2, 1.75f, 0, -2, 0, 0)));
 
     }
@@ -340,7 +340,7 @@ public class TrueTypeGlyphParserTest
     }
 
     [Fact]
-    public async Task Render2PointAlignedGlyphs()
+    public async Task Render2PointAlignedGlyphsAsync()
     {
         var parser = CreateParser("FFFF" + 
                                   "0000 0000 0000 0000" + 
@@ -354,7 +354,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
     }
     [Fact]
-    public async Task Render2PointAlignedGlyphsLongForm()
+    public async Task Render2PointAlignedGlyphsLongFormAsync()
     {
         var parser = CreateParser("FFFF" + 
                                   "0000 0000 0000 0000" + 

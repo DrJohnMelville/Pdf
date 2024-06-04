@@ -4,7 +4,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 public static class PrintCmap
 {
-    public static async ValueTask<IReadOnlyList<String>> PrintCMap(ICMapSource cmap, int index)
+    public static async ValueTask<IReadOnlyList<String>> PrintCMapAsync(ICMapSource cmap, int index)
     {
         try
         {
