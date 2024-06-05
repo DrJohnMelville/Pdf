@@ -14,7 +14,10 @@ public interface ICffGlyphTarget
 public class CffGlyphSource : IGlyphSource
 {
     private readonly CffIndex glyphs;
-    internal CffGlyphSource(CffIndex glyphs) => this.glyphs = glyphs;
+    internal CffGlyphSource(CffIndex glyphs, CffIndex globalSubrs, CffIndex localSubrs)
+    {
+        this.glyphs = glyphs;
+    }
 
     /// <inheritdoc />
     public int GlyphCount => (int)glyphs.Length;

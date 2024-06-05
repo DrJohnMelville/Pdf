@@ -21,22 +21,64 @@ internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
 
 
         var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
-        var offsetVal = GetCharStringOffset(firstFontTopDictData);
+        ParseTopDict(
+            firstFontTopDictData, out var charStringOffset,
+            out var privateOffset, out var privateSize);
         
-        await pipe.AdvanceToLocalPositionAsync(offsetVal).CA();
+        await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();
         var charStringsIndex= await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        
 
-        return new CffGlyphSource(charStringsIndex);
+        var privateSubrs = await GetrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
+
+        return new CffGlyphSource(charStringsIndex, globalSubrIndex, privateSubrs);
     }
 
-    private static int GetCharStringOffset(ReadOnlySequence<byte> first)
+    private async ValueTask<CffIndex> GetrivateSubrsAsync(ByteSource pipe, int privateOffset, int privateSize)
     {
-        var result = new DictValue[1];
-        if (!new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result).TryFindEntry(17))
-            throw new InvalidDataException("No charstringoffset for font");
-        var offsetVal = result[0].IntValue;
-        return offsetVal;
+        await pipe.AdvanceToLocalPositionAsync(privateOffset).CA();
+        var privateDictBytes = await pipe.ReadAtLeastAsync(privateSize).CA();
+        var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
+            privateDictBytes.Buffer.Slice(0, privateSize));
+
+        if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0);
+
+        await pipe.AdvanceToLocalPositionAsync(privateSubrsOffset+privateOffset).CA();
+        return await new CFFIndexParser(source, pipe).ParseAsync().CA();
+    }
+
+    // Per Adobe Techical Note 5176 page 24
+    private const int subrsInstruction = 19;
+    private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
+    {
+        Span<DictValue> result = stackalloc DictValue[1];
+        return new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(slice), result)
+            .TryFindEntry(subrsInstruction)
+            ? result[0].IntValue
+            : 0;
+    }
+
+    //per Adobe Technical note 5716 page 15
+    private const int charStringsInstruction = 17;
+    private const int privateInstruction = 18;
+    private static void ParseTopDict(ReadOnlySequence<byte> first, 
+        out int charStringOffset, out int privateOffset, out int privateSize)
+    {
+        charStringOffset = privateOffset = privateSize = 0;
+        Span<DictValue> result = stackalloc DictValue[2];
+        var dictParser = new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result);
+        while (dictParser.ReadNextInstruction() is var instr and < 255)
+        {
+            switch (instr)
+            {
+                case charStringsInstruction:
+                    charStringOffset = (int)result[0].IntValue;
+                    break;
+                case privateInstruction:
+                    privateSize = (int)result[0].IntValue;
+                    privateOffset = (int)result[1].IntValue;
+                    break;
+            }
+        }
     }
 
     private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(ByteSource pipe)
