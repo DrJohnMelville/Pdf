@@ -1,23 +1,14 @@
-﻿using System.Buffers;
-using System.Collections;
-using System.Configuration;
-using System.IO;
-using System.IO.Pipelines;
-using System.Printing;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System.Collections;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
-using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
-using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
-using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.MultiplexSources;
+using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
+using Melville.Pdf.LowLevelViewerParts.FontViewers.CFFGlyphViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.HeadViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.MetricViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
@@ -25,11 +16,29 @@ public static class SpecialTableParser
 {
     public static async ValueTask<object> ParseAsync(TableRecord record, SFnt font)
     {
-        if (record.Tag == SFntTableName.GlyphData)
+
+        return await TryShowGlyphTableAsync(record, font) ??
+               await TablesWithNexDumpsAsync(record, font);
+
+    }
+
+    private static async ValueTask<object?> TryShowGlyphTableAsync(TableRecord record, SFnt font)
+    {
+        if (record.Tag is SFntTableName.GlyphData or SFntTableName.CFF)
         {
-            return new GlyphsViewModel(await font.GetGlyphSourceAsync());
+            return await font.GetGlyphSourceAsync() switch
+            {
+                TrueTypeGlyphSource ttgs => new GlyphsViewModel(ttgs),
+                CffGlyphSource cffgs => new CffGlyphViewModel(cffgs),
+                _ => null
+            };
         }
 
+        return null;
+    }
+
+    private static async Task<object> TablesWithNexDumpsAsync(TableRecord record, SFnt font)
+    {
         var byteModel = new ByteStringViewModel(await font.GetTableBytesAsync(record));
         var special = await ParseAsync(record.Tag, font);
         return special switch

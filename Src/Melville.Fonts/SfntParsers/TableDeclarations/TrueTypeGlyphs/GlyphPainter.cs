@@ -82,6 +82,7 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
     /// <param name="matrix">A transform to apply to the glyph points when rendering.</param>
     public async ValueTask RenderGlyphInFontUnitsAsync(uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix)
     {
+        if (glyph >= GlyphCount) glyph = 0;
         var location = index.GetLocation(glyph);
         if (location.Length == 0) return;
         var data = await glyphDataOrigin.ReadPipeFrom(location.Offset)

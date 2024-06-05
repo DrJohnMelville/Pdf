@@ -14,19 +14,26 @@ internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
         var pipe = new ByteSource(source.ReadPipeFrom(0));
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
-        await ReadNameIndexAsync(pipe).CA();
+        var nameIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
         var topIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        var first = await topIndex.ItemDataAsync(0).CA();
-        var offsetVal = GetCharStringOffset(first);
+        var stringIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
+        var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
 
+
+        var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
+        var offsetVal = GetCharStringOffset(firstFontTopDictData);
+        
         await pipe.AdvanceToLocalPositionAsync(offsetVal).CA();
-        return new CFFGlyphSource(await new CFFIndexParser(source, pipe).ParseAsync().CA());
+        var charStringsIndex= await new CFFIndexParser(source, pipe).ParseAsync().CA();
+        
+
+        return new CffGlyphSource(charStringsIndex);
     }
 
     private static int GetCharStringOffset(ReadOnlySequence<byte> first)
     {
         var result = new DictValue[1];
-        if (!new DictScanner(new SequenceReader<byte>(first), 17, result).TryFindEntry())
+        if (!new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result).TryFindEntry(17))
             throw new InvalidDataException("No charstringoffset for font");
         var offsetVal = result[0].IntValue;
         return offsetVal;
@@ -50,11 +57,5 @@ internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
         Debug.Assert(majorVersion == 1);
         Debug.Assert(minorVersion == 0);
         return (headerSize, offSize);
-    }
-
-    private async ValueTask ReadNameIndexAsync(ByteSource pipe)
-    {
-        var nameIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        await nameIndex.SkipReaderOverAsync(pipe).CA();
     }
 }

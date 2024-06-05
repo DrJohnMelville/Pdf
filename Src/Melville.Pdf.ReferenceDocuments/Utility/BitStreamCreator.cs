@@ -34,7 +34,7 @@ public static class BitStreamCreator
     {
         >= '0' and <= '9' => character - '0',
         >= 'A' and <= 'F' => 0x0A + character - 'A',
-        >= 'a' and <= 'f' => 0x0A + character - 'A',
+        >= 'a' and <= 'f' => 0x0A + character - 'a',
         _=> -1
     };
 

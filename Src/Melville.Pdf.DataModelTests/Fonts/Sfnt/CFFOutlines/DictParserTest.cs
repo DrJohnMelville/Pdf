@@ -7,19 +7,19 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
 
-public class DictScannerTest
+public class DictParserTest
 {
-    private static DictScanner CreateScanner(string bytes, int operatorDesired, Span<DictValue> operands)
+    private static DictParser<CffDictionaryDefinition> CreateScanner(
+        string bytes, Span<DictValue> operands)
     {
-        return new DictScanner(
-            new SequenceReader<byte>(new ReadOnlySequence<byte>(bytes.BitsFromHex())),
-            operatorDesired, operands);
+        return new DictParser<CffDictionaryDefinition>(
+            new SequenceReader<byte>(new ReadOnlySequence<byte>(bytes.BitsFromHex())), operands);
     }
     [Fact]
     public void ScanEmptyDict()
     {
-        CreateScanner("", 2, stackalloc DictValue[1])
-            .TryFindEntry().Should().BeFalse();
+        CreateScanner("", stackalloc DictValue[1])
+            .TryFindEntry(2).Should().BeFalse();
     }
 
     [Theory]
@@ -37,8 +37,8 @@ public class DictScannerTest
     public void FindInteger(string bytes, int value)
     {
         Span<DictValue> operands = stackalloc DictValue[1];
-        var scanner = CreateScanner(bytes, 2, operands);
-        scanner.TryFindEntry().Should().BeTrue();
+        var scanner = CreateScanner(bytes, operands);
+        scanner.TryFindEntry(2).Should().BeTrue();
         operands[0].IntValue.Should().Be(value);
     }
 
@@ -48,8 +48,8 @@ public class DictScannerTest
     public void FindFloat(string bytes, float value)
     {
         Span<DictValue> operands = stackalloc DictValue[1];
-        var scanner = CreateScanner(bytes, 2, operands);
-        scanner.TryFindEntry().Should().BeTrue();
+        var scanner = CreateScanner(bytes, operands);
+        scanner.TryFindEntry(2).Should().BeTrue();
         operands[0].FloatValue.Should().Be(value);
     }
 

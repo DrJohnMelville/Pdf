@@ -1,6 +1,4 @@
 ﻿using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.INPC;
 using Melville.Pdf.Wpf.Controls;
@@ -9,7 +7,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 
 public partial class GlyphsViewModel
 {
-    [FromConstructor] public IGlyphSource GlyphSource { get; }
+    [FromConstructor] public TrueTypeGlyphSource GlyphSource { get; }
     [AutoNotify] private GlyphRecorder glyph = GlyphRecorderFactory.GetRecorder();
     [AutoNotify] private bool unitSquare = true;
     [AutoNotify] private bool boundingBox = true;
@@ -18,6 +16,7 @@ public partial class GlyphsViewModel
     [AutoNotify] private bool phantomPoints = true;
     [AutoNotify] private bool outline = true;
     [AutoNotify] private bool fill = false;
+    public PageSelectorViewModel PageSelector { get; } = new();
 
     partial void OnConstructed()
     {
@@ -27,18 +26,13 @@ public partial class GlyphsViewModel
         LoadNewGlyph();
     }
 
-    public PageSelectorViewModel PageSelector { get; } = new();
 
     private async void LoadNewGlyph()
     {
-        if (GlyphSource is TrueTypeGlyphSource ttgs)
-        {
             var newGlyph = GlyphRecorderFactory.GetRecorder();
-            await ttgs.RenderGlyphInEmUnitsAsync((uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
+            await GlyphSource.RenderGlyphInEmUnitsAsync(
+                (uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
             GlyphRecorderFactory.ReturnRecorder(Glyph);
             Glyph = newGlyph;
-        }
     }
 }
-
-public record GlyphPointViewModel(double X, double Y, string Type);

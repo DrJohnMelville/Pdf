@@ -1,67 +1,65 @@
 ﻿using System.Buffers;
-using System.Runtime.InteropServices;
+using System.ComponentModel;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-[StructLayout(LayoutKind.Explicit)]
-internal readonly struct DictValue
-{
-    [FieldOffset(0)] private readonly int intValue;
-    [FieldOffset(0)] private readonly float floatValue;
-    public DictValue(int value)  => intValue = value;
-    public DictValue(float value)  => floatValue = value;
-    public int IntValue => intValue;
-    public float FloatValue => floatValue;
-}
-
-internal ref partial struct DictScanner
+internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 {
     [FromConstructor] private SequenceReader<byte> source;
-    [FromConstructor] private readonly int operatorDesired;
     [FromConstructor] private readonly Span<DictValue> operands;
     private int operandPosition = 0;
-    public bool TryFindEntry()
-    {
-        while (source.TryRead(out var b))
-        {
-            if (TryReadToken(b)) return true;
-        }
 
-        return false;
+    public ReadOnlySpan<DictValue> Operands => operands[..operandPosition];
+
+    public bool TryFindEntry(int operatorDesired)
+    {
+        while (true)
+        {
+            var op = ReadNextInstruction();
+            if (op == operatorDesired) return true;
+            if (op == 0xFF) return false;
+        }
     }
 
-    private bool TryReadToken(byte value)
+    public int ReadNextInstruction(int startingStackSize = 0)
     {
-        switch (value)
+        operandPosition = startingStackSize;
+        while (source.TryRead(out var value))
         {
-            // handle prefix operator
-            case < 22: return value == operatorDesired;
-            case 28: 
-                ReadRawTwoByteInteger();
-                break;
-            case 29:
-                ReadFiveByteInteger();
-                break;
-            case 30:
-                ReadSingle();
-                break;
-            case < 247: 
-                PushOperand(new DictValue(value - 139)); 
-                break;
-            case < 251:
-                Parse2ByteInteger(value);
-                break;
-            case < 255:
-                ParseNegativeTwoByteInteger(value);
-                break;
-            default:
-                throw new InvalidDataException("Invalid string in Dictionary");
+            switch (T.ClassifyEntry(value))
+            {
+                // handle prefix operator
+                case DictParserOperations.TwoByteInstruction: return ReadTwoByteInstruction();
+                case DictParserOperations.OneByteInstruction: return value;
+                case DictParserOperations.RawTwoByteInteger:
+                    ReadRawTwoByteInteger();
+                    break;
+                case DictParserOperations.FiveByteInteger:
+                    ReadFiveByteInteger();
+                    break;
+                case DictParserOperations.SingleFloat:
+                    ReadSingle();
+                    break;
+                case DictParserOperations.OneByteInteger:
+                    PushOperand(new DictValue(value - 139));
+                    break;
+                case DictParserOperations.TwoBytePositiveInteger:
+                    Parse2ByteInteger(value);
+                    break;
+                case DictParserOperations.TwoByteNegativeInteger:
+                    ParseNegativeTwoByteInteger(value);
+                    break;
+                default:
+                    throw new InvalidDataException("Unknown Dict Operator");
+            }
         }
 
-        return false;
+        return 0xFF;
     }
+
+    private int ReadTwoByteInstruction() => source.TryRead(out var b1) ? (12<<8) & b1 :0xFF;
 
     private void ReadSingle()
     {

@@ -39,4 +39,9 @@ public class SFntTableName
     /// Table name 'glyf'
     /// </summary>
     public const uint GlyphData = 0x676C7966;
+
+    /// <summary>
+    /// Table name 'CFF '
+    /// </summary>
+    public const uint CFF = 0x43464620;
 }

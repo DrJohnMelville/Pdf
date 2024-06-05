@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
@@ -121,11 +122,23 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    public override ValueTask<IGlyphSource> GetGlyphSourceAsync() => 
         new(DelayedLoadTableAsync(SFntTableName.GlyphData, LoadGlyphSourceAsync));
 
-   private async Task<IGlyphSource> LoadGlyphSourceAsync()
+   private Task<IGlyphSource> LoadGlyphSourceAsync()
    {
-       if (FindTable(SFntTableName.GlyphData) is not { } table)
-           throw new NotImplementedException("Right now only truetype outlines are supported");
+       if (FindTable(SFntTableName.GlyphData) is { } trueType)
+            return LoadTrueTypeGlyphSourceAsync(trueType);
+       if (FindTable(SFntTableName.CFF) is {} cff)
+            return LoadCffGlyphSourceAsync(cff);
+       throw new NotImplementedException("Cannot find Glyph Source");
+   }
 
+   private Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
+   {
+       var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset));
+       return parser.ParseAsync();
+   }
+
+   private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
+   {
        var loc = await GlyphLocationsAsync().CA();
        if (loc is null) 
            throw new InvalidDataException("GlyphLoc table is require for truetype outlines");
