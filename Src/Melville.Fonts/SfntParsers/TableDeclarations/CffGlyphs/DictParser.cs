@@ -9,9 +9,10 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 {
     [FromConstructor] private SequenceReader<byte> source;
     [FromConstructor] private readonly Span<DictValue> operands;
-    private int operandPosition = 0;
+    public int OperandPosition { get; private set; } = 0;
+    public ReadOnlySequence<byte> UnreadSequence => source.UnreadSequence;
 
-    public ReadOnlySpan<DictValue> Operands => operands[..operandPosition];
+    public ReadOnlySpan<DictValue> Operands => operands[..OperandPosition];
 
     public bool TryFindEntry(int operatorDesired)
     {
@@ -25,7 +26,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 
     public int ReadNextInstruction(int startingStackSize = 0)
     {
-        operandPosition = startingStackSize;
+        OperandPosition = startingStackSize;
         while (source.TryRead(out var value))
         {
             switch (T.ClassifyEntry(value))
@@ -59,7 +60,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
         return 0xFF;
     }
 
-    private int ReadTwoByteInstruction() => source.TryRead(out var b1) ? (12<<8) & b1 :0xFF;
+    private int ReadTwoByteInstruction() => source.TryRead(out var b1) ? (12<<8) | b1 :0xFF;
 
     private void ReadSingle()
     {
@@ -124,8 +125,8 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 
     private void PushOperand(DictValue value)
     {
-        operands[operandPosition] = value;
-        operandPosition++;
-        operandPosition %= operands.Length;
+        operands[OperandPosition] = value;
+        OperandPosition++;
+        OperandPosition %= operands.Length;
     }
 }

@@ -17,13 +17,14 @@ public class GlyphDesignPainter (
     Brush? glyphBrush,
     GlyphRecorder points)
 {
-    public void Paint()
+    public void Paint(int maxIndex)
     {
+        var takeValue = maxIndex < 0 ? int.MaxValue : maxIndex + 1;
         if (points.Count == 0) return;
-        DrawGlyph();
+        DrawGlyph(takeValue);
         DrawUnitRect();
         DrawBoundingBox();
-        DrawPoints();
+        DrawPoints(takeValue);
     }
 
     private void DrawBoundingBox()
@@ -36,9 +37,9 @@ public class GlyphDesignPainter (
     private void DrawUnitRect() =>
         dc.DrawRectangle(null, unitPen, new Rect(0, 0, 1, 1));
 
-    private void DrawPoints()
+    private void DrawPoints(int takeValue)
     {
-        foreach (var point in points)
+        foreach (var point in points.Take(takeValue))
         {
             dc.DrawPoint(PickPointBrush(point), point.Point.X, point.Point.Y);
         }
@@ -52,7 +53,7 @@ public class GlyphDesignPainter (
     };
 
 
-    private void DrawGlyph()
+    private void DrawGlyph(int takeValue)
     {
         var drawer = new SplineDrawer(dc, points[0]);
         var geometry = new PathGeometry(){FillRule = FillRule.Nonzero};
@@ -68,7 +69,7 @@ public class GlyphDesignPainter (
                 drawer.AddPoint(point);
                 if (point.End)
                 {
-                    geometry.Figures.Add(drawer.CloseFigure());
+                   geometry.Figures.Add(drawer.CloseFigure());
                 }
             }
         }

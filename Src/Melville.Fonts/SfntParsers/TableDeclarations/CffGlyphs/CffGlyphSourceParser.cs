@@ -7,7 +7,8 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
+internal readonly struct CffGlyphSourceParser(
+    IMultiplexSource source, ushort unitsPerEm)
 {
     public async Task<IGlyphSource> ParseAsync()
     {
@@ -30,7 +31,9 @@ internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
 
         var privateSubrs = await GetrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
 
-        return new CffGlyphSource(charStringsIndex, globalSubrIndex, privateSubrs);
+        return new CffGlyphSource(charStringsIndex, 
+            new GlyphSubroutineExecutor(globalSubrIndex), 
+            new GlyphSubroutineExecutor(privateSubrs), unitsPerEm);
     }
 
     private async ValueTask<CffIndex> GetrivateSubrsAsync(ByteSource pipe, int privateOffset, int privateSize)
@@ -66,7 +69,7 @@ internal readonly struct CffGlyphSourceParser(IMultiplexSource source)
         charStringOffset = privateOffset = privateSize = 0;
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result);
-        while (dictParser.ReadNextInstruction() is var instr and < 255)
+        while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             switch (instr)
             {

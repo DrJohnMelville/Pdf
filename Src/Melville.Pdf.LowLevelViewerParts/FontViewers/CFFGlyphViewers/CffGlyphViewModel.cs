@@ -1,4 +1,6 @@
-﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
+﻿using System.Numerics;
+using System.Text;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
 using Melville.Pdf.Wpf.Controls;
 
@@ -28,101 +30,80 @@ public partial class CffGlyphViewModel
     private async void LoadNewGlyph()
     {
         var renderTemp = new CffGlyphBuffer();
-        await GlpyhSource.RenderGlyph((uint)PageSelector.Page, renderTemp);
+        await GlpyhSource.RenderGlyph((uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
         RenderedGlyph = renderTemp;
     }
 }
 
 public class CffGlyphBuffer : ICffGlyphTarget
 {
-    private readonly List<CffGlyphInstruction> instructions = new();
+    public List<ICffAction> Output { get; } = new();
 
-    public void Instruction(int instruction, ReadOnlySpan<DictValue> values) =>
-        instructions.Add(new CffGlyphInstruction(instruction, values.ToArray()));
+    public void RelativeCharWidth(float delta) => 
+        Output.Add(new CffCharWidthAction(delta));
 
-    public string ViewOutput => string.Join(Environment.NewLine, instructions.Select(i=>i.ToString()));
+    public void MoveTo(Vector2 point) => Output.Add(new CffMoveToAction(point));
+    public void LineTo(Vector2 point) => Output.Add(new CffLineToAction(point));
+    public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
+        Output.Add(new CffCurveToAction(control1, control2, endPoint));
+    public void EndGlyph() => Output.Add(new CffEndGlyphAction());
 }
 
-public record struct CffGlyphInstruction(int Instruction, DictValue[] Values)
+public interface ICffAction
 {
-    public override string ToString()
-    {
-        return $"{InstructionName} ({string.Join(", ", Values.Select(i=>i.FloatValue.ToString("#######0.###")))})";
-    }
+    void Execute(ICffGlyphTarget target);
+}
 
-    public string InstructionName => Instruction switch
-    {
-        0 => "Reserved",
-        1 => "hstem",
-        2 => "Reserved",
-        3 => "vstem",
-        4 => "vmoveto",
-        5 => "rlineto",
-        6 => "hlineto",
-        7 => "vlineto",
-        8 => "rrcurveto",
-        9 => "Reserved",
-        10 => "callsubr",
-        11 => "return",
-        12 => "escape",
-        13 => "Reserved",
-        14 => "endchar",
-        15 => "Reserved",
-        16 => "blend",
-        17 => "Reserved",
-        18 => "hstemhm",
-        19 => "hintmask",
-        20 => "cntrmask",
-        21 => "rmoveto",
-        22 => "hmoveto",
-        23 => "vstemhm",
-        24 => "rcurveline",
-        25 => "rlinecurve",
-        26 => "vvcurveto",
-        27 => "hhcurveto",
-        28 => "shortint",
-        29 => "callgsubr",
-        30 => "vhcurveto",
-        31 => "hvcurveto",
-        0x0C00 => "Reserved",
-        0x0C01 => "Reserved",
-        0x0C02 => "Reserved",
-        0x0C03 => "and",
-        0x0C04 => "or",
-        0x0C05 => "not",
-        0x0C06 => "Reserved",
-        0x0C07 => "Reserved",
-        0x0C08 => "Reserved",
-        0x0C09 => "abs",
-        0x0C0A => "add",
-        0x0C0B => "sub",
-        0x0C0C => "div",
-        0x0C0D => "Reserved",
-        0x0C0E => "neg",
-        0x0C0F => "eq",
-        0x0C10 => "Reserved",
-        0x0C11 => "Reserved",
-        0x0C12 => "drop",
-        0x0C13 => "Reserved",
-        0x0C14 => "put",
-        0x0C15 => "get",
-        0x0C16 => "ifelse",
-        0x0C17 => "random",
-        0x0C18 => "mul",
-        0x0C19 => "Reserved",
-        0x0C1A => "sqrt",
-        0x0C1B => "dup",
-        0x0C1C => "exch",
-        0x0C1D => "index",
-        0x0C1E => "roll",
-        0x0C1F => "Reserved",
-        0x0C20 => "Reserved",
-        0x0C21 => "Reserved",
-        0x0C22 => "hflex",
-        0x0C23 => "flex",
-        0x0C24 => "hflex1",
-        0x0C25 => "flex1",
-        >= 0x0C26 and <= 0x0CFF => "Reserved",
-        _ => "Unknown"
-    };
+public class CffCharWidthAction : ICffAction
+{
+    private readonly float delta;
+
+    public CffCharWidthAction(float delta) => this.delta = delta;
+
+    public void Execute(ICffGlyphTarget target) => target.RelativeCharWidth(delta);
+
+    public override string ToString() => $"CharWidth ({delta})";
+}
+
+public class CffMoveToAction : ICffAction
+{
+    private readonly Vector2 point;
+
+    public CffMoveToAction(Vector2 point) => this.point = point;
+
+    public void Execute(ICffGlyphTarget target) => target.MoveTo(point);
+
+    public override string ToString() => $"MoveTo ({point})";
+}
+
+public class CffLineToAction : ICffAction
+{
+    private readonly Vector2 point;
+
+    public CffLineToAction(Vector2 point) => this.point = point;
+
+    public void Execute(ICffGlyphTarget target) => target.LineTo(point);
+
+    public override string ToString() => $"LineTo ({point})";
+}
+
+public class CffCurveToAction : ICffAction
+{
+    private readonly Vector2 control1;
+    private readonly Vector2 control2;
+    private readonly Vector2 endPoint;
+
+    public CffCurveToAction(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
+        (this.control1, this.control2, this.endPoint) = (control1, control2, endPoint);
+
+    public void Execute(ICffGlyphTarget target) => target.CurveTo(control1, control2, endPoint);
+
+    public override string ToString() => $"CurveTo ({control1}, {control2}, {endPoint})";
+}
+
+public class CffEndGlyphAction : ICffAction
+{
+    public void Execute(ICffGlyphTarget target) => target.EndGlyph();
+
+    public override string ToString() => "End of Glyph";
 }

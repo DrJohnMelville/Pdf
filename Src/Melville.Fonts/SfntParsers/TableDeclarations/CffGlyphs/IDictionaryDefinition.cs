@@ -42,8 +42,7 @@ internal struct CharString2Definition: IDictionaryDefinition
         {
             12 => DictParserOperations.TwoByteInstruction,
             28 => DictParserOperations.RawTwoByteInteger,
-            <22 => DictParserOperations.OneByteInstruction,
-            32 => DictParserOperations.SingleFloat,
+            <32 => DictParserOperations.OneByteInstruction,
             <247 => DictParserOperations.OneByteInteger,
             <251 => DictParserOperations.TwoBytePositiveInteger,
             <255 => DictParserOperations.TwoByteNegativeInteger,

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Melville.INPC;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
@@ -184,21 +185,8 @@ public partial class PostscriptStack<T>
         Push(Peek());
     }
 
-    internal void Roll(int rollPlaces, int rollSize)
-    {
-        while (rollPlaces < 0) rollPlaces += rollSize; 
-        rollPlaces %= rollSize;
-
-        Debug.Assert(rollPlaces >= 0);
-        Debug.Assert(rollPlaces < rollSize);
-    
-        var span = CollectionAsSpan()[^rollSize..];
-        //Uses the reversalAlgorithm for array rotation.
-        //https://www.geeksforgeeks.org/complete-guide-on-array-rotations/?ref=ml_lbp
-        span[..^rollPlaces].Reverse();
-        span[^rollPlaces..].Reverse();
-        span.Reverse();
-    }
+    internal void Roll(int rollPlaces, int rollSize) => 
+        CollectionAsSpan().Roll(rollPlaces, rollSize);
 
     /// <summary>
     /// Get the current stack as a span

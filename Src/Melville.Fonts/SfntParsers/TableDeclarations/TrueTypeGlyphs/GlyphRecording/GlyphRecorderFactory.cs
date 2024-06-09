@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
@@ -24,7 +25,10 @@ public static class GlyphRecorderFactory
             {
                 return new GlyphRecorder(PooledAllocator.Instance);
             }
-            return recorders[--count];
+
+            var ret = recorders[--count];
+            recorders[count] = null!; 
+            return ret;
         }
     }
 

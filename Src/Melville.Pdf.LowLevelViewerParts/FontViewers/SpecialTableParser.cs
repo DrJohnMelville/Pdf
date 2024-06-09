@@ -18,26 +18,31 @@ public static class SpecialTableParser
     {
 
         return await TryShowGlyphTableAsync(record, font) ??
-               await TablesWithNexDumpsAsync(record, font);
+               await TablesWithHexDumpsAsync(record, font);
 
     }
 
     private static async ValueTask<object?> TryShowGlyphTableAsync(TableRecord record, SFnt font)
     {
-        if (record.Tag is SFntTableName.GlyphData or SFntTableName.CFF)
+        try
         {
-            return await font.GetGlyphSourceAsync() switch
+            if (record.Tag is SFntTableName.GlyphData or SFntTableName.CFF)
             {
-                TrueTypeGlyphSource ttgs => new GlyphsViewModel(ttgs),
-                CffGlyphSource cffgs => new CffGlyphViewModel(cffgs),
-                _ => null
-            };
+                return await font.GetGlyphSourceAsync() switch
+                {
+                    TrueTypeGlyphSource ttgs => new GlyphsViewModel(ttgs),
+                    CffGlyphSource cffgs => new CffGlyphViewModel(cffgs),
+                    _ => null
+                };
+            }
         }
-
+        catch (Exception)
+        {
+        }
         return null;
     }
 
-    private static async Task<object> TablesWithNexDumpsAsync(TableRecord record, SFnt font)
+    private static async Task<object> TablesWithHexDumpsAsync(TableRecord record, SFnt font)
     {
         var byteModel = new ByteStringViewModel(await font.GetTableBytesAsync(record));
         var special = await ParseAsync(record.Tag, font);

@@ -131,10 +131,12 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        throw new NotImplementedException("Cannot find Glyph Source");
    }
 
-   private Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
+   private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
    {
-       var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset));
-       return parser.ParseAsync();
+       var head = await HeadTableAsync().CA();
+       var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
+           head.UnitsPerEm);
+       return await parser.ParseAsync().CA();
    }
 
    private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)

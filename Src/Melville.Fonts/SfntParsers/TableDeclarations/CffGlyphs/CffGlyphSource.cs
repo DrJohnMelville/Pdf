@@ -1,12 +1,8 @@
 ﻿using System.Buffers;
+using System.Numerics;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-
-public interface ICffGlyphTarget
-{
-    void Instruction(int instruction, ReadOnlySpan<DictValue> values);
-}
 
 /// <summary>
 /// This is a source of CFF glyphs.
@@ -14,32 +10,38 @@ public interface ICffGlyphTarget
 public class CffGlyphSource : IGlyphSource
 {
     private readonly CffIndex glyphs;
-    internal CffGlyphSource(CffIndex glyphs, CffIndex globalSubrs, CffIndex localSubrs)
+    private readonly IGlyphSubroutineExecutor globalSubrs;
+    private readonly IGlyphSubroutineExecutor localSubrs;
+    private readonly Matrix3x2 glyphUnitAdjuster;
+
+    internal CffGlyphSource(
+        CffIndex glyphs, 
+        IGlyphSubroutineExecutor globalSubrs, 
+        IGlyphSubroutineExecutor localSubrs,
+        uint unitsPerEm)
     {
         this.glyphs = glyphs;
+        this.globalSubrs = globalSubrs;
+        this.localSubrs = localSubrs;
+        glyphUnitAdjuster = Matrix3x2.CreateScale(1f/unitsPerEm);
     }
 
     /// <inheritdoc />
     public int GlyphCount => (int)glyphs.Length;
 
-    public async ValueTask RenderGlyph(uint glyph, ICffGlyphTarget target)
+    /// <summary>
+    /// Render a glyph to the target.
+    /// </summary>
+    /// <param name="glyph">The glyph number</param>
+    /// <param name="target">The target to draw to</param>
+    /// <param name="transform">The transform matrix for the glyph rendering</param>
+    public async ValueTask RenderGlyph(uint glyph, ICffGlyphTarget target, Matrix3x2 transform)
     {
         if (glyph > GlyphCount) glyph = 0;
-        ExecuteGlyph((await glyphs.ItemDataAsync((int)glyph).CA()), target);
-    }
+        var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
+        using var engine = new CffInstructionExecutor(
+            target, glyphUnitAdjuster*transform, globalSubrs, localSubrs);
 
-    // per Adobe Technical Note #5176, page 11
-    private const int MaximumCffInstructionOperands = 48;
-    private void ExecuteGlyph(ReadOnlySequence<byte> itemDataAsync, ICffGlyphTarget target)
-    {
-        var stack = ArrayPool<DictValue>.Shared.Rent(MaximumCffInstructionOperands);
-        var parser = new DictParser<CharString2Definition>(new SequenceReader<byte>(itemDataAsync), stack);
-
-        while (parser.ReadNextInstruction() is var op and not 255)
-        {
-            target.Instruction(op, parser.Operands);
-        }
-
-        ArrayPool<DictValue>.Shared.Return(stack);
-    }
+        await engine.ExecuteInstructionSequenceAsync(sourceSequence).CA();
+   }
 }

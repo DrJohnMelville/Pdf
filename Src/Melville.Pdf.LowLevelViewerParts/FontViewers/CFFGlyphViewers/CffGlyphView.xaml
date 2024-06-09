@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
+             xmlns:glyphViewer="clr-namespace:Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -16,7 +17,8 @@
             <ColumnDefinition Width="6*" />
         </Grid.ColumnDefinitions>
         <viewFrames:ViewFrame HorizontalAlignment="Center" Content="{Binding PageSelector}" />
-        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding RenderedGlyph.ViewOutput, Mode=OneWay}"/>
+        <ListBox Grid.Row="1" Margin="0 0 5 0"
+                 ItemsSource="{Binding RenderedGlyph.Output}" Name="StrokeBox"/>
         <GridSplitter Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" />
         <DockPanel Grid.Row="1" Grid.Column="1">
             <WrapPanel DockPanel.Dock="Bottom">
@@ -32,7 +34,14 @@
                 <CheckBox IsChecked="{Binding Outline}">Outline</CheckBox>
                 <CheckBox IsChecked="{Binding Fill}">Fill</CheckBox>
             </WrapPanel>
-            <Border Background="Gray"></Border>
+            <glyphViewer:CffGlyphRenderer Glyph="{Binding RenderedGlyph}"
+                              UnitSquare="{Binding UnitSquare}"
+                              BoundingBox="{Binding BoundingBox}"
+                              Points="{Binding Points}"
+                              ControlPoints="{Binding ControlPoints}"
+                              Outline="{Binding Outline}"
+                              MaxIndex="{Binding SelectedIndex, ElementName=StrokeBox}"
+                              Fill="{Binding Fill}"/>
         </DockPanel>
     </Grid>
 </UserControl>

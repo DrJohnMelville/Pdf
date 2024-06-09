@@ -15,6 +15,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 [MacroItem("bool", "PhantomPoints")]
 [MacroItem("bool", "Outline")]
 [MacroItem("bool", "Fill")]
+[MacroItem("int", "MaxIndex")]
 [MacroCode("""
 public static readonly DependencyProperty ~1~Property = 
     DependencyProperty.Register(
@@ -26,7 +27,6 @@ public ~0~ ~1~
     get => (~0~)GetValue(~1~Property);
     set => SetValue(~1~Property, value);
 }
-
 """)]
 public partial class GlyphRenderer : FrameworkElement
 {
@@ -48,7 +48,7 @@ public partial class GlyphRenderer : FrameworkElement
             PhantomPoints ? Brushes.Green : null,
             Outline ? new Pen(Brushes.Black, 1)  : null, 
             Fill ? Brushes.Black : null,
-            Glyph).Paint();
+            Glyph).Paint(MaxIndex);
     }
 
     private float ComputeZoomFactor() => (float)(Math.Min(ActualHeight, ActualWidth) * 0.8);
@@ -101,7 +101,7 @@ public readonly struct ScaledDrawContext(DrawingContext dc, Matrix3x2 transform)
 
     public PathFigure MoveTo(double x, double y)
     {
-        var ret = new PathFigure();
+        var ret = new PathFigure(){IsClosed = true};
         ret.StartPoint = TransformToPoint(x, y);
         return ret;
     }
@@ -115,5 +115,13 @@ public readonly struct ScaledDrawContext(DrawingContext dc, Matrix3x2 transform)
     public void Draw(PathGeometry figure, Pen? pen, Brush? brush)
     {
         dc.DrawGeometry(brush, pen, figure);
+    }
+
+    public void CubicCurveTo(PathFigure figure, float control1X, float control1Y, float control2X, float control2Y, float endPointX, float endPointY)
+    {
+        figure.Segments.Add(new BezierSegment(
+            TransformToPoint(control1X, control1Y),
+            TransformToPoint(control2X, control2Y),
+            TransformToPoint(endPointX, endPointY), true));
     }
 }

@@ -7,7 +7,7 @@ internal ref struct SplineDrawer
 {
     CapturedPoint lastPoint;
     private bool lastOnCurve = true;
-    PathFigure figure;
+    private readonly PathFigure figure;
     private readonly ScaledDrawContext dc;
     private readonly CapturedPoint initialPoint;
 

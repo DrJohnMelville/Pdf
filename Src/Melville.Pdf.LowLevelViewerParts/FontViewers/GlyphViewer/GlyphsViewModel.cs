@@ -28,11 +28,13 @@ public partial class GlyphsViewModel
 
 
     private async void LoadNewGlyph()
-    {
+    {           //something is wrong with the glyphrecorder factory 
+                // makes the lengths inconsistent
             var newGlyph = GlyphRecorderFactory.GetRecorder();
             await GlyphSource.RenderGlyphInEmUnitsAsync(
                 (uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
-            GlyphRecorderFactory.ReturnRecorder(Glyph);
+           var oldGlyph = Glyph;
             Glyph = newGlyph;
+//            GlyphRecorderFactory.ReturnRecorder(oldGlyph);
     }
 }

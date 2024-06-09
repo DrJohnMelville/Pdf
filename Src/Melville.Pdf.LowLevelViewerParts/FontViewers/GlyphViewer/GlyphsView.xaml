@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
         <viewFrames:ViewFrame HorizontalAlignment="Center" Content="{Binding PageSelector}" />
         <DataGrid Grid.Row="1" ItemsSource="{Binding Glyph}" IsReadOnly="True" Margin="0 0 5 0"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False" SelectionUnit="FullRow" SelectionMode="Single" Name="PointSource">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="X" Binding="{Binding X}" />
                 <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
@@ -51,7 +51,9 @@
                                  ControlPoints="{Binding ControlPoints}"
                                  PhantomPoints="{Binding PhantomPoints}"
                                  Outline="{Binding Outline}"
-                                 Fill="{Binding Fill}"/>
+                                 Fill="{Binding Fill}"
+                                 MaxIndex="{Binding SelectedIndex, ElementName=PointSource}"
+                                 />
         </DockPanel>
     </Grid>
 </UserControl>
