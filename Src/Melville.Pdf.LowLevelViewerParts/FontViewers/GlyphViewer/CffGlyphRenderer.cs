@@ -70,9 +70,14 @@ public class CffGlyphPainter(
     private PathGeometry geometry = new PathGeometry(){FillRule = FillRule.Nonzero};
     private PathFigure? figure;
 
+    public void Operator(CharStringOperators opCode, Span<DictValue> stack)
+    {
+    }
+
     public void Paint(int maxIndex)
     {
         scaled.DrawRectangle(null, bboxPen, new Rect(0,0, 1, 1));
+        if (glyph is null) return;
         foreach (var action in glyph.Output.Take(
                      maxIndex >= 0?maxIndex+1:int.MaxValue))
         {

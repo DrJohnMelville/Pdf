@@ -98,7 +98,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
         if (!(source.TryRead(out var b1) && source.TryRead(out var b2)
                                          && source.TryRead(out var b3) && source.TryRead(out var b4))) 
             return;
-        PushOperand(new DictValue((b1 << 24) | (b2 << 16) | (b3 << 8) + b4));
+        PushOperand(new DictValue((b1 << 24) | (b2 << 16) | (b3 << 8) | b4));
     }
 
     private bool IsOperator(byte b) => b < 22;
@@ -114,7 +114,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     {
         if (!source.TryRead(out var b1))
             return;
-        PushOperand(new DictValue(-(value - 251) * 256 - b1 - 108));
+        PushOperand(new DictValue((251-value) * 256 - b1 - 108));
     }
 
     private void Parse2ByteInteger(byte value)

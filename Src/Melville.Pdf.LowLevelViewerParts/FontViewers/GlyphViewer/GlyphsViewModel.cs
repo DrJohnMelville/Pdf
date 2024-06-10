@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 public partial class GlyphsViewModel
 {
     [FromConstructor] public TrueTypeGlyphSource GlyphSource { get; }
-    [AutoNotify] private GlyphRecorder glyph = GlyphRecorderFactory.GetRecorder();
+    [AutoNotify] private GlyphRecorder? glyph = GlyphRecorderFactory.GetRecorder();
     [AutoNotify] private bool unitSquare = true;
     [AutoNotify] private bool boundingBox = true;
     [AutoNotify] private bool points = true;
@@ -26,15 +26,14 @@ public partial class GlyphsViewModel
         LoadNewGlyph();
     }
 
-
     private async void LoadNewGlyph()
-    {           //something is wrong with the glyphrecorder factory 
-                // makes the lengths inconsistent
-            var newGlyph = GlyphRecorderFactory.GetRecorder();
-            await GlyphSource.RenderGlyphInEmUnitsAsync(
-                (uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
-           var oldGlyph = Glyph;
-            Glyph = newGlyph;
-//            GlyphRecorderFactory.ReturnRecorder(oldGlyph);
+    {
+        var newGlyph = Glyph;
+        newGlyph.Reset();
+        await GlyphSource.RenderGlyphInEmUnitsAsync(
+            (uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
+        Glyph = null;
+        Glyph = newGlyph;
+        Glyph.NotifyNewData();
     }
 }

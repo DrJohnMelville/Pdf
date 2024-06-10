@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Specialized;
 using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
@@ -8,7 +9,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 /// it can do so with amortized zero allocations.
 /// </summary>
 public class GlyphRecorder :
-    ITrueTypePointTarget, IReadOnlyList<CapturedPoint>
+    ITrueTypePointTarget, IReadOnlyList<CapturedPoint>, INotifyCollectionChanged
 {
     private readonly IRecorderAllocator allocator;
 
@@ -53,13 +54,18 @@ public class GlyphRecorder :
         data = newData;
     }
 
-    internal void Reset()
+    public void Reset()
     {
         Count = 0;
         allocator.Free(data);
         data = [];
     }
 
+    private static NotifyCollectionChangedEventArgs reset = new(NotifyCollectionChangedAction.Reset);
+    /// <summary>
+    /// Notify the WPF binding system that the data has changed.
+    /// </summary>
+    public void NotifyNewData() => CollectionChanged?.Invoke(this, reset);
     #endregion
 
     /// <summary>
@@ -129,4 +135,6 @@ public class GlyphRecorder :
             throw new ArgumentOutOfRangeException("Index out of used range");
 
     #endregion
+
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
 }

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Net.Sockets;
+using System.Numerics;
 using System.Text;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
@@ -37,21 +38,44 @@ public partial class CffGlyphViewModel
 
 public class CffGlyphBuffer : ICffGlyphTarget
 {
-    public List<ICffAction> Output { get; } = new();
+    public  List<ICffAction> Output { get; } = new();
+
+    public void Operator(CharStringOperators opCode, Span<DictValue> stack)
+    {
+        AddInstr(new CffOperator(opCode, stack));
+    }
+
+    private void AddInstr(ICffAction action) => Output.Add(action);
 
     public void RelativeCharWidth(float delta) => 
-        Output.Add(new CffCharWidthAction(delta));
+        AddInstr(new CffCharWidthAction(delta));
 
-    public void MoveTo(Vector2 point) => Output.Add(new CffMoveToAction(point));
-    public void LineTo(Vector2 point) => Output.Add(new CffLineToAction(point));
+    public void MoveTo(Vector2 point) => AddInstr(new CffMoveToAction(point));
+    public void LineTo(Vector2 point) => AddInstr(new CffLineToAction(point));
     public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
-        Output.Add(new CffCurveToAction(control1, control2, endPoint));
-    public void EndGlyph() => Output.Add(new CffEndGlyphAction());
+        AddInstr(new CffCurveToAction(control1, control2, endPoint));
+    public void EndGlyph() => AddInstr(new CffEndGlyphAction());
 }
 
 public interface ICffAction
 {
     void Execute(ICffGlyphTarget target);
+}
+
+public class CffOperator: ICffAction
+{
+    private string result;
+
+    public CffOperator(CharStringOperators opCode, Span<DictValue> stack)
+    {
+        result = $"## {opCode}({string.Join(", ", stack.ToArray().Select(i => i.ToString()))})";
+    }
+
+    public void Execute(ICffGlyphTarget target)
+    {
+    }
+
+    public override string ToString() => result;
 }
 
 public class CffCharWidthAction : ICffAction
@@ -76,26 +100,16 @@ public class CffMoveToAction : ICffAction
     public override string ToString() => $"MoveTo ({point})";
 }
 
-public class CffLineToAction : ICffAction
+public class CffLineToAction(Vector2 point) : ICffAction
 {
-    private readonly Vector2 point;
-
-    public CffLineToAction(Vector2 point) => this.point = point;
-
     public void Execute(ICffGlyphTarget target) => target.LineTo(point);
 
     public override string ToString() => $"LineTo ({point})";
 }
 
-public class CffCurveToAction : ICffAction
+public class CffCurveToAction(
+    Vector2 control1, Vector2 control2, Vector2 endPoint) : ICffAction
 {
-    private readonly Vector2 control1;
-    private readonly Vector2 control2;
-    private readonly Vector2 endPoint;
-
-    public CffCurveToAction(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
-        (this.control1, this.control2, this.endPoint) = (control1, control2, endPoint);
-
     public void Execute(ICffGlyphTarget target) => target.CurveTo(control1, control2, endPoint);
 
     public override string ToString() => $"CurveTo ({control1}, {control2}, {endPoint})";

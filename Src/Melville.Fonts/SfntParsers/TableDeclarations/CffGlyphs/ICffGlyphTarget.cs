@@ -7,6 +7,11 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs
     /// </summary>
     public interface ICffGlyphTarget
     {
+        public string PrintStack(Span<DictValue> stack) =>
+            string.Join(", ", stack.ToArray().Select(i => i.ToString()));
+
+        void Operator(CharStringOperators opCode, Span<DictValue> stack);
+
         /// <summary>
         /// Report the difference between the default glyph width and this glyph's width.
         /// </summary>

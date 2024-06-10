@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
+using System.Net.Sockets;
 using System.Numerics;
+using System.Text;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SpanAndMemory;
@@ -74,12 +76,15 @@ internal partial class CffInstructionExecutor: IDisposable
 
     private int stackSize;
     public ref int StackSize => ref stackSize;
+
     public float CurrentX {get; private set;}
     public float CurrentY {get; private set; }
     public int HintCount { get; private set; }
 
+
     private ValueTask<int> ExecuteInstructionAsync(CharStringOperators instruction)
     {
+        target.Operator(instruction, CurrentStackSpan);
         switch (instruction)
         {
             case CharStringOperators.CallSubr: return CallSubr(localSubroutines);
@@ -273,46 +278,20 @@ internal partial class CffInstructionExecutor: IDisposable
             target.LineTo(IncrementCurrentPointFrom(span, i));
     }
 
-    private void DoHLineTo()
+    private void DoHLineTo() => AlternatingLines(true);
+    private void DoVLineTo() => AlternatingLines(false);
+
+    private void AlternatingLines(bool horizontal)
     {
-        if (StackSize % 2 == 1)
+        foreach (var offset in CurrentStackSpan)
         {
-            target.LineTo(IncrementCurrentPoint(Stack[0].FloatValue, 0));
-            VerticalCorners(Stack.AsSpan(1, StackSize - 1));
-        }else
-        {
-            HorizontalCorners(Stack.AsSpan());
+            target.LineTo(horizontal
+                ? IncrementCurrentPoint(offset.IntValue, 0)
+                : IncrementCurrentPoint(0, offset.IntValue));
+            horizontal = !horizontal;
         }
     }
 
-    private void VerticalCorners(Span<DictValue> coordinates)
-    {
-        for (int i = 0; i < coordinates.Length; i+=2)
-        {
-            target.LineTo(IncrementCurrentPoint(0, coordinates[i].FloatValue));
-            target.LineTo(IncrementCurrentPoint(coordinates[i+1].FloatValue, 0));
-        }
-    }
-    private void HorizontalCorners(Span<DictValue> coordinates)
-    {
-        for (int i = 0; i < coordinates.Length; i+=2)
-        {
-            target.LineTo(IncrementCurrentPoint(coordinates[i].FloatValue, 0));
-            target.LineTo(IncrementCurrentPoint(0, coordinates[i+1].FloatValue));
-        }
-    }
-
-    private void DoVLineTo()
-    {
-        if (StackSize % 2 == 1)
-        {
-            target.LineTo(IncrementCurrentPoint(0, Stack[0].FloatValue));
-            HorizontalCorners(Stack.AsSpan(1, StackSize - 1));
-        }else
-        {
-            VerticalCorners(Stack.AsSpan());
-        }
-    }
 
     private void DoRRCurveTo(Span<DictValue> source)
     {
@@ -353,15 +332,20 @@ internal partial class CffInstructionExecutor: IDisposable
     }
 
 
-    private void DrawHorizontalCurve(int index, float beginY = 0, float endY = 0) =>
-        target.CurveTo(IncrementCurrentPoint(Stack[index].FloatValue, beginY),
-            IncrementCurrentPointFrom(index+1),
-            IncrementCurrentPoint(Stack[index+3].FloatValue, endY));
-    
-    private void DrawVerticalCurve(int index, float beginX = 0, float endY = 0) =>
+    private void DrawHorizontalCurve(int index, float beginY = 0)
+    {
+        var start = IncrementCurrentPoint(0, 0);
+        var c1 = IncrementCurrentPoint(
+            Stack[index].FloatValue, beginY);
+        var c2 = IncrementCurrentPointFrom(index + 1);
+        var final = IncrementCurrentPoint(Stack[index + 3].FloatValue, 0);
+        target.CurveTo(c1, c2, final);
+    }
+
+    private void DrawVerticalCurve(int index, float beginX = 0) =>
         target.CurveTo(IncrementCurrentPoint(beginX, Stack[index].FloatValue),
             IncrementCurrentPointFrom(index+1),
-            IncrementCurrentPoint(endY,Stack[index+3].FloatValue));
+            IncrementCurrentPoint(0,Stack[index+3].FloatValue));
 
     private void DoHVCurveTo() => AlternatingHVCurves(true);
     private void DoVHCurveTo() => AlternatingHVCurves(false);
@@ -372,11 +356,25 @@ internal partial class CffInstructionExecutor: IDisposable
         {
             var finalOffset = CheckForAdditionalTrailingOffset(i);
             if (horizontal)
-                DrawHorizontalCurve(i, 0, finalOffset);
+                DrawHorizontalToVerticalkCurve(i, finalOffset);
             else
-                DrawVerticalCurve(i, 0, finalOffset);
+                DrawVerticalToHorizontalCurve(i, finalOffset);
             horizontal = !horizontal;
         }
+    }
+
+    private void DrawHorizontalToVerticalkCurve(int i, float finalOffset)
+    {
+        target.CurveTo(IncrementCurrentPoint(Stack[i].FloatValue, 0),
+            IncrementCurrentPointFrom(i+1),
+            IncrementCurrentPoint(finalOffset, Stack[i+3].FloatValue));
+    }
+
+    private void DrawVerticalToHorizontalCurve(int i, float finalOffset)
+    {
+        target.CurveTo(IncrementCurrentPoint(0, Stack[i].FloatValue),
+            IncrementCurrentPointFrom(i+1),
+            IncrementCurrentPoint(Stack[i+3].FloatValue, finalOffset));
     }
 
     private float CheckForAdditionalTrailingOffset(int i)

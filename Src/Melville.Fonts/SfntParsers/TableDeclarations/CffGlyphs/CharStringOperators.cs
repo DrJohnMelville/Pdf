@@ -1,6 +1,6 @@
 ﻿namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal enum CharStringOperators
+public enum CharStringOperators
 {
     HStem = 0x01,
     VStem = 0x03,
