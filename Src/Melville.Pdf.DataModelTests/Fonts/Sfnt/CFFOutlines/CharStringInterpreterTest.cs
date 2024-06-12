@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -18,6 +19,13 @@ public class CharStringInterpreterTest
     private readonly Mock<IGlyphSubroutineExecutor> globalSubrs = new();
     private readonly Mock<IGlyphSubroutineExecutor> localSubrs = new();
 
+    private IFontDictExecutorSelector CreateSel(Mock<IGlyphSubroutineExecutor> ex)
+    {
+        var ret = new Mock<IFontDictExecutorSelector>();
+        ret.Setup(i => i.GetExecutor(It.IsAny<uint>())).Returns(ex.Object);
+        return ret.Object;
+    }
+
     private async Task<CffGlyphSource> CreateAsync(string hex)
     {
         var bytes = hex.BitsFromHex();
@@ -26,8 +34,9 @@ public class CharStringInterpreterTest
         var source = MultiplexSourceFactory.Create(buffer);
         var index = await new CFFIndexParser(source, 
                 new ByteSource(source.ReadPipeFrom(0)))
-            .ParseAsync();
-        return new CffGlyphSource(index, globalSubrs.Object, localSubrs.Object, 1);
+            .ParseCff1Async();
+        return new CffGlyphSource(index, 
+            CreateSel(globalSubrs), CreateSel(localSubrs), 1);
     }
 
     private Task ExecuteInstructionAsync(string code) =>
@@ -35,7 +44,7 @@ public class CharStringInterpreterTest
     private async Task ExecuteInstructionAsync(string code, Matrix3x2 mat)
     {
         var sut = await CreateAsync(code);
-        await sut.RenderGlyph(0, target.Object, mat);
+        await sut.RenderGlyphAsync(0, target.Object, mat);
     }
 
     [Fact]
@@ -409,14 +418,14 @@ public class CharStringInterpreterTest
     public async Task CallSubroutineTestAsync()
     {
         await ExecuteInstructionAsync("1c0002 0A");
-        localSubrs.Verify(i=>i.Call(2,
+        localSubrs.Verify(i=>i.CallAsync(2,
             It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()));
     }
     [Fact]
     public async Task CallGlobalSubroutineTestAsync()
     {
         await ExecuteInstructionAsync("1c0002 1D");
-        globalSubrs.Verify(i=>i.Call(2,
+        globalSubrs.Verify(i=>i.CallAsync(2,
             It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()));
     }
 }

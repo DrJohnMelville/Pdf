@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
@@ -127,10 +128,18 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        if (FindTable(SFntTableName.GlyphData) is { } trueType)
             return LoadTrueTypeGlyphSourceAsync(trueType);
        if (FindTable(SFntTableName.CFF) is {} cff)
-            return LoadCffGlyphSourceAsync(cff);
+           return LoadCffGlyphSourceAsync(cff);
+       if (FindTable(SFntTableName.CFF2) is {} cff2)
+           return LoadCff2GlyphSourceAsync(cff2);
        throw new NotImplementedException("Cannot find Glyph Source");
    }
 
+   private async Task<IGlyphSource> LoadCff2GlyphSourceAsync(TableRecord cff)
+   {
+       var head = await HeadTableAsync().CA();
+       var parser = new Cff2GlyphSourceParser(source.OffsetFrom(cff.Offset));
+       return await parser.ParseAsync().CA();
+   }
    private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
    {
        var head = await HeadTableAsync().CA();

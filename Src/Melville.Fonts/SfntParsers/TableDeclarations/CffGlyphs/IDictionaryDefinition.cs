@@ -9,7 +9,8 @@ internal enum DictParserOperations
     SingleFloat = 4,
     OneByteInteger = 5,
     TwoBytePositiveInteger = 6,
-    TwoByteNegativeInteger = 7
+    TwoByteNegativeInteger = 7,
+    FiveByteFixed=8
 }
 
 internal interface IDictionaryDefinition
@@ -23,10 +24,10 @@ internal struct CffDictionaryDefinition: IDictionaryDefinition
         data switch
         {
             12 => DictParserOperations.TwoByteInstruction,
-            <22 => DictParserOperations.OneByteInstruction,
             28 => DictParserOperations.RawTwoByteInteger,
             29 => DictParserOperations.FiveByteInteger,
             30 => DictParserOperations.SingleFloat,
+            <32 => DictParserOperations.OneByteInstruction,
             <247 => DictParserOperations.OneByteInteger,
             <251 => DictParserOperations.TwoBytePositiveInteger,
             <255 => DictParserOperations.TwoByteNegativeInteger,
@@ -46,7 +47,7 @@ internal struct CharString2Definition: IDictionaryDefinition
             <247 => DictParserOperations.OneByteInteger,
             <251 => DictParserOperations.TwoBytePositiveInteger,
             <255 => DictParserOperations.TwoByteNegativeInteger,
-            255 => DictParserOperations.FiveByteInteger,
+            255 => DictParserOperations.FiveByteFixed,
         };
 
 }

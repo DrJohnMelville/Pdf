@@ -8,6 +8,23 @@ using Melville.Parsing.SpanAndMemory;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
+internal interface ICffInstructionSet
+{
+    static abstract CharStringOperators Operator(int instruction);
+}
+
+internal class CffInstructionSet : ICffInstructionSet
+{
+    public static CharStringOperators Operator(int instruction) =>
+        (CharStringOperators)instruction;
+}
+
+internal class Cff2InstructionSet : ICffInstructionSet
+{
+    public static CharStringOperators Operator(int instruction) =>
+        (CharStringOperators)instruction;
+}
+
 #warning this class needs allocation free implementation
 internal partial class CffInstructionExecutor: IDisposable
 {
@@ -21,13 +38,11 @@ internal partial class CffInstructionExecutor: IDisposable
     [FromConstructor] private readonly Matrix3x2 transform;
     [FromConstructor] private readonly IGlyphSubroutineExecutor globalSuboutines;
     [FromConstructor] private readonly IGlyphSubroutineExecutor localSubroutines;
-    private DictValue[] Stack { get; set; }
-    private float[] storedValues;
+    private DictValue[] Stack { get;} = ArrayPool<DictValue>.Shared.Rent(MaximumCffInstructionOperands);
+    private readonly float[] storedValues = ArrayPool<float>.Shared.Rent(MamimumTransientArraySize);
 
     partial void OnConstructed()
     {
-        Stack = ArrayPool<DictValue>.Shared.Rent(MaximumCffInstructionOperands);
-        storedValues = ArrayPool<float>.Shared.Rent(MamimumTransientArraySize);
         StackSize = 0;
         CurrentX = CurrentY = HintCount = 0;
     }
@@ -46,18 +61,25 @@ internal partial class CffInstructionExecutor: IDisposable
 
     public async ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence)
     {
-        while (ReadInstruction(ref sourceSequence, out var instruction))
+        try
         {
-            var skipBytes =await ExecuteInstructionAsync(
-                (CharStringOperators)instruction).CA();
-            switch (skipBytes)
+            while (ReadInstruction(ref sourceSequence, out var instruction))
             {
-                case <0: return;
-                case >0: 
-                    sourceSequence = sourceSequence.Slice(skipBytes);
-                    break;
+                var skipBytes =await ExecuteInstructionAsync(
+                    (CharStringOperators)instruction).CA();
+                switch (skipBytes)
+                {
+                    case <0: return;
+                    case >0: 
+                        sourceSequence = sourceSequence.Slice(skipBytes);
+                        break;
+                }
             }
         }
+        catch (Exception )
+        {
+        }
+
     }
 
     private bool ReadInstruction(ref ReadOnlySequence<byte> source, out int instruction)
@@ -84,11 +106,13 @@ internal partial class CffInstructionExecutor: IDisposable
 
     private ValueTask<int> ExecuteInstructionAsync(CharStringOperators instruction)
     {
+#if DEBUG
         target.Operator(instruction, CurrentStackSpan);
+#endif
         switch (instruction)
         {
-            case CharStringOperators.CallSubr: return CallSubr(localSubroutines);
-            case CharStringOperators.CallGSubr: return CallSubr(globalSuboutines);
+            case CharStringOperators.CallSubr: return CallSubrAsync(localSubroutines);
+            case CharStringOperators.CallGSubr: return CallSubrAsync(globalSuboutines);
             case CharStringOperators.IfElse: return DoIfAsync();
             case CharStringOperators.Eq: return FuncAsync((i,j)=>i==j?1f:0f);
             case CharStringOperators.Not: return DoNotAsync();
@@ -108,8 +132,8 @@ internal partial class CffInstructionExecutor: IDisposable
             case CharStringOperators.Negative: return FuncAsync((i) => -i);
             case CharStringOperators.Abs: return FuncAsync(Math.Abs);
             case CharStringOperators.Sqrt: return FuncAsync(i=>(float)Math.Sqrt(i));
-            case CharStringOperators.HintMask: return DoHintMask();
-            case CharStringOperators.CntrMask: return DoHintMask();
+            case CharStringOperators.HintMask: return DoHintMaskAsync();
+            case CharStringOperators.CntrMask: return DoHintMaskAsync();
             case CharStringOperators.HStem: DoHintWithWidth(); break;
             case CharStringOperators.HStemHM: DoHintWithWidth(); break;
             case CharStringOperators.VStem: DoHintWithWidth(); break;
@@ -131,8 +155,8 @@ internal partial class CffInstructionExecutor: IDisposable
             case CharStringOperators.HFlex: DoHFlex(); break;
             case CharStringOperators.HFlex1: DoHFlex1(); break;
             case CharStringOperators.Flex1: DoFlex1(); break;
-            case CharStringOperators.EndChar: return SendEndGlyph();
-            case CharStringOperators.Return: return ReturnFromSubroutine();
+            case CharStringOperators.EndChar: return SendEndGlyphAsync();
+            case CharStringOperators.Return: return ReturnFromSubroutineAsync();
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
         }
@@ -144,11 +168,11 @@ internal partial class CffInstructionExecutor: IDisposable
     #region Language Elements
 
 
-    private async ValueTask<int> CallSubr(
+    private async ValueTask<int> CallSubrAsync(
         IGlyphSubroutineExecutor glyphSubroutineExecutor)
     {
         StackSize--;
-        await glyphSubroutineExecutor.Call(Stack[StackSize].IntValue, 
+        await glyphSubroutineExecutor.CallAsync(Stack[StackSize].IntValue, 
             ExecuteInstructionSequenceAsync).CA();
         return 0;
     }
@@ -236,7 +260,7 @@ internal partial class CffInstructionExecutor: IDisposable
 
     #region Hints
 
-    private ValueTask<int> DoHintMask()
+    private ValueTask<int> DoHintMaskAsync()
     {
         DoHintWithWidth();
         StackSize = 0;
@@ -506,14 +530,14 @@ internal partial class CffInstructionExecutor: IDisposable
         }
     }
     
-    private ValueTask<int> SendEndGlyph()
+    private ValueTask<int> SendEndGlyphAsync()
     {
         if (StackSize > 0)
             target.RelativeCharWidth(Stack[0].FloatValue);
         target.EndGlyph();
         return ValueTask.FromResult(-1);
     }
-    private ValueTask<int> ReturnFromSubroutine() => ValueTask.FromResult(-2);
+    private ValueTask<int> ReturnFromSubroutineAsync() => ValueTask.FromResult(-2);
 
     private float MinimumDistance(Vector2 lineStart, Vector2 lineEnd, Vector2 point)
     {

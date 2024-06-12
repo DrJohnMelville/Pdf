@@ -31,7 +31,7 @@ public partial class CffGlyphViewModel
     private async void LoadNewGlyph()
     {
         var renderTemp = new CffGlyphBuffer();
-        await GlpyhSource.RenderGlyph((uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
+        await GlpyhSource.RenderGlyphAsync((uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
         RenderedGlyph = renderTemp;
     }
 }

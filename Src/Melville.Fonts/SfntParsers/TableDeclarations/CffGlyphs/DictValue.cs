@@ -41,6 +41,7 @@ public readonly struct DictValue
     /// </summary>
     public float FloatValue => isInt?Convert.ToSingle(intValue):floatValue;
 
+    /// <inheritdoc />
     public override string ToString() => isInt?intValue.ToString():
         floatValue.ToString()+"f";
 }

@@ -42,11 +42,9 @@ public partial class CffGlyphRenderer: FrameworkElement
         var scaled = new ScaledDrawContext(drawingContext, matrix);
 
         new CffGlyphPainter(scaled, 
-            UnitSquare ? new Pen(Brushes.LightGray, 1): null, 
-            BoundingBox ? new Pen(Brushes.LightBlue, 1) : null,
+            UnitSquare ? new Pen(Brushes.LightGray, 1): null,
             Points ? Brushes.Red: null,
             ControlPoints ? Brushes.Blue : null,
-            PhantomPoints ? Brushes.Green : null,
             Outline ? new Pen(Brushes.Black, 1)  : null, 
             Fill ? Brushes.Black : null,
             Glyph).Paint(MaxIndex);
@@ -58,10 +56,8 @@ public partial class CffGlyphRenderer: FrameworkElement
 public class CffGlyphPainter(
     ScaledDrawContext scaled, 
     Pen? unitPen, 
-    Pen? bboxPen, 
     Brush? pointBrush, 
     Brush? controlPointBrush, 
-    Brush? phantomPointBrush, 
     Pen? glyphPen, 
     Brush? glyphBrush, 
     CffGlyphBuffer glyph):ICffGlyphTarget
@@ -76,7 +72,7 @@ public class CffGlyphPainter(
 
     public void Paint(int maxIndex)
     {
-        scaled.DrawRectangle(null, bboxPen, new Rect(0,0, 1, 1));
+        scaled.DrawRectangle(null, unitPen, new Rect(0,0, 1, 1));
         if (glyph is null) return;
         foreach (var action in glyph.Output.Take(
                      maxIndex >= 0?maxIndex+1:int.MaxValue))

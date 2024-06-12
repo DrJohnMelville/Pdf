@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.InteropServices.JavaScript;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;

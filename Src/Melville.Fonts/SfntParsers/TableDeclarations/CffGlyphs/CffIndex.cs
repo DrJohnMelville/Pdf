@@ -35,31 +35,34 @@ internal readonly partial struct CffIndex
 
 internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
 {
-    public async ValueTask<CffIndex> ParseAsync()
+    public ValueTask<CffIndex> ParseCff1Async() => InnerParseAsync(2);
+    public ValueTask<CffIndex> ParseCff2Async() => InnerParseAsync(4);
+
+    private async ValueTask<CffIndex> InnerParseAsync(int sizeWidth)
     {
-        var data = await pipe.ReadAtLeastAsync(3).CA();
-        var (count, offsetSize) = ParseData(data.Buffer);
+        var count = (uint)await pipe.ReadBigEndianUintAsync(sizeWidth).CA();
+        var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
         if (count == 0) return new CffIndex(root, 0, 0);
         var rootSource = root.OffsetFrom((uint)pipe.Position);
-        await pipe.SkipOverAsync(count * offsetSize).CA();
+        await pipe.SkipOverAsync((int)count * offsetSize).CA();
         var dataLength = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         await pipe.SkipOverAsync((int)(dataLength-1)).CA();
         return new CffIndex(rootSource, count, offsetSize);
     }
 
-    private (ushort Count, byte offsetSize) ParseData(ReadOnlySequence<byte> bytes)
-    {
-        var reader = new SequenceReader<byte>(bytes);
-        var count = reader.ReadBigEndianUint16();
-        if (count == 0)
-        {
-            pipe.AdvanceTo(reader.Position);
-            return new (0, 0);
-        }
-        var offSize = reader.ReadBigEndianUint8();
-        pipe.AdvanceTo(reader.Position);
-        return (count, offSize);
-    }
+    // private (ushort Count, byte offsetSize) ParseData(ReadOnlySequence<byte> bytes)
+    // {
+    //     var reader = new SequenceReader<byte>(bytes);
+    //     var count = reader.ReadBigEndianUint16();
+    //     if (count == 0)
+    //     {
+    //         pipe.AdvanceTo(reader.Position);
+    //         return new (0, 0);
+    //     }
+    //     var offSize = reader.ReadBigEndianUint8();
+    //     pipe.AdvanceTo(reader.Position);
+    //     return (count, offSize);
+    // }
 }
 
 internal static class NumberFromByteSourceImpl

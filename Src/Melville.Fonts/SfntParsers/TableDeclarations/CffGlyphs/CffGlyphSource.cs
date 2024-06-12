@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Numerics;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -10,20 +11,20 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 public class CffGlyphSource : IGlyphSource
 {
     private readonly CffIndex glyphs;
-    private readonly IGlyphSubroutineExecutor globalSubrs;
-    private readonly IGlyphSubroutineExecutor localSubrs;
+    private readonly IFontDictExecutorSelector globalSubrs;
+    private readonly IFontDictExecutorSelector localSubrs;
     private readonly Matrix3x2 glyphUnitAdjuster;
 
     internal CffGlyphSource(
         CffIndex glyphs, 
-        IGlyphSubroutineExecutor globalSubrs, 
-        IGlyphSubroutineExecutor localSubrs,
-        uint unitsPerEm)
+        IFontDictExecutorSelector globalSubrs, 
+        IFontDictExecutorSelector localSubrs,
+        in Matrix3x2 glyphUnitAdjustment)
     {
         this.glyphs = glyphs;
         this.globalSubrs = globalSubrs;
         this.localSubrs = localSubrs;
-        glyphUnitAdjuster = Matrix3x2.CreateScale(1f/unitsPerEm);
+        glyphUnitAdjuster = glyphUnitAdjustment;
     }
 
     /// <inheritdoc />
@@ -35,12 +36,12 @@ public class CffGlyphSource : IGlyphSource
     /// <param name="glyph">The glyph number</param>
     /// <param name="target">The target to draw to</param>
     /// <param name="transform">The transform matrix for the glyph rendering</param>
-    public async ValueTask RenderGlyph(uint glyph, ICffGlyphTarget target, Matrix3x2 transform)
+    public async ValueTask RenderGlyphAsync(uint glyph, ICffGlyphTarget target, Matrix3x2 transform)
     {
         if (glyph > GlyphCount) glyph = 0;
         var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
         using var engine = new CffInstructionExecutor(
-            target, glyphUnitAdjuster*transform, globalSubrs, localSubrs);
+            target, glyphUnitAdjuster*transform, globalSubrs.GetExecutor(glyph), localSubrs.GetExecutor(glyph));
 
         await engine.ExecuteInstructionSequenceAsync(sourceSequence).CA();
    }

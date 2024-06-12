@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 
@@ -6,14 +7,14 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 internal interface IGlyphSubroutineExecutor
 {
-    ValueTask Call(int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute);
+    ValueTask CallAsync(int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute);
 }
 
-internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
+internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor, IFontDictExecutorSelector
 {
     [FromConstructor] private readonly CffIndex subroutines;
 
-    public async ValueTask Call(
+    public async ValueTask CallAsync(
         int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute)
     {
         var data = await subroutines.ItemDataAsync(subroutine+Bias()).CA();
@@ -26,4 +27,6 @@ internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
         < 33900 => 1131,
         _ => 32768
     };
+
+    public IGlyphSubroutineExecutor GetExecutor(uint glyph) => this;
 }

@@ -26,7 +26,7 @@ public static class SpecialTableParser
     {
         try
         {
-            if (record.Tag is SFntTableName.GlyphData or SFntTableName.CFF)
+            if (IsGlyphTable(record))
             {
                 return await font.GetGlyphSourceAsync() switch
                 {
@@ -40,6 +40,14 @@ public static class SpecialTableParser
         {
         }
         return null;
+    }
+
+    private static bool IsGlyphTable(TableRecord record)
+    {
+        return record.Tag is 
+            SFntTableName.GlyphData or 
+            SFntTableName.CFF or
+            SFntTableName.CFF2;
     }
 
     private static async Task<object> TablesWithHexDumpsAsync(TableRecord record, SFnt font)

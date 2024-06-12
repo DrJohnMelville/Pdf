@@ -52,6 +52,9 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
                 case DictParserOperations.TwoByteNegativeInteger:
                     ParseNegativeTwoByteInteger(value);
                     break;
+                case DictParserOperations.FiveByteFixed:
+                    ReadFiveByteFixed();
+                    break;
                 default:
                     throw new InvalidDataException("Unknown Dict Operator");
             }
@@ -95,10 +98,33 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 
     private void ReadFiveByteInteger()
     {
-        if (!(source.TryRead(out var b1) && source.TryRead(out var b2)
-                                         && source.TryRead(out var b3) && source.TryRead(out var b4))) 
+        if (TryRead5ByteInt(out var intValue))
+        {
             return;
-        PushOperand(new DictValue((b1 << 24) | (b2 << 16) | (b3 << 8) | b4));
+        }
+        PushOperand(new DictValue(intValue));
+    }
+
+    private bool TryRead5ByteInt(out int intValue)
+    {
+        if (!(source.TryRead(out var b1) && source.TryRead(out var b2)
+                                         && source.TryRead(out var b3) && source.TryRead(out var b4)))
+        {
+            intValue = 0;
+            return true;
+        }
+        intValue = (b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
+        return false;
+    }
+
+    private const float fixedFactor = 1.0f / 0x10000;
+    private void ReadFiveByteFixed()
+    {
+        if (TryRead5ByteInt(out var intValue))
+        {
+            return;
+        }
+        PushOperand(new DictValue(intValue*fixedFactor));
     }
 
     private bool IsOperator(byte b) => b < 22;

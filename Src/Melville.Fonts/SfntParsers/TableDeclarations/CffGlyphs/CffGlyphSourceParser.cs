@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.Numerics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -15,10 +16,10 @@ internal readonly struct CffGlyphSourceParser(
         var pipe = new ByteSource(source.ReadPipeFrom(0));
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
-        var nameIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        var topIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        var stringIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
-        var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseAsync().CA();
+        var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
 
 
         var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
@@ -27,13 +28,13 @@ internal readonly struct CffGlyphSourceParser(
             out var privateOffset, out var privateSize);
         
         await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();
-        var charStringsIndex= await new CFFIndexParser(source, pipe).ParseAsync().CA();
+        var charStringsIndex= await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
 
         var privateSubrs = await GetrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
 
         return new CffGlyphSource(charStringsIndex, 
             new GlyphSubroutineExecutor(globalSubrIndex), 
-            new GlyphSubroutineExecutor(privateSubrs), unitsPerEm);
+            new GlyphSubroutineExecutor(privateSubrs), Matrix3x2.CreateScale(1f/unitsPerEm));
     }
 
     private async ValueTask<CffIndex> GetrivateSubrsAsync(ByteSource pipe, int privateOffset, int privateSize)
@@ -46,7 +47,7 @@ internal readonly struct CffGlyphSourceParser(
         if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0);
 
         await pipe.AdvanceToLocalPositionAsync(privateSubrsOffset+privateOffset).CA();
-        return await new CFFIndexParser(source, pipe).ParseAsync().CA();
+        return await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
     }
 
     // Per Adobe Techical Note 5176 page 24

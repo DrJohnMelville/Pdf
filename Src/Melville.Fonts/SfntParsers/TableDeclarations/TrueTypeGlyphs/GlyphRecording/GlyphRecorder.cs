@@ -54,6 +54,9 @@ public class GlyphRecorder :
         data = newData;
     }
 
+    /// <summary>
+    /// Reset the recorder to its empty state.
+    /// </summary>
     public void Reset()
     {
         Count = 0;
@@ -136,5 +139,6 @@ public class GlyphRecorder :
 
     #endregion
 
+    /// <inheritdoc />
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 }

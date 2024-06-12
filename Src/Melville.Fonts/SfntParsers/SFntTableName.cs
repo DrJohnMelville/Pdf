@@ -44,4 +44,9 @@ public class SFntTableName
     /// Table name 'CFF '
     /// </summary>
     public const uint CFF = 0x43464620;
+
+    /// <summary>
+    /// Table name 'CFF2'
+    /// </summary>
+    public const uint CFF2 = 0x43464632;
 }
