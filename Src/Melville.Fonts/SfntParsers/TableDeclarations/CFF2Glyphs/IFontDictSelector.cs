@@ -1,7 +1,9 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
@@ -39,13 +41,20 @@ internal partial class NullExecutorSelector :
      }
 }
 
-internal readonly struct FontDictSelectParser(IMultiplexSource source, int offset)
+internal readonly struct FontDictSelectParser(
+    IMultiplexSource source, int offset, uint glyphCount)
 {
     public ValueTask<IFontDictSelector> ParseAsync()
     {
-        if (offset != 0)
-            throw new NotImplementedException("need to implement FontDictSelect parsing");
-        #warning need to implement FontDictSelect parsing
-        return new(EmptySelector.Instance);
+        if (offset == 0) return new(EmptySelector.Instance);
+        return ParseAsync(source.ReadPipeFrom(offset));
+    }
+
+    private async ValueTask<IFontDictSelector> ParseAsync(PipeReader pipe)
+    {
+        var result = await pipe.ReadAsync().CA();
+        var type = result.Buffer.First.Span[0];
+        pipe.AdvanceTo(result.Buffer.GetPosition(1));
+        throw new NotImplementedException();
     }
 }

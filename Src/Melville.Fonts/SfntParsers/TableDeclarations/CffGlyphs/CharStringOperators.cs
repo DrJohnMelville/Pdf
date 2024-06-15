@@ -51,6 +51,10 @@ public enum CharStringOperators
     /// </summary>
     EndChar = 0x0E,
     /// <summary>
+    /// 
+    /// </summary>
+    VsIndex = 0x0F,
+    /// <summary>
     /// Blend operator
     /// </summary>
     Blend = 0x10,

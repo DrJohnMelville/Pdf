@@ -1,29 +1,11 @@
 ﻿using System.Buffers;
-using System.Net.Sockets;
+using System.Diagnostics;
 using System.Numerics;
-using System.Text;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SpanAndMemory;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-
-internal interface ICffInstructionSet
-{
-    static abstract CharStringOperators Operator(int instruction);
-}
-
-internal class CffInstructionSet : ICffInstructionSet
-{
-    public static CharStringOperators Operator(int instruction) =>
-        (CharStringOperators)instruction;
-}
-
-internal class Cff2InstructionSet : ICffInstructionSet
-{
-    public static CharStringOperators Operator(int instruction) =>
-        (CharStringOperators)instruction;
-}
 
 #warning this class needs allocation free implementation
 internal partial class CffInstructionExecutor: IDisposable
@@ -38,6 +20,8 @@ internal partial class CffInstructionExecutor: IDisposable
     [FromConstructor] private readonly Matrix3x2 transform;
     [FromConstructor] private readonly IGlyphSubroutineExecutor globalSuboutines;
     [FromConstructor] private readonly IGlyphSubroutineExecutor localSubroutines;
+    [FromConstructor] private readonly uint[] variatons;
+    private int currentVariation;
     private DictValue[] Stack { get;} = ArrayPool<DictValue>.Shared.Rent(MaximumCffInstructionOperands);
     private readonly float[] storedValues = ArrayPool<float>.Shared.Rent(MamimumTransientArraySize);
 
@@ -59,8 +43,7 @@ internal partial class CffInstructionExecutor: IDisposable
 
     #region Intstruction Sequence Execution
 
-    public async ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence)
-    {
+    public async ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence)    {
         try
         {
             while (ReadInstruction(ref sourceSequence, out var instruction))
@@ -79,7 +62,6 @@ internal partial class CffInstructionExecutor: IDisposable
         catch (Exception )
         {
         }
-
     }
 
     private bool ReadInstruction(ref ReadOnlySequence<byte> source, out int instruction)
@@ -157,12 +139,35 @@ internal partial class CffInstructionExecutor: IDisposable
             case CharStringOperators.Flex1: DoFlex1(); break;
             case CharStringOperators.EndChar: return SendEndGlyphAsync();
             case CharStringOperators.Return: return ReturnFromSubroutineAsync();
+            #warning need to skip blend and vsindex operators
+            case CharStringOperators.Blend: return Blend();
+            case CharStringOperators.VsIndex: VsIndex(); break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
         }
         StackSize = 0;
         return ValueTask.FromResult(0);
     }
+
+
+    #endregion
+
+    #region Blending
+
+    private void VsIndex()
+    {
+        currentVariation = Math.Min(CurrentStackSpan[^1].IntValue, variatons.Length - 1);
+    }
+    
+    private ValueTask<int> Blend()
+    {
+        var n = CurrentStackSpan[^1].IntValue;
+        var delta = variatons[currentVariation];
+        StackSize -= (int)(delta * n) + 1;
+        Debug.Assert(StackSize >= n );
+        return ValueTask.FromResult(0);
+    }
+
     #endregion
 
     #region Language Elements
@@ -319,13 +324,14 @@ internal partial class CffInstructionExecutor: IDisposable
 
     private void DoRRCurveTo(Span<DictValue> source)
     {
-        for (int i = 0; i < source.Length; i+= 6)
+        while (source.Length > 5)
         {
-            target.CurveTo(IncrementCurrentPointFrom(source, i), 
-                IncrementCurrentPointFrom(source, i+2),
-                IncrementCurrentPointFrom(source, i + 4));
+            target.CurveTo(IncrementCurrentPointFrom(source, 0), 
+                IncrementCurrentPointFrom(source, 2),
+                IncrementCurrentPointFrom(source, 4));
+            source = source[6..];
         }
-    }
+   }
 
     private void DoHHCurveTo()
     {

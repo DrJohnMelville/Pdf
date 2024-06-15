@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
+using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -12,6 +13,17 @@ using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
+
+public partial class MockSpanFilter : ICffGlyphTarget
+{
+    [FromConstructor][DelegateTo] private readonly ICffGlyphTarget target;
+
+    public void Operator(CharStringOperators opCode, Span<DictValue> stack)
+    {
+
+    }
+
+}
 
 public class CharStringInterpreterTest
 {
@@ -36,7 +48,7 @@ public class CharStringInterpreterTest
                 new ByteSource(source.ReadPipeFrom(0)))
             .ParseCff1Async();
         return new CffGlyphSource(index, 
-            CreateSel(globalSubrs), CreateSel(localSubrs), 1);
+            CreateSel(globalSubrs), CreateSel(localSubrs), Matrix3x2.Identity,[]);
     }
 
     private Task ExecuteInstructionAsync(string code) =>
@@ -44,7 +56,7 @@ public class CharStringInterpreterTest
     private async Task ExecuteInstructionAsync(string code, Matrix3x2 mat)
     {
         var sut = await CreateAsync(code);
-        await sut.RenderGlyphAsync(0, target.Object, mat);
+        await sut.RenderGlyphAsync(0, new MockSpanFilter(target.Object), mat);
     }
 
     [Fact]
@@ -189,9 +201,9 @@ public class CharStringInterpreterTest
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
                                       "1C0007 1c0008 1c0009 1C000A 1F");
         target.Verify(i=>i.CurveTo(
-            new Vector2(1,0), new Vector2(3,3), new Vector2(7,3)));
+            new Vector2(1,0), new Vector2(3,3), new Vector2(3,7)));
         target.Verify(i=>i.CurveTo(
-            new Vector2(7, 10), new Vector2(15, 19), new Vector2(15,29)));
+            new Vector2(3,14), new Vector2(11, 23), new Vector2(21,23)));
     }
     [Fact]
     public async Task MultiHVCurveToWithTrailerAsync()
@@ -199,9 +211,9 @@ public class CharStringInterpreterTest
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
                                       "1C0007 1c0008 1c0009 1C000A 1C000B 1F");
         target.Verify(i=>i.CurveTo(
-            new Vector2(1,0), new Vector2(3,3), new Vector2(7,3)));
+            new Vector2(1,0), new Vector2(3,3), new Vector2(3,7)));
         target.Verify(i=>i.CurveTo(
-            new Vector2(7, 10), new Vector2(15, 19), new Vector2(26,29)));
+            new Vector2(3,14), new Vector2(11, 23), new Vector2(21,34)));
     }
     [Fact]
     public async Task MultiRRCurveLineAsync()
@@ -232,9 +244,9 @@ public class CharStringInterpreterTest
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
                                       "1C0007 1c0008 1c0009 1C000A 1E");
         target.Verify(i=>i.CurveTo(
-            new Vector2(0,1), new Vector2(2,4), new Vector2(2,8)));
+            new Vector2(0,1), new Vector2(2,4), new Vector2(6,4)));
         target.Verify(i=>i.CurveTo(
-            new Vector2(9, 8), new Vector2(17, 17), new Vector2(27,17)));
+            new Vector2(13,4), new Vector2(21,13), new Vector2(21,23)));
     }
 
     [Fact]

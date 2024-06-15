@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Parsing.CountingReaders;
 
@@ -26,6 +27,12 @@ public static class IByteSourceOperations
         }
     }
 
+    public static async ValueTask<IByteSource> SkipForwardToAsync(this IByteSource source, long position, IMultiplexSource multiplexSource)
+    {
+        if (source.Position > position) source= new ByteSource(multiplexSource.ReadPipeFrom(0));
+        await source.SkipForwardToAsync(position).CA();
+        return source;
+    }
     public static async ValueTask SkipForwardToAsync(this IByteSource source, long position)
     {
         if (position < source.Position)

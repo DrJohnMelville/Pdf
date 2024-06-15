@@ -14,17 +14,18 @@ public class CffGlyphSource : IGlyphSource
     private readonly IFontDictExecutorSelector globalSubrs;
     private readonly IFontDictExecutorSelector localSubrs;
     private readonly Matrix3x2 glyphUnitAdjuster;
-
-    internal CffGlyphSource(
-        CffIndex glyphs, 
-        IFontDictExecutorSelector globalSubrs, 
+    private readonly uint[] variatons;
+ 
+    internal CffGlyphSource(CffIndex glyphs,
+        IFontDictExecutorSelector globalSubrs,
         IFontDictExecutorSelector localSubrs,
-        in Matrix3x2 glyphUnitAdjustment)
+        in Matrix3x2 glyphUnitAdjustment, uint[] variatons)
     {
         this.glyphs = glyphs;
         this.globalSubrs = globalSubrs;
         this.localSubrs = localSubrs;
         glyphUnitAdjuster = glyphUnitAdjustment;
+        this.variatons = variatons;
     }
 
     /// <inheritdoc />
@@ -41,7 +42,8 @@ public class CffGlyphSource : IGlyphSource
         if (glyph > GlyphCount) glyph = 0;
         var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
         using var engine = new CffInstructionExecutor(
-            target, glyphUnitAdjuster*transform, globalSubrs.GetExecutor(glyph), localSubrs.GetExecutor(glyph));
+            target, glyphUnitAdjuster*transform, globalSubrs.GetExecutor(glyph), 
+            localSubrs.GetExecutor(glyph), variatons);
 
         await engine.ExecuteInstructionSequenceAsync(sourceSequence).CA();
    }

@@ -50,7 +50,9 @@ internal readonly struct PrivateCff2DictionaryParser(
         {
             #warning -- can I use the same pipe
             var  p2 = source.ReadPipeFrom(offsets[i]);
-            procIndexes[i] = await new CFFIndexParser(source, new ByteSource(p2)).ParseCff2Async().CA();
+            procIndexes[i] = await new CFFIndexParser(source.OffsetFrom(
+                    (uint)offsets[i]), new ByteSource(p2))
+                .ParseCff2Async().CA();
         }
 
         var ret = selector.GetSelector(procIndexes.AsSpan(0, count));

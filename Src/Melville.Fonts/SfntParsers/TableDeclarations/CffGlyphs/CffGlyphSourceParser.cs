@@ -29,12 +29,13 @@ internal readonly struct CffGlyphSourceParser(
         
         await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();
         var charStringsIndex= await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-
+        
         var privateSubrs = await GetrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
 
         return new CffGlyphSource(charStringsIndex, 
             new GlyphSubroutineExecutor(globalSubrIndex), 
-            new GlyphSubroutineExecutor(privateSubrs), Matrix3x2.CreateScale(1f/unitsPerEm));
+            new GlyphSubroutineExecutor(privateSubrs), 
+            Matrix3x2.CreateScale(1f/unitsPerEm),[]);
     }
 
     private async ValueTask<CffIndex> GetrivateSubrsAsync(ByteSource pipe, int privateOffset, int privateSize)

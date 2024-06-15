@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -22,6 +23,7 @@ internal readonly partial struct CffIndex
         await pipe.SkipForwardToAsync(offsetSize * index).CA();
         var itemOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         var nextOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+        Debug.Assert(nextOffset >= itemOffset);
 
         var startOfData = FirstItemOffset() + itemOffset - 1;
         var length = (int) (nextOffset - itemOffset);
@@ -41,28 +43,25 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
     private async ValueTask<CffIndex> InnerParseAsync(int sizeWidth)
     {
         var count = (uint)await pipe.ReadBigEndianUintAsync(sizeWidth).CA();
-        var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
         if (count == 0) return new CffIndex(root, 0, 0);
+        var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
         var rootSource = root.OffsetFrom((uint)pipe.Position);
+        #if DEBUG
+        ulong dataLength = 0;
+        for (int i = 0; i < count+1; i++)
+        {
+            var current = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+            Debug.Assert(current >= dataLength);
+            dataLength = current;
+        }
+        #else
         await pipe.SkipOverAsync((int)count * offsetSize).CA();
         var dataLength = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+        #endif
         await pipe.SkipOverAsync((int)(dataLength-1)).CA();
         return new CffIndex(rootSource, count, offsetSize);
     }
 
-    // private (ushort Count, byte offsetSize) ParseData(ReadOnlySequence<byte> bytes)
-    // {
-    //     var reader = new SequenceReader<byte>(bytes);
-    //     var count = reader.ReadBigEndianUint16();
-    //     if (count == 0)
-    //     {
-    //         pipe.AdvanceTo(reader.Position);
-    //         return new (0, 0);
-    //     }
-    //     var offSize = reader.ReadBigEndianUint8();
-    //     pipe.AdvanceTo(reader.Position);
-    //     return (count, offSize);
-    // }
 }
 
 internal static class NumberFromByteSourceImpl
