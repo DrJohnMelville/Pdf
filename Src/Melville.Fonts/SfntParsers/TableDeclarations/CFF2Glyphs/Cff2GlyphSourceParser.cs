@@ -23,11 +23,12 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
         var glyphs = await new CFFIndexParser(
             glyphsource, new ByteSource(glyphsource.ReadPipeFrom(0))).ParseCff2Async().CA();
 
-        await pipe.AdvanceToLocalPositionAsync(topDict.FontDictIndexOffset).CA();
         var fdSelector = await 
             new FontDictSelectParser(source, topDict.FontDictSelectOffset,
                     glyphs.Length)
                 .ParseAsync().CA();
+
+        await pipe.AdvanceToLocalPositionAsync(topDict.FontDictIndexOffset).CA();
         var dicts = await new PrivateCff2DictionaryParser(source, pipe, fdSelector)
             .ParseAsync().CA();
 

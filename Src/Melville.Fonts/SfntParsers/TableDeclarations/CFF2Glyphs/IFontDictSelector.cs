@@ -10,7 +10,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
 internal interface IFontDictSelector
 {
-    IFontDictExecutorSelector GetSelector(Span<CffIndex> indexes);
+    IFontDictExecutorSelector GetSelector(Span<IGlyphSubroutineExecutor> indexes);
 
 }
 
@@ -20,33 +20,27 @@ internal interface IFontDictExecutorSelector
 }
 
 [StaticSingleton]
-internal partial class EmptySelector: IFontDictSelector
+internal partial class SingleDictSelector: IFontDictSelector
 {
-    public IFontDictExecutorSelector GetSelector(Span<CffIndex> indexes)
+    public IFontDictExecutorSelector GetSelector(Span<IGlyphSubroutineExecutor> indexes)
     {
         Debug.Assert(indexes.Length == 1);
-        return new GlyphSubroutineExecutor(indexes[0]);
+        return indexes[0];
     }
 }
 
-[StaticSingleton]
-internal partial class NullExecutorSelector : 
-    IFontDictExecutorSelector, IGlyphSubroutineExecutor
+internal sealed class Type0FontDictSelector(byte[] table): RootFontDictSelector
 {
-     public IGlyphSubroutineExecutor GetExecutor(uint glyph) => this;
-     public ValueTask CallAsync(
-         int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute)
-     {
-         throw new InvalidOperationException("Executed subr from an empty index.");
-     }
+    protected override int SelectIndexFor(uint glyph) => table[glyph];
 }
+
 
 internal readonly struct FontDictSelectParser(
     IMultiplexSource source, int offset, uint glyphCount)
 {
     public ValueTask<IFontDictSelector> ParseAsync()
     {
-        if (offset == 0) return new(EmptySelector.Instance);
+        if (offset == 0) return new(SingleDictSelector.Instance);
         return ParseAsync(source.ReadPipeFrom(offset));
     }
 
@@ -55,6 +49,22 @@ internal readonly struct FontDictSelectParser(
         var result = await pipe.ReadAsync().CA();
         var type = result.Buffer.First.Span[0];
         pipe.AdvanceTo(result.Buffer.GetPosition(1));
-        throw new NotImplementedException();
+        return type switch
+        {
+            0 => await ReadType0SelectorAsync(pipe).CA(),
+            3 => await new Type34FontSelectorParser(pipe, 2,1).ParseAsync().CA(),
+            4 => await new Type34FontSelectorParser(pipe, 4,2).ParseAsync().CA(),
+            _ => throw new InvalidDataException("Unknown font dict selector type")
+        };
+    }
+
+    private async ValueTask<IFontDictSelector> ReadType0SelectorAsync(PipeReader pipe)
+    {
+        var data = new byte[(int)glyphCount];
+        var result = await pipe.ReadAtLeastAsync(data.Length).CA();
+        result.Buffer.CopyTo(data);
+        pipe.AdvanceTo(result.Buffer.GetPosition(data.Length));
+        return new Type0FontDictSelector(data);
+
     }
 }

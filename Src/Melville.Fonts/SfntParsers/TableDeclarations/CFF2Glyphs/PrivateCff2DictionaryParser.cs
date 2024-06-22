@@ -31,7 +31,7 @@ internal readonly struct PrivateCff2DictionaryParser(
             first = offsets[i];
             var sequence = await pipe.ReadAtLeastAsync(length).CA();
             var trimmed = sequence.Buffer.Slice(0, length);
-            (offsets[i + count], offsets[i]) = ParseFontDictIndex(trimmed);
+            (offsets[i + count], offsets[i]) = ParseFontDict(trimmed);
             pipe.AdvanceTo(trimmed.End);
         }
 
@@ -41,23 +41,44 @@ internal readonly struct PrivateCff2DictionaryParser(
             var p2 = source.ReadPipeFrom((uint)offsets[i]);
             var result = await p2.ReadAtLeastAsync(offsets[count+ i]).CA();
             var trimmed = result.Buffer.Slice(0, offsets[count + i]);
-            offsets[i] += ReadPrivateDict(trimmed);
+            offsets[i+count] = ReadPrivateDict(trimmed);
             p2.AdvanceTo(trimmed.End);
         }
 
         var procIndexes = ArrayPool<CffIndex>.Shared.Rent(count);
         for (int i = 0; i < count; i++)
         {
+            if (offsets[i + count] == 0)
+            {
+                procIndexes[i] = new CffIndex(source, 0, 0);
+                continue;
+            }
             #warning -- can I use the same pipe
-            var  p2 = source.ReadPipeFrom(offsets[i]);
+            var indexOffset = offsets[i]+offsets[i+count];
+            var  p2 = source.ReadPipeFrom(indexOffset);
             procIndexes[i] = await new CFFIndexParser(source.OffsetFrom(
-                    (uint)offsets[i]), new ByteSource(p2))
+                    (uint)indexOffset), new ByteSource(p2))
                 .ParseCff2Async().CA();
         }
 
-        var ret = selector.GetSelector(procIndexes.AsSpan(0, count));
+        var ret = RealizeSelector(selector, procIndexes.AsSpan(0, count));
         ArrayPool<int>.Shared.Return(offsets);
         ArrayPool<CffIndex>.Shared.Return(procIndexes);
+        return ret;
+    }
+
+
+    private IFontDictExecutorSelector RealizeSelector(IFontDictSelector sel,
+        ReadOnlySpan<CffIndex> indexes)
+    {
+        var executors = ArrayPool<IGlyphSubroutineExecutor>.Shared.Rent(indexes.Length);
+        for (int i = 0; i < indexes.Length; i++)
+        {
+            executors[i] = new GlyphSubroutineExecutor(indexes[i]);
+        }
+
+        var ret = sel.GetSelector(executors.AsSpan(0, indexes.Length));
+        ArrayPool<IGlyphSubroutineExecutor>.Shared.Return(executors);
         return ret;
     }
 
@@ -71,7 +92,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         return operands[0].IntValue;
     }
 
-    private (int, int) ParseFontDictIndex(ReadOnlySequence<byte> source)
+    private (int, int) ParseFontDict(ReadOnlySequence<byte> source)
     {
         var reader = new SequenceReader<byte>(source);
         Span<DictValue> operands = stackalloc DictValue[2];

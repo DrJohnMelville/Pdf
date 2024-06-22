@@ -5,12 +5,12 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal interface IGlyphSubroutineExecutor
+internal interface IGlyphSubroutineExecutor: IFontDictExecutorSelector
 {
     ValueTask CallAsync(int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute);
 }
 
-internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor, IFontDictExecutorSelector
+internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
 {
     [FromConstructor] private readonly CffIndex subroutines;
 
