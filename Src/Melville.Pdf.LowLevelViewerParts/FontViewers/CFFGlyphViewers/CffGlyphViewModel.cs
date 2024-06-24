@@ -23,7 +23,7 @@ public partial class CffGlyphViewModel
     partial void OnConstructed()
     {
         PageSelector.MinPage = 0;
-        PageSelector.MaxPage = GlpyhSource.GlyphCount;
+        PageSelector.MaxPage = GlpyhSource.GlyphCount-1;
         PageSelector.WhenMemberChanges(nameof(PageSelector.Page), LoadNewGlyph);
         LoadNewGlyph();
     }

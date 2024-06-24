@@ -12,8 +12,9 @@ internal partial class CffInstructionExecutor: IDisposable
 {
     #region Variables Creation and Destruction
 
-    // per Adobe Technical Note #5177, page 33
-    private const int MaximumCffInstructionOperands = 48;
+    // per Adobe Technical Note #5177, page 33 this should be 48, but
+    // I found values over 512 in real fonts.
+    private const int MaximumCffInstructionOperands = 1024;
     private const int MamimumTransientArraySize = 32;
 
     [FromConstructor] private readonly ICffGlyphTarget target;
@@ -163,7 +164,9 @@ internal partial class CffInstructionExecutor: IDisposable
     {
         var n = CurrentStackSpan[^1].IntValue;
         var delta = variatons[currentVariation];
-        StackSize -= (int)(delta * n) + 1;
+        var totalDelta = (int)(delta * n) + 1;
+        if (StackSize < (n + totalDelta)) return ValueTask.FromResult(0);
+        StackSize -= totalDelta;
         Debug.Assert(StackSize >= n );
         return ValueTask.FromResult(0);
     }

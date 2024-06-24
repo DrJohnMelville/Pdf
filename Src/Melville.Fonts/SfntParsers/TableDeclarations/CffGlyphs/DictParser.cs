@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
+using System.Diagnostics;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
 
@@ -99,32 +100,26 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     private void ReadFiveByteInteger()
     {
         if (TryRead5ByteInt(out var intValue))
-        {
-            return;
-        }
-        PushOperand(new DictValue(intValue));
+             PushOperand(new DictValue(intValue));
     }
 
     private bool TryRead5ByteInt(out int intValue)
     {
-        if (!(source.TryRead(out var b1) && source.TryRead(out var b2)
-                                         && source.TryRead(out var b3) && source.TryRead(out var b4)))
+        intValue = 0;
+        for (int i = 0; i < 4; i++)
         {
-            intValue = 0;
-            return true;
+            if (!source.TryRead(out var b)) return false;
+            intValue <<= 8;
+            intValue |= b;
         }
-        intValue = (b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
-        return false;
+        return true;
     }
 
     private const float fixedFactor = 1.0f / 0x10000;
     private void ReadFiveByteFixed()
     {
-        if (TryRead5ByteInt(out var intValue))
-        {
-            return;
-        }
-        PushOperand(new DictValue(intValue*fixedFactor));
+        if (TryRead5ByteInt(out var intValue)) 
+            PushOperand(new DictValue(intValue*fixedFactor));
     }
 
     private bool IsOperator(byte b) => b < 22;
