@@ -39,6 +39,60 @@ internal interface ISubGlyphRenderer
 
 }
 
+internal class TtToGlyphTarget<T>(T target) :ITrueTypePointTarget where
+    T: IGlyphTarget
+{
+    Vector2 lastPoint;
+    private bool lastOnCurve = true;
+
+    public void AddPoint(Vector2 point, bool onCurve, bool isContourStart, bool isContourEnd)
+    {
+        if (isContourStart)
+            NewMethod(point);
+        else if (onCurve)
+            OnCurvePoint(point);
+        else OffCurvePoint(point);
+    }
+
+    private void NewMethod(Vector2 point)
+    {
+        target.MoveTo(point);
+        lastOnCurve = true;
+        lastPoint = point;
+    }
+
+    private void OnCurvePoint(Vector2 point)
+    {
+        if (lastOnCurve)
+        {
+            target.LineTo(point);
+        }
+        else
+        {
+            target.CurveTo(lastPoint, point);
+        }
+
+        lastOnCurve = true;
+        lastPoint = point;
+    }
+
+
+    private void OffCurvePoint(Vector2 point)
+    {
+        if (!lastOnCurve)
+        {
+            OnCurvePoint((point + lastPoint)/2);
+        }
+
+        lastOnCurve = false;
+        lastPoint = point;
+    }
+
+    public void AddPhantomPoint(Vector2 point)
+    {
+    }
+}
+
 /// <summary>
 /// This class rertieves glyphs from a SFnt font that uses truetype outlines.
 /// </summary>
@@ -64,10 +118,9 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
     /// <inheritdoc />
     public int GlyphCount => index.TotalGlyphs;
 
-    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget
-    {
-        throw new NotImplementedException();
-    }
+    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget =>
+        RenderGlyphInEmUnitsAsync(glyph,
+            new TtToGlyphTarget<T>(target), transform);
 
     /// <summary>
     /// Paint a glyph on the indicated target the glyph is expressed in fractions of the 1 unit EM square
