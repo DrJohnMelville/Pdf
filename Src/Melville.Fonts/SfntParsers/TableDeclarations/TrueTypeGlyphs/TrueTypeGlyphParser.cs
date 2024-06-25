@@ -10,12 +10,12 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
-internal readonly struct TrueTypeGlyphParser(
+internal readonly struct TrueTypeGlyphParser<T>(
     ISubGlyphRenderer innerRenderer,
     ReadOnlySequence<byte> slice,
-    ITrueTypePointTarget target,
+    T target,
     Matrix3x2 matrix,
-    HorizontalMetric horizontalMetric)
+    HorizontalMetric horizontalMetric) where T: ITrueTypePointTarget
 {
     public ValueTask DrawGlyphAsync()
     {

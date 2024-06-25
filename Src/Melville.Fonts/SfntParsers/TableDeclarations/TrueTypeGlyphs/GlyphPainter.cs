@@ -34,8 +34,8 @@ internal interface ISubGlyphRenderer
     /// <param name="glyph">index of the glyph to paint</param>
     /// <param name="target">The target to receive the glyph</param>
     /// <param name="matrix">A transform to apply to the glyph points when rendering.</param>
-    public ValueTask RenderGlyphInFontUnitsAsync(
-        uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix);
+    public ValueTask RenderGlyphInFontUnitsAsync<T>(
+        uint glyph, T target, Matrix3x2 matrix) where T:ITrueTypePointTarget;
 
 }
 
@@ -64,14 +64,19 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
     /// <inheritdoc />
     public int GlyphCount => index.TotalGlyphs;
 
+    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Paint a glyph on the indicated target the glyph is expressed in fractions of the 1 unit EM square
     /// </summary>
     /// <param name="glyph">index of the glyph to paint</param>
     /// <param name="target">The target to receive the glyph</param>
     /// <param name="matrix">A transform to apply to the glyph points when rendering.</param>
-    public  ValueTask RenderGlyphInEmUnitsAsync(
-        uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix) => 
+    public  ValueTask RenderGlyphInEmUnitsAsync<T>(
+        uint glyph, T target, Matrix3x2 matrix) where T: ITrueTypePointTarget => 
         RenderGlyphInFontUnitsAsync(glyph, target, unitsPerEmCorrection*matrix);
 
     /// <summary>
@@ -80,14 +85,14 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
     /// <param name="glyph">index of the glyph to paint</param>
     /// <param name="target">The target to receive the glyph</param>
     /// <param name="matrix">A transform to apply to the glyph points when rendering.</param>
-    public async ValueTask RenderGlyphInFontUnitsAsync(uint glyph, ITrueTypePointTarget target, Matrix3x2 matrix)
+    public async ValueTask RenderGlyphInFontUnitsAsync<T>(uint glyph, T target, Matrix3x2 matrix) where T:ITrueTypePointTarget
     {
         if (glyph >= GlyphCount) glyph = 0;
         var location = index.GetLocation(glyph);
         if (location.Length == 0) return;
         var data = await glyphDataOrigin.ReadPipeFrom(location.Offset)
             .ReadAtLeastAsync((int)location.Length).CA();
-        await new TrueTypeGlyphParser(
+        await new TrueTypeGlyphParser<T>(
                 this, data.Buffer.Slice(0, location.Length), target, 
                 matrix, hMetrics[(int)glyph])
             .DrawGlyphAsync().CA();

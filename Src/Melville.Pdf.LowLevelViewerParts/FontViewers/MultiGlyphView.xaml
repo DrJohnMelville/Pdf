@@ -26,6 +26,7 @@
                                  Columns="{Binding Columns}"
                                  Page="{Binding PageSelector.Page}"
                                  GlyphSource="{Binding GlyphSource}"
+                                 GlyphSize="{Binding GlyphSize}"
                                  ></local:MultiGlyphPainter>
     </Grid>
 </UserControl>

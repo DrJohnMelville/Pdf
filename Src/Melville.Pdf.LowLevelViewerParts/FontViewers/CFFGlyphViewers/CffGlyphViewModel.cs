@@ -31,7 +31,7 @@ public partial class CffGlyphViewModel
     private async void LoadNewGlyph()
     {
         var renderTemp = new CffGlyphBuffer();
-        await GlpyhSource.RenderGlyphAsync((uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
+        await GlpyhSource.RenderCffGlyphAsync((uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
         RenderedGlyph = renderTemp;
     }
 }
@@ -54,6 +54,10 @@ public class CffGlyphBuffer : ICffGlyphTarget
     public void LineTo(Vector2 point) => AddInstr(new CffLineToAction(point));
     public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
         AddInstr(new CffCurveToAction(control1, control2, endPoint));
+    // CFF fonts never call this, but it is required for the more generic
+    // interface.
+    public void CurveTo(Vector2 control, Vector2 endPoint) =>
+        CurveTo(control, control, endPoint);
     public void EndGlyph() => AddInstr(new CffEndGlyphAction());
 }
 

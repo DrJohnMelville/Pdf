@@ -20,15 +20,3 @@ public interface IGenericFont
     /// </summary>
     ValueTask<IGlyphSource> GetGlyphSourceAsync();
 }
-
-/// <summary>
-/// This interface is used to retrieve individual glyphs from the font file  
-/// </summary>
-public interface IGlyphSource
-{
-    /// <summary>
-    /// The number of glyphs in the font.
-    /// </summary>
-    int GlyphCount { get; }
-
-}

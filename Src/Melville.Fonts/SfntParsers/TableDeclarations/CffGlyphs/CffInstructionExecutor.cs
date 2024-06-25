@@ -8,7 +8,7 @@ using Melville.Parsing.SpanAndMemory;
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 #warning this class needs allocation free implementation
-internal partial class CffInstructionExecutor: IDisposable
+internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphTarget
 {
     #region Variables Creation and Destruction
 
@@ -17,7 +17,7 @@ internal partial class CffInstructionExecutor: IDisposable
     private const int MaximumCffInstructionOperands = 1024;
     private const int MamimumTransientArraySize = 32;
 
-    [FromConstructor] private readonly ICffGlyphTarget target;
+    [FromConstructor] private readonly T target;
     [FromConstructor] private readonly Matrix3x2 transform;
     [FromConstructor] private readonly IGlyphSubroutineExecutor globalSuboutines;
     [FromConstructor] private readonly IGlyphSubroutineExecutor localSubroutines;

@@ -56,7 +56,7 @@ public class CharStringInterpreterTest
     private async Task ExecuteInstructionAsync(string code, Matrix3x2 mat)
     {
         var sut = await CreateAsync(code);
-        await sut.RenderGlyphAsync(0, new MockSpanFilter(target.Object), mat);
+        await sut.RenderCffGlyphAsync(0, new MockSpanFilter(target.Object), mat);
     }
 
     [Fact]

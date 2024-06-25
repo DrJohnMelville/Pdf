@@ -13,11 +13,11 @@ public partial class GenericFontViewModel
 
     partial void OnConstructed()
     {
-        LoadCmapAsync();
+        LoadCmap();
     }
-    public async void LoadCmapAsync()
+    public async void LoadCmap()
     {
         GlyphViewModel = new MultiGlyphViewModel((await Font.GetGlyphSourceAsync()));
-        CmapViewModel = await (await Font.GetCmapSourceAsync()).PrintCMapAsync();
+        CmapViewModel = (await Font.GetCmapSourceAsync()).PrintCMap();
     }
 }

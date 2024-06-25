@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Pdf.ReferenceDocuments.Utility;
@@ -29,7 +30,7 @@ public class TrueTypeGlyphParserTest
 
     }
 
-    private TrueTypeGlyphParser CreateParser(string hex, Matrix3x2 matrix) =>
+    private TrueTypeGlyphParser<ITrueTypePointTarget> CreateParser(string hex, Matrix3x2 matrix) =>
         new(glyphSource.Object, new ReadOnlySequence<byte>(hex.BitsFromHex()),
             target.Object, matrix, new HorizontalMetric(514, 17));
 

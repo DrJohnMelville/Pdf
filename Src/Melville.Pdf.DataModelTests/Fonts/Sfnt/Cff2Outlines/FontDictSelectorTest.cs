@@ -31,12 +31,12 @@ public class FontDictSelectorTest
     [InlineData(2, 2)]
     [InlineData(3, 1)]
     [InlineData(4, 0)]
-    public Task Type1FontSelectorTest(uint glyph, int index) =>
-        TestSelector(glyph, index, """
+    public Task Type1FontSelectorTestAsync(uint glyph, int index) =>
+        TestSelectorAsync(glyph, index, """
         FF 00 04 03 02 01 00
         """);
 
-    private async Task TestSelector(uint glyph, int index, string selectorCode)
+    private async Task TestSelectorAsync(uint glyph, int index, string selectorCode)
     {
         var source = MultiplexSourceFactory.Create(selectorCode.BitsFromHex()
         );
@@ -55,8 +55,8 @@ public class FontDictSelectorTest
     [InlineData(2, 1)]
     [InlineData(3, 4)]
     [InlineData(4, 4)]
-    public Task Type3FontSelectorTest(uint glyph, int index) =>
-        TestSelector(glyph, index, """
+    public Task Type3FontSelectorTestAsync(uint glyph, int index) =>
+        TestSelectorAsync(glyph, index, """
         FF 03 0003
         0000 02
         0002 01
@@ -70,8 +70,8 @@ public class FontDictSelectorTest
     [InlineData(2, 1)]
     [InlineData(3, 4)]
     [InlineData(4, 4)]
-    public Task Type4FontSelectorTest(uint glyph, int index) =>
-        TestSelector(glyph, index, """
+    public Task Type4FontSelectorTestAsync(uint glyph, int index) =>
+        TestSelectorAsync(glyph, index, """
         FF 04 00000003
         0000 0000 0002
         0000 0002 0001
