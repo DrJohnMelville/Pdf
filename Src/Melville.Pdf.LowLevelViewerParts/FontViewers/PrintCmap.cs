@@ -4,6 +4,18 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 public static class PrintCmap
 {
+    public async static ValueTask<object> PrintCMapAsync(this ICMapSource cmap)
+    {
+        var cmapArray = cmap.ToMultiStringViewModel();
+        return new CompositeTableViewModel(cmapArray);
+    }
+    public static object[] ToMultiStringViewModel(this ICMapSource cmap) =>
+        Enumerable.Range(0, cmap.Count)
+            .Select(i => 
+                new MultiStringViewModel(()=> PrintCMapAsync(cmap, i), 
+                    CmapName(cmap, i)) as object)
+            .ToArray();
+
     public static async ValueTask<IReadOnlyList<String>> PrintCMapAsync(ICMapSource cmap, int index)
     {
         try

@@ -10,7 +10,7 @@ internal readonly struct SfntParser(IMultiplexSource src)
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync(ulong rootPosition)
     {
         var rec = await FieldParser.ReadFromAsync<TableDirectory>(
-            src.ReadPipeFrom((long)rootPosition));
+            src.ReadPipeFrom((long)rootPosition)).CA();
         return rec.Parse(src);
     }
 }
