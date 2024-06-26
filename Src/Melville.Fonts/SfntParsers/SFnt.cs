@@ -6,6 +6,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
+using Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Hacks;
@@ -176,6 +177,17 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
        return index < 0 ? null : tables[index];
    }
 
+   private Task<PostscriptData> GetPostscriptDataAsync() =>
+       DelayedLoadTableAsync<PostscriptData>(SFntTableName.PostscriptData, LoadPostscriptData);
+
+   private Task<PostscriptData> LoadPostscriptData() => 
+       FindTable(SFntTableName.PostscriptData) is not { } table ? 
+           Task.FromResult(new PostscriptData()) : 
+           new PostscriptTableParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask();
+
+   /// <inheritdoc />
+   public override async ValueTask<string[]> GlyphNamesAsync() => 
+       (await GetPostscriptDataAsync().CA()).GlyphNames;
 }
 
 internal class DelayTaskStart<T>(Func<Task<T>> operation)

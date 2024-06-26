@@ -9,6 +9,10 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
 /// </summary>
 public partial class PostscriptData
 {
+    public PostscriptData()
+    {
+    }
+
     /// <summary>
     /// Version of the postscript table
     /// </summary>

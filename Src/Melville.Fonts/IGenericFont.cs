@@ -19,4 +19,11 @@ public interface IGenericFont
     /// This retrieves the IGlyphSource for the font.
     /// </summary>
     ValueTask<IGlyphSource> GetGlyphSourceAsync();
+
+    /// <summary>
+    /// Get an array of the names of the glyphs.  May be empty if the font does not
+    /// have glyph names.
+    /// </summary>
+    /// <returns></returns>
+    ValueTask<string[]> GlyphNamesAsync();
 }

@@ -10,6 +10,7 @@ public partial class GenericFontViewModel
     public string? ToolTip => null;
     [AutoNotify] private object? glyphViewModel = null;
     [AutoNotify] private object? cmapViewModel = null;
+    [AutoNotify] private object? glyphNames = null; 
 
     partial void OnConstructed()
     {
@@ -19,5 +20,11 @@ public partial class GenericFontViewModel
     {
         GlyphViewModel = new MultiGlyphViewModel((await Font.GetGlyphSourceAsync()));
         CmapViewModel = (await Font.GetCmapSourceAsync()).PrintCMap();
+        GlyphNames = new MultiStringViewModel(LoadGlyphs, "Glyph Names");
     }
+
+    private async ValueTask<IReadOnlyList<string>> LoadGlyphs() =>
+        (await Font.GlyphNamesAsync())
+        .Select((item, i) => $"0x{i:X} => {item}")
+        .ToArray();
 }

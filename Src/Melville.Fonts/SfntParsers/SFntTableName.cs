@@ -49,4 +49,9 @@ public class SFntTableName
     /// Table name 'CFF2'
     /// </summary>
     public const uint CFF2 = 0x43464632;
+
+    /// <summary>
+    /// Table name 'post'
+    /// </summary>
+    public const uint PostscriptData = 0x706f7374;
 }
