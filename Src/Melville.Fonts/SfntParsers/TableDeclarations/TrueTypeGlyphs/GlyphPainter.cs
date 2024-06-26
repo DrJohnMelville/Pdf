@@ -6,95 +6,7 @@ using Melville.Parsing.MultiplexSources;
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 /// <summary>
-/// Receives the points that make up a TrueType Glyph outline.
-/// </summary>
-public interface ITrueTypePointTarget
-{
-    /// <summary>
-    /// Add a real point to the glyph
-    /// </summary>
-    /// <param name="point">Location of the point</param>
-    /// <param name="onCurve">True if this is a curve point, false if it is a control point</param>
-    /// <param name="isContourStart">True if this is the first point in a contour, false otherwise.</param>
-    /// <param name="isContourEnd">True if this is the last point in a contour, false otherwise</param>
-    void AddPoint(Vector2 point, bool onCurve, bool isContourStart, bool isContourEnd);
-    /// <summary>
-    /// Add a phantom point, which does not render but can affect the shape of composite glyphs.
-    /// </summary>
-    /// <param name="point"></param>
-    void AddPhantomPoint(Vector2 point);
-}
-
-internal interface ISubGlyphRenderer
-{
-    /// <summary>
-    /// Paint a glyph on the indicated target the glyph is expressed in the
-    /// native units in which the font is defined.  This is useful for rendering subglyphs.
-    /// </summary>
-    /// <param name="glyph">index of the glyph to paint</param>
-    /// <param name="target">The target to receive the glyph</param>
-    /// <param name="matrix">A transform to apply to the glyph points when rendering.</param>
-    public ValueTask RenderGlyphInFontUnitsAsync<T>(
-        uint glyph, T target, Matrix3x2 matrix) where T:ITrueTypePointTarget;
-
-}
-
-internal class TtToGlyphTarget<T>(T target) :ITrueTypePointTarget where
-    T: IGlyphTarget
-{
-    Vector2 lastPoint;
-    private bool lastOnCurve = true;
-
-    public void AddPoint(Vector2 point, bool onCurve, bool isContourStart, bool isContourEnd)
-    {
-        if (isContourStart)
-            NewMethod(point);
-        else if (onCurve)
-            OnCurvePoint(point);
-        else OffCurvePoint(point);
-    }
-
-    private void NewMethod(Vector2 point)
-    {
-        target.MoveTo(point);
-        lastOnCurve = true;
-        lastPoint = point;
-    }
-
-    private void OnCurvePoint(Vector2 point)
-    {
-        if (lastOnCurve)
-        {
-            target.LineTo(point);
-        }
-        else
-        {
-            target.CurveTo(lastPoint, point);
-        }
-
-        lastOnCurve = true;
-        lastPoint = point;
-    }
-
-
-    private void OffCurvePoint(Vector2 point)
-    {
-        if (!lastOnCurve)
-        {
-            OnCurvePoint((point + lastPoint)/2);
-        }
-
-        lastOnCurve = false;
-        lastPoint = point;
-    }
-
-    public void AddPhantomPoint(Vector2 point)
-    {
-    }
-}
-
-/// <summary>
-/// This class rertieves glyphs from a SFnt font that uses truetype outlines.
+/// This class retrieves glyphs from a SFnt font that uses truetype outlines.
 /// </summary>
 public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
 {
@@ -117,7 +29,9 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
 
     /// <inheritdoc />
     public int GlyphCount => index.TotalGlyphs;
+    #warning -- need an allocation free version of this method
 
+    /// <inheritdoc />
     public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget =>
         RenderGlyphInEmUnitsAsync(glyph,
             new TtToGlyphTarget<T>(target), transform);

@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Media;
 using Melville.Fonts;
 using Melville.INPC;
-using Melville.Pdf.LowLevelViewerParts.FontViewers.CFFGlyphViewers;
 using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
@@ -34,6 +33,7 @@ public partial class MultiGlyphViewModel
     private void RecomputePages()
     {
         source.Cancel(false);
+        source.Dispose();
         source = new CancellationTokenSource();
         var item = (PageSelector.Page-1) * oldPageSize;
         oldPageSize = PageSize;
