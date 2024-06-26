@@ -140,8 +140,7 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
             case CharStringOperators.Flex1: DoFlex1(); break;
             case CharStringOperators.EndChar: return SendEndGlyphAsync();
             case CharStringOperators.Return: return ReturnFromSubroutineAsync();
-            #warning need to skip blend and vsindex operators
-            case CharStringOperators.Blend: return Blend();
+            case CharStringOperators.Blend: return BlendAsync();
             case CharStringOperators.VsIndex: VsIndex(); break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
@@ -160,7 +159,7 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
         currentVariation = Math.Min(CurrentStackSpan[^1].IntValue, variatons.Length - 1);
     }
     
-    private ValueTask<int> Blend()
+    private ValueTask<int> BlendAsync()
     {
         var n = CurrentStackSpan[^1].IntValue;
         var delta = variatons[currentVariation];

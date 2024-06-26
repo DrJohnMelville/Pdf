@@ -24,8 +24,7 @@ public interface IGlyphTarget
     /// Draws a cubic Bezier curve from the current location to the endpoint with the
     /// given control points.
     /// </summary>
-    /// <param name="control1">First control point</param>
-    /// <param name="control2">Second control point</param>
+    /// <param name="control">Control point</param>
     /// <param name="endPoint">End point</param>
     void CurveTo(Vector2 control, Vector2 endPoint);
 
