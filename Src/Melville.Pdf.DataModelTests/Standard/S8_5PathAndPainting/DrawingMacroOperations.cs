@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
@@ -28,10 +29,10 @@ public class DrawingMacroOperations
     public void Rectangle()
     {
         sut.Rectangle(7,13,17, 19);
-        drawTarget.Verify(i=>i.MoveTo(7,13), Times.Once);
-        drawTarget.Verify(i=>i.LineTo(24,13), Times.Once);
-        drawTarget.Verify(i=>i.LineTo(24,32), Times.Once);
-        drawTarget.Verify(i=>i.LineTo(7,32), Times.Once);
+        drawTarget.Verify(i=>i.MoveTo(new Vector2(7,13)), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(new Vector2(24,13)), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(new Vector2(24,32)), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(new Vector2(7,32)), Times.Once);
         drawTarget.Verify(i=>i.ClosePath(), Times.Once);
         drawTarget.VerifyNoOtherCalls();
     }
@@ -103,8 +104,8 @@ public class DrawingMacroOperations
     private void VerifyPathOperation(bool stroke, bool fill, bool evenOddFillRule, bool closePath)
     {
         if (closePath) drawTarget.Verify(i=>i.ClosePath());
-        drawTarget.Verify(i=>i.MoveTo(10,10));
-        drawTarget.Verify(i=>i.LineTo(10,12));
+        drawTarget.Verify(i=>i.MoveTo(new Vector2(10,10)));
+        drawTarget.Verify(i=>i.LineTo(new Vector2(10,12)));
         drawTarget.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
         drawTarget.Verify(i=>i.Dispose());
         drawTarget.VerifyNoOtherCalls();

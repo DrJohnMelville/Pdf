@@ -16,37 +16,29 @@ public interface IDrawTarget: IDisposable
     /// <summary>
     /// Move the current point to a position.
     /// </summary>
-    /// <param name="x">Horizontal coordinate to move to.</param>
-    /// <param name="y">Vertical coordinate to move to.</param>
-    void MoveTo(double x, double y);
+    /// <param name="startPoint">Point to move to.</param>
+    void MoveTo(Vector2 startPoint);
     
     /// <summary>
     /// Draw a line from the current point to a given point.
     /// </summary>
-    /// <param name="x">Horizontal coordinate to draw to.</param>
-    /// <param name="y">Vertical coordinate to draw to.</param>
-    void LineTo(double x, double y);
+    /// <param name="endPoint">Point to move to.</param>
+    void LineTo(Vector2 endPoint);
 
     /// <summary>
     /// Draw a parabolic bezier curve
     /// </summary>
-    /// <param name="controlX">Horizontal component of the control point</param>
-    /// <param name="controlY">Vertical component of the control point</param>
-    /// <param name="finalX">Horizontal component of the final point</param>
-    /// <param name="finalY">Vertical component of the final point</param>
-    void ConicCurveTo(double controlX, double controlY, double finalX, double finalY);
+    /// <param name="control">The control point</param>
+    /// <param name="final">The final point</param>
+    void ConicCurveTo(Vector2 control, Vector2 final);
 
     /// <summary>
     /// Draw a cubic bezier curve.
     /// </summary>
-    /// <param name="control1X">Horizontal component of the first control point</param>
-    /// <param name="control1Y">Vertical component of the first control point</param>
-    /// <param name="control2X">Horizontal component of the second control point</param>
-    /// <param name="control2Y">Vertical component of the second control point</param>
-    /// <param name="finalX">Horizontal component of the final point</param>
-    /// <param name="finalY">Vertical component of the final point</param>
-    void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-        double finalX, double finalY);
+    /// <param name="control1">The first control point</param>
+    /// <param name="control2">The second control point</param>
+    /// <param name="final">The final point</param>
+    void CurveTo(Vector2 control1, Vector2 control2, Vector2 final);
 
     /// <summary>
     /// Draw a line from the current point to the beginning of this polycurve, and close it.

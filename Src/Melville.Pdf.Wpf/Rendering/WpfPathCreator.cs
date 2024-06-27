@@ -21,22 +21,24 @@ internal class WpfPathCreator : IDrawTarget
         Geometry = SetGeometry;
     }
 
-    public void MoveTo(double x, double y)
+
+
+    public void MoveTo(Vector2 startPoint)
     {
-        figure = new PathFigure(){StartPoint = new Point(x, y)};
+        figure = new PathFigure(){StartPoint = startPoint.AsPoint()};
         RequireGeometry().Figures.Add(figure);
     }
 
-    public void LineTo(double x, double y) => figure?.Segments.Add(new LineSegment(new Point(x,y), true));
+    public void LineTo(Vector2 endPoint) => figure?.Segments.Add(
+        new LineSegment(endPoint.AsPoint(), true));
 
-    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) =>
-        figure?.Segments.Add(new QuadraticBezierSegment(new Point(controlX, controlY), new Point(finalX, finalY),
-            true));
+    public void ConicCurveTo(Vector2 control, Vector2 endPoint) =>
+        figure?.Segments.Add(new QuadraticBezierSegment(
+            control.AsPoint(), endPoint.AsPoint(), true));
 
-    public void CurveTo( 
-        double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY) => 
+    public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) => 
         figure?.Segments.Add(new BezierSegment(
-            new Point(control1X, control1Y), new Point(control2X, control2Y), new Point(finalX, finalY), true));
+            control1.AsPoint(), control2.AsPoint(), endPoint.AsPoint(), true));
 
     public void ClosePath()
     {

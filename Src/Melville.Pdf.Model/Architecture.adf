@@ -39,5 +39,8 @@ DocumentRenderers => FontMappings
 #Cabin the freetype dependency
 Melville.Pdf.Model.Renderers.FontRenderings.FreeType.* ^=> Melville.SharpFont.*
 
+#Cabin the Melville.Fonts dependency
+Melville.Pdf.Model.Renderers.FontRenderings.FreeType.* ^=> Melville.Fonts.*
+
 #The reader can see everything
 Melville.Pdf.Model.PdfReader => Melville.Pdf.Model.*

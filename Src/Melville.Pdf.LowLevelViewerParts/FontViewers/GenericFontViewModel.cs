@@ -20,10 +20,10 @@ public partial class GenericFontViewModel
     {
         GlyphViewModel = new MultiGlyphViewModel((await Font.GetGlyphSourceAsync()));
         CmapViewModel = (await Font.GetCmapSourceAsync()).PrintCMap();
-        GlyphNames = new MultiStringViewModel(LoadGlyphs, "Glyph Names");
+        GlyphNames = new MultiStringViewModel(LoadGlyphsAsync, "Glyph Names");
     }
 
-    private async ValueTask<IReadOnlyList<string>> LoadGlyphs() =>
+    private async ValueTask<IReadOnlyList<string>> LoadGlyphsAsync() =>
         (await Font.GlyphNamesAsync())
         .Select((item, i) => $"0x{i:X} => {item}")
         .ToArray();
