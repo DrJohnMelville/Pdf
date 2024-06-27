@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using Melville.SharpFont;
 
@@ -24,7 +25,8 @@ internal struct FreeTypeOutlineWriter
     private static readonly OutlineFuncs drawHandle = new(MoveTo, LineTo, ConicTo, CubicTo, 0, 0);
     private static int MoveTo(ref FTVector to, IntPtr user)
     {
-        Target(user).MoveTo(to.X*scale, to.Y*scale);
+        double y = to.Y*scale;
+        Target(user).MoveTo(new Vector2((float)(to.X*scale), (float)y));
         return 0;
     }
 
@@ -33,20 +35,32 @@ internal struct FreeTypeOutlineWriter
 
     private static int LineTo(ref FTVector to, IntPtr user)
     {
-        Target(user).LineTo(to.X*scale, to.Y*scale);
+        double y = to.Y*scale;
+        Target(user).LineTo(new Vector2((float)(to.X*scale), (float)y));
         return 0;
     }
 
     private static int ConicTo(ref FTVector control, ref FTVector to, IntPtr user)
     {
-        Target(user).ConicCurveTo(control.X*scale,control.Y*scale, to.X*scale, to.Y*scale);
+        double controlY = control.Y*scale;
+        double finalX = to.X*scale;
+        double finalY = to.Y*scale;
+        Target(user).ConicCurveTo(new Vector2((float)(control.X*scale), (float)controlY), 
+            new Vector2((float)finalX, (float)finalY));
         return 0;
     }
 
     private static int CubicTo(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
     {
-        Target(user).CurveTo(control1.X*scale, control1.Y*scale, control2.X*scale, control2.Y*scale, 
-            to.X*scale, to.Y*scale);
+        double control1Y = control1.Y*scale;
+        double control2X = control2.X*scale;
+        double control2Y = control2.Y*scale;
+        double finalX = to.X*scale;
+        double finalY = to.Y*scale;
+        Target(user).CurveTo(
+            new Vector2((float)(control1.X*scale), (float)control1Y), 
+            new Vector2((float)control2X, (float)control2Y), 
+            new Vector2((float)finalX, (float)finalY));
         return 0;
     }
 }
