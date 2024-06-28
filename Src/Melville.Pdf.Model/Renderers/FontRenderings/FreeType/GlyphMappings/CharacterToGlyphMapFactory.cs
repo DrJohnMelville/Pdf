@@ -57,7 +57,8 @@ internal readonly partial struct CharacterToGlyphMapFactory
     private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMappingAsync()
     {
         var array = new uint[256];
-        var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
+        var nameToGlyphMapper = await new NameToGlyphMappingFactory(
+            new FreeTypeFace(face)).CreateAsync().CA();
         await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappingsAsync().CA())
             .WriteEncodingToArrayAsync(encoding.LowLevel).CA();
         WriteBackupMappings(array);

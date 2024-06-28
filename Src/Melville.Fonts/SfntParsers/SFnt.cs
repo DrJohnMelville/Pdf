@@ -91,6 +91,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    public Task<ParsedHorizontalMetrics> HorizontalMetricsAsync() =>
        DelayedLoadTableAsync(SFntTableName.HorizontalMetrics, CreateHorizontalMetricsAsync);
 
+   /// <inheritdoc />
    public override async ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => 
        await HorizontalMetricsAsync().CA();
 
@@ -182,9 +183,9 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    }
 
    private Task<PostscriptData> GetPostscriptDataAsync() =>
-       DelayedLoadTableAsync<PostscriptData>(SFntTableName.PostscriptData, LoadPostscriptData);
+       DelayedLoadTableAsync<PostscriptData>(SFntTableName.PostscriptData, LoadPostscriptDataAsync);
 
-   private Task<PostscriptData> LoadPostscriptData() => 
+   private Task<PostscriptData> LoadPostscriptDataAsync() => 
        FindTable(SFntTableName.PostscriptData) is not { } table ? 
            Task.FromResult(new PostscriptData()) : 
            new PostscriptTableParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask();

@@ -10,7 +10,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource, 
+internal class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource, 
     IDisposable, IGlyphWidthSource
 {
     public ValueTask<ICMapSource> GetCmapSourceAsync() => 
@@ -69,7 +69,7 @@ public class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource,
     }
 }
 
-public class FreeTypeCmapImplementation (CharMap charmap) : ICmapImplementation
+internal class FreeTypeCmapImplementation (CharMap charmap) : ICmapImplementation
 {
     public IEnumerable<(int Bytes, uint Character, uint Glyph)> AllMappings() =>
         charmap.AllMappings().Select(i => (2, i.Char, i.Glyph));

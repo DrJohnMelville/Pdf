@@ -9,6 +9,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
 /// </summary>
 public partial class PostscriptData
 {
+    /// <summary>
+    /// Create an empty PostscriptData -- representing a font with no postscriptdata table
+    /// </summary>
     public PostscriptData()
     {
     }

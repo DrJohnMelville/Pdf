@@ -2,6 +2,9 @@
 
 namespace Melville.Fonts;
 
+/// <summary>
+/// This object can compute the width of glyphs in a font.
+/// </summary>
 public interface IGlyphWidthSource
 {
     /// <summary>

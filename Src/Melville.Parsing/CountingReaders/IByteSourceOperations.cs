@@ -27,12 +27,12 @@ public static class IByteSourceOperations
         }
     }
 
-    public static async ValueTask<IByteSource> SkipForwardToAsync(this IByteSource source, long position, IMultiplexSource multiplexSource)
-    {
-        if (source.Position > position) source= new ByteSource(multiplexSource.ReadPipeFrom(0));
-        await source.SkipForwardToAsync(position).CA();
-        return source;
-    }
+    /// <summary>
+    /// Advance the bytesource to a given index.
+    /// </summary>
+    /// <param name="source">The IByteSource to advance</param>
+    /// <param name="position">The position to advance to.</param>
+    /// <exception cref="InvalidOperationException">If the current position is greater than the desired position</exception>
     public static async ValueTask SkipForwardToAsync(this IByteSource source, long position)
     {
         if (position < source.Position)
@@ -47,6 +47,11 @@ public static class IByteSourceOperations
         }
     }
 
+    /// <summary>
+    /// Advance the IByteSource by a given number of bytes
+    /// </summary>
+    /// <param name="source">The source</param>
+    /// <param name="bytes">The number of byutes to skip</param>
     public static ValueTask SkipOverAsync(this IByteSource source, int bytes) =>
         source.SkipForwardToAsync(source.Position + bytes);
 }
