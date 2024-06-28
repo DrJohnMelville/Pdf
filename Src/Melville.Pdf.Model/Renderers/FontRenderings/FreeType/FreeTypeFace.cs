@@ -10,7 +10,8 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource
+public class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource, 
+    IDisposable, IGlyphWidthSource
 {
     public ValueTask<ICMapSource> GetCmapSourceAsync() => 
         ValueTask.FromResult<ICMapSource>(this);
@@ -43,9 +44,28 @@ public class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource
 
     public int GlyphCount => font.GlyphCount;
 
-    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget
+    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) 
+        where T : IGlyphTarget
     {
-        throw new NotImplementedException();
+        LoadGlyph(glyph);
+        new FreeTypeOutlineWriter(target).Decompose(font.Glyph.Outline);
+        return ValueTask.CompletedTask;
+    }
+
+    private void LoadGlyph(uint glyph)
+    {
+        if (glyph >= font.GlyphCount) glyph = 0;
+        font.LoadGlyph(glyph, LoadFlags.NoBitmap | LoadFlags.NoHinting, LoadTarget.Normal);
+    }
+
+    public void Dispose() => font.Dispose();
+
+    public ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => new(this);
+
+    public float GlyphWidth(ushort glyph)
+    {
+        LoadGlyph(glyph);
+        return (float) font.Glyph.Advance.X / 64;
     }
 }
 

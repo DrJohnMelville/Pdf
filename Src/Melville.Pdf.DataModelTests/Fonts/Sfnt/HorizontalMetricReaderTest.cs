@@ -22,13 +22,22 @@ public class HorizontalMetricReaderTest
             0008
             """.BitsFromHex());
 
-        var metrics = await new HorizontalMetricsParser(data.ReadPipeFrom(0), 3, 5).ParseAsync();
+        var metrics = await new HorizontalMetricsParser(data.ReadPipeFrom(0), 3, 5, 1)
+            .ParseAsync();
 
         metrics[0].Should().Be(new HorizontalMetric(1, 2));
         metrics[1].Should().Be(new HorizontalMetric(3, 4));
         metrics[2].Should().Be(new HorizontalMetric(5, 6));
         metrics[3].Should().Be(new HorizontalMetric(5, 7));
         metrics[4].Should().Be(new HorizontalMetric(5, 8));
+
+        metrics.GlyphWidth(0).Should().Be(1);
+        metrics.GlyphWidth(1).Should().Be(3);
+        metrics.GlyphWidth(2).Should().Be(5);
+        metrics.GlyphWidth(3).Should().Be(5);
+        metrics.GlyphWidth(4).Should().Be(5);
+        metrics.GlyphWidth(40).Should().Be(5);
+
 
     }
 }

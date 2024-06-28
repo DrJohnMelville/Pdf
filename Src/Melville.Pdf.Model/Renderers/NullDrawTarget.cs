@@ -30,12 +30,17 @@ public partial class NullDrawTarget : IDrawTarget
     }
 
     /// <inheritdoc />
-    public void ConicCurveTo(Vector2 control, Vector2 endPoint)
+    public void CurveTo(Vector2 control, Vector2 endPoint)
     {
     }
 
     /// <inheritdoc />
     public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint)
+    {
+    }
+
+    /// <inheritdoc />
+    public void EndGlyph()
     {
     }
 

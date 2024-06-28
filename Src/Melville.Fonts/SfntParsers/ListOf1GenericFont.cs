@@ -32,4 +32,7 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
 
     /// <inheritdoc/>
     public abstract ValueTask<string[]> GlyphNamesAsync();
+
+    /// <inheritdoc />
+    public abstract ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync();
 }

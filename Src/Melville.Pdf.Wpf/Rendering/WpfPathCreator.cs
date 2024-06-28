@@ -32,7 +32,7 @@ internal class WpfPathCreator : IDrawTarget
     public void LineTo(Vector2 endPoint) => figure?.Segments.Add(
         new LineSegment(endPoint.AsPoint(), true));
 
-    public void ConicCurveTo(Vector2 control, Vector2 endPoint) =>
+    public void CurveTo(Vector2 control, Vector2 endPoint) =>
         figure?.Segments.Add(new QuadraticBezierSegment(
             control.AsPoint(), endPoint.AsPoint(), true));
 
@@ -43,6 +43,10 @@ internal class WpfPathCreator : IDrawTarget
     public void ClosePath()
     {
         if (figure != null && ShouldClose(figure)) figure.IsClosed = true;
+    }
+
+    public void EndGlyph()
+    {
     }
 
     private bool ShouldClose(PathFigure pathFigure)

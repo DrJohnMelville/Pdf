@@ -50,9 +50,10 @@ internal readonly partial struct FreeTypeFontFactory
     private async ValueTask<IRealizedFont> FontFromFaceAsync(Face face)
     {
         face.SetCharSize(0, 65, 0, 0);
+        var iFace = new FreeTypeFace(face);
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
-            new FreeTypeFont(face,
+            new FreeTypeFont(iFace,
                 await new FontRenderings.GlyphMappings.ReadCharacterFactory(
                         fontDefinitionDictionary, encoding,
                         new NameToGlyphMappingFactory(face).Create())

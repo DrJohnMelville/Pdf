@@ -26,4 +26,10 @@ public interface IGenericFont
     /// </summary>
     /// <returns></returns>
     ValueTask<string[]> GlyphNamesAsync();
+
+    /// <summary>
+    /// Gets the object that holds the glyph widths.
+    /// </summary>
+    /// <returns></returns>
+    ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync();
 }

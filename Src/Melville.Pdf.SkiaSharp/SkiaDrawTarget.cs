@@ -51,14 +51,16 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
         path?.Close();
     }
 
-    public void ConicCurveTo(Vector2 control, Vector2 endPoint) =>
+    public void CurveTo(Vector2 control, Vector2 endPoint) =>
         path?.QuadTo(control.X, control.Y, endPoint.X, endPoint.Y);
 
     public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) =>
         path?.CubicTo(control1.X, control1.Y, control2.X, control2.Y,
             endPoint.X, endPoint.Y);
 
-
+    public void EndGlyph()
+    {
+    }
 
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {

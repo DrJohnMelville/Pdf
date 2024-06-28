@@ -91,15 +91,19 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    public Task<ParsedHorizontalMetrics> HorizontalMetricsAsync() =>
        DelayedLoadTableAsync(SFntTableName.HorizontalMetrics, CreateHorizontalMetricsAsync);
 
+   public override async ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => 
+       await HorizontalMetricsAsync().CA();
+
    private async Task<ParsedHorizontalMetrics> CreateHorizontalMetricsAsync()
    {
        if (FindTable(SFntTableName.HorizontalMetrics) is not { } table)
-           return new ParsedHorizontalMetrics([], 0);
+           return new ParsedHorizontalMetrics([], 0, 1);
 
        var horizontalHeader = await HorizontalHeaderTableAsync().CA();
        var maximums = await MaximumProfileTableAsync().CA();
+       var head = await HeadTableAsync().CA();
        return await new HorizontalMetricsParser(source.ReadPipeFrom(table.Offset),
-           horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs).ParseAsync().CA();
+           horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs, head.UnitsPerEm).ParseAsync().CA();
    }
 
    /// <summary>
