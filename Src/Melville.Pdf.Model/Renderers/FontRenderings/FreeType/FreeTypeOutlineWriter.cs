@@ -6,15 +6,9 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-internal struct FreeTypeOutlineWriter
+internal struct FreeTypeOutlineWriter(IGlyphTarget target)
 {
-    private readonly IGlyphTarget target;
-    private const float scale = 16.0f; 
-    
-    public FreeTypeOutlineWriter(IGlyphTarget target)
-    {
-        this.target = target;
-    }
+    private const float scale = 16.0f;
 
     public void Decompose(Outline outline)
     {

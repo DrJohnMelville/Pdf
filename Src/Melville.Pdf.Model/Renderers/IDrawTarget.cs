@@ -12,6 +12,7 @@ public interface IDrawTarget: IDisposable, IGlyphTarget
     /// <summary>
     /// Set the drawing transform.
     /// </summary>
+    [Obsolete("I think this is unnecessary in the new font renderer")]
     void SetDrawingTransform(in Matrix3x2 transform);
 
     /// <summary>

@@ -20,7 +20,7 @@ public class GlyphDesignPainter (
     public void Paint(int maxIndex)
     {
         var takeValue = maxIndex < 0 ? int.MaxValue : maxIndex + 1;
-        if (points.Count == 0) return;
+        if (points is null || points.Count == 0) return;
         DrawGlyph(takeValue);
         DrawUnitRect();
         DrawBoundingBox();

@@ -10,6 +10,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
+[Obsolete("Freetype is going away")]
 internal class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource, 
     IDisposable, IGlyphWidthSource
 {
