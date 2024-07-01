@@ -28,7 +28,7 @@ internal readonly partial struct FreeTypeFontFactory
     public async ValueTask<IRealizedFont> FromCSharpStreamAsync(
         Stream source, int index = 0)
     {
-        var iFace = await StreamToGenericFontMF(source, index).CA();
+        var iFace = await StreamToGenericFontFT(source, index).CA();
         return await FontFromFaceAsync(iFace).CA();
     }
 
@@ -50,8 +50,7 @@ internal readonly partial struct FreeTypeFontFactory
             GlobalFreeTypeMutex.Release();
         }
         face.SetCharSize(0, 65, 0, 0);
-        var iFace = new FreeTypeFace(face);
-        return iFace;
+        return new FreeTypeFace(face);
     }
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
@@ -66,7 +65,7 @@ internal readonly partial struct FreeTypeFontFactory
     {
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
-            new FreeTypeFont(iFace,
+            new GenericToRealizedFontWrapper(iFace,
                 await new FontRenderings.GlyphMappings.ReadCharacterFactory(
                         fontDefinitionDictionary, encoding,
                         await new NameToGlyphMappingFactory(iFace).CreateAsync().CA())

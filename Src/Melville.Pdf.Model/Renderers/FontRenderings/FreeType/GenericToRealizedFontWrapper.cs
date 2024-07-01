@@ -13,12 +13,12 @@ public static class GenericFontExtractor
 {
     public static IGenericFont? ExtractGenericFont(this IRealizedFont font) =>font switch
         {
-            FreeTypeFont ft => ft.Face,
+            GenericToRealizedFontWrapper ft => ft.Face,
             _ => null
         };
 }
 
-internal partial class FreeTypeFont : IRealizedFont, IDisposable
+internal partial class GenericToRealizedFontWrapper : IRealizedFont, IDisposable
 {
     [FromConstructor] public IGenericFont Face { get; } // Lowlevel reader uses this property dynamically 
     [FromConstructor] public IReadCharacter ReadCharacter { get; }

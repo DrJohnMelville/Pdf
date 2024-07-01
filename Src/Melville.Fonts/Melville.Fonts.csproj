@@ -25,4 +25,8 @@
 		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Type1TextParsers\" />
+	</ItemGroup>
+
 </Project>

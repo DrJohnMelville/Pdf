@@ -7,20 +7,34 @@ internal class TtToGlyphTarget<T>(T target) :ITrueTypePointTarget where
 {
     Vector2 lastPoint;
     private bool lastOnCurve = true;
+    Vector2 contourStartPoint = Vector2.Zero;
+    private bool contourStartOnCurve = false;
 
     public void AddPoint(Vector2 point, bool onCurve, bool isContourStart, bool isContourEnd)
     {
         if (isContourStart)
-            NewMethod(point);
-        else if (onCurve)
+            ContourStartPoint(point, onCurve);
+        else
+            InsertPoint(point, onCurve);
+        if (isContourEnd)
+            CloseContour();
+    }
+
+    private void InsertPoint(Vector2 point, bool onCurve)
+    {
+        if (onCurve)
             OnCurvePoint(point);
         else OffCurvePoint(point);
     }
 
-    private void NewMethod(Vector2 point)
+    private void CloseContour() => InsertPoint(contourStartPoint, contourStartOnCurve);
+
+    private void ContourStartPoint(Vector2 point, bool isOnCurve)
     {
         target.MoveTo(point);
-        lastOnCurve = true;
+        contourStartPoint = point;
+        contourStartOnCurve = isOnCurve;
+        lastOnCurve = isOnCurve;
         lastPoint = point;
     }
 
