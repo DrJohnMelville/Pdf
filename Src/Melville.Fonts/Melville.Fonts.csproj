@@ -27,8 +27,4 @@
 		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Type1TextParsers\" />
-	</ItemGroup>
-
 </Project>

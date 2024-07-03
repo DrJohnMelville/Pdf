@@ -126,6 +126,12 @@ public class OperatorsTest
     [InlineData("3 string dup currentfile exch readstring JD", "01: false\r\n02: (JD)\r\n03: (JD\u0000)")]
     [InlineData("3 string dup currentfile exch readstring ", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
     [InlineData("3 string dup currentfile exch readstring", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
+    [InlineData("3 currentfile closefile", "01: 3")]
+    public void WithFileOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine(
+            PostscriptOperatorCollections.Empty().WithBaseLanguage()));
+    
+    [Theory]
     [InlineData("2 string dup 0 102 put dup 1 103 put", "01: (fg)")]
     [InlineData("(Hello) length", "01: 5")]
     [InlineData("(Hello) 1 get", "01: 101")]

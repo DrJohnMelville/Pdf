@@ -17,6 +17,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("RelationalAndBitwiseOperators")]
 [MacroItem("DictionaryOperators")]
 [MacroItem("StringOperators")]
+[MacroItem("FileOperators")]
 [MacroItem("ResourceOperators")]
 [MacroCode("""
     /// <summary>
@@ -72,5 +73,6 @@ public static partial class PostscriptOperatorCollections
         .WithRelationalAndBitwiseOperators()
         .WithDictionaryOperators()
         .WithStringOperators()
-        .WithResourceOperators();
+        .WithResourceOperators()
+        .WithFileOperators();
 }
