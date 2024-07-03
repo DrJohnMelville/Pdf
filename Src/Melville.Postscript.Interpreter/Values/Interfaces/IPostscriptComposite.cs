@@ -41,7 +41,7 @@ public interface IPostscriptComposite
     /// <summary>
     /// Creates a forall cursor for this composite.
     /// </summary>
-    internal ForAllCursor CreateForAllCursor();
+    public ForAllCursor CreateForAllCursor();
 }
 
 /// <summary>

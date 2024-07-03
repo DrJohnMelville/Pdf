@@ -122,6 +122,11 @@ public class OperatorsTest
             PostscriptOperatorCollections.Empty().WithMathOperators()));
 
     [Theory]
+    [InlineData("3 string dup currentfile exch readstring JDM", "01: true\r\n02: (JDM)\r\n03: (JDM)")]
+    [InlineData("3 string dup currentfile exch readstring JD", "01: false\r\n02: (JD)\r\n03: (JD\u0000)")]
+    [InlineData("3 string dup currentfile exch readstring ", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
+    [InlineData("3 string dup currentfile exch readstring", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
+    [InlineData("2 string dup 0 102 put dup 1 103 put", "01: (fg)")]
     [InlineData("(Hello) length", "01: 5")]
     [InlineData("(Hello) 1 get", "01: 101")]
     [InlineData("(Hello) dup 1 102 put", "01: (Hfllo)")]

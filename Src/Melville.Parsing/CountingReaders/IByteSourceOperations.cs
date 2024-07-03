@@ -21,8 +21,30 @@ public static class IByteSourceOperations
         while (true)
         {
             var result = await source.ReadAsync().CA();
-            if (result.Buffer.Length >= length || 
-                result.IsCompleted || result.IsCanceled) return result;
+            if (HaveEnoughBytes(length, result)) return result;
+            source.MarkSequenceAsExamined();
+        }
+    }
+
+    private static bool HaveEnoughBytes(int length, ReadResult result)
+    {
+        return result.Buffer.Length >= length || 
+               result.IsCompleted || result.IsCanceled;
+    }
+
+    /// <summary>
+    /// Read from a byteSource until at least length bytes are available.
+    /// or the end of the source is reached
+    /// </summary>
+    /// <param name="source">The bytsource to read from.</param>
+    /// <param name="length">The minimum required length</param>
+    /// <returns>The ReadResult from the successful read operation</returns>
+    public static ReadResult ReadAtLeast(this IByteSource source, int length)
+    {
+        while (true)
+        {
+            var result = source.Read();
+            if (HaveEnoughBytes(length, result)) return result;
             source.MarkSequenceAsExamined();
         }
     }

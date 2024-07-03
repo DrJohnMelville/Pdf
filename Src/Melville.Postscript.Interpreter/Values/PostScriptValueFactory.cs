@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Numbers;
@@ -11,6 +12,12 @@ namespace Melville.Postscript.Interpreter.Values;
 /// </summary>
 public static class PostscriptValueFactory
 {
+    /// <summary>
+    /// Create a PostscriptValue representing a long.
+    /// </summary>
+    /// <param name="value">The long to encode</param>
+    public static PostscriptValue Create(IByteSourceWithGlobalPosition value) =>
+        new(value, PostscriptBuiltInOperations.PushArgument, default);
     /// <summary>
     /// Create a PostscriptValue representing a long.
     /// </summary>

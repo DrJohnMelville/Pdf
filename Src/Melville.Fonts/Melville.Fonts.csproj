@@ -23,6 +23,8 @@
 		<ProjectReference Include="..\Melville.Fonts.TableGenerator\Melville.Fonts.TableGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
 
 		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+
+		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

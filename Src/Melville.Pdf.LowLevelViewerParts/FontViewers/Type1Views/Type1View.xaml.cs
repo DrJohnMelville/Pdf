@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Melville.Pdf.LowLevelViewerParts.FontViewers
+namespace Melville.Pdf.LowLevelViewerParts.FontViewers.Type1Views
 {
     /// <summary>
-    /// Interaction logic for SfntView.xaml
+    /// Interaction logic for Type1View.xaml
     /// </summary>
-    public partial class SfntView : UserControl
+    public partial class Type1View : UserControl
     {
-        public SfntView()
+        public Type1View()
         {
             InitializeComponent();
         }

@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 public class DecryptText
 {
     [Fact]
-    public async Task DecryptCharstring()
+    public async Task DecryptCharstringAsync()
     {
         var source = new MemoryStream("""
             10BF31704FAB5B1F03F9B68B1F39A66521B1841F14
@@ -20,7 +20,7 @@ public class DecryptText
 
         var result = new byte[source.Length - 4];
 
-        var stream = await ExecDecodeStream.WrapAsync(source, 4330);
+        var stream = new ExecDecodeStream(source, 4330);
 
         await result.FillBufferAsync(0, 10, stream);
         await result.FillBufferAsync(10, result.Length - 10, stream);

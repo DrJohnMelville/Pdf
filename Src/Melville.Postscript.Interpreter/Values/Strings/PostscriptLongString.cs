@@ -27,6 +27,9 @@ internal sealed partial class
         value.Span[indexOrKey.Get<int>()] = (byte)setValue.Get<int>();
     }
 
+    internal PostscriptLongString Substring(int start, int length) =>
+        new PostscriptLongString(StringKind, value.Slice(start, length));
+
     public int Length => value.Length;
 
     public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target)
