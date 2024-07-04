@@ -1,9 +1,38 @@
-﻿using Melville.Fonts.Type1TextParsers;
+﻿using System.Drawing;
+using System.Numerics;
+using System.Windows;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
+using Melville.Fonts.Type1TextParsers;
 using Melville.INPC;
+using Melville.MVVM.Wpf.ViewFrames;
+using Melville.Pdf.LowLevelViewerParts.FontViewers.CFFGlyphViewers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers.Type1Views;
+
+
+public class Type1CharstringViewModel :CharStringViewModel, ICreateView
+{
+    private readonly Type1GenericFont font;
+
+    public Type1CharstringViewModel(Type1GenericFont font)
+    {
+        this.font = font;
+        PageSelector.MaxPage = font.GlyphCount-1;
+        LoadNewGlyph();
+    }
+
+    protected override ValueTask RenderGlyph(ICffGlyphTarget renderTemp)
+    {
+        if (font == null) return ValueTask.CompletedTask;
+        return font.RenderToCffGlyphTarget(
+            (uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
+    }
+
+    public UIElement View() => 
+        new CffGlyphView() { DataContext = this };
+}
 
 public partial class Type1ViewModel
 {
@@ -11,10 +40,13 @@ public partial class Type1ViewModel
     {
         gf = new(() => new(Font));
         dict = new(() => ExtractDictionary(Font.Dictionary).ToArray());
+        GlyphView = new Type1CharstringViewModel(Font);
     }
 
     private readonly Lazy<GenericFontViewModel> gf;
     public GenericFontViewModel GenericFont => gf.Value;
+
+    public Type1CharstringViewModel GlyphView { get; }
 
     private readonly Lazy<TextTree[]> dict;
     public TextTree[] Dictionary => dict.Value;

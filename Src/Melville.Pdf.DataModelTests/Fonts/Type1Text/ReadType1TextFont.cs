@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Fonts;
 using Melville.Fonts.Type1TextParsers;
 using Melville.Parsing.MultiplexSources;
 using Xunit;
@@ -20,11 +21,20 @@ public class ReadType1TextFont()
     }
 
     [Fact]
-    public async Task ReadTextAsync()
+    public async Task GlyphCountAsync()
     {
-        var font = await new Type1Parser(MultiplexSourceFactory.Create(fontText))
-            .ParseAsync();
+        var font = await ReadFontAsync();
 
-        (font[0] as Type1GenericFont)!.Dictionary.Should().NotBeNull();
+        (await font.GetGlyphSourceAsync()).GlyphCount.Should().Be(4);
+        (await font.GlyphNamesAsync()).Should().BeEquivalentTo(
+            "n",".notdef","one","j");
+        (await font.GetCmapSourceAsync()).Count.Should().Be(0);
+    }
+
+    private static async Task<IGenericFont> ReadFontAsync()
+    {
+        var font = (await new Type1Parser(MultiplexSourceFactory.Create(fontText))
+            .ParseAsync())[0];
+        return font;
     }
 }

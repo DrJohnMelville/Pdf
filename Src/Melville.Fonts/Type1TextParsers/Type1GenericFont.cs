@@ -1,8 +1,13 @@
-﻿using System.Numerics;
+﻿using System.Buffers;
+using System.Numerics;
 using Melville.Fonts.SfntParsers;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Postscript.Interpreter.Values.Composites;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Fonts.Type1TextParsers;
 
@@ -17,6 +22,10 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     /// (this may always be null in release builds.)
     /// </summary>
     [FromConstructor] public IPostscriptDictionary? Dictionary { get; }
+    [FromConstructor] private readonly string[] glyphNames;
+    [FromConstructor] private readonly Memory<byte>[] charStrings;
+    [FromConstructor] private readonly int notDefIndex;
+    [FromConstructor] private readonly Matrix3x2 glyphTransform;
 
     /// <inheritdoc />
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
@@ -25,7 +34,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     public override ValueTask<IGlyphSource> GetGlyphSourceAsync() => new(this);
 
     /// <inheritdoc />
-    public override ValueTask<string[]> GlyphNamesAsync() => new([]);
+    public override ValueTask<string[]> GlyphNamesAsync() => new(glyphNames);
 
     /// <inheritdoc />
     public override ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => new(this);
@@ -51,12 +60,21 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     }
 
     /// <inheritdoc />
-    public int GlyphCount => 0;
+    public int GlyphCount => glyphNames.Length;
 
     /// <inheritdoc />
-    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget
+    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget => 
+        RenderToCffGlyphTarget(glyph, new CffGlyphTargetWrapper<T>(target), transform);
+
+    public async ValueTask RenderToCffGlyphTarget<T>(
+        uint glyph, T targetWrapper, Matrix3x2 transform) where T : ICffGlyphTarget
     {
-        return ValueTask.CompletedTask;
+        if (glyph >= charStrings.Length) glyph = (uint)notDefIndex;
+        using var executor = new CffInstructionExecutor<T>(
+            targetWrapper, glyphTransform*transform,
+            NullExecutorSelector.Instance, NullExecutorSelector.Instance, []);
+        await executor.ExecuteInstructionSequenceAsync(
+            new ReadOnlySequence<byte>(charStrings[glyph])).CA();
     }
 
     /// <inheritdoc />

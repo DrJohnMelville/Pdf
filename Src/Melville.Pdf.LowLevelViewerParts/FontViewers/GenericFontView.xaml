@@ -15,7 +15,7 @@
             <viewFrames:ViewFrame Content="{Binding CmapViewModel}"></viewFrames:ViewFrame>
         </TabItem>
         <TabItem Header="Glyph Names">
-
+            <viewFrames:ViewFrame Content="{Binding GlyphNames}"></viewFrames:ViewFrame>
         </TabItem>
     </TabControl>
 </UserControl>

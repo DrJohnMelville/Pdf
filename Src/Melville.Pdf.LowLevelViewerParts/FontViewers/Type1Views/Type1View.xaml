@@ -17,6 +17,9 @@
                 </TreeView.ItemTemplate>
             </TreeView>
         </TabItem>
+        <TabItem Header="Glyph View">
+            <viewFrames:ViewFrame Content="{Binding GlyphView}"/>
+        </TabItem>
         <TabItem Header="Generic Font">
             <viewFrames:ViewFrame Content="{Binding GenericFont}" />
         </TabItem>

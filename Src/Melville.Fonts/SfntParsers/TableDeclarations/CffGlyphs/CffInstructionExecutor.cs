@@ -142,6 +142,15 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
             case CharStringOperators.Return: return ReturnFromSubroutineAsync();
             case CharStringOperators.Blend: return BlendAsync();
             case CharStringOperators.VsIndex: VsIndex(); break;
+            //type 1 specific operators
+            case CharStringOperators.ClosePath: break; // all paths are closed.
+            case CharStringOperators.HStem3:  break;
+            case CharStringOperators.Seac:  break; 
+            case CharStringOperators.SbW:  break;
+            case CharStringOperators.Hsbw:  break;
+            case CharStringOperators.CallOtherSubr:  break;
+            case CharStringOperators.Pop:  break;
+            case CharStringOperators.SetCurrentPoint:  break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
         }

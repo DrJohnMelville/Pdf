@@ -35,6 +35,10 @@ public enum CharStringOperators
     /// </summary>
     RRCurveTo = 0x08,
     /// <summary>
+    /// In type 1 fonts, close the stroke path.  (Can be a noop, because we c lose all paths.)
+    /// </summary>
+    ClosePath = 0x09,
+    /// <summary>
     /// Call a local subroutine
     /// </summary>
     CallSubr = 0x0A,
@@ -46,6 +50,10 @@ public enum CharStringOperators
     /// Access the extended instruction set with the next byte
     /// </summary>
     Escape = 0x0C,
+    /// <summary>
+    /// In type 1 fonts set the font width and left sidebearing point
+    /// </summary>
+    Hsbw = 0x0D,
     /// <summary>
     /// End the charstring
     /// </summary>
@@ -115,6 +123,14 @@ public enum CharStringOperators
     /// </summary>
     HVCurveTo = 0x1F,
     /// <summary>
+    /// Brackets the dots in characters such as i and j and ?
+    /// </summary>
+    DotSection = 0x0C00,
+    /// <summary>
+    /// Hstem3 command in the type1 fonts definition
+    /// </summary>
+    HStem3 = 0x0C02,
+    /// <summary>
     /// Logical AND
     /// </summary>
     And = 0x0C03,
@@ -126,6 +142,14 @@ public enum CharStringOperators
     /// Logial NOT
     /// </summary>
     Not = 0x0C05,
+    /// <summary>
+    /// In type 1 fonts make an accented character from two other characters.
+    /// </summary>
+    Seac = 0x0C06,
+    /// <summary>
+    /// In type 1 fonts set the width of the font and the left sidebearing point.
+    /// </summary>
+    SbW = 0x0C07,
     /// <summary>
     /// Compute absolute value of top stack element
     /// </summary>
@@ -150,6 +174,14 @@ public enum CharStringOperators
     /// Check the top two stack elements for equality.
     /// </summary>
     Eq = 0x0C0F,
+    /// <summary>
+    ///  Type 1 Call other subr command.
+    /// </summary>
+    CallOtherSubr = 0x0C10,
+    /// <summary>
+    /// In type 1 fonts pop an item from the postscript stack to the Charstring stack.
+    /// </summary>
+    Pop = 0x0C11,
     /// <summary>
     /// Remove the top element from the stack.
     /// </summary>
@@ -194,6 +226,10 @@ public enum CharStringOperators
     /// Rotate the parameter array
     /// </summary>
     Roll = 0x0C1E,
+    /// <summary>
+    /// In a type 1 font  set an absolute current point without calling the moveto operatiom
+    /// </summary>
+    SetCurrentPoint = 0x0C21,
     /// <summary>
     /// draw a horizontal flex curve
     /// </summary>
