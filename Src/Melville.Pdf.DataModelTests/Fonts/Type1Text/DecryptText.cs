@@ -39,7 +39,8 @@ public class DecryptText
             81697F8E12B7F7DDD6E3D7248D965B1CD45E2114
             """.BitsFromHex();
 
-        DecodeType1Encoding.DecodeSegment(source, 4330);
+        ushort key = 4330;
+        DecodeType1Encoding.DecodeSegment(source, ref key);
 
         source.Should().BeEquivalentTo("""
             00000000BDF9B40D8BEF038BEF01F8ECEF018B16F9

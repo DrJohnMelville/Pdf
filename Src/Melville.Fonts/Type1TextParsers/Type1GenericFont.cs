@@ -69,6 +69,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     public async ValueTask RenderToCffGlyphTarget<T>(
         uint glyph, T targetWrapper, Matrix3x2 transform) where T : ICffGlyphTarget
     {
+        #warning -- need to be able to execute subrs
         if (glyph >= charStrings.Length) glyph = (uint)notDefIndex;
         using var executor = new CffInstructionExecutor<T>(
             targetWrapper, glyphTransform*transform,

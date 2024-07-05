@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -316,6 +317,13 @@ public class CharStringInterpreterTest
     }
 
     [Fact]
+    public async Task TestHstem3()
+    {
+        await ExecuteInstructionAsync("09");
+        target.VerifyNoOtherCalls();
+    }
+
+    [Fact]
     public async Task TestEndCharOperatorAsync()
     {
         await ExecuteInstructionAsync("0E");
@@ -339,6 +347,8 @@ public class CharStringInterpreterTest
     }
     
     [Theory]
+    [InlineData("09 0E")] // ClosePath
+    [InlineData("1c0001 1c0002 1c0003 1c0004 1c0005 1c0006 0C02 0E")] // hstem3
     [InlineData("1c0001 1c0002 01 0E")]
     [InlineData("1c0001 1c0002 03 0E")]
     [InlineData("1c0001 1c0002 12 0E")]
@@ -407,6 +417,7 @@ public class CharStringInterpreterTest
     }
 
     [Theory]
+    [InlineData("1c0001 1c0002 0c21 1c0000 1c0000 15", 1f, 2f)]
     [InlineData("1c0001 1c0002 0c1c 15", 2f, 1f)]
     [InlineData("1c0001 1c0002 1c0002 1c0003 0c1E 15", 2f, 1f)]
     [InlineData("1c0001 1c0002 1c0002 1cFFFF 0c1E 15", 2f, 1f)]
@@ -424,6 +435,24 @@ public class CharStringInterpreterTest
     {
         await ExecuteInstructionAsync("0c17 0e");
         target.Verify(i=>i.RelativeCharWidth(It.IsAny<float>()));
+        target.Verify(i=>i.EndGlyph());
+    }
+    [Theory()]
+    [InlineData("""
+        1c0001 1c0002 1c0003 1c0004 0c07
+        1c0000 04
+        0E
+        """, 4f)]
+    [InlineData("""
+        1c0001 1c0003 0D
+        1c0000 04
+        0E
+        """, 0f)]
+    public async Task TestSbwAndHsbw(string code, float yValue)
+    {
+        await ExecuteInstructionAsync(code);
+        target.Verify(i=>i.RelativeCharWidth(3));
+        target.Verify(i=>i.MoveTo(new Vector2(3,yValue)));
         target.Verify(i=>i.EndGlyph());
     }
     [Fact]

@@ -145,12 +145,14 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
             //type 1 specific operators
             case CharStringOperators.ClosePath: break; // all paths are closed.
             case CharStringOperators.HStem3:  break;
+            #warning implement the seac command
             case CharStringOperators.Seac:  break; 
-            case CharStringOperators.SbW:  break;
-            case CharStringOperators.Hsbw:  break;
+            case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
+            case CharStringOperators.Hsbw: DoSetBearingAndWidth2();  break;
+            #warning implement CallOtherSubr and pop
             case CharStringOperators.CallOtherSubr:  break;
             case CharStringOperators.Pop:  break;
-            case CharStringOperators.SetCurrentPoint:  break;
+            case CharStringOperators.SetCurrentPoint: DoSetCurrentPoint();  break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
         }
@@ -158,6 +160,32 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
         return ValueTask.FromResult(0);
     }
 
+
+    #endregion
+
+    #region Type 1 font specific operations
+
+    private void DoSetBearingAndWidth4()
+    {
+        if (StackSize < 4) return;
+        target.RelativeCharWidth(Stack[2].FloatValue);
+        CurrentX = Stack[2].FloatValue;
+        CurrentY = Stack[3].FloatValue;
+    }
+    
+    private void DoSetBearingAndWidth2()
+    {
+        if (StackSize < 2) return;
+        target.RelativeCharWidth(CurrentStackSpan[1].FloatValue);
+        CurrentX = Stack[1].FloatValue;
+        CurrentY = 0f;
+    }
+    
+    private void DoSetCurrentPoint()
+    {
+        CurrentX = Stack[0].FloatValue;
+        CurrentY = Stack[1].FloatValue;
+    }
 
     #endregion
 

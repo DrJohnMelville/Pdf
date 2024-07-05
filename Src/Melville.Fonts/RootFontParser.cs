@@ -30,7 +30,7 @@ public static class RootFontParser
     private const uint trueFmt = 0x74_72_75_65;
     private const uint typ1Fmt = 0x74_79_70_31;
     private const uint ttcfFmt = 0x74_74_63_66;
-    private const uint Type1Format = 0x25_21_46_6F;
+    private const uint Type1Format = 0x25_21_00_00;
 
     private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
         IMultiplexSource src, ulong tag)
@@ -39,7 +39,7 @@ public static class RootFontParser
         {
             openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
             ttcfFmt => new FontCollectionParser(src).ParseAsync(),
-            Type1Format => new Type1Parser(src).ParseAsync(),
+            var x when (x & 0xFFFF0000) == Type1Format => new Type1Parser(src).ParseAsync(),
             _ => new([])
         };
     }
