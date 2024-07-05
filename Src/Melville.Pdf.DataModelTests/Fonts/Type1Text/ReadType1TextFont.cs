@@ -12,18 +12,34 @@ namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
 public class ReadType1TextFont()
 {
-    private static readonly byte[] fontText = GetFontText();
-
-    private static byte[] GetFontText([CallerFilePath] string callerPath = "")
+    private static byte[] GetFontText(
+        string name, [CallerFilePath] string callerPath = "")
     {
-        var fname = Path.Combine(Path.GetDirectoryName(callerPath)!, "Type1Text.fon");
+        var fname = Path.Combine(Path.GetDirectoryName(callerPath)!, name);
         return File.ReadAllBytes(fname);
+    }
+    private static async Task<IGenericFont> ReadFontAsync(string name)
+    {
+        var font = (await new Type1Parser(
+                MultiplexSourceFactory.Create(GetFontText(name)))
+            .ParseAsync())[0];
+        return font;
     }
 
     [Fact]
-    public async Task GlyphCountAsync()
+    public async Task ReadTrimmedAsync()
     {
-        var font = await ReadFontAsync();
+        var font = await ReadFontAsync("Type1Text.fon");
+
+        (await font.GetGlyphSourceAsync()).GlyphCount.Should().Be(4);
+        (await font.GlyphNamesAsync()).Should().BeEquivalentTo(
+            "n",".notdef","one","j");
+        (await font.GetCmapSourceAsync()).Count.Should().Be(0);
+    }
+    [Fact]
+    public async Task REadFullType1Async()
+    {
+        var font = await ReadFontAsync("putr.pfa");
 
         (await font.GetGlyphSourceAsync()).GlyphCount.Should().Be(4);
         (await font.GlyphNamesAsync()).Should().BeEquivalentTo(
@@ -31,10 +47,4 @@ public class ReadType1TextFont()
         (await font.GetCmapSourceAsync()).Count.Should().Be(0);
     }
 
-    private static async Task<IGenericFont> ReadFontAsync()
-    {
-        var font = (await new Type1Parser(MultiplexSourceFactory.Create(fontText))
-            .ParseAsync())[0];
-        return font;
-    }
 }
