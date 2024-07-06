@@ -16,7 +16,7 @@ public partial class CffGlyphViewModel: CharStringViewModel
         LoadNewGlyph();
     }
 
-    protected override ValueTask RenderGlyph(ICffGlyphTarget renderTemp) => 
+    protected override ValueTask RenderGlyphAsync(ICffGlyphTarget renderTemp) => 
         GlpyhSource?.RenderCffGlyphAsync((uint)PageSelector.Page, renderTemp, 
             Matrix3x2.Identity) ?? ValueTask.CompletedTask;
 }

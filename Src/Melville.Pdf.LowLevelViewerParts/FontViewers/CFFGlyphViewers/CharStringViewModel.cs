@@ -26,10 +26,10 @@ public abstract partial class CharStringViewModel
     protected async void LoadNewGlyph()
     {
         var renderTemp = new CffGlyphBuffer();
-        await RenderGlyph(renderTemp);
+        await RenderGlyphAsync(renderTemp);
         RenderedGlyph = renderTemp;
     }
 
-    protected abstract ValueTask RenderGlyph(ICffGlyphTarget renderTemp);
+    protected abstract ValueTask RenderGlyphAsync(ICffGlyphTarget renderTemp);
 
 }

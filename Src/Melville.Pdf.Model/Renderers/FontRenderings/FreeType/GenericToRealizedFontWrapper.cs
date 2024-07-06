@@ -9,8 +9,16 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
+/// <summary>
+/// This allows the low level viewer to get a IGenericFont from an IRealizedFont
+/// </summary>
 public static class GenericFontExtractor
 {
+    /// <summary>
+    /// IGenericFont, if any, underlying the given realized
+    /// </summary>
+    /// <param name="font"></param>
+    /// <returns></returns>
     public static IGenericFont? ExtractGenericFont(this IRealizedFont font) =>font switch
         {
             GenericToRealizedFontWrapper ft => ft.Face,

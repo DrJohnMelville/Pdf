@@ -317,7 +317,7 @@ public class CharStringInterpreterTest
     }
 
     [Fact]
-    public async Task TestHstem3()
+    public async Task TestHstem3Async()
     {
         await ExecuteInstructionAsync("09");
         target.VerifyNoOtherCalls();
@@ -448,7 +448,7 @@ public class CharStringInterpreterTest
         1c0000 04
         0E
         """, 0f)]
-    public async Task TestSbwAndHsbw(string code, float yValue)
+    public async Task TestSbwAndHsbwAsync(string code, float yValue)
     {
         await ExecuteInstructionAsync(code);
         target.Verify(i=>i.RelativeCharWidth(3));

@@ -19,7 +19,7 @@ public class HexDecodeStreamTests
     [InlineData("1234567890ABCDEF")]
     [InlineData("1234567890\r\nABCDEF")]
     [InlineData("1gk234567890\r\nABCDEF")]
-    public async Task DecodeHexStream(string input)
+    public async Task DecodeHexStreamAsync(string input)
     {
         var source = new MemoryStream(Encoding.ASCII.GetBytes(input));
         var target = new MemoryStream();

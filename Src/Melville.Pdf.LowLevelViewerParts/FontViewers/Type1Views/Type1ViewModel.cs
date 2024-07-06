@@ -23,7 +23,7 @@ public class Type1CharstringViewModel :CharStringViewModel, ICreateView
         LoadNewGlyph();
     }
 
-    protected override ValueTask RenderGlyph(ICffGlyphTarget renderTemp)
+    protected override ValueTask RenderGlyphAsync(ICffGlyphTarget renderTemp)
     {
         if (font == null) return ValueTask.CompletedTask;
         return font.RenderToCffGlyphTarget(

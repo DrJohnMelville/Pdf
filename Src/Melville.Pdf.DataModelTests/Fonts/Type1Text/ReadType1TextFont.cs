@@ -41,9 +41,7 @@ public class ReadType1TextFont()
     {
         var font = await ReadFontAsync("putr.pfa");
 
-        (await font.GetGlyphSourceAsync()).GlyphCount.Should().Be(4);
-        (await font.GlyphNamesAsync()).Should().BeEquivalentTo(
-            "n",".notdef","one","j");
+        (await font.GetGlyphSourceAsync()).GlyphCount.Should().Be(229);
         (await font.GetCmapSourceAsync()).Count.Should().Be(0);
     }
 

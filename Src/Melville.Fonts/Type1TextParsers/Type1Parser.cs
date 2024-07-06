@@ -1,9 +1,4 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using System.Net.NetworkInformation;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using Melville.Fonts.Type1TextParsers.EexecDecoding;
+﻿using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Postscript.Interpreter.FunctionLibrary;
@@ -12,8 +7,6 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Melville.Postscript.Interpreter.Values.Interfaces;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Melville.Fonts.Type1TextParsers;
 
