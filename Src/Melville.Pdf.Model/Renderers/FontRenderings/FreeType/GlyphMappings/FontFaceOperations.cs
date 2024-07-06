@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using Melville.SharpFont;
@@ -6,6 +7,7 @@ using Melville.SharpFont.TrueType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
+[Obsolete("Freetype is going away")]
 internal static class FontFaceOperations
 {
     internal static CharMap? CharMapByInts(this Face face, int platformId, int encodingId) =>

@@ -1,18 +1,14 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
+using Melville.Fonts;
 using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-internal struct FreeTypeOutlineWriter
+internal struct FreeTypeOutlineWriter(IGlyphTarget target)
 {
-    private readonly IDrawTarget target;
-    private const double scale = 16.0; 
-    
-    public FreeTypeOutlineWriter(IDrawTarget target)
-    {
-        this.target = target;
-    }
+    private const float scale = 16.0f;
 
     public void Decompose(Outline outline)
     {
@@ -21,32 +17,33 @@ internal struct FreeTypeOutlineWriter
         handle.Free();
     }
 
+    public static Vector2 ScalePoint(in FTVector v) => new Vector2((float)v.X, (float)v.Y)* scale;
+
     private static readonly OutlineFuncs drawHandle = new(MoveTo, LineTo, ConicTo, CubicTo, 0, 0);
     private static int MoveTo(ref FTVector to, IntPtr user)
     {
-        Target(user).MoveTo(to.X*scale, to.Y*scale);
+        Target(user).MoveTo(ScalePoint(to));
         return 0;
     }
 
-    private static IDrawTarget Target(IntPtr user) => 
-        ((IDrawTarget)GCHandle.FromIntPtr(user).Target!);
+    private static IGlyphTarget Target(IntPtr user) => 
+        ((IGlyphTarget)GCHandle.FromIntPtr(user).Target!);
 
     private static int LineTo(ref FTVector to, IntPtr user)
     {
-        Target(user).LineTo(to.X*scale, to.Y*scale);
+        Target(user).LineTo(ScalePoint(to));
         return 0;
     }
 
     private static int ConicTo(ref FTVector control, ref FTVector to, IntPtr user)
     {
-        Target(user).ConicCurveTo(control.X*scale,control.Y*scale, to.X*scale, to.Y*scale);
+        Target(user).CurveTo(ScalePoint(control), ScalePoint(to));
         return 0;
     }
 
     private static int CubicTo(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
     {
-        Target(user).CurveTo(control1.X*scale, control1.Y*scale, control2.X*scale, control2.Y*scale, 
-            to.X*scale, to.Y*scale);
+        Target(user).CurveTo(ScalePoint(control1), ScalePoint(control2), ScalePoint(to));
         return 0;
     }
 }

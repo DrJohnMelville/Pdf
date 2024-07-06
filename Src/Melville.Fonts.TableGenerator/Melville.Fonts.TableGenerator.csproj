@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Melville.INPC" Version="0.7.2" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2" PrivateAssets="all" />
+		<PackageReference Include="Melville.Generators.INPC" Version="0.7.2" />
+	</ItemGroup>
+
+</Project>

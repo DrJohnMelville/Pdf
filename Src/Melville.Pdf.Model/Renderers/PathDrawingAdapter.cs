@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -25,31 +26,40 @@ internal sealed partial class PathDrawingAdapter : TrivialPathStateMachine,  IPa
 
     public void MoveTo(double x, double y)
     {
-        CurrentShape().MoveTo(x, y);
+        CurrentShape().MoveTo(new Vector2((float)x, (float)y));
         RegisterInitialMove(x,y);
     }
 
     public void LineTo(double x, double y)
     {
-        CurrentShape().LineTo(x, y);
+        CurrentShape().LineTo(new Vector2((float)x, (float)y));
         RegisterDrawOperationLastPoint(x,y);
     }
 
     public void CurveTo(double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY)
     {
-        CurrentShape().CurveTo(control1X, control1Y, control2X, control2Y, finalX, finalY);
+        CurrentShape().CurveTo(
+            new Vector2((float)control1X, (float)control1Y), 
+            new Vector2((float)control2X, (float)control2Y), 
+            new Vector2((float)finalX, (float)finalY));
         RegisterDrawOperationLastPoint(finalX, finalY);
     }
 
     public void CurveToWithoutInitialControl(double control2X, double control2Y, double finalX, double finalY)
     {
-        CurrentShape().CurveTo(CurrentX, CurrentY, control2X, control2Y, finalX, finalY);
+        CurrentShape().CurveTo(
+            new Vector2((float)CurrentX, (float)CurrentY), 
+            new Vector2((float)control2X, (float)control2Y), 
+            new Vector2((float)finalX, (float)finalY));
         RegisterDrawOperationLastPoint(finalX, finalY);
     }
 
     public void CurveToWithoutFinalControl(double control1X, double control1Y, double finalX, double finalY)
     {
-        CurrentShape().CurveTo(control1X, control1Y, finalX, finalY, finalX, finalY);
+        CurrentShape().CurveTo(
+            new Vector2((float)control1X, (float)control1Y), 
+            new Vector2((float)finalX, (float)finalY), 
+            new Vector2((float)finalX, (float)finalY));
         RegisterDrawOperationLastPoint(finalX, finalY);
     }
 

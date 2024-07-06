@@ -14,6 +14,7 @@
 	</PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Melville.Fonts\Melville.Fonts.csproj" />
       <ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
     </ItemGroup>

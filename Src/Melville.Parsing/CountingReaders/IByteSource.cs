@@ -29,7 +29,8 @@ public interface IByteSource
     /// from the source, or it could report that no more bytes are available.
     /// </summary>
     /// <returns>A ReadResult with the resulting data.</returns>
-    ReadResult Read() => TryRead(out var ret)?ret: throw new NotSupportedException("Must use an AsyncParser.");
+    ReadResult Read() => TryRead(out var ret)?ret: 
+        throw new NotSupportedException("Must use an AsyncParser.");
 
     /// <summary>
     /// Mark the next unconsumed and unexamined byte in the source.

@@ -18,6 +18,7 @@ public class MultiplexMultBufferTest : MultiplexedStreamTest
 {
     protected override IMultiplexSource CreateSut(byte[] data) =>
         new MultiBufferStream(data);
+
 }
 
 public class MultiplexedStreamTest

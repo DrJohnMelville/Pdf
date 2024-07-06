@@ -17,4 +17,8 @@ internal static partial class StringOperators
     private static void Tokenizers(IPostscriptTokenSource source, OperandStack stack) =>
         source.GetToken(stack);
 
+    [PostscriptMethod("string")]
+    private static PostscriptValue String(long length) => 
+        PostscriptValueFactory.CreateLongString(new byte[(int)length], StringKind.String);
+    
 }

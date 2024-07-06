@@ -24,8 +24,8 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
     private Matrix3x2 currentMatrix = Matrix3x2.Identity;
     public void SetDrawingTransform(in Matrix3x2 transform)
     {
-        TryAddCurrent();
-        currentMatrix = transform;
+        //TryAddCurrent();
+        //currentMatrix = transform;
     }
 
     private void TryAddCurrent()
@@ -36,28 +36,31 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
         path = new SKPath();
     }
 
-    public void MoveTo(double x, double y) => GetOrCreatePath().MoveTo((float)x,(float)y);
+    public void MoveTo(Vector2 startPoint) => GetOrCreatePath()
+        .MoveTo(startPoint.X, startPoint.Y);
 
     //The Adobe Pdf interpreter ignores drawing operations before the first MoveTo operation.
     //If path == null then we have not yet gotten a moveto command and we just ignore all the drawing operations
     private SKPath GetOrCreatePath() => path ??= new SKPath();
 
-    public void LineTo(double x, double y) => path?.LineTo((float)x, (float)y);
+    public void LineTo(Vector2 endPoint) => path?.LineTo(
+        endPoint.X, endPoint.Y);
 
     public void ClosePath()
     {
         path?.Close();
     }
 
-    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) =>
-        path?.QuadTo((float)controlX, (float)controlY, (float)finalX, (float)finalY);
+    public void CurveTo(Vector2 control, Vector2 endPoint) =>
+        path?.QuadTo(control.X, control.Y, endPoint.X, endPoint.Y);
 
-    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-        double finalX, double finalY) =>
-        path?.CubicTo(
-            (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
+    public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint) =>
+        path?.CubicTo(control1.X, control1.Y, control2.X, control2.Y,
+            endPoint.X, endPoint.Y);
 
-
+    public void EndGlyph()
+    {
+    }
 
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {

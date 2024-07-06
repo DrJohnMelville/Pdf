@@ -4,7 +4,10 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal readonly partial struct ForAllCursor
+/// <summary>
+/// A cursor used to iterate over postscript Arrays and Dictioanries
+/// </summary>
+public readonly partial struct ForAllCursor
 {
     /// <summary>
     /// A Memory containing the items to be iterated over.

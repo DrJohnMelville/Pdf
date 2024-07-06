@@ -5,7 +5,7 @@ using System.Text;
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
 /// <summary>
-/// Adds one method that Arrays do not have.
+/// Represents a dictionary created by the postscript interpreter.
 /// </summary>
 public interface IPostscriptDictionary : IPostscriptComposite
 {

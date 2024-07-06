@@ -22,6 +22,6 @@ internal partial class CountingPipeWriter: PipeWriter
     }
 
     [Obsolete]
-    public override void OnReaderCompleted(System.Action<System.Exception?, object?> callback, object? state) => this.innerWriter.OnReaderCompleted(callback, state);
+    public override void OnReaderCompleted(Action<Exception?, object?> callback, object? state) => innerWriter.OnReaderCompleted(callback, state);
 
 }

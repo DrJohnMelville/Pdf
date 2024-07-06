@@ -20,22 +20,27 @@ public partial class NullDrawTarget : IDrawTarget
     }
 
     /// <inheritdoc />
-    public void MoveTo(double x, double y)
+    public void MoveTo(Vector2 startPoint)
     {
     }
 
     /// <inheritdoc />
-    public void LineTo(double x, double y)
+    public void LineTo(Vector2 endPoint)
     {
     }
 
     /// <inheritdoc />
-    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY)
+    public void CurveTo(Vector2 control, Vector2 endPoint)
     {
     }
 
     /// <inheritdoc />
-    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY)
+    public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint)
+    {
+    }
+
+    /// <inheritdoc />
+    public void EndGlyph()
     {
     }
 

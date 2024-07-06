@@ -1,52 +1,19 @@
 ﻿using System;
 using System.Numerics;
+using Melville.Fonts;
 
 namespace Melville.Pdf.Model.Renderers;
 
 /// <summary>
 /// Target of a PDF drawing operation
 /// </summary>
-public interface IDrawTarget: IDisposable
+public interface IDrawTarget: IDisposable, IGlyphTarget
 {
     /// <summary>
-    /// Set tje drawing transform.
+    /// Set the drawing transform.
     /// </summary>
+    [Obsolete("I think this is unnecessary in the new font renderer")]
     void SetDrawingTransform(in Matrix3x2 transform);
-
-    /// <summary>
-    /// Move the current point to a position.
-    /// </summary>
-    /// <param name="x">Horizontal coordinate to move to.</param>
-    /// <param name="y">Vertical coordinate to move to.</param>
-    void MoveTo(double x, double y);
-    
-    /// <summary>
-    /// Draw a line from the current point to a given point.
-    /// </summary>
-    /// <param name="x">Horizontal coordinate to draw to.</param>
-    /// <param name="y">Vertical coordinate to draw to.</param>
-    void LineTo(double x, double y);
-
-    /// <summary>
-    /// Draw a parabolic bezier curve
-    /// </summary>
-    /// <param name="controlX">Horizontal component of the control point</param>
-    /// <param name="controlY">Vertical component of the control point</param>
-    /// <param name="finalX">Horizontal component of the final point</param>
-    /// <param name="finalY">Vertical component of the final point</param>
-    void ConicCurveTo(double controlX, double controlY, double finalX, double finalY);
-
-    /// <summary>
-    /// Draw a cubic bezier curve.
-    /// </summary>
-    /// <param name="control1X">Horizontal component of the first control point</param>
-    /// <param name="control1Y">Vertical component of the first control point</param>
-    /// <param name="control2X">Horizontal component of the second control point</param>
-    /// <param name="control2Y">Vertical component of the second control point</param>
-    /// <param name="finalX">Horizontal component of the final point</param>
-    /// <param name="finalY">Vertical component of the final point</param>
-    void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-        double finalX, double finalY);
 
     /// <summary>
     /// Draw a line from the current point to the beginning of this polycurve, and close it.
