@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -24,19 +25,24 @@ internal static partial class FileOperators
     }
 
     [PostscriptMethod("readstring")]
-    private static void ReadString(
+    private static async ValueTask ReadStringAsync(
         IByteSourceWithGlobalPosition file, PostscriptLongString str, OperandStack stack)
     {
-        var result = file.ReadAtLeast(str.Length+1);
+        var result = await file.ReadAtLeastAsync(str.Length+1);
         if (TryHandleEmptyRead(file, str, stack, result)) return;
-
         var start = TrySkipWhiteSpace(result);
         var outputLen = (int)Math.Min(str.Length, result.Buffer.Length-start);
-        var destination = str.GetBytes(default,[])[..outputLen];
-        result.Buffer.Slice(start, outputLen).CopyTo(destination);
+        ReadStringSync(str, result.Buffer.Slice(start, outputLen));
 
         PushReadStringResults(stack, str, outputLen);
         file.AdvanceTo(result.Buffer.GetPosition(start+outputLen));
+    }
+
+    private static void ReadStringSync(
+        PostscriptLongString str, ReadOnlySequence<byte> trimmedResult)
+    {
+        var destination = str.GetBytes(default,[])[..(int)trimmedResult.Length];
+        trimmedResult.CopyTo(destination);
     }
 
     private static void PushReadStringResults(

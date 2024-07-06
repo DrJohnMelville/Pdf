@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Postscript.Interpreter.FunctionLibrary;

@@ -1,4 +1,4 @@
-﻿using System.IO.Pipelines;
+﻿using Melville.Hacks.Reflection;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -6,7 +6,7 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
 
-namespace Melville.Fonts.Type1TextParsers;
+namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
 internal partial class EexecDecryptingByteSource : 
     BuiltInFunction, IByteSourceWithGlobalPosition
@@ -23,11 +23,11 @@ internal partial class EexecDecryptingByteSource :
     public override void Execute(PostscriptEngine engine, in PostscriptValue value)
     {
         engine.OperandStack.Pop();
-        source = new ByteSourceWithGlobalPosition(
-            PipeReader.Create(DecodedStream()), source.Position);
+        source = new EexeDecisionSource(source, multiplexSource,
+            i => source = i, eexecDecodeKey);
     }
 
     private const ushort eexecDecodeKey = 55665;
-    private ExecDecodeStream DecodedStream() => 
-        new(multiplexSource.ReadFrom(source.Position), eexecDecodeKey);
 }
+
+#pragma warning disable CS1734, CS1735

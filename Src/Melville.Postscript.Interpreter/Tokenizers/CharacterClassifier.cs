@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -58,4 +59,10 @@ public static class CharacterClassifier
         >= (byte)'a' and <= (byte)'z' => (byte)(digitChar - 'a' + 10),
         _ => byte.MaxValue
     };
+
+    /// <summary>
+    /// SearchValues that looks for a hex digit
+    /// </summary>
+    public static readonly SearchValues<byte> HexDigits = 
+        SearchValues.Create("0123456789ABCDEFabcdef"u8);
 }
