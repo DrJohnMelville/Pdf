@@ -17,11 +17,12 @@ public class HomeViewModel
     public async void LoadFile([FromServices] IOpenSaveFile osf, INavigationWindow window)
     {
         var file = osf.GetLoadFile(null, "ttf", 
-            "All Font Files (ttf;ttc;otf;otc;fon)|*.ttf;*.ttc;*.otf;*.otc;*.fon|" +
+            "All Font Files (ttf;ttc;otf;otc;fon;pfa)|*.ttf;*.ttc;*.otf;*.otc;*.fon;*.pfa|" +
             "True Type Font Files (*.ttf)|*.ttf|" +
             "True Type Collections (*.ttc)|*.ttc|" +
             "Open Type Font Files (*.otf)|*.otf|" +
             "Open Type Collections (*.otc)|*.otc|" +
+            "Type 1 ASCII Font (*.pfa)|*.pfa|" +
             "Font files (*.fon)|*.fon", "Select File to View");
         if (file == null)
         {
