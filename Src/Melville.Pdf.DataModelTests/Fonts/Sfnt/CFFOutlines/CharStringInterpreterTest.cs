@@ -469,4 +469,40 @@ public class CharStringInterpreterTest
         globalSubrs.Verify(i=>i.CallAsync(2,
             It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()));
     }
+
+    [Fact]
+    public async Task Type1FlexAsync()
+    {
+        await ExecuteInstructionAsync("""
+            1c0000 1c0001 0c10
+            
+            1c0001 1c0002 15
+            1c0000 1c0002 0c10
+            
+            1c0003 1c0004 15
+            1c0000 1c0002 0c10
+            
+            1c0005 1c0006 15
+            1c0000 1c0002 0c10
+            
+            1c0007 1c0008 15
+            1c0000 1c0002 0c10
+            
+            1c0009 1c000A 15
+            1c0000 1c0002 0c10
+            
+            1c000B 1c000C 15
+            1c0000 1c0002 0c10
+            
+            1c000D 1c000E 15
+            1c0000 1c0002 0c10
+            
+            1c0100 1c0101 1c0102 1c0003 1c0000 0c10
+            """);
+        target.Verify(i=>i.CurveTo(
+            new Vector2(4,6), new Vector2(9,12), new Vector2(16,20)));
+        target.Verify(i=>i.CurveTo(
+            new Vector2(25,30), new Vector2(36,42), new Vector2(49,56)));
+        target.VerifyNoOtherCalls();
+    }
 }

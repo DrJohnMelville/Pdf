@@ -127,6 +127,10 @@ public enum CharStringOperators
     /// </summary>
     DotSection = 0x0C00,
     /// <summary>
+    /// Vstem3 command in type 1 font definitions
+    /// </summary>
+    VStem3 = 0x0C01,
+    /// <summary>
     /// Hstem3 command in the type1 fonts definition
     /// </summary>
     HStem3 = 0x0C02,

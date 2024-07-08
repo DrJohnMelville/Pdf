@@ -4,10 +4,12 @@ using System.Numerics;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SpanAndMemory;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 #warning this class needs allocation free implementation
+
 internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphTarget
 {
     #region Variables Creation and Destruction
@@ -145,6 +147,7 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
             //type 1 specific operators
             case CharStringOperators.ClosePath: break; // all paths are closed.
             case CharStringOperators.HStem3:  break;
+            case CharStringOperators.VStem3:  break;
             #warning implement the seac command
             case CharStringOperators.Seac:  break; 
             case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
@@ -165,8 +168,8 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
              */
 #warning implement othersubrs
 
-            case CharStringOperators.CallOtherSubr:  break;
-            case CharStringOperators.Pop:  break;
+            case CharStringOperators.CallOtherSubr:  return DoOtherSubr();
+            case CharStringOperators.Pop:  return DoPop();
             case CharStringOperators.SetCurrentPoint: DoSetCurrentPoint();  break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
@@ -180,20 +183,17 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
 
     #region Type 1 font specific operations
 
+
     private void DoSetBearingAndWidth4()
     {
         if (StackSize < 4) return;
         target.RelativeCharWidth(Stack[2].FloatValue);
-        CurrentX = Stack[2].FloatValue;
-        CurrentY = Stack[3].FloatValue;
     }
     
     private void DoSetBearingAndWidth2()
     {
         if (StackSize < 2) return;
         target.RelativeCharWidth(CurrentStackSpan[1].FloatValue);
-        CurrentX = Stack[1].FloatValue;
-        CurrentY = 0f;
     }
     
     private void DoSetCurrentPoint()
@@ -346,8 +346,11 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
 
     #region Path creation operations
 
-    private void DoRmoveTo(Span<DictValue> point) => 
-        target.MoveTo(IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue));
+    private void DoRmoveTo(Span<DictValue> point)
+    {
+        var position = IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue);
+        if (!ShouldSuppressRmove) target.MoveTo(position);
+    }
 
     private void DoHMoveTo(Span<DictValue> coord) => 
         target.MoveTo(IncrementCurrentPoint(coord[0].FloatValue, 0));
