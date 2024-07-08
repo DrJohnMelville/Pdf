@@ -6,15 +6,23 @@ using Performance.Playground.Rendering;
  
 #pragma warning disable CS0162
 
-if (true)
+switch (2)
 {
-    Console.WriteLine("Begin");
-    await new ImageExtraction().ExtractImagesAsync();
-    Console.WriteLine("done");
-}
-else
-{
-    BenchmarkRunner.Run<PageRendering>();
+    case 0:
+        Console.WriteLine("Begin");
+        await new FontRendering().Melville();
+        Console.WriteLine("done");
+        break;
+    case 1:
+        BenchmarkRunner.Run<FontRendering>();
+        break;
+    case 2:
+        var ren = new FontRendering();
+        for (int i = 0; i < 10_000; i++)
+        {
+            await ren.Melville();
+        }
+        break;
 }
 
 public static class Timer
