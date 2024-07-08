@@ -11,6 +11,18 @@ using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.Values;
 
+
+/// <summary>
+/// Empty postscript structures that can be shared.
+/// </summary>
+public static class PostscriptSingletosn
+{
+    /// <summary>
+    /// An empty postscript arraY
+    /// </summary>
+    public static IPostscriptArray Array => PostscriptArray.Empty;
+}
+
 internal partial class PostscriptArray : 
     PostscriptComposite,
     IPostscriptArray,

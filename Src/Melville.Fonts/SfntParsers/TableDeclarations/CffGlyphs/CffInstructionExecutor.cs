@@ -149,7 +149,22 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
             case CharStringOperators.Seac:  break; 
             case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
             case CharStringOperators.Hsbw: DoSetBearingAndWidth2();  break;
-            #warning implement CallOtherSubr and pop
+#warning implement CallOtherSubr and pop
+
+            /*
+             * I think I understand this
+             * Otherubrs 0, 1, and 2 implement flex as documented in the manner -- careful about order because othersubr/pop reverses things
+             * Othersubrs 3 can just pop the 1 and the subr number off of the stack
+             * this will leave the new metrics subr on the stack --  
+             * nothing we are good to go.
+             *
+             * I can implement the other subrs from the supplement.
+             *
+             * It looks like we always pop the values off the stack so we ought to not need a separate subrstack, but we do need a
+             * flex coordinates structure,
+             */
+#warning implement othersubrs
+
             case CharStringOperators.CallOtherSubr:  break;
             case CharStringOperators.Pop:  break;
             case CharStringOperators.SetCurrentPoint: DoSetCurrentPoint();  break;
@@ -563,16 +578,18 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
         Vector2 start, Vector2 control1, Vector2 control2, Vector2 flexPoint, 
         Vector2 control3, Vector2 control4, Vector2 end, float flexValueTimes100)
     {
-        var dist = MinimumDistance(start, end, flexPoint);
-        if (dist * 100 > flexValueTimes100)
-        {
-            target.CurveTo(control1, control2, flexPoint);
-            target.CurveTo(control3, control4, end);
-        }
-        else
-        {
-            target.LineTo(end);
-        }
+        target.CurveTo(control1, control2, flexPoint);
+        target.CurveTo(control3, control4, end);
+        // var dist = MinimumDistance(start, end, flexPoint);
+        // if (dist * 100 > flexValueTimes100)
+        // {
+        //     target.CurveTo(control1, control2, flexPoint);
+        //     target.CurveTo(control3, control4, end);
+        // }
+        // else
+        // {
+        //     target.LineTo(end);
+        // }
     }
     
     private ValueTask<int> SendEndGlyphAsync()

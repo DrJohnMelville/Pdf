@@ -6,8 +6,8 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
-using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Fonts.Type1TextParsers;
 
@@ -21,11 +21,30 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     /// The dictionary that was used tooo create the font.
     /// (this may always be null in release builds.)
     /// </summary>
-    [FromConstructor] public IPostscriptDictionary? Dictionary { get; }
-    [FromConstructor] private readonly string[] glyphNames;
-    [FromConstructor] private readonly Memory<byte>[] charStrings;
-    [FromConstructor] private readonly int notDefIndex;
-    [FromConstructor] private readonly Matrix3x2 glyphTransform;
+    public IPostscriptDictionary? Dictionary { get; }
+    private readonly string[] glyphNames;
+    private readonly Memory<byte>[] charStrings;
+    private readonly int notDefIndex;
+    private readonly Matrix3x2 glyphTransform;
+    private readonly IGlyphSubroutineExecutor subroutines;
+    private readonly IPostscriptArray otherSubrs;
+
+    internal Type1GenericFont(
+        IPostscriptDictionary? dictionary, 
+        string[] glyphNames, 
+        Memory<byte>[] charStrings, 
+        int notDefIndex, 
+        Matrix3x2 glyphTransform, 
+        IGlyphSubroutineExecutor subroutines, IPostscriptArray otherSubrs)
+    {
+        Dictionary = dictionary;
+        this.glyphNames = glyphNames;
+        this.charStrings = charStrings;
+        this.notDefIndex = notDefIndex;
+        this.glyphTransform = glyphTransform;
+        this.subroutines = subroutines;
+        this.otherSubrs = otherSubrs;
+    }
 
     /// <inheritdoc />
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
@@ -73,7 +92,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
         if (glyph >= charStrings.Length) glyph = (uint)notDefIndex;
         using var executor = new CffInstructionExecutor<T>(
             targetWrapper, glyphTransform*transform,
-            NullExecutorSelector.Instance, NullExecutorSelector.Instance, []);
+            subroutines, subroutines, []);
         await executor.ExecuteInstructionSequenceAsync(
             new ReadOnlySequence<byte>(charStrings[glyph])).CA();
     }
