@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Net.Http.Headers;
 using System.Numerics;
 using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.Postscript.Interpreter.Values;
@@ -75,6 +76,7 @@ internal ref struct Type1FontExtractor
     private Memory<byte> ReadCharString(PostscriptValue funcDecl)
     {
         var memory = funcDecl.Get<Memory<byte>>();
+        if (memory.Length < encodingPrefixBytes) return memory;
         ushort charStringKey = 4330;
         DecodeType1Encoding.DecodeSegment(memory.Span, ref charStringKey);
         var decodedCharString = memory.Slice(encodingPrefixBytes);

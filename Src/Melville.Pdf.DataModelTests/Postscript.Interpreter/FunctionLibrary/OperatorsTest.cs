@@ -1,4 +1,5 @@
-﻿using Melville.Postscript.Interpreter.InterpreterState;
+﻿using System.Threading.Tasks;
+using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Xunit;
 
@@ -127,8 +128,8 @@ public class OperatorsTest
     [InlineData("3 string dup currentfile exch readstring ", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
     [InlineData("3 string dup currentfile exch readstring", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
     [InlineData("3 currentfile closefile", "01: 3")]
-    public void WithFileOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine(
+    public Task WithFileOperators(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine(
             PostscriptOperatorCollections.Empty().WithBaseLanguage()));
     
     [Theory]
@@ -370,6 +371,11 @@ public class OperatorsTest
     private static void RunTestOn(string code, string result, PostscriptEngine engine)
     {
         engine.Execute(code);
+        Assert.Equal(result, engine.OperandStack.ToString());
+    }
+    private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
+    {
+        await engine.ExecuteAsync(code);
         Assert.Equal(result, engine.OperandStack.ToString());
     }
 }

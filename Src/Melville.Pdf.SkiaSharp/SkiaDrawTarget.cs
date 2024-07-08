@@ -24,8 +24,8 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
     private Matrix3x2 currentMatrix = Matrix3x2.Identity;
     public void SetDrawingTransform(in Matrix3x2 transform)
     {
-        //TryAddCurrent();
-        //currentMatrix = transform;
+        TryAddCurrent();
+        currentMatrix = transform;
     }
 
     private void TryAddCurrent()

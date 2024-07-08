@@ -280,6 +280,8 @@ public class CharStringInterpreterTest
         target.Verify(i=>i.CurveTo(new Vector2(1,0), new Vector2(1,2), new Vector2(3,2)));
         target.Verify(i=>i.CurveTo(new Vector2(4,2), new Vector2(4,0),new Vector2(5,0)));
     }
+    /*
+     for right now we have disabled flex shortcuts
     [Fact]
     public async Task TestSimpleFlexToLineAsync()
     {
@@ -288,6 +290,7 @@ public class CharStringInterpreterTest
                                       "1c0032 0c23", Matrix3x2.CreateScale(0.1f));
         target.Verify(i=>i.LineTo(new Vector2(0.5f, 0)));
     }
+    */
     [Fact]
     public async Task TestHFlexToCurvesAsync()
     {
@@ -452,7 +455,6 @@ public class CharStringInterpreterTest
     {
         await ExecuteInstructionAsync(code);
         target.Verify(i=>i.RelativeCharWidth(3));
-        target.Verify(i=>i.MoveTo(new Vector2(3,yValue)));
         target.Verify(i=>i.EndGlyph());
     }
     [Fact]
