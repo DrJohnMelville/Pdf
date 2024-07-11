@@ -30,8 +30,6 @@ public class FontRendering
         return newMemoryFace;
     }
 
-    private static readonly IGlyphTarget target = new NullTarget();
-
     [Benchmark]
     public Task FreeType() => Render(freeType);
     [Benchmark(Baseline = true)]
@@ -43,31 +41,8 @@ public class FontRendering
         for (uint i = 0; i < glyphSourceAsync.GlyphCount; i++)
         {
             await glyphSourceAsync
-                .RenderGlyphAsync(i, target, Matrix3x2.Identity);
+                .RenderGlyphAsync(i, (IGlyphTarget)NullTarget.Instance, Matrix3x2.Identity);
 
         }
-    }
-}
-
-public class NullTarget : IGlyphTarget
-{
-    public void MoveTo(Vector2 point)
-    {
-    }
-
-    public void LineTo(Vector2 point)
-    {
-    }
-
-    public void CurveTo(Vector2 control, Vector2 endPoint)
-    {
-    }
-
-    public void CurveTo(Vector2 control1, Vector2 control2, Vector2 endPoint)
-    {
-    }
-
-    public void EndGlyph()
-    {
     }
 }

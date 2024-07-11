@@ -5,7 +5,7 @@ namespace Melville.Pdf.DataModelTests.Primatives;
 
 public class ObjectRentalManager
 {
-    private readonly ObjectRentalManager<object> sut = new(3);
+    private readonly ObjectPool<object> sut = new();
 
     [Fact]
     public void RentalCreatesObject()
@@ -32,16 +32,18 @@ public class ObjectRentalManager
     }
 
     [Fact]
-    public void DoNotStoreMoreThanThreeItems()
+    public void DoNotStoreMoreThanTwentyItems()
     {
+        for (int i = 0; i < 20; i++)
+        {
+            sut.Return(new object());
+        }
+        var last = sut.Rent();
+        sut.Return(last);
         sut.Return(new object());
         sut.Return(new object());
-        var third = new object();
-        sut.Return(third);
         sut.Return(new object());
-        sut.Return(new object());
-        sut.Return(new object());
-        Assert.Equal(third, sut.Rent());
+        Assert.Equal(last, sut.Rent());
         
     }
 }

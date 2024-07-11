@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Specialized;
 using System.Numerics;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
@@ -9,7 +10,8 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 /// it can do so with amortized zero allocations.
 /// </summary>
 public class GlyphRecorder :
-    ITrueTypePointTarget, IReadOnlyList<CapturedPoint>, INotifyCollectionChanged
+    ITrueTypePointTarget, IReadOnlyList<CapturedPoint>, INotifyCollectionChanged,
+    IClearable
 {
     private readonly IRecorderAllocator allocator;
 
@@ -57,7 +59,7 @@ public class GlyphRecorder :
     /// <summary>
     /// Reset the recorder to its empty state.
     /// </summary>
-    public void Reset()
+    public void Clear()
     {
         Count = 0;
         allocator.Free(data);

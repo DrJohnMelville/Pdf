@@ -14,7 +14,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         PhantomPoints phantomPoints,
         Matrix3x2 transform)
     {
-        private readonly GlyphRecorder scratchRecorder = GlyphRecorderFactory.GetRecorder();
+        private readonly GlyphRecorder scratchRecorder = GlyphRecorderFactory.Shared.Rent();
         public ValueTask DrawAsync(ReadOnlySequence<byte> source)
         {
             var reader = new SequenceReader<byte>(source);
@@ -122,7 +122,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         private void FinalizeGlyph()
         {
             scratchRecorder.Replay(finalTarget);
-            GlyphRecorderFactory.ReturnRecorder(scratchRecorder);
+            GlyphRecorderFactory.Shared.Return(scratchRecorder);
             phantomPoints.Draw(finalTarget);
         }
 
@@ -130,7 +130,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             ushort subGlyph, Matrix3x2 transform, ReadOnlySequence<byte> next, 
             ushort parentIndex, ushort childIndex)
         {
-            var childTarget = GlyphRecorderFactory.GetRecorder();
+            var childTarget = GlyphRecorderFactory.Shared.Rent();
             await subGlyphRenderer.RenderGlyphInFontUnitsAsync(subGlyph, childTarget, transform).CA();
 
             var parentPoint = scratchRecorder[parentIndex];
@@ -139,7 +139,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
                 parentPoint.Y - childPoint.Y);
 
             childTarget.Replay(scratchRecorder, correction);
-            GlyphRecorderFactory.ReturnRecorder(childTarget);
+            GlyphRecorderFactory.Shared.Return(childTarget);
 
             await FinishSubglyphAsync(next).CA();
         }

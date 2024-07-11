@@ -49,7 +49,7 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
     }
 
 
-    private static readonly ObjectRentalManager<OptionalContentDrawTarget> targets = new (10);
+    private static readonly ObjectPool<OptionalContentDrawTarget> targets = new ();
     public IDrawTarget WrapDrawTarget(IDrawTarget inner) => targets.Rent().With(this, inner);
     internal void ReturnDrawTarget(OptionalContentDrawTarget item) => targets.Return(item);
 }

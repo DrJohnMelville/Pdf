@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.IO.Pipelines;
 using Melville.INPC;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 
 namespace Melville.Parsing.MultiplexSources
 {
@@ -24,14 +26,20 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        PipeReader ReadPipeFrom(long position) =>PipeReader.Create(ReadFrom(position));
+        PipeReader ReadPipeFrom(long position) =>
+#if true
+            ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+                .WithParameters(ReadFrom(position), false);
+#else
+        PipeReader.Create(ReadFrom(position));
+#endif
 
         /// <summary>
         /// The length of the represented data.
         /// </summary>
         long Length { get; }
 
-        #warning -- opportunity to optimize the memory multiplex source
+#warning -- opportunity to optimize the memory multiplex source
         /// <summary>
         /// Returns a multiplex source with an offset from the current source
         /// </summary>

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Melville.Fonts.SfntParsers.TableDeclarations;
+﻿using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
@@ -21,183 +20,204 @@ namespace Melville.Fonts.SfntParsers;
 /// </summary>
 public partial class SFnt : ListOf1GenericFont, IDisposable
 {
-    /// <summary>
-    /// A MultiplexSource to get font data from.
-    /// </summary>
-    [FromConstructor] private IMultiplexSource source;
-    private readonly TableCache cache = new();
-    /// <inheritdoc />
-    public void Dispose() => source.Dispose();
+    private IMultiplexSource source;
+
+
+    private readonly TableRecord[] tables;
+    private readonly Lazy<Task<IGlyphSource>> glyphSource;
+    private readonly Lazy<Task<ICMapSource>> cmapSource;
+    private readonly Lazy<Task<ParsedHead>> headSource;
+    private readonly Lazy<Task<ParsedHorizontalHeader>> horizHeadSource;
+    private readonly Lazy<Task<ParsedHorizontalMetrics>> horizMetricsSource;
+    private readonly Lazy<Task<ParsedMaximums>> maxSource;
+    private readonly Lazy<Task<IGlyphLocationSource?>> glyphLocationSource;
+    private readonly Lazy<Task<PostscriptData>> postscriptDataSource;
+
 
     /// <summary>
-    /// The TableRecords that describe locations of tables in the font data
+    /// Create a SFnt
     /// </summary>
-    [FromConstructor] private readonly TableRecord[] tables;
+    /// <param name="source">A MultiplexSource to get font data from.</param>
+    /// <param name="tables">The TableRecords that describe locations of tables in the font data</param>
+    public SFnt(IMultiplexSource source, TableRecord[] tables)
+    {
+        this.source = source;
+        this.tables = tables;
+        glyphSource = new(LoadGlyphSourceAsync);
+        cmapSource = new(LoadCmapAsync);
+        headSource = new(LoadHeadAsync);
+        horizHeadSource = new(LoadHorizHeaderAsync);
+        horizMetricsSource = new(LoadHorizontalMetricsAsync);
+        maxSource = new(LoadMaxProfileAsync);
+        glyphLocationSource = new(LoadGlyphLocationsAsync);
+        postscriptDataSource = new(LoadPostscriptDataAsync);
+    }
+
+    /// <inheritdoc />
+    public void Dispose() => source.Dispose();
 
     /// <summary>
     /// These are the tables that make up the font.
     /// </summary>
     public IReadOnlyList<TableRecord> Tables => tables;
 
-   /// <summary>
-   /// Load a font table as an array of bytes.  This is used by the font viewer in the tools. 
-   /// </summary>
-   /// <param name="table">The TableRecord corresponding to the desired font.</param>
-   /// <returns>A byte array containing the desired table</returns>
-   public async Task<byte[]> GetTableBytesAsync(TableRecord table)
-   {
-       var ret = new byte[table.Length];
-       await using var stream = source.ReadFrom(table.Offset);
-       await ret.FillBufferAsync(0, ret.Length, stream).CA();
-       return ret;
-   }
+    /// <summary>
+    /// Load a font table as an array of bytes.  This is used by the font viewer in the tools. 
+    /// </summary>
+    /// <param name="table">The TableRecord corresponding to the desired font.</param>
+    /// <returns>A byte array containing the desired table</returns>
+    public async Task<byte[]> GetTableBytesAsync(TableRecord table)
+    {
+        var ret = new byte[table.Length];
+        await using var stream = source.ReadFrom(table.Offset);
+        await ret.FillBufferAsync(0, ret.Length, stream).CA();
+        return ret;
+    }
 
-   /// <inheritdoc />
-   public override ValueTask<ICMapSource> GetCmapSourceAsync() =>
-       new(cache.GetTable(SFntTableName.CMap, async ()=>
-       {
-           return FindTable(SFntTableName.CMap) is { } table
-               ? ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
-                   (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(table.Offset)).CA()).Tables))
-               : new ParsedCmap(source, []);
-       }));
-    
-   /// <summary>
-   /// Get a parsed header table from the SFnt
-   /// </summary>
-   /// <returns>The header table from the font.</returns>
-   public Task<ParsedHead> HeadTableAsync() =>
-       LoadTableAsync<ParsedHead>(SFntTableName.Head);
+    /// <inheritdoc />
+    public override ValueTask<ICMapSource> GetCmapSourceAsync() =>
+        new(cmapSource.Value);
 
-   /// <summary>
-   /// Get a parsed Horizontal Header Table from the SFnt
-   /// </summary>
-   /// <returns></returns>
-   public Task<ParsedHorizontalHeader> HorizontalHeaderTableAsync() =>
-       LoadTableAsync<ParsedHorizontalHeader>(SFntTableName.HorizontalHeadder);
+    private async Task<ICMapSource> LoadCmapAsync()
+    {
+        return FindTable(SFntTableName.CMap) is { } table
+            ? ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
+                (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(table.Offset)).CA()).Tables))
+            : new ParsedCmap(source, []);
+    }
 
-   /// <summary>
-   /// Load the maximums table from the font
-   /// </summary>
-   public Task<ParsedMaximums> MaximumProfileTableAsync() =>
-       cache.GetTable(SFntTableName.MaximumProfile, () => 
-           FindTable(SFntTableName.MaximumProfile) is {} table?
-               new MaxpParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask():
-               Task.FromResult(new ParsedMaximums(0)));
+    /// <summary>
+    /// Get a parsed header table from the SFnt
+    /// </summary>
+    /// <returns>The header table from the font.</returns>
+    public Task<ParsedHead> HeadTableAsync() =>
+        headSource.Value;
 
-   /// <summary>
-   /// Get the horizontal metrics table from the font
-   /// </summary>
-   public Task<ParsedHorizontalMetrics> HorizontalMetricsAsync() =>
-       DelayedLoadTableAsync(SFntTableName.HorizontalMetrics, CreateHorizontalMetricsAsync);
+    private Task<ParsedHead> LoadHeadAsync() =>
+        LoadTableAsync<ParsedHead>(SFntTableName.Head);
 
-   /// <inheritdoc />
-   public override async ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => 
-       await HorizontalMetricsAsync().CA();
 
-   private async Task<ParsedHorizontalMetrics> CreateHorizontalMetricsAsync()
-   {
-       if (FindTable(SFntTableName.HorizontalMetrics) is not { } table)
-           return new ParsedHorizontalMetrics([], 0, 1);
+    /// <summary>
+    /// Get a parsed Horizontal Header Table from the SFnt
+    /// </summary>
+    /// <returns></returns>
+    public Task<ParsedHorizontalHeader> HorizontalHeaderTableAsync() =>
+        horizHeadSource.Value;
 
-       var horizontalHeader = await HorizontalHeaderTableAsync().CA();
-       var maximums = await MaximumProfileTableAsync().CA();
-       var head = await HeadTableAsync().CA();
-       return await new HorizontalMetricsParser(source.ReadPipeFrom(table.Offset),
-           horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs, head.UnitsPerEm).ParseAsync().CA();
-   }
+    private Task<ParsedHorizontalHeader> LoadHorizHeaderAsync =>
+        LoadTableAsync<ParsedHorizontalHeader>(SFntTableName.HorizontalHeadder);
 
-   /// <summary>
-   /// Parse the GlyphLocations table from the font
-   /// </summary>
-   /// <returns>An interface that can retrieve the offset and length of a glyph.</returns>
-   public Task<IGlyphLocationSource?> GlyphLocationsAsync() =>
-       DelayedLoadTableAsync(SFntTableName.GlyphLocations, CreateGlyphLocationsAsync);
+    /// <summary>
+    /// Load the maximums table from the font
+    /// </summary>
+    public Task<ParsedMaximums> MaximumProfileTableAsync() => maxSource.Value;
 
-   private async Task<IGlyphLocationSource?> CreateGlyphLocationsAsync()
-   {
-       var maximums = await MaximumProfileTableAsync().CA();
-       var head = await HeadTableAsync().CA();
-       return FindTable(SFntTableName.GlyphLocations) is { } table
-           ? await new LocationTableParser(
-                   source.ReadPipeFrom(table.Offset), maximums.NumGlyphs, head.IndexToLocFormat)
-               .ParseAsync().CA()
-           : null;
-   }
+    private Task<ParsedMaximums> LoadMaxProfileAsync() =>
+        FindTable(SFntTableName.MaximumProfile) is { } table
+            ? new MaxpParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask()
+            : Task.FromResult(new ParsedMaximums(0));
 
-   /// <inheritdoc />
-   public override ValueTask<IGlyphSource> GetGlyphSourceAsync() => 
-        new(DelayedLoadTableAsync(SFntTableName.GlyphData, LoadGlyphSourceAsync));
+    /// <inheritdoc />
+    public override async ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() =>
+        await HorizontalMetricsAsync().CA();
 
-   private Task<IGlyphSource> LoadGlyphSourceAsync()
-   {
-       if (FindTable(SFntTableName.GlyphData) is { } trueType)
+    /// <summary>
+    /// Get the horizontal metrics table from the font
+    /// </summary>
+    public Task<ParsedHorizontalMetrics> HorizontalMetricsAsync() =>
+        horizMetricsSource.Value;
+
+    private async Task<ParsedHorizontalMetrics> LoadHorizontalMetricsAsync()
+    {
+        if (FindTable(SFntTableName.HorizontalMetrics) is not { } table)
+            return new ParsedHorizontalMetrics([], 0, 1);
+
+        var horizontalHeader = await HorizontalHeaderTableAsync().CA();
+        var maximums = await MaximumProfileTableAsync().CA();
+        var head = await HeadTableAsync().CA();
+        return await new HorizontalMetricsParser(source.ReadPipeFrom(table.Offset),
+            horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs, head.UnitsPerEm).ParseAsync().CA();
+    }
+
+    /// <summary>
+    /// Parse the GlyphLocations table from the font
+    /// </summary>
+    /// <returns>An interface that can retrieve the offset and length of a glyph.</returns>
+    public Task<IGlyphLocationSource?> GlyphLocationsAsync() =>
+        glyphLocationSource.Value;
+
+    private async Task<IGlyphLocationSource?> LoadGlyphLocationsAsync()
+    {
+        var maximums = await MaximumProfileTableAsync().CA();
+        var head = await HeadTableAsync().CA();
+        return FindTable(SFntTableName.GlyphLocations) is { } table
+            ? await new LocationTableParser(
+                    source.ReadPipeFrom(table.Offset), maximums.NumGlyphs, head.IndexToLocFormat)
+                .ParseAsync().CA()
+            : null;
+    }
+
+    /// <inheritdoc />
+    public override ValueTask<IGlyphSource> GetGlyphSourceAsync() =>
+        new(glyphSource.Value);
+
+    private Task<IGlyphSource> LoadGlyphSourceAsync()
+    {
+        if (FindTable(SFntTableName.GlyphData) is { } trueType)
             return LoadTrueTypeGlyphSourceAsync(trueType);
-       if (FindTable(SFntTableName.CFF) is {} cff)
-           return LoadCffGlyphSourceAsync(cff);
-       if (FindTable(SFntTableName.CFF2) is {} cff2)
-           return LoadCff2GlyphSourceAsync(cff2);
-       throw new NotImplementedException("Cannot find Glyph Source");
-   }
+        if (FindTable(SFntTableName.CFF) is { } cff)
+            return LoadCffGlyphSourceAsync(cff);
+        if (FindTable(SFntTableName.CFF2) is { } cff2)
+            return LoadCff2GlyphSourceAsync(cff2);
+        throw new NotImplementedException("Cannot find Glyph Source");
+    }
 
-   private async Task<IGlyphSource> LoadCff2GlyphSourceAsync(TableRecord cff)
-   {
-       var head = await HeadTableAsync().CA();
-       var parser = new Cff2GlyphSourceParser(source.OffsetFrom(cff.Offset));
-       return await parser.ParseAsync().CA();
-   }
-   private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
-   {
-       var head = await HeadTableAsync().CA();
-       var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
-           head.UnitsPerEm);
-       return await parser.ParseAsync().CA();
-   }
+    private async Task<IGlyphSource> LoadCff2GlyphSourceAsync(TableRecord cff)
+    {
+        var head = await HeadTableAsync().CA();
+        var parser = new Cff2GlyphSourceParser(source.OffsetFrom(cff.Offset));
+        return await parser.ParseAsync().CA();
+    }
 
-   private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
-   {
-       var loc = await GlyphLocationsAsync().CA();
-       if (loc is null) 
-           throw new InvalidDataException("GlyphLoc table is require for truetype outlines");
-       var head = await HeadTableAsync().CA();
-       var hMetrics = await HorizontalMetricsAsync().CA();
-       return new TrueTypeGlyphSource(
-           loc, source.OffsetFrom(table.Offset), head.UnitsPerEm, hMetrics);
-   }
+    private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
+    {
+        var head = await HeadTableAsync().CA();
+        var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
+            head.UnitsPerEm);
+        return await parser.ParseAsync().CA();
+    }
 
-   private async Task<T> DelayedLoadTableAsync<T>(uint tag, Func<Task<T>> method) =>
-       await cache.GetTable(tag, ()=>
-           new DelayTaskStart<T>(method));
+    private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
+    {
+        var loc = await GlyphLocationsAsync().CA();
+        if (loc is null)
+            throw new InvalidDataException("GlyphLoc table is require for truetype outlines");
+        var head = await HeadTableAsync().CA();
+        var hMetrics = await HorizontalMetricsAsync().CA();
+        return new TrueTypeGlyphSource(
+            loc, source.OffsetFrom(table.Offset), head.UnitsPerEm, hMetrics);
+    }
 
-   
-   private Task<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
-       cache.GetTable(tag, ()=>
-           FindTable(tag) is {} table ? 
-               FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
-               : Task.FromResult(new T()));
+    private Task<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
+        FindTable(tag) is { } table
+            ? FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
+            : Task.FromResult(new T());
 
-   private TableRecord? FindTable(uint tag)
-   {  
-       var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
-       return index < 0 ? null : tables[index];
-   }
+    private TableRecord? FindTable(uint tag)
+    {
+        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
+        return index < 0 ? null : tables[index];
+    }
 
-   private Task<PostscriptData> GetPostscriptDataAsync() =>
-       DelayedLoadTableAsync<PostscriptData>(SFntTableName.PostscriptData, LoadPostscriptDataAsync);
+    private Task<PostscriptData> GetPostscriptDataAsync() =>
+        postscriptDataSource.Value;
 
-   private Task<PostscriptData> LoadPostscriptDataAsync() => 
-       FindTable(SFntTableName.PostscriptData) is not { } table ? 
-           Task.FromResult(new PostscriptData()) : 
-           new PostscriptTableParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask();
+    private Task<PostscriptData> LoadPostscriptDataAsync() =>
+        FindTable(SFntTableName.PostscriptData) is not { } table
+            ? Task.FromResult(new PostscriptData())
+            : new PostscriptTableParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask();
 
-   /// <inheritdoc />
-   public override async ValueTask<string[]> GlyphNamesAsync() => 
-       (await GetPostscriptDataAsync().CA()).GlyphNames;
-}
-
-internal class DelayTaskStart<T>(Func<Task<T>> operation)
-{
-    private readonly Lazy<Task<T>> task = new(operation);
-
-    public TaskAwaiter<T> GetAwaiter() => task.Value.GetAwaiter();
+    /// <inheritdoc />
+    public override async ValueTask<string[]> GlyphNamesAsync() =>
+        (await GetPostscriptDataAsync().CA()).GlyphNames;
 }

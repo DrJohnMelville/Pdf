@@ -1,10 +1,24 @@
 ﻿using System.Numerics;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
-internal class TtToGlyphTarget<T>(T target) :ITrueTypePointTarget where
+internal class TtToGlyphTarget<T> :ITrueTypePointTarget, IClearable where
     T: IGlyphTarget
 {
+    private T target = default(T)!;
+
+    public TtToGlyphTarget<T> WithTarget(T target)
+    {
+        this.target = target;
+        return this;
+    }
+
+    public void Clear()
+    {
+        target = default(T)!;
+    }
+
     Vector2 lastPoint;
     private bool lastOnCurve = true;
     Vector2 contourStartPoint = Vector2.Zero;

@@ -1,9 +1,5 @@
 ﻿using System.Buffers;
-using System.Net.Sockets;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks.Dataflow;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;

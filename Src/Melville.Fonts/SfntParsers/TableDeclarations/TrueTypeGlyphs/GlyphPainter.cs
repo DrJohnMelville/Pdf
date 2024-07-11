@@ -2,6 +2,7 @@
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
@@ -32,9 +33,15 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
     #warning -- need an allocation free version of this method
 
     /// <inheritdoc />
-    public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget =>
-        RenderGlyphInEmUnitsAsync(glyph,
-            new TtToGlyphTarget<T>(target), transform);
+    public async ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) 
+        where T : IGlyphTarget
+    {
+        var interimTarget = ObjectPool<TtToGlyphTarget<T>>.Shared
+            .Rent().WithTarget(target);
+        await RenderGlyphInEmUnitsAsync(glyph,
+            interimTarget, transform).CA();
+        ObjectPool<TtToGlyphTarget<T>>.Shared.Return(interimTarget);
+    }
 
     /// <summary>
     /// Paint a glyph on the indicated target the glyph is expressed in fractions of the 1 unit EM square
@@ -57,11 +64,12 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
         if (glyph >= GlyphCount) glyph = 0;
         var location = index.GetLocation(glyph);
         if (location.Length == 0) return;
-        var data = await glyphDataOrigin.ReadPipeFrom(location.Offset)
-            .ReadAtLeastAsync((int)location.Length).CA();
+        var pipe = glyphDataOrigin.ReadPipeFrom(location.Offset);
+        var data = await pipe.ReadAtLeastAsync((int)location.Length).CA();
         await new TrueTypeGlyphParser<T>(
                 this, data.Buffer.Slice(0, location.Length), target, 
                 matrix, hMetrics[(int)glyph])
             .DrawGlyphAsync().CA();
+        await pipe.CompleteAsync().CA();
     }
 }

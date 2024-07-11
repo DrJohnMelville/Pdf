@@ -1,4 +1,5 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -27,17 +28,24 @@ internal interface IIndexedReader
     /// The length of the represented data.
     /// </summary>
     long Length { get; }
-
 }
 
-internal class IndexedReaderStream : DefaultBaseStream
+internal partial class IndexedReaderStreamFactory : ObjectPoolBase<IndexedReaderStream>
 {
-    private readonly IIndexedReader source;
+    public static readonly IndexedReaderStreamFactory Shared = new();
+    protected override IndexedReaderStream Create() => new(this);
+}
 
-    public IndexedReaderStream(IIndexedReader source, long position) : base(true, false, true)
+internal class IndexedReaderStream(IndexedReaderStreamFactory home) : 
+    DefaultBaseStream(true, false, true)
+{
+    private IIndexedReader source;
+
+    public IndexedReaderStream ReadFrom(IIndexedReader source, long position)
     {
         this.source = source;
         Position = position;
+        return this;
     }
 
     public override int Read(Span<byte> buffer)
@@ -68,4 +76,10 @@ internal class IndexedReaderStream : DefaultBaseStream
         };
 
     public override long Length => source.Length;
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        home.Return(this);
+    }
 }

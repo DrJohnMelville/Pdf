@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Performance.Playground.Rendering
 {
-    // Async to non async by Stephen Toub
+    // FillFromAsync to non async by Stephen Toub
 //https://blogs.msdn.microsoft.com/pfxteam/2012/02/02/await-synchronizationcontext-and-console-apps-part-3/
     public static class AsyncPump
     {

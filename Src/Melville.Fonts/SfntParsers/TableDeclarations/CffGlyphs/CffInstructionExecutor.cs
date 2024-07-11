@@ -348,8 +348,9 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
 
     private void DoRmoveTo(Span<DictValue> point)
     {
-        var position = IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue);
-        if (!ShouldSuppressRmove) target.MoveTo(position);
+        var location = IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue);
+        if (ShouldSuppressRmove) return;
+        target.MoveTo(location);
     }
 
     private void DoHMoveTo(Span<DictValue> coord) => 

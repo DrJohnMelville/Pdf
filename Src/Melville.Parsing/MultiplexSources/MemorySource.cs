@@ -4,7 +4,8 @@ internal class MemorySource (Memory<byte> data) : IMultiplexSource, IIndexedRead
 {
     public void Dispose() { }
 
-    public Stream ReadFrom(long position) => new IndexedReaderStream(this, position);
+    public Stream ReadFrom(long position) =>
+        IndexedReaderStreamFactory.Shared.Rent().ReadFrom(this, position);
 
     public long Length => data.Length;
 

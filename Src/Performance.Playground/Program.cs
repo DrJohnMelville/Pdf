@@ -6,7 +6,7 @@ using Performance.Playground.Rendering;
  
 #pragma warning disable CS0162
 
-switch (2)
+switch (1)
 {
     case 0:
         Console.WriteLine("Begin");
@@ -18,7 +18,7 @@ switch (2)
         break;
     case 2:
         var ren = new FontRendering();
-        for (int i = 0; i < 10_000; i++)
+        for (int i = 0; i < 100_000; i++)
         {
             await ren.Melville();
         }
@@ -47,4 +47,4 @@ public static class Timer
         }
     }
 
-#pragma warning restore Arch004 // Async method does not have name ending with Async
+#pragma warning restore Arch004 // FillFromAsync method does not have name ending with FillFromAsync

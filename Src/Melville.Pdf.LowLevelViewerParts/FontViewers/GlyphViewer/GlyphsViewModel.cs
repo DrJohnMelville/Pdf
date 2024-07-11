@@ -28,8 +28,8 @@ public partial class GlyphsViewModel
 
     private async void LoadNewGlyph()
     {
-        var newGlyph = Glyph ?? GlyphRecorderFactory.GetRecorder();
-        newGlyph.Reset();
+        var newGlyph = Glyph ?? GlyphRecorderFactory.Shared.Rent();
+        newGlyph.Clear();
         await GlyphSource.RenderGlyphInEmUnitsAsync(
             (uint)PageSelector.Page, newGlyph, Matrix3x2.Identity);
         Glyph = null;

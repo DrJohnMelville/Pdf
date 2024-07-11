@@ -13,7 +13,7 @@ internal class FileMultiplexer(FileStream stream) : IMultiplexSource, IIndexedRe
     }
 
     public Stream ReadFrom(long position) => 
-        new IndexedReaderStream(this, position);
+        IndexedReaderStreamFactory.Shared.Rent().ReadFrom(this, position);
 
     public long Length => stream.Length;
 
