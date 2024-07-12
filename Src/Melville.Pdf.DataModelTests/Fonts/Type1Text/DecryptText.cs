@@ -44,7 +44,7 @@ public class DecryptText
 
         IByteSource stream;
         stream = new EexeDecisionSource(
-            new ByteSourceWithGlobalPosition(source.ReadPipeFrom(0), 0), source,
+            source.ReadPipeFrom(0), source,
             i=>stream = i, 4330);
 
         var rr = await stream.ReadAtLeastAsync(result.Length);
@@ -69,7 +69,7 @@ public class DecryptText
     
         IByteSource stream;
         stream = new EexeDecisionSource(
-            new ByteSourceWithGlobalPosition(source.ReadPipeFrom(0), 0), source,
+            source.ReadPipeFrom(0), source,
             i=>stream = i, 4330);
     
         var rr = await stream.ReadAtLeastAsync(result.Length);

@@ -55,11 +55,11 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
             setReader = null;
         }
 
-        private ByteSourceWithGlobalPosition ConstructNewByteSource(Stream input)
+        private IByteSource ConstructNewByteSource(Stream input)
         {
-            return new ByteSourceWithGlobalPosition(
+            return 
                 ReusableStreamPipeReader.Create(new EexecDecodeStream(
-                        input, key), false), inner.Position);
+                        input, key), false);
         }
 
         private bool IsHex(ReadOnlySequence<byte> buffer)

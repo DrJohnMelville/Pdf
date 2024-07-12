@@ -17,7 +17,7 @@ internal partial class EexecDecryptingByteSource :
     public EexecDecryptingByteSource(IMultiplexSource multiplexSource)
     {
         this.multiplexSource = multiplexSource;
-        source = new ByteSourceWithGlobalPosition(multiplexSource.ReadPipeFrom(0), 0);
+        source = multiplexSource.ReadPipeFrom(0);
     }
 
     public override void Execute(PostscriptEngine engine, in PostscriptValue value)
