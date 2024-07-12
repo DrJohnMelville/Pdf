@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.PipeReaders;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -24,7 +25,7 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
-        this(PipeReader.Create(source))
+        this(ReusableStreamPipeReader.Create(source, false))
     {
     }
 
@@ -32,7 +33,7 @@ public partial class Tokenizer : ITokenSource
     /// Create a tokenizer from a stream.
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
-    public Tokenizer(PipeReader source) :
+    public Tokenizer(IByteSource source) :
         this(new ByteSourceWithGlobalPosition(source, 0))
     {
     }

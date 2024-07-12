@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.Icc.Model;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
@@ -10,18 +11,13 @@ namespace Melville.Icc.Parser;
 /// <summary>
 /// Parses an ICC profile from a pipereader;
 /// </summary>
-public readonly struct IccParser
+public readonly partial struct IccParser
 {
-    private readonly IByteSource source;
     /// <summary>
-    /// Create a new parser from a byteSource
+    /// Source of the information to parse.
     /// </summary>
-    /// <param name="source"></param>
-    public IccParser(PipeReader source)
-    {
-        this.source = new ByteSource(source); 
-    }
-
+    [FromConstructor] private readonly IByteSource source;
+    
     /// <summary>
     /// Parse an ICC profile from the PipeReader passed in the constructor.
     /// </summary>

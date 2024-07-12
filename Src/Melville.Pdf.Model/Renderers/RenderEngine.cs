@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.PipeReaders;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -165,11 +166,11 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync() =>
         await new ContentStreamParser(this).ParseAsync(
-            PipeReader.Create(await page.GetContentBytesAsync().CA())).CA();
+            ReusableStreamPipeReader.Create(await page.GetContentBytesAsync().CA(), false)).CA();
 
     #endregion
     
-    #region Text Operations
+    #region Text OperationsB
 
     public void BeginTextObject() => GraphicsState.SetBothTextMatrices(Matrix3x2.Identity);
 

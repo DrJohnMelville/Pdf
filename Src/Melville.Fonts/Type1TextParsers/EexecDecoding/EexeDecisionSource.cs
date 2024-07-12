@@ -8,6 +8,8 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams.Bases;
 using Melville.Postscript.Interpreter.Tokenizers;
 
@@ -56,10 +58,8 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         private ByteSourceWithGlobalPosition ConstructNewByteSource(Stream input)
         {
             return new ByteSourceWithGlobalPosition(
-                new ByteSource(PipeReader.Create(
-                    new EexecDecodeStream(
-                        input, key))
-                ), inner.GlobalPosition);
+                ReusableStreamPipeReader.Create(new EexecDecodeStream(
+                        input, key), false), inner.GlobalPosition);
         }
 
         private bool IsHex(ReadOnlySequence<byte> buffer)

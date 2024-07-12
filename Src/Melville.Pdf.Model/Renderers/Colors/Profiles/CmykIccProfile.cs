@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.PipeReaders;
 
 namespace Melville.Pdf.Model.Renderers.Colors.Profiles;
 
@@ -22,8 +24,8 @@ public static class CmykIccProfile
         await LoadProfileAsync().CA();
     
     private static ValueTask<IccProfile> LoadProfileAsync() =>
-        new IccParser(PipeReader.Create(
-            GetCmykProfileStream())).ParseAsync();
+        new IccParser(ReusableStreamPipeReader.Create(
+            GetCmykProfileStream(), false)).ParseAsync();
 
     /// <summary>
     /// Load the CMYK ICC profile as a stream

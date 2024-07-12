@@ -13,15 +13,16 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 {
     public async ValueTask<IGlyphSource> ParseAsync()
     {
-        var pipe = new ByteSource(source.ReadPipeFrom(0));
+        var pipe = source.ReadPipeFrom(0);
         var topDictSize = await ParseHeaderAsync(pipe).CA();
         var topDict = await ParseTopDictAsync(pipe, topDictSize).CA();
         await pipe.AdvanceToLocalPositionAsync(topDictSize+5).CA();
         var globalSubrs = await new CFFIndexParser(source, pipe).ParseCff2Async().CA();
 
+
         var glyphsource = source.OffsetFrom((uint)topDict.CharStringOffset);
         var glyphs = await new CFFIndexParser(
-            glyphsource, new ByteSource(glyphsource.ReadPipeFrom(0))).ParseCff2Async().CA();
+            glyphsource, glyphsource.ReadPipeFrom(0)).ParseCff2Async().CA();
 
         var fdSelector = await 
             new FontDictSelectParser(source, topDict.FontDictSelectOffset,
@@ -43,7 +44,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
     }
 
     private static async ValueTask<TopDict> ParseTopDictAsync(
-        ByteSource pipe, ushort topDictSize)
+        IByteSource pipe, ushort topDictSize)
     {
         var topDictData = await pipe.ReadAtLeastAsync(topDictSize).CA();
         var topDictSequence = topDictData.Buffer.Slice(0,topDictSize);
@@ -52,7 +53,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
         return ret;
     }
 
-    private async Task<ushort> ParseHeaderAsync(ByteSource pipe)
+    private async Task<ushort> ParseHeaderAsync(IByteSource pipe)
     {
         var (headerSize, topDictSize) = ParseHeader(pipe, (await pipe.ReadAtLeastAsync(5).CA()).Buffer);
         await pipe.AdvanceToLocalPositionAsync(headerSize).CA();
@@ -60,7 +61,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
     }
 
     private (byte headerSize, ushort topDictSize) ParseHeader(
-        ByteSource pipe, ReadOnlySequence<byte> bytes)
+        IByteSource pipe, ReadOnlySequence<byte> bytes)
     {
         var reader = new SequenceReader<byte>(bytes);
         var majorVersion = reader.ReadBigEndianUint8();

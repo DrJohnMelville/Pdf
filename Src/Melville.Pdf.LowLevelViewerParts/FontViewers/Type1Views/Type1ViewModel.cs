@@ -54,6 +54,7 @@ public partial class Type1ViewModel
     private static IEnumerable<TextTree> ExtractDictionary(
         IPostscriptDictionary? fontDictionary)
     {
+        if (fontDictionary == null) yield break;
         var iter = fontDictionary.CreateForAllCursor();
         var values  = new PostscriptValue[2];
         var pos = 0;
@@ -65,10 +66,10 @@ public partial class Type1ViewModel
 
     private static TextTree CreateTextTree(string name, PostscriptValue value)
     {
-        if (value.TryGet(out IPostscriptDictionary dict))
+        if (value.TryGet(out IPostscriptDictionary? dict))
             return new TextTree(name, ExtractDictionary(dict).ToArray());
         if ((!(value.IsString || value.IsLiteralName || value.IsExecutedName)) 
-            && value.TryGet(out IPostscriptArray array))
+            && value.TryGet(out IPostscriptArray? array))
             return new TextTree(name, array
                 .Select((item, i) => CreateTextTree(i.ToString(), item)).ToArray());
         return new TextTree($"{name}: {value.ToString()}", []);

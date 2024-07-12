@@ -8,6 +8,7 @@ using Melville.Parsing.CountingReaders;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
+#warning generalize this and use it in the MultiplexSources -- I can make it more efficient
 /// <summary>
 /// An IByteSource that reads data from an IMemory source.
 /// </summary>
@@ -65,4 +66,10 @@ public partial class MemoryWrapper : IByteSourceWithGlobalPosition
 
     /// <inheritdoc />
     public long Position { get; private set; }
+
+    public void Complete(Exception? exception = null)
+    {
+    }
+
+    public ValueTask CompleteAsync(Exception? exception = null) => ValueTask.CompletedTask;
 }

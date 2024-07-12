@@ -46,7 +46,7 @@ public class CharStringInterpreterTest
             ..bytes];
         var source = MultiplexSourceFactory.Create(buffer);
         var index = await new CFFIndexParser(source, 
-                new ByteSource(source.ReadPipeFrom(0)))
+                source.ReadPipeFrom(0))
             .ParseCff1Async();
         return new CffGlyphSource(index, 
             CreateSel(globalSubrs), CreateSel(localSubrs), Matrix3x2.Identity,[]);

@@ -2,18 +2,18 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
 public class CountingPipeReaderTest
 {
-    private readonly ByteSource sut;
+    private readonly IByteSource sut;
 
     public CountingPipeReaderTest()
     {
-        var src = new MemoryStream(new byte[30]);
-        sut = new(PipeReader.Create(src));
+        sut = MultiplexSourceFactory.Create(new byte[30]).ReadPipeFrom(0);
     }
 
     [Fact]

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -17,7 +19,7 @@ internal static class ObjectStreamOperations
         this PdfStream stream, InternalObjectTargetForStream target)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
-        var bytes = new ByteSource(PipeReader.Create(decoded));
+        var bytes = ReusableStreamPipeReader.Create(decoded, false);
 
         await ReportIncludedObjectsAsync(stream, target, bytes).CA();
     }

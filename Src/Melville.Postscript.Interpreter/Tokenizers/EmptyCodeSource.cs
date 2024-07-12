@@ -47,4 +47,11 @@ public sealed partial class EmptyCodeSource : IByteSourceWithGlobalPosition
 
     /// <inheritdoc />
     public long GlobalPosition => 0;
+
+    public void Complete(Exception? exception = null)
+    {
+    }
+
+    public ValueTask CompleteAsync(Exception? exception = null) =>
+        ValueTask.CompletedTask;
 }

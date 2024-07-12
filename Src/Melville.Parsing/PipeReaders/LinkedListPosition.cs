@@ -77,4 +77,6 @@ internal readonly partial struct LinkedListPosition
             new LinkedListPosition(Node, Index + bytesRead),
             bytesRead == 0);
     }
+
+    public long GlobalPosition => Node.RunningIndex + Index;
 }

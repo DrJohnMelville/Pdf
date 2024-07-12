@@ -13,7 +13,7 @@ internal readonly struct CffGlyphSourceParser(
 {
     public async Task<IGlyphSource> ParseAsync()
     {
-        var pipe = new ByteSource(source.ReadPipeFrom(0));
+        var pipe = source.ReadPipeFrom(0);
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
         var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
@@ -30,7 +30,7 @@ internal readonly struct CffGlyphSourceParser(
         await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();
         var charStringsIndex= await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         
-        var privateSubrs = await GetrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
+        var privateSubrs = await GetPrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
 
         return new CffGlyphSource(charStringsIndex, 
             new GlyphSubroutineExecutor(globalSubrIndex), 
@@ -38,7 +38,7 @@ internal readonly struct CffGlyphSourceParser(
             Matrix3x2.CreateScale(1f/unitsPerEm),[]);
     }
 
-    private async ValueTask<CffIndex> GetrivateSubrsAsync(ByteSource pipe, int privateOffset, int privateSize)
+    private async ValueTask<CffIndex> GetPrivateSubrsAsync(IByteSource pipe, int privateOffset, int privateSize)
     {
         await pipe.AdvanceToLocalPositionAsync(privateOffset).CA();
         var privateDictBytes = await pipe.ReadAtLeastAsync(privateSize).CA();
@@ -51,7 +51,7 @@ internal readonly struct CffGlyphSourceParser(
         return await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
     }
 
-    // Per Adobe Techical Note 5176 page 24
+    // Per Adobe Technical Note 5176 page 24
     private const int subrsInstruction = 19;
     private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
     {
@@ -86,13 +86,13 @@ internal readonly struct CffGlyphSourceParser(
         }
     }
 
-    private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(ByteSource pipe)
+    private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(IByteSource pipe)
     {
         var results = await pipe.ReadAtLeastAsync(4).CA();
         return ParseHeader(pipe, results.Buffer);
     }
 
-    private (byte headerSize, byte offetSize) ParseHeader(ByteSource pipe, ReadOnlySequence<byte> buffer)
+    private (byte headerSize, byte offetSize) ParseHeader(IByteSource pipe, ReadOnlySequence<byte> buffer)
     {
         var reader = new SequenceReader<byte>(buffer);
         var majorVersion = reader.ReadBigEndianUint8();

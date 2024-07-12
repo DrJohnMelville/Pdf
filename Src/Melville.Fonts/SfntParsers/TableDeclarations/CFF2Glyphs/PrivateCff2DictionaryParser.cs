@@ -8,7 +8,7 @@ using Melville.Parsing.MultiplexSources;
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
 internal readonly struct PrivateCff2DictionaryParser(
-    IMultiplexSource source, ByteSource pipe, IFontDictSelector selector)
+    IMultiplexSource source, IByteSource pipe, IFontDictSelector selector)
 {
     public async ValueTask<IFontDictExecutorSelector> ParseAsync()
     {
@@ -57,7 +57,7 @@ internal readonly struct PrivateCff2DictionaryParser(
             var indexOffset = offsets[i]+offsets[i+count];
             var  p2 = source.ReadPipeFrom(indexOffset);
             procIndexes[i] = await new CFFIndexParser(source.OffsetFrom(
-                    (uint)indexOffset), new ByteSource(p2))
+                    (uint)indexOffset), p2)
                 .ParseCff2Async().CA();
         }
 

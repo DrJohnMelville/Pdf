@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -24,7 +25,7 @@ public static class ContentStreamPrettyPrinter
         MemoryStream dest = new();
         var pipeWriter = PipeWriter.Create(dest);
         var parser = new ContentStreamParser(new IndentingContentStreamWriter(pipeWriter));
-        await parser.ParseAsync(PipeReader.Create(new ReadOnlySequence<byte>(content.AsExtendedAsciiBytes()))).CA();
+        await parser.ParseAsync(MultiplexSourceFactory.Create(content.AsExtendedAsciiBytes()).ReadPipeFrom(0)).CA();
         await pipeWriter.FlushAsync().CA();
         return new ReadOnlySpan<byte>(dest.GetBuffer(), 0, (int)dest.Length).ExtendedAsciiString();
     }

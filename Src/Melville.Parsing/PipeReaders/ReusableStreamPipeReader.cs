@@ -2,12 +2,17 @@
 using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ObjectRentals;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.PipeReaders;
 
-internal class ReusableStreamPipeReader : PipeReader, IClearable
+/// <summary>
+/// This is a pipe reader that knows its location, and uses an allocation free
+/// linked list of buffers
+/// </summary>
+public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
 {
     private static readonly LinkedListNode EmptyNode = new LinkedListNode();
 
@@ -23,6 +28,19 @@ internal class ReusableStreamPipeReader : PipeReader, IClearable
     private LinkedListPosition bufferEnd = EmptyPosition;
     private LinkedListPosition examined = EmptyPosition;
 
+    public static ReusableStreamPipeReader Create(
+        Stream stream, bool leaveOpen, int desiredBufferSize = 4096) =>
+        ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+            .WithParameters(stream, leaveOpen, desiredBufferSize);
+
+
+    /// <summary>
+    /// Configure this reader
+    /// </summary>
+    /// <param name="stream">Stream to read from</param>
+    /// <param name="leaveOpen">Close the stream when completed?</param>
+    /// <param name="desiredBufferSize">Desired size for each block of the buffer</param>
+    /// <returns>The configured reader</returns>
     public ReusableStreamPipeReader WithParameters(
         Stream stream, bool leaveOpen, int desiredBufferSize = 4096)
     {
@@ -62,6 +80,9 @@ internal class ReusableStreamPipeReader : PipeReader, IClearable
         ObjectPool<ReusableStreamPipeReader>.Shared.Return(this);
     }
 
+    /// <summary>
+    /// Clean up this reader after it is returned to the object pool
+    /// </summary>
     public void Clear()
     {
         bufferStart.ClearTo(EmptyPosition); // return all nodes
@@ -89,10 +110,7 @@ internal class ReusableStreamPipeReader : PipeReader, IClearable
 
     private bool AllBytesHaveBeenExamined() => bufferEnd == examined;
 
-    /// <summary>
-    /// Reads a sequence of bytes from the from the buffer or underlying <see cref="Stream" /> using synchronous APIs.
-    /// </summary>
-    /// <returns>The read buffer.</returns>
+    /// <inheritdoc />
     public ReadResult Read()
     {
         if (AllBytesHaveBeenExamined() && !atSourceEnd && stream is not null)
@@ -111,6 +129,13 @@ internal class ReusableStreamPipeReader : PipeReader, IClearable
         return bufferStart != bufferEnd;
     }
 
+    /// <inheritdoc />
     public override void CancelPendingRead() => 
         throw new NotSupportedException("Cancellation is not supported.");
+
+    /// <inheritdoc />
+    public void MarkSequenceAsExamined() => examined = bufferEnd;
+
+    /// <inheritdoc />
+    public long Position => bufferStart.GlobalPosition;
 }

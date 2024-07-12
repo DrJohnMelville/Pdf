@@ -47,10 +47,8 @@ internal sealed partial class ParsingFileOwner: IDisposable
         documentCryptContext.ContextForObject(objectNumber, generation);
 
     public ParsingReader ParsingReaderForStream(Stream s, long position) =>
-        new ParsingReader(this, PipeReader.Create(s, pipeOptions), position);
+        new ParsingReader(this, s, position);
 
-    private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
-    
     public async ValueTask InitializeDecryptionAsync(PdfDictionary trailerDictionary)
     {
         if (AlreadyInitializedDecryption()) return;

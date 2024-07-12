@@ -29,14 +29,6 @@ public partial class ByteSourceWithGlobalPosition: IByteSourceWithGlobalPosition
     /// </summary>
     /// <param name="source">The source from which additional data read.</param>
     /// <param name="basePosition">The offset between the local and global streams</param>
-    public ByteSourceWithGlobalPosition(PipeReader source, long basePosition): 
-        this(new ByteSource(source), basePosition){}
-
-    /// <summary>
-    /// Creates a ByteSourceWithGlobalPosition
-    /// </summary>
-    /// <param name="source">The source from which additional data read.</param>
-    /// <param name="basePosition">The offset between the local and global streams</param>
     public ByteSourceWithGlobalPosition(IByteSource source, long basePosition)
     {
         this.source = source;
@@ -44,5 +36,9 @@ public partial class ByteSourceWithGlobalPosition: IByteSourceWithGlobalPosition
     }
 
     /// <inheritdoc />
-    public long GlobalPosition => basePosition + Position;
+    public long GlobalPosition => basePosition + this.source.Position;
+
+#warning -- elimiate ByteSourceWithGlobalPosition in favor of ReusablePipereader
+    public long Position =>
+        throw new NotImplementedException("Try not to use Position on ByteSourceWithGlobaalPosition, because it is going away");
 }

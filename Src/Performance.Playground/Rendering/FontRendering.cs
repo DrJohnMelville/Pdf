@@ -16,7 +16,7 @@ namespace Performance.Playground.Rendering;
 public class FontRendering
 {
     private static readonly Byte[] data = File.ReadAllBytes(
-        @"C:\Users\jom252\source\repos\DrJohnMelville\Pdf\Src\Melville.Pdf.ReferenceDocuments\Text\Zev.ttf");
+        @"C:\Users\jom252\source\repos\DrJohnMelville\Pdf\Src\Melville.Pdf.ReferenceDocuments\Text\GFSEustace.otf");
 
     private IGenericFont freeType = new FreeTypeFace(NewMemoryFace());
 

@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.FunctionLibrary;
@@ -28,7 +29,7 @@ public readonly partial struct ContentStreamParser
     /// Render the content stream operations in the given CodeSource pipereader.
     /// </summary>
     /// <param name="source">The content stream to parse.</param>
-    public async ValueTask ParseAsync(PipeReader source)
+    public async ValueTask ParseAsync(IByteSource source)
     {
         var engine = new PostscriptEngine(contentStreamCommands);
         engine.Tag = target;

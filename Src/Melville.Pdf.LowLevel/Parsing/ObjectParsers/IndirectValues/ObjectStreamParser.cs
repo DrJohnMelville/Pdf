@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -23,7 +25,7 @@ internal partial class ObjectStreamParser: IInternalObjectTarget
         ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
     {
         var sourceStream = await source.StreamContentAsync().CA();
-        var bytes = new SubsetByteSource(new ByteSource(PipeReader.Create(sourceStream)));
+        var bytes = new SubsetByteSource( ReusableStreamPipeReader.Create(sourceStream, true));
         var reader = new ParsingReader(owner, bytes);
         var parser = new RootObjectParser(reader);
 

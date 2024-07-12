@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 using Melville.Icc.Parser;
+using Melville.Parsing.PipeReaders;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Xunit;
 
@@ -19,7 +20,7 @@ public class ICCParserTest
     public async Task SizeFieldAsync()
     {
         var source = LoadSampleData();
-        var profile = await new IccParser(PipeReader.Create(source)).ParseAsync();
+        var profile = await new IccParser( ReusableStreamPipeReader.Create(source, false)).ParseAsync();
 
         Assert.Equal(60960u, profile.Header.Size);
         Assert.Equal(0u, profile.Header.CmmType);

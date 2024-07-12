@@ -26,13 +26,9 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        PipeReader ReadPipeFrom(long position) =>
-#if true
+        ReusableStreamPipeReader ReadPipeFrom(long position) =>
             ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
-                .WithParameters(ReadFrom(position), false);
-#else
-        PipeReader.Create(ReadFrom(position));
-#endif
+                .WithParameters(ReadFrom(position), false); 
 
         /// <summary>
         /// The length of the represented data.

@@ -3,6 +3,8 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -22,8 +24,8 @@ public abstract class ParserTest
         return sut.ParseAsync(PipeReaderFromString(s));
     }
 
-    private static PipeReader PipeReaderFromString(string s) =>
-        PipeReader.Create(new MemoryStream(s.AsExtendedAsciiBytes()));
+    private static IByteSource PipeReaderFromString(string s) =>
+        MultiplexSourceFactory.Create(s.AsExtendedAsciiBytes()).ReadPipeFrom(0);
 
     protected async Task TestInputAsync(
         string input, params Expression<Action<IContentStreamOperations>>[] actions)
