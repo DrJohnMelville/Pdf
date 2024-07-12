@@ -4,18 +4,10 @@ using Melville.INPC;
 namespace Melville.Parsing.CountingReaders;
 
 /// <summary>
-/// This is a bytesource that has 2 positions, a local position within a block or
-/// substream and a global position in a stream containing that block.
-/// </summary>
-public interface IByteSourceWithGlobalPosition: IByteSource
-{
-}
-
-/// <summary>
 /// An IByteSouorceWithGlobalPosition that stores a fixed offset from the beginning
 /// of the source stream.
 /// </summary>
-public partial class ByteSourceWithGlobalPosition: IByteSourceWithGlobalPosition
+public partial class ByteSourceWithGlobalPosition: IByteSource
 {
     [DelegateTo()]private readonly IByteSource source;
     private readonly long basePosition;

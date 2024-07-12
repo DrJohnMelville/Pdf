@@ -16,7 +16,7 @@ public static class PostscriptValueFactory
     /// Create a PostscriptValue representing a long.
     /// </summary>
     /// <param name="value">The long to encode</param>
-    public static PostscriptValue Create(IByteSourceWithGlobalPosition value) =>
+    public static PostscriptValue Create(IByteSource value) =>
         new(value, PostscriptBuiltInOperations.PushArgument, default);
     /// <summary>
     /// Create a PostscriptValue representing a long.

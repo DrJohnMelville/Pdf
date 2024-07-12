@@ -42,7 +42,7 @@ public class DecryptText
 
         var result = new byte[source.Length - 8];
 
-        IByteSourceWithGlobalPosition stream;
+        IByteSource stream;
         stream = new EexeDecisionSource(
             new ByteSourceWithGlobalPosition(source.ReadPipeFrom(0), 0), source,
             i=>stream = i, 4330);
@@ -67,7 +67,7 @@ public class DecryptText
     
         var result = new byte[37];
     
-        IByteSourceWithGlobalPosition stream;
+        IByteSource stream;
         stream = new EexeDecisionSource(
             new ByteSourceWithGlobalPosition(source.ReadPipeFrom(0), 0), source,
             i=>stream = i, 4330);

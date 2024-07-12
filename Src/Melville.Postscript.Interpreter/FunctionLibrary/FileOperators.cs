@@ -18,7 +18,7 @@ internal static partial class FileOperators
                                       throw new PostscriptException("Does not have a CodeSource in a currentfile operation"));
 
     [PostscriptMethod("closefile")]
-    private static void CloseFile(IByteSourceWithGlobalPosition file)
+    private static void CloseFile(IByteSource file)
     {
         // right now the only file is the current stream so closefile is a no-op that
         // only has to honor the stack signature of the closefile operation.
@@ -26,7 +26,7 @@ internal static partial class FileOperators
 
     [PostscriptMethod("readstring")]
     private static async ValueTask ReadStringAsync(
-        IByteSourceWithGlobalPosition file, PostscriptLongString str, OperandStack stack)
+        IByteSource file, PostscriptLongString str, OperandStack stack)
     {
         var result = await file.ReadAtLeastAsync(str.Length+1);
         if (TryHandleEmptyRead(file, str, stack, result)) return;
@@ -64,7 +64,7 @@ internal static partial class FileOperators
     private static int TrySkipWhiteSpace(ReadResult result) => 
         CharacterClassifier.IsWhitespace(result.Buffer.FirstSpan[0]) ? 1 : 0;
 
-    private static bool TryHandleEmptyRead(IByteSourceWithGlobalPosition file, PostscriptLongString str, OperandStack stack,
+    private static bool TryHandleEmptyRead(IByteSource file, PostscriptLongString str, OperandStack stack,
         ReadResult result)
     {
         if (result.Buffer.Length < 1)

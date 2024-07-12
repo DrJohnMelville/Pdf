@@ -12,7 +12,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// A code source with no code in it.  Used for running pre-parsed type 4 functions
 /// </summary>
 [StaticSingleton]
-public sealed partial class EmptyCodeSource : IByteSourceWithGlobalPosition
+public sealed partial class EmptyCodeSource : IByteSource
 {
     /// <inheritdoc/>
     public ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default) =>

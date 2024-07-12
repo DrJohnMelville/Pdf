@@ -7,7 +7,7 @@ using Melville.Parsing.CountingReaders;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal partial class SubsetByteSource : IByteSourceWithGlobalPosition
+internal partial class SubsetByteSource : IByteSource
 {
     public long ExclusiveEndPosition { get; set; } = long.MaxValue;
 

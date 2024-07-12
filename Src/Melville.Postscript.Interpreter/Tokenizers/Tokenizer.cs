@@ -18,7 +18,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public partial class Tokenizer : ITokenSource
 {
     /// <inheritdoc />
-    [FromConstructor] public IByteSourceWithGlobalPosition CodeSource { get; }
+    [FromConstructor] public IByteSource CodeSource { get; }
 
     /// <summary>
     /// Create a tokenizer from a stream.
@@ -26,15 +26,6 @@ public partial class Tokenizer : ITokenSource
     /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
         this(ReusableStreamPipeReader.Create(source, false))
-    {
-    }
-
-    /// <summary>
-    /// Create a tokenizer from a stream.
-    /// </summary>
-    /// <param name="source">A stream containing the code to execute.</param>
-    public Tokenizer(IByteSource source) :
-        this(new ByteSourceWithGlobalPosition(source, 0))
     {
     }
 

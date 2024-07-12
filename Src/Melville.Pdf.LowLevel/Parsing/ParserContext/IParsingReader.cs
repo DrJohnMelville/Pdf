@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 internal partial class ParsingReader
 {
     [FromConstructor] public ParsingFileOwner Owner { get; }
-    [FromConstructor] public IByteSourceWithGlobalPosition Reader { get; }
+    [FromConstructor] public IByteSource Reader { get; }
 
     public ParsingReader(ParsingFileOwner owner, Stream input, long lastSeek) :
         this(owner, new ByteSourceWithGlobalPosition(

@@ -13,7 +13,7 @@ public interface ITokenSource
     /// <summary>
     /// The IByteSource reading bytes from
     /// </summary>
-    IByteSourceWithGlobalPosition CodeSource { get; }
+    IByteSource CodeSource { get; }
 
     /// <summary>
     /// Get all the tokens as a syncronous enumerable.

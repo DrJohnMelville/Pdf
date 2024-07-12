@@ -17,7 +17,7 @@ public partial class PretokenizedSource : ITokenSource
     [FromConstructor] private IEnumerable<PostscriptValue> source;
 
     /// <inheritdoc/>
-    public IByteSourceWithGlobalPosition CodeSource => EmptyCodeSource.Instance;
+    public IByteSource CodeSource => EmptyCodeSource.Instance;
 
     /// <inheritdoc/>
     public IEnumerable<PostscriptValue> Tokens() => source;

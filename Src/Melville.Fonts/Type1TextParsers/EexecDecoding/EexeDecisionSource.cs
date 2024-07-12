@@ -15,11 +15,11 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding
 {
-    internal sealed partial class EexeDecisionSource : IByteSourceWithGlobalPosition
+    internal sealed partial class EexeDecisionSource : IByteSource
     {
-        [FromConstructor] [DelegateTo] private IByteSourceWithGlobalPosition inner;
+        [FromConstructor] [DelegateTo] private IByteSource inner;
         [FromConstructor] private readonly IMultiplexSource multiplexSource;
-        [FromConstructor] private Action<IByteSourceWithGlobalPosition>? setReader;
+        [FromConstructor] private Action<IByteSource>? setReader;
         [FromConstructor] private readonly ushort key;
 
         public bool TryRead(out ReadResult result) =>

@@ -17,6 +17,7 @@ namespace Melville.Parsing.PipeReaders
             buffer = ArrayPool<byte>.Shared.Rent(desiredLength);
             Memory = buffer;
             Next = next;
+            RunningIndex = 0;
             return this;
         }
 

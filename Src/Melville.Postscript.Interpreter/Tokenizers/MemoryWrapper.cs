@@ -12,7 +12,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// <summary>
 /// An IByteSource that reads data from an IMemory source.
 /// </summary>
-public partial class MemoryWrapper : IByteSourceWithGlobalPosition
+public partial class MemoryWrapper : IByteSource
 {
     /// <summary>
     /// The buffer to read from.

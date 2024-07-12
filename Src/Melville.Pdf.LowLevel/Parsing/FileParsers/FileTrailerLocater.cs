@@ -52,7 +52,7 @@ internal static class FileTrailerLocater
     }
         
 
-    private static bool SearchForS(ReadResult readResult, IByteSourceWithGlobalPosition source, long max, out bool foundOne)
+    private static bool SearchForS(ReadResult readResult, IByteSource source, long max, out bool foundOne)
     {
         if (readResult.IsCompleted || source.Position> max)
         {

@@ -9,10 +9,10 @@ using Melville.Postscript.Interpreter.Values.Execution;
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
 internal partial class EexecDecryptingByteSource : 
-    BuiltInFunction, IByteSourceWithGlobalPosition
+    BuiltInFunction, IByteSource
 {
     private readonly IMultiplexSource multiplexSource;
-    [DelegateTo] IByteSourceWithGlobalPosition source;
+    [DelegateTo] IByteSource source;
 
     public EexecDecryptingByteSource(IMultiplexSource multiplexSource)
     {
