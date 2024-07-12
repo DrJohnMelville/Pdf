@@ -79,4 +79,9 @@ internal readonly partial struct LinkedListPosition
     }
 
     public long GlobalPosition => Node.RunningIndex + Index;
+
+    public void RenumberCurrentPosition(long startAt)
+    {
+        Node.RenumberStartingPosition(startAt - Index);
+    }
 }

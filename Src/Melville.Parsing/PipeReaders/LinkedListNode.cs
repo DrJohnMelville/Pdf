@@ -41,5 +41,12 @@ namespace Melville.Parsing.PipeReaders
 
         public int FillFrom(Stream stream, int index) => 
             stream.Read(buffer.AsSpan(index));
+
+        public void RenumberStartingPosition(long startAt)
+        {
+            RunningIndex = startAt;
+            if (Next is LinkedListNode lln)
+                lln.RenumberStartingPosition(startAt+buffer.Length);
+        }
     }
 }

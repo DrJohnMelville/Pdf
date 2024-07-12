@@ -14,10 +14,9 @@ internal partial class ParsingReader
     [FromConstructor] public IByteSource Reader { get; }
 
     public ParsingReader(ParsingFileOwner owner, Stream input, long lastSeek) :
-        this(owner, new ByteSourceWithGlobalPosition(
+        this(owner, 
             ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
-                .WithParameters(input, true)
-            , lastSeek))
+                .WithParameters(input, true).WithStartingPosition(lastSeek))
     {
     }
 }

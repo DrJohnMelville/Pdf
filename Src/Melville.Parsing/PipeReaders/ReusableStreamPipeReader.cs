@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using System.IO.Pipelines;
+using Melville.Hacks.Reflection;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ObjectRentals;
@@ -52,6 +53,12 @@ public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
         bufferStart = new SequencePosition(block, 0);
         bufferEnd = bufferStart;
         examined = bufferStart;
+        return this;
+    }
+
+    public ReusableStreamPipeReader WithStartingPosition(long startAt)
+    {
+        bufferStart.RenumberCurrentPosition(startAt);
         return this;
     }
 
