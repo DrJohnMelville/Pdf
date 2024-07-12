@@ -9,10 +9,6 @@ namespace Melville.Parsing.CountingReaders;
 /// </summary>
 public interface IByteSourceWithGlobalPosition: IByteSource
 {
-    /// <summary>
-    /// The global position within the larger stream.
-    /// </summary>
-    long GlobalPosition { get; }
 }
 
 /// <summary>
@@ -35,10 +31,6 @@ public partial class ByteSourceWithGlobalPosition: IByteSourceWithGlobalPosition
         this.basePosition = basePosition - this.source.Position;
     }
 
-    /// <inheritdoc />
-    public long GlobalPosition => basePosition + this.source.Position;
-
 #warning -- elimiate ByteSourceWithGlobalPosition in favor of ReusablePipereader
-    public long Position =>
-        throw new NotImplementedException("Try not to use Position on ByteSourceWithGlobaalPosition, because it is going away");
+    public long Position => basePosition + source.Position;
 }

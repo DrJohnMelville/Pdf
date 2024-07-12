@@ -45,8 +45,8 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
             var result = await inner.ReadAtLeastAsync(4).CA();
             var newInner = IsHex(result.Buffer.Slice(0, 4))
                 ? ConstructNewByteSource(
-                    new DecodeHexStream(multiplexSource.ReadFrom(inner.GlobalPosition)))
-                : ConstructNewByteSource(multiplexSource.ReadFrom(inner.GlobalPosition));
+                    new DecodeHexStream(multiplexSource.ReadFrom(inner.Position)))
+                : ConstructNewByteSource(multiplexSource.ReadFrom(inner.Position));
 
             result = await newInner.ReadAtLeastAsync(4).CA();
             newInner.AdvanceTo(result.Buffer.GetPosition(4));
@@ -59,7 +59,7 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         {
             return new ByteSourceWithGlobalPosition(
                 ReusableStreamPipeReader.Create(new EexecDecodeStream(
-                        input, key), false), inner.GlobalPosition);
+                        input, key), false), inner.Position);
         }
 
         private bool IsHex(ReadOnlySequence<byte> buffer)

@@ -43,9 +43,9 @@ public class ParsingSourceTest
         var sut = (owner.RentReader(0)).Reader;
         var result = await sut.ReadAsync();
         var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-        Assert.Equal(0, sut.GlobalPosition);
+        Assert.Equal(0, sut.Position);
         sut.AdvanceTo( sp);
-        Assert.Equal(5, sut.GlobalPosition);
+        Assert.Equal(5, sut.Position);
     }
     [Fact]
     public async Task ReadThenJumpAsync()
@@ -54,9 +54,9 @@ public class ParsingSourceTest
             var sut = owner.RentReader(0);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-            Assert.Equal(0, sut.Reader.GlobalPosition);
+            Assert.Equal(0, sut.Reader.Position);
             sut.Reader.AdvanceTo(sp);
-            Assert.Equal(5, sut.Reader.GlobalPosition);
+            Assert.Equal(5, sut.Reader.Position);
         }
 
         {
@@ -64,7 +64,7 @@ public class ParsingSourceTest
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
             sut.Reader.AdvanceTo( sp);
-            Assert.Equal(49, sut.Reader.GlobalPosition);
+            Assert.Equal(49, sut.Reader.Position);
         }
     }
 }

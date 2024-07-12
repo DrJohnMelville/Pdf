@@ -35,6 +35,4 @@ internal partial class SubsetByteSource : IByteSourceWithGlobalPosition
 
     private ReadResult SliceToAllowedLength(ReadResult result) =>
         new(result.Buffer.Slice(0, MaxReadLength()), false, true);
-
-    public long GlobalPosition => this.Position;
 }

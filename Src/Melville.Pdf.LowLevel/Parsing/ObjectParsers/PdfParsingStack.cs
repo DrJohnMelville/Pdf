@@ -123,7 +123,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
         Push(new PdfStream(new  PdfFileStreamSource(
-                Source.Reader.GlobalPosition, Source.Owner, CryptoContext()), 
+                Source.Reader.Position, Source.Owner, CryptoContext()), 
                 dv.Get<Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>>>()));
     }
 

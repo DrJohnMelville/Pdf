@@ -54,7 +54,7 @@ internal static class FileTrailerLocater
 
     private static bool SearchForS(ReadResult readResult, IByteSourceWithGlobalPosition source, long max, out bool foundOne)
     {
-        if (readResult.IsCompleted || source.GlobalPosition > max)
+        if (readResult.IsCompleted || source.Position> max)
         {
             foundOne = false;
             return false;

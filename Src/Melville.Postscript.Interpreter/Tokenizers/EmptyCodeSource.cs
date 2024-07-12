@@ -45,9 +45,6 @@ public sealed partial class EmptyCodeSource : IByteSourceWithGlobalPosition
     /// <inheritdoc />
     public long Position => 0;
 
-    /// <inheritdoc />
-    public long GlobalPosition => 0;
-
     public void Complete(Exception? exception = null)
     {
     }
