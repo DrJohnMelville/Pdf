@@ -3,13 +3,14 @@ using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Microsoft.CodeAnalysis;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 
 internal class HorizontalMetricsParser(
-    PipeReader source,
+    IByteSource source,
     ushort numberOfHMetrics,
     ushort numGlyphs,
     ushort unitsPerEM)

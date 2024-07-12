@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -13,7 +14,7 @@ internal readonly partial struct CmapFormat6Parser
     [SFntField] private readonly ushort entryCount;
     [SFntField("entryCount")] private readonly ushort[] glyphIdArray;
 
-    public static async ValueTask<ICmapImplementation> ParseAsync(PipeReader input)
+    public static async ValueTask<ICmapImplementation> ParseAsync(IByteSource input)
     {
         var record = await FieldParser.ReadFromAsync<CmapFormat6Parser>(input).CA();
         return new CmapFormat6Implementation(

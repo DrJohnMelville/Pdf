@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
@@ -44,7 +45,7 @@ internal readonly struct FontDictSelectParser(
         return ParseAsync(source.ReadPipeFrom(offset));
     }
 
-    private async ValueTask<IFontDictSelector> ParseAsync(PipeReader pipe)
+    private async ValueTask<IFontDictSelector> ParseAsync(IByteSource pipe)
     {
         var result = await pipe.ReadAsync().CA();
         var type = result.Buffer.First.Span[0];
@@ -58,7 +59,7 @@ internal readonly struct FontDictSelectParser(
         };
     }
 
-    private async ValueTask<IFontDictSelector> ReadType0SelectorAsync(PipeReader pipe)
+    private async ValueTask<IFontDictSelector> ReadType0SelectorAsync(IByteSource pipe)
     {
         var data = new byte[(int)glyphCount];
         var result = await pipe.ReadAtLeastAsync(data.Length).CA();

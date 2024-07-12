@@ -33,11 +33,11 @@ internal static partial class FieldParser
     [MacroItem("short")]
     [MacroItem("uint")]
     [MacroCode(NumberArrayReader.NumberArrayImplementation)]
-    public static  ValueTask ReadAsync(PipeReader reader, Memory<byte> offsets) =>
+    public static  ValueTask ReadAsync(IByteSource reader, Memory<byte> offsets) =>
         NumberArrayReader.ReadAsync(reader, offsets);
 
 
-    public static async ValueTask<T> ReadFromAsync<T>(PipeReader reader) where T : IGeneratedParsable<T>
+    public static async ValueTask<T> ReadFromAsync<T>(IByteSource reader) where T : IGeneratedParsable<T>
     {
         var result = await reader.ReadAtLeastAsync(T.StaticSize).CA();
         LoadFrom(reader, result, out T ret); 
@@ -45,7 +45,7 @@ internal static partial class FieldParser
         return ret;
     }
     
-    private static void LoadFrom<T>(PipeReader reader, ReadResult readResult, out T result) 
+    private static void LoadFrom<T>(IByteSource reader, ReadResult readResult, out T result) 
         where T : IGeneratedParsable<T>
     {
         var seqReader = new SequenceReader<byte>(readResult.Buffer);
@@ -53,7 +53,7 @@ internal static partial class FieldParser
         reader.AdvanceTo(seqReader.Position);
     }
 
-    public static async ValueTask ReadAsync<T>(PipeReader reader, T[] records)
+    public static async ValueTask ReadAsync<T>(IByteSource reader, T[] records)
     where T: IGeneratedParsable<T>
     {
         for (int i = 0; i < records.Length; i++)

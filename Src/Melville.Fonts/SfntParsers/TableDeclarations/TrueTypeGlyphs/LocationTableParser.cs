@@ -2,6 +2,7 @@
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
@@ -24,7 +25,7 @@ public interface IGlyphLocationSource
 }
 
 
-internal readonly struct LocationTableParser(PipeReader source, ushort numGlyphs, short style)
+internal readonly struct LocationTableParser(IByteSource source, ushort numGlyphs, short style)
 {
     public ValueTask<IGlyphLocationSource> ParseAsync()
     {

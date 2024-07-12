@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -26,7 +27,7 @@ internal readonly partial struct CmapFormat4Parser
 
     private int SizePriorToGlyphArray() => (this.GetStaticSize() + 2 + (8*SegCount));
 
-    public static async ValueTask<ICmapImplementation> ParseAsync(PipeReader input) => 
+    public static async ValueTask<ICmapImplementation> ParseAsync(IByteSource input) => 
             (await FieldParser.ReadFromAsync<CmapFormat4Parser>(input).CA())
             .CreateImplementation();
 

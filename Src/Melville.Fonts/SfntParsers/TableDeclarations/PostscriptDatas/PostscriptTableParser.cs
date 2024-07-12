@@ -5,11 +5,12 @@ using System.Text;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
 {
-    internal readonly struct PostscriptTableParser(PipeReader source)
+    internal readonly struct PostscriptTableParser(IByteSource source)
     {
         public async ValueTask<PostscriptData> ParseAsync()
         {
@@ -21,7 +22,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
         }
 
         private ValueTask<string[]> ReadGlyphNamesAsync(
-            PipeReader source, uint version) => version switch
+            IByteSource source, uint version) => version switch
         {
             0x00010000 => new (DefaultNames),
             0x00020000 => ReadType20NamesAsync(source),
@@ -29,7 +30,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             _ => new ValueTask<string[]>([])
         };
 
-        private async ValueTask<string[]> ReadType20NamesAsync(PipeReader source)
+        private async ValueTask<string[]> ReadType20NamesAsync(IByteSource source)
         {
             var ret = await PrepareResultArrayAsync(source).CA();
             var indexes = ArrayPool<int>.Shared.Rent(ret.Length);
@@ -43,7 +44,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
         }
 
         private async ValueTask ReadCustomNamesAsync(
-            PipeReader source, string[] ret, int[] indexes)
+            IByteSource source, string[] ret, int[] indexes)
         {
             var count = indexes.AsSpan().LastIndexOfAnyExcept(-1);
             for (int i = 0; i <= count; i++)
@@ -79,7 +80,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             return reader.Position;
         }
 
-        private async ValueTask<string[]> ReadType25NamesAsync(PipeReader source)
+        private async ValueTask<string[]> ReadType25NamesAsync(IByteSource source)
         {
             var ret = await PrepareResultArrayAsync(source).CA();
             var result2 = await source.ReadAtLeastAsync(ret.Length).CA();
@@ -87,7 +88,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             return ret;
         }
 
-        private async ValueTask<string[]> PrepareResultArrayAsync(PipeReader source)
+        private async ValueTask<string[]> PrepareResultArrayAsync(IByteSource source)
         {
             var result = await source.ReadAtLeastAsync(2).CA();
             var count = ReadCount(result.Buffer);

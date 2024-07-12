@@ -23,7 +23,7 @@ public class LocationTableReaderTest
             0007
             0008
             """.BitsFromHex();
-        var pipe = PipeReader.Create(new MemoryStream(bitsFromHex));
+        var pipe = MultiplexSourceFactory.Create(bitsFromHex).ReadPipeFrom(0); 
         var data = await new LocationTableParser(pipe, 7, 0).ParseAsync();
 
         data.TotalGlyphs.Should().Be(7);
@@ -46,7 +46,7 @@ public class LocationTableReaderTest
             0000000E
             00000010
             """.BitsFromHex();
-        var pipe = PipeReader.Create(new MemoryStream(bitsFromHex));
+        var pipe = MultiplexSourceFactory.Create(bitsFromHex).ReadPipeFrom(0);
         var data = await new LocationTableParser(pipe, 7, 1).ParseAsync();
 
         data.TotalGlyphs.Should().Be(7);

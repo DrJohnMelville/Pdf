@@ -81,7 +81,7 @@ namespace Melville.Fonts.TableGenerator
         private void GenerateLoadAsyncHeader(string asyncDecl, string postfix) =>
             output.AppendLine($"""
                     {asyncDecl}global::System.Threading.Tasks.ValueTask {InterfaceName()}.LoadAsync(
-                    global::System.IO.Pipelines.PipeReader reader) {postfix}
+                    global::Melville.Parsing.CountingReaders.IByteSource reader) {postfix}
                 """);
         private void GenerateReaderConstructor()
         {

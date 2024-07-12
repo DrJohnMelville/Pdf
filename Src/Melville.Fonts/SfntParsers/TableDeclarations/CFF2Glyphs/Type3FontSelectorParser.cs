@@ -1,12 +1,13 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
 internal readonly struct Type34FontSelectorParser(
-    PipeReader reader, int glyphSize, int tableSize)
+    IByteSource reader, int glyphSize, int tableSize)
 {
     public async ValueTask<IFontDictSelector> ParseAsync()
     {

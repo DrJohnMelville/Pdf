@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -13,7 +14,7 @@ public class PostTableReaderTest
 {
     private static async Task<PostscriptData> ReadPostscriptTableAsync(string data) =>
         await new PostscriptTableParser(
-                PipeReader.Create(new MemoryStream(data.BitsFromHex())))
+                MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0))
             .ParseAsync();
 
     [Fact]

@@ -2,6 +2,7 @@
 using System.Security.AccessControl;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
@@ -51,12 +52,12 @@ internal readonly partial struct VariantSelectorRecord
     }
 
 
-    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTableAsync(PipeReader pipe)
+    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTableAsync(IByteSource pipe)
     {
         var record = await FieldParser.ReadFromAsync<DefaultUvsTableRecord>(pipe).CA();
         return record.unicodeValueRanges;
     }
-    private async ValueTask<UvsMapping[]> LoadNonDefaultTableAsync(PipeReader readPipeFrom)
+    private async ValueTask<UvsMapping[]> LoadNonDefaultTableAsync(IByteSource readPipeFrom)
     {
         var record = await FieldParser.ReadFromAsync<NonDefaultUvsTableRecord>(
             readPipeFrom).CA();

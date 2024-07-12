@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -25,7 +26,7 @@ internal readonly partial struct CmapFormat2Parser
         return new Type2Cmap(subheadderKeys, glyphArray);
     }
 
-    public static async Task<ICmapImplementation> ParseAsync(PipeReader input)
+    public static async Task<ICmapImplementation> ParseAsync(IByteSource input)
     {
         return (await FieldParser.ReadFromAsync<CmapFormat2Parser>(input).CA())
             .CreateImplementation();

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.Hacks.Reflection;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ObjectRentals;
@@ -9,11 +10,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.PipeReaders;
 
+
 /// <summary>
 /// This is a pipe reader that knows its location, and uses an allocation free
 /// linked list of buffers
 /// </summary>
-public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
+public class ReusableStreamPipeReader : IClearable, IByteSource
 {
     private static readonly LinkedListNode EmptyNode = new LinkedListNode();
 
@@ -64,10 +66,10 @@ public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
 
 
     /// <inheritdoc />
-    public override void AdvanceTo(SequencePosition consumed) => this.AdvanceTo(consumed, consumed);
+    public void AdvanceTo(SequencePosition consumed) => this.AdvanceTo(consumed, consumed);
 
     /// <inheritdoc />
-    public override void AdvanceTo(SequencePosition consumed, SequencePosition examined)
+    public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
     {
         LinkedListPosition lpConsumed = consumed;
         bufferStart.ClearTo(lpConsumed);
@@ -78,13 +80,20 @@ public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
 
 
     /// <inheritdoc />
-    public override void Complete(Exception? exception = null)
+    public void Complete(Exception? exception = null)
     {
         if (!this.leaveOpen)
         {
             stream?.Dispose();
         }
         ObjectPool<ReusableStreamPipeReader>.Shared.Return(this);
+    }
+
+    /// <inheritdoc />
+    public ValueTask CompleteAsync(Exception? exception = null)
+    {
+        Complete();
+        return default;
     }
 
     /// <summary>
@@ -97,7 +106,7 @@ public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
     }
 
     /// <inheritdoc />
-    public override async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
     {
         Debug.Assert(EmptyNode.RunningIndex == 0);
         if (AllBytesHaveBeenExamined() && !atSourceEnd && stream is not null)
@@ -130,14 +139,14 @@ public class ReusableStreamPipeReader : PipeReader, IClearable, IByteSource
     }
 
     /// <inheritdoc />
-    public override bool TryRead(out ReadResult result)
+    public  bool TryRead(out ReadResult result)
     {
         result = CreateReadResult();
         return bufferStart != bufferEnd;
     }
 
     /// <inheritdoc />
-    public override void CancelPendingRead() => 
+    public void CancelPendingRead() => 
         throw new NotSupportedException("Cancellation is not supported.");
 
     /// <inheritdoc />
