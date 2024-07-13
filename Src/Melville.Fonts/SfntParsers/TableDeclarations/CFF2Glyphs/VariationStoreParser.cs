@@ -46,6 +46,7 @@ internal readonly struct VariationStoreParser(IByteSource pipe)
             ret[i] = reader.ReadBigEndianUint16();
         }
 
+
         return ret;
     }
 

@@ -13,7 +13,7 @@ internal readonly struct CffGlyphSourceParser(
 {
     public async Task<IGlyphSource> ParseAsync()
     {
-        var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ReadPipeFrom(0);
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
         var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();

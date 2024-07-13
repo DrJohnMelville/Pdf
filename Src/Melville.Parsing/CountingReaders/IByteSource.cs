@@ -5,7 +5,7 @@ namespace Melville.Parsing.CountingReaders;
 /// <summary>
 /// Represents a source of bytes to be parsed - a thin wrapper around PipeReader with a current position
 /// </summary>
-public interface IByteSource
+public interface IByteSource: IDisposable
 {
     /// <summary>
     /// fill a read result with bytes to parse iff it can be done without blocking.
@@ -46,16 +46,6 @@ public interface IByteSource
     /// <param name="examined">The first byte that has not been examined.  The next ReadAsync will contain data beyond
     /// this byte.</param>
     void AdvanceTo(SequencePosition consumed, SequencePosition examined);
-
-    /// <summary>Signals to the producer that the consumer is done reading.</summary>
-    /// <param name="exception">Optional <see cref="System.Exception" /> indicating a failure that's causing the pipeline to complete.</param>
-    void Complete(Exception? exception = null);
-
-    /// <summary>Marks the current pipe reader instance as being complete, meaning no more data will be read from it.</summary>
-    /// <param name="exception">An optional exception that indicates the failure that caused the reader to complete.</param>
-    /// <returns>A value task that represents the asynchronous complete operation.</returns>
-    ValueTask CompleteAsync(Exception? exception = null);
-
 
     /// <summary>
     /// Mark the entire read sequence as examined, forcing the next ReadAsync to get more data.

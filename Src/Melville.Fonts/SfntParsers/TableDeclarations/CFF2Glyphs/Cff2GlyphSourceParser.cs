@@ -13,7 +13,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 {
     public async ValueTask<IGlyphSource> ParseAsync()
     {
-        var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ReadPipeFrom(0);
         var topDictSize = await ParseHeaderAsync(pipe).CA();
         var topDict = await ParseTopDictAsync(pipe, topDictSize).CA();
         await pipe.AdvanceToLocalPositionAsync(topDictSize+5).CA();
@@ -21,8 +21,9 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 
 
         var glyphsource = source.OffsetFrom((uint)topDict.CharStringOffset);
+        using var glyphPipe = glyphsource.ReadPipeFrom(0);
         var glyphs = await new CFFIndexParser(
-            glyphsource, glyphsource.ReadPipeFrom(0)).ParseCff2Async().CA();
+            glyphsource, glyphPipe).ParseCff2Async().CA();
 
         var fdSelector = await 
             new FontDictSelectParser(source, topDict.FontDictSelectOffset,
@@ -35,12 +36,18 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 
         var variatons = topDict.VariationStoreOffset == 0
             ? Array.Empty<uint>()
-            : await new VariationStoreParser(
-                source.ReadPipeFrom(topDict.VariationStoreOffset)).ParseAsync().CA();
+            : await ParseVariationStoreAsync(topDict).CA();
 
         return new CffGlyphSource(
             glyphs, new GlyphSubroutineExecutor(globalSubrs), dicts, topDict.FontMatrix,
             variatons);
+    }
+
+    private async ValueTask<uint[]> ParseVariationStoreAsync(TopDict topDict)
+    {
+        using var pipe = source.ReadPipeFrom(topDict.VariationStoreOffset);
+        return await new VariationStoreParser(
+            pipe).ParseAsync().CA();
     }
 
     private static async ValueTask<TopDict> ParseTopDictAsync(

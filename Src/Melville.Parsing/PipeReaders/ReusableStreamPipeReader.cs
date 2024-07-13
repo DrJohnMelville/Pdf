@@ -1,6 +1,8 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using System.IO.Pipelines;
+using System.Net.Sockets;
+using System.Text;
 using Melville.Hacks.Reflection;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -9,6 +11,50 @@ using Melville.Parsing.ObjectRentals;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.PipeReaders;
+
+internal partial class EnsureByteSourceDisposed: IByteSource
+{
+    [FromConstructor] [DelegateTo] private IByteSource inner;
+    [FromConstructor] private string fileName;
+    [FromConstructor] private int lineNumber;
+
+    private string stacktrace;
+
+
+    public void Dispose()
+    {
+        inner.Dispose();
+        inner = null; // this will cause an error if I use after free
+        GC.SuppressFinalize(this);
+    }
+
+    ~EnsureByteSourceDisposed()
+    {
+        UdpConsole.WriteLine($"""
+            Undisposed reader {fileName}({lineNumber})
+            """);
+    }
+
+    public static class UdpConsole
+    {
+        private static UdpClient? client = null;
+        private static UdpClient Client
+        {
+            get
+            {
+                client ??= new UdpClient();
+                return client;
+            }
+        }
+
+        public static string WriteLine(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+            return str;
+        }
+    }
+}
 
 
 /// <summary>
@@ -55,6 +101,7 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
         bufferStart = new SequencePosition(block, 0);
         bufferEnd = bufferStart;
         examined = bufferStart;
+        atSourceEnd = false;
         return this;
     }
 
@@ -80,20 +127,17 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
 
 
     /// <inheritdoc />
-    public void Complete(Exception? exception = null)
+    public void Dispose()
     {
+        if (stream != null) 
+            return;
         if (!this.leaveOpen)
         {
-            stream?.Dispose();
+            stream.Dispose();
         }
-        ObjectPool<ReusableStreamPipeReader>.Shared.Return(this);
-    }
 
-    /// <inheritdoc />
-    public ValueTask CompleteAsync(Exception? exception = null)
-    {
-        Complete();
-        return default;
+       stream = null;
+       ObjectPool<ReusableStreamPipeReader>.Shared.Return(this);
     }
 
     /// <summary>

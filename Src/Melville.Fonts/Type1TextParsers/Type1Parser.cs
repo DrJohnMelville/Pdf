@@ -21,7 +21,6 @@ internal readonly struct Type1Parser(IMultiplexSource source)
             PostscriptOperatorCollections.BaseLanguage()
                 .With(AddEexec));
         await parser.ExecuteAsync(new Tokenizer(eexecDecryptingSource)).CA();
-
         return factory.Result;
     }
 

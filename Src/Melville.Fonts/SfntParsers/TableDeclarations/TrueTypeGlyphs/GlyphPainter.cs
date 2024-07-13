@@ -65,12 +65,11 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
         if (glyph >= GlyphCount) glyph = 0;
         var location = index.GetLocation(glyph);
         if (location.Length == 0) return;
-        var pipe = glyphDataOrigin.ReadPipeFrom(location.Offset);
+        using var pipe = glyphDataOrigin.ReadPipeFrom(location.Offset);
         var data = await pipe.ReadAtLeastAsync((int)location.Length).CA();
         await new TrueTypeGlyphParser<T>(
                 this, data.Buffer.Slice(0, location.Length), target, 
                 matrix, hMetrics[(int)glyph])
             .DrawGlyphAsync().CA();
-        await pipe.CompleteAsync().CA();
     }
 }

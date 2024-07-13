@@ -15,8 +15,9 @@ internal readonly partial struct CmapFormat14Parser
     [SFntField("numVarSelectorRecords")] private readonly VariantSelectorRecord[] varSelectorRecords;
     public static async ValueTask<ICmapImplementation> ParseAsync(IMultiplexSource input)
     {
+        using var pipe = input.ReadPipeFrom(0);
         var header = await FieldParser.ReadFromAsync<CmapFormat14Parser>(
-            input.ReadPipeFrom(0)).CA();
+            pipe).CA();
 
         return await header.CreateImplementationAsync(input).CA();
        
@@ -45,8 +46,9 @@ internal readonly partial struct VariantSelectorRecord
     {
         var defaults = defaultUVSOffset is > 0?
                 await LoadDefaultTableAsync(input.ReadPipeFrom(defaultUVSOffset)).CA():[];
+        using var pipe = input.ReadPipeFrom(nonDefaultUVSOffset);
         var mappings = nonDefaultUVSOffset is > 0?
-                await LoadNonDefaultTableAsync(input.ReadPipeFrom(nonDefaultUVSOffset)).CA():[];
+                await LoadNonDefaultTableAsync(pipe).CA():[];
         return new VariantSelection(
             varSelector, defaults, mappings);
     }

@@ -12,10 +12,11 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class PostTableReaderTest
 {
-    private static async Task<PostscriptData> ReadPostscriptTableAsync(string data) =>
-        await new PostscriptTableParser(
-                MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0))
-            .ParseAsync();
+    private static async Task<PostscriptData> ReadPostscriptTableAsync(string data)
+    {
+        using var pipe = MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0);
+        return await new PostscriptTableParser(pipe).ParseAsync();
+    }
 
     [Fact]
     public async Task Type1TableAsync()

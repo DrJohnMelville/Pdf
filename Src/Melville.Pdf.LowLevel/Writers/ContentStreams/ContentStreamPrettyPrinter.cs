@@ -25,7 +25,8 @@ public static class ContentStreamPrettyPrinter
         MemoryStream dest = new();
         var pipeWriter = PipeWriter.Create(dest);
         var parser = new ContentStreamParser(new IndentingContentStreamWriter(pipeWriter));
-        await parser.ParseAsync(MultiplexSourceFactory.Create(content.AsExtendedAsciiBytes()).ReadPipeFrom(0)).CA();
+        using var readPipe = MultiplexSourceFactory.Create(content.AsExtendedAsciiBytes()).ReadPipeFrom(0);
+        await parser.ParseAsync(readPipe).CA();
         await pipeWriter.FlushAsync().CA();
         return new ReadOnlySpan<byte>(dest.GetBuffer(), 0, (int)dest.Length).ExtendedAsciiString();
     }

@@ -11,10 +11,13 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class MaximumProfileReaderTest
 {
-    private static async Task<ParsedMaximums> ReadMaximumTableAsync(string data) =>
-        await new MaxpParser(
-                MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0))
+    private static async Task<ParsedMaximums> ReadMaximumTableAsync(string data)
+    {
+        using var pipe = MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0);
+        return await new MaxpParser(
+                pipe)
             .ParseAsync();
+    }
 
     [Fact]
     public async Task ReadVersion0_5Async()

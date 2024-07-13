@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
@@ -7,7 +8,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
-public class CountingPipeReaderTest
+public class CountingPipeReaderTest: IDisposable
 {
     private readonly IByteSource sut;
 
@@ -46,4 +47,6 @@ public class CountingPipeReaderTest
         sut.AdvanceTo(res.Buffer.GetPosition(3));
         Assert.Equal(5, sut.Position);
     }
+
+    public void Dispose() => sut.Dispose();
 }

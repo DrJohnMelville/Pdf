@@ -17,11 +17,12 @@ public abstract class ParserTest
 {
     protected Mock<IContentStreamOperations> Target { get; } = new();
 
-    protected ValueTask ParseStringAsync(
+    protected async ValueTask ParseStringAsync(
         string s, IContentStreamOperations? target = null)
     {
         var sut = new ContentStreamParser(target ?? Target.Object);
-        return sut.ParseAsync(PipeReaderFromString(s));
+        using var reader = PipeReaderFromString(s);
+        await sut.ParseAsync(reader);
     }
 
     private static IByteSource PipeReaderFromString(string s) =>

@@ -37,8 +37,9 @@ public class CmapGlobalParserTest
     private static async ValueTask<ParsedCmap> ParseCmapAsync(string data)
     {
         IMultiplexSource source = MultiplexSourceFactory.Create(data.BitsFromHex());
+        using var pipe = source.ReadPipeFrom(0);
         return (ParsedCmap)new ParsedCmap(source,
-            (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA()).Tables);
+            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
     }
 
     [Fact]
@@ -213,8 +214,9 @@ public class CmapGlobalParserTest
     {
         await using var select = GetPeerFile("CmapFromCambriaFont.dat");
         IMultiplexSource source = MultiplexSourceFactory.Create(select);
+        using var pipe = source.ReadPipeFrom(0);
         var cmap = (ICMapSource)new ParsedCmap(source,
-            (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(0)).CA()).Tables);
+            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
         var subtable = await cmap.GetByIndexAsync(1);
 
         subtable.AllMappings().Should().AllSatisfy(i =>

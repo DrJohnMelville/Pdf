@@ -39,10 +39,11 @@ internal sealed class Type0FontDictSelector(byte[] table): RootFontDictSelector
 internal readonly struct FontDictSelectParser(
     IMultiplexSource source, int offset, uint glyphCount)
 {
-    public ValueTask<IFontDictSelector> ParseAsync()
+    public async ValueTask<IFontDictSelector> ParseAsync()
     {
-        if (offset == 0) return new(SingleDictSelector.Instance);
-        return ParseAsync(source.ReadPipeFrom(offset));
+        if (offset == 0) return SingleDictSelector.Instance;
+        using var pipe = source.ReadPipeFrom(offset);
+        return await ParseAsync(pipe).CA();
     }
 
     private async ValueTask<IFontDictSelector> ParseAsync(IByteSource pipe)

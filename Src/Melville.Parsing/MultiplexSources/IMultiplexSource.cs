@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ObjectRentals;
@@ -27,9 +28,18 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        IByteSource ReadPipeFrom(long position) =>
+#if DEBUG
+IByteSource ReadPipeFrom(long position,
+        [CallerFilePath] string? filename = null,
+            [CallerLineNumber] int lineNo = -1) =>
+            new EnsureByteSourceDisposed(
             ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
-                .WithParameters(ReadFrom(position), false); 
+                .WithParameters(ReadFrom(position), false), filename, lineNo); 
+#else
+        IByteSource ReadPipeFrom(long position,) =>
+                ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+                    .WithParameters(ReadFrom(position), false);
+#endif
 
         /// <summary>
         /// The length of the represented data.

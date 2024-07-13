@@ -78,12 +78,18 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     public override ValueTask<ICMapSource> GetCmapSourceAsync() =>
         new(cmapSource.Value);
 
-    private async Task<ICMapSource> LoadCmapAsync()
+    private Task<ICMapSource> LoadCmapAsync()
     {
         return FindTable(SFntTableName.CMap) is { } table
-            ? ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
-                (await FieldParser.ReadFromAsync<CmapTable>(source.ReadPipeFrom(table.Offset)).CA()).Tables))
-            : new ParsedCmap(source, []);
+            ? LoadCmapSlowAsync(table)
+            : Task.FromResult((ICMapSource)new ParsedCmap(source, []));
+    }
+
+    private async Task<ICMapSource> LoadCmapSlowAsync(TableRecord table)
+    {
+        using var pipe = source.ReadPipeFrom(table.Offset);
+        return ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
+            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables));
     }
 
     /// <summary>
@@ -200,8 +206,14 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private Task<T> LoadTableAsync<T>(uint tag) where T : IGeneratedParsable<T>, new() =>
         FindTable(tag) is { } table
-            ? FieldParser.ReadFromAsync<T>(source.ReadPipeFrom(table.Offset)).AsTask()
+            ? LoadTableSlowAsync<T>(table)
             : Task.FromResult(new T());
+
+    private async Task<T> LoadTableSlowAsync<T>(TableRecord table) where T : IGeneratedParsable<T>, new()
+    {
+        using var pipe = source.ReadPipeFrom(table.Offset);
+        return await FieldParser.ReadFromAsync<T>(pipe).CA();
+    }
 
     private TableRecord? FindTable(uint tag)
     {

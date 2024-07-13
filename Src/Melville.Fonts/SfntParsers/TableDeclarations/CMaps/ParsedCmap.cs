@@ -16,7 +16,7 @@ internal class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables)
 
     private async ValueTask<ICmapImplementation> GetSubtableAsync(IMultiplexSource input)
     {
-        var pipe = input.ReadPipeFrom(0);
+        using var pipe = input.ReadPipeFrom(0);
         var tag = await pipe.PeekTagAsync(2).CA();
         return tag switch
         {

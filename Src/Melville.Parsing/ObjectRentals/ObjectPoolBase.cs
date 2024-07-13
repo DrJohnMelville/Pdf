@@ -16,7 +16,7 @@ public abstract class ObjectPoolBase<T> where T : class
     private int nextSlot;
 
     #warning use new lock object in .net 9.0
-    private object mutex = new ();
+    private object mutex = new();
     
     public T Rent()
     {
@@ -28,7 +28,7 @@ public abstract class ObjectPoolBase<T> where T : class
 
     public void Return(T item)
     {
-        lock (mutex)
+        lock(mutex)
         {
             if (nextSlot >= bufferLength)
             {

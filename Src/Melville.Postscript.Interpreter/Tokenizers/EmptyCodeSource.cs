@@ -51,4 +51,9 @@ public sealed partial class EmptyCodeSource : IByteSource
 
     public ValueTask CompleteAsync(Exception? exception = null) =>
         ValueTask.CompletedTask;
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
+    }
 }

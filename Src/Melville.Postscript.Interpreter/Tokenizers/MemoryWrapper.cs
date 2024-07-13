@@ -67,9 +67,7 @@ public partial class MemoryWrapper : IByteSource
     /// <inheritdoc />
     public long Position { get; private set; }
 
-    public void Complete(Exception? exception = null)
+    public void Dispose()
     {
     }
-
-    public ValueTask CompleteAsync(Exception? exception = null) => ValueTask.CompletedTask;
 }

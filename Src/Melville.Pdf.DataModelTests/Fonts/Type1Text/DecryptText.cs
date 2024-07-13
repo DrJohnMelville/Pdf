@@ -43,8 +43,9 @@ public class DecryptText
         var result = new byte[source.Length - 8];
 
         IByteSource stream;
+        var pipe = source.ReadPipeFrom(0);
         stream = new EexeDecisionSource(
-            source.ReadPipeFrom(0), source,
+            pipe, source,
             i=>stream = i, 4330);
 
         var rr = await stream.ReadAtLeastAsync(result.Length);
@@ -68,9 +69,8 @@ public class DecryptText
         var result = new byte[37];
     
         IByteSource stream;
-        stream = new EexeDecisionSource(
-            source.ReadPipeFrom(0), source,
-            i=>stream = i, 4330);
+        var pipe = source.ReadPipeFrom(0);
+        stream = new EexeDecisionSource(pipe, source, i=>stream = i, 4330);
     
         var rr = await stream.ReadAtLeastAsync(result.Length);
         new SequenceReader<byte>(rr.Buffer).TryCopyTo(result);
