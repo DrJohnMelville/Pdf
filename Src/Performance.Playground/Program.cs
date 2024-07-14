@@ -6,7 +6,7 @@ using Performance.Playground.Rendering;
  
 #pragma warning disable CS0162
 
-switch (1)
+switch (2)
 {
     case 0:
         Console.WriteLine("Begin");
@@ -18,7 +18,7 @@ switch (1)
         break;
     case 2:
         var ren = new FontRendering();
-        for (int i = 0; i < 100_000; i++)
+        for (int i = 0; i < 1_000; i++)
         {
             await ren.Melville();
         }

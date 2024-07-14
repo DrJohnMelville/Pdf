@@ -1,16 +1,25 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using System.Numerics;
+using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
+
+public interface ICffInstructionExecutor
+{
+    ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence);
+}
+
 #warning this class needs allocation free implementation
 
-internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphTarget
+internal partial class CffInstructionExecutor<T>:
+    ICffInstructionExecutor, IDisposable, IClearable where T:ICffGlyphTarget
 {
     #region Variables Creation and Destruction
 
@@ -19,17 +28,41 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
     private const int MaximumCffInstructionOperands = 1024;
     private const int MamimumTransientArraySize = 32;
 
-    [FromConstructor] private readonly T target;
-    [FromConstructor] private readonly Matrix3x2 transform;
-    [FromConstructor] private readonly IGlyphSubroutineExecutor globalSuboutines;
-    [FromConstructor] private readonly IGlyphSubroutineExecutor localSubroutines;
-    [FromConstructor] private readonly uint[] variatons;
+    private T target;
+    private Matrix3x2 transform;
+    private IGlyphSubroutineExecutor globalSuboutines = NullExecutorSelector.Instance;
+    private IGlyphSubroutineExecutor localSubroutines = NullExecutorSelector.Instance;
+    private uint[] variatons = [];
+    private int stackSize;
+    public ref int StackSize => ref stackSize;
+    public float CurrentX { get; private set; }
+    public float CurrentY { get; private set; }
+    public int HintCount { get; private set; }
     private int currentVariation;
     private DictValue[] Stack { get;} = ArrayPool<DictValue>.Shared.Rent(MaximumCffInstructionOperands);
     private readonly float[] storedValues = ArrayPool<float>.Shared.Rent(MamimumTransientArraySize);
 
-    partial void OnConstructed()
+
+    public CffInstructionExecutor<T> With(
+        T target, Matrix3x2 transform,
+        IGlyphSubroutineExecutor globalSubroutines,
+        IGlyphSubroutineExecutor locqalSubroutines,
+        uint[] variatons)
     {
+        this.target = target;
+        this.transform = transform;
+        this.globalSuboutines =globalSubroutines;
+        this.localSubroutines =locqalSubroutines;
+        this.variatons = variatons;
+        return this;
+    }
+
+    public void Clear()
+    {
+        this.target = default!;
+        this.globalSuboutines = NullExecutorSelector.Instance;
+        this.localSubroutines = NullExecutorSelector.Instance;
+        this.variatons = [];
         StackSize = 0;
         CurrentX = CurrentY = HintCount = 0;
     }
@@ -80,13 +113,6 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
     #endregion
 
     #region InstructionDecoding
-
-    private int stackSize;
-    public ref int StackSize => ref stackSize;
-
-    public float CurrentX {get; private set;}
-    public float CurrentY {get; private set; }
-    public int HintCount { get; private set; }
 
 
     private ValueTask<int> ExecuteInstructionAsync(CharStringOperators instruction)
@@ -232,7 +258,7 @@ internal partial class CffInstructionExecutor<T>: IDisposable where T:ICffGlyphT
     {
         StackSize--;
         await glyphSubroutineExecutor.CallAsync(Stack[StackSize].IntValue, 
-            ExecuteInstructionSequenceAsync).CA();
+            this).CA();
         return 0;
     }
 

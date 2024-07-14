@@ -129,7 +129,7 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
     /// <inheritdoc />
     public void Dispose()
     {
-        if (stream != null) 
+        if (stream == null) 
             return;
         if (!this.leaveOpen)
         {

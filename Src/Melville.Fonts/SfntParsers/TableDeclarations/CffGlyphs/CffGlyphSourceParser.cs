@@ -22,9 +22,9 @@ internal readonly struct CffGlyphSourceParser(
         var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
 
 
-        var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
+        using var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
         ParseTopDict(
-            firstFontTopDictData, out var charStringOffset,
+            firstFontTopDictData.Sequence, out var charStringOffset,
             out var privateOffset, out var privateSize);
         
         await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();

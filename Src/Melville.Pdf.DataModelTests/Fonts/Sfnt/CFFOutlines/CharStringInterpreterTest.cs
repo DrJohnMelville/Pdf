@@ -463,14 +463,14 @@ public class CharStringInterpreterTest
     {
         await ExecuteInstructionAsync("1c0002 0A");
         localSubrs.Verify(i=>i.CallAsync(2,
-            It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()));
+            It.IsAny<ICffInstructionExecutor>()));
     }
     [Fact]
     public async Task CallGlobalSubroutineTestAsync()
     {
         await ExecuteInstructionAsync("1c0002 1D");
         globalSubrs.Verify(i=>i.CallAsync(2,
-            It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()));
+            It.IsAny<ICffInstructionExecutor>()));
     }
 
     [Fact]

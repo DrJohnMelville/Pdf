@@ -36,7 +36,7 @@ IByteSource ReadPipeFrom(long position,
             ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
                 .WithParameters(ReadFrom(position), false), filename, lineNo); 
 #else
-        IByteSource ReadPipeFrom(long position,) =>
+        IByteSource ReadPipeFrom(long position) =>
                 ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
                     .WithParameters(ReadFrom(position), false);
 #endif

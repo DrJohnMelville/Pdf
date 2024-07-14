@@ -6,6 +6,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 
@@ -90,11 +91,12 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     {
         #warning -- need to be able to execute subrs
         if (glyph >= charStrings.Length) glyph = (uint)notDefIndex;
-        using var executor = new CffInstructionExecutor<T>(
+        var executor = ObjectPool<CffInstructionExecutor<T>>.Shared.Rent().With(
             targetWrapper, glyphTransform*transform,
             subroutines, subroutines, []);
         await executor.ExecuteInstructionSequenceAsync(
             new ReadOnlySequence<byte>(charStrings[glyph])).CA();
+        ObjectPool<CffInstructionExecutor<T>>.Shared.Return(executor);
     }
 
     /// <inheritdoc />

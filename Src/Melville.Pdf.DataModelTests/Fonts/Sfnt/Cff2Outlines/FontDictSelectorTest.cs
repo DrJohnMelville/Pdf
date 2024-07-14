@@ -44,9 +44,10 @@ public class FontDictSelectorTest
         var selector = await new FontDictSelectParser(source, 1, 5).ParseAsync();
         var final = selector.GetSelector(selectors);
 
-        await final.GetExecutor(glyph).CallAsync(10, seq => ValueTask.CompletedTask);
+        await final.GetExecutor(glyph).CallAsync(10, 
+            Mock.Of<ICffInstructionExecutor>());
         sel[index].Verify(i => i.CallAsync(10,
-            It.IsAny<Func<ReadOnlySequence<byte>, ValueTask>>()), Times.Once);
+            It.IsAny<ICffInstructionExecutor>()), Times.Once);
     }
 
     [Theory]

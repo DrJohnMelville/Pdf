@@ -3,6 +3,7 @@ using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -57,11 +58,12 @@ public class CffGlyphSource : IGlyphSource
     public async ValueTask RenderCffGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T: ICffGlyphTarget
     {
         if (glyph >= GlyphCount) glyph = 0;
-        var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
-        using var engine = new CffInstructionExecutor<T>(
+        using var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
+        var engine = ObjectPool<CffInstructionExecutor<T>>.Shared.Rent().With(
             target, glyphUnitAdjuster*transform, globalSubrs.GetExecutor(glyph), 
             localSubrs.GetExecutor(glyph), variatons);
 
-        await engine.ExecuteInstructionSequenceAsync(sourceSequence).CA();
+        await engine.ExecuteInstructionSequenceAsync(sourceSequence.Sequence).CA();
+        ObjectPool<CffInstructionExecutor<T>>.Shared.Return(engine);
    }
 }

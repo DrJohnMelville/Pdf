@@ -9,18 +9,26 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
+internal readonly partial struct DisposableSequence : IDisposable
+{
+    [FromConstructor] private readonly IByteSource holder;
+    [FromConstructor] public ReadOnlySequence<byte> Sequence { get; }
+
+    public void Dispose() => holder.Dispose();
+}
+
 internal readonly partial struct CffIndex
 {
     [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] public uint Length { get; }
     [FromConstructor] private readonly byte offsetSize;
 
-    public async ValueTask<ReadOnlySequence<byte>> ItemDataAsync(int index)
+    public async ValueTask<DisposableSequence> ItemDataAsync(int index)
     {
         if ((uint)index >= Length)
             throw new IndexOutOfRangeException("Index is bigger than the index length");
-        using var pipe = source.ReadPipeFrom(0);
-        await pipe.SkipForwardToAsync(offsetSize * index).CA();
+        var pipe = source.ReadPipeFrom(0);
+        pipe.SkipForwardToAsync(offsetSize * index).CA();
         var itemOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         var nextOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         Debug.Assert(nextOffset >= itemOffset);
@@ -29,7 +37,7 @@ internal readonly partial struct CffIndex
         var length = (int) (nextOffset - itemOffset);
         await pipe.SkipForwardToAsync((long)startOfData).CA();
         var result = await pipe.ReadAtLeastAsync(length).CA();
-        return (result.Buffer.Slice(0, length));
+        return new(pipe, result.Buffer.Slice(0, length));
     }
 
     private uint FirstItemOffset() => (Length + 1) * offsetSize;

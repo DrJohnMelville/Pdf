@@ -10,7 +10,7 @@ internal partial class NullExecutorSelector :
 {
     public IGlyphSubroutineExecutor GetExecutor(uint glyph) => this;
     public ValueTask CallAsync(
-        int subroutine, Func<ReadOnlySequence<byte>, ValueTask> execute)
+        int subroutine, ICffInstructionExecutor execute)
     {
         throw new InvalidOperationException("Executed subr from an empty index.");
     }
