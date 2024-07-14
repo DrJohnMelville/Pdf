@@ -58,11 +58,11 @@ public class CffGlyphSource : IGlyphSource
     public async ValueTask RenderCffGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T: ICffGlyphTarget
     {
         if (glyph >= GlyphCount) glyph = 0;
-        using var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
         var engine = ObjectPool<CffInstructionExecutor<T>>.Shared.Rent().With(
             target, glyphUnitAdjuster*transform, globalSubrs.GetExecutor(glyph), 
             localSubrs.GetExecutor(glyph), variatons);
 
+        using var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
         await engine.ExecuteInstructionSequenceAsync(sourceSequence.Sequence).CA();
         ObjectPool<CffInstructionExecutor<T>>.Shared.Return(engine);
    }

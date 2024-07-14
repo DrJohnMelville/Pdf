@@ -35,7 +35,8 @@ internal readonly partial struct CffIndex
 
         var startOfData = FirstItemOffset() + itemOffset - 1;
         var length = (int) (nextOffset - itemOffset);
-        await pipe.SkipForwardToAsync((long)startOfData).CA();
+        pipe = pipe.PipeAtPosition(source, (long)startOfData);
+//        await pipe.SkipForwardToAsync((long)startOfData).CA();
         var result = await pipe.ReadAtLeastAsync(length).CA();
         return new(pipe, result.Buffer.Slice(0, length));
     }
