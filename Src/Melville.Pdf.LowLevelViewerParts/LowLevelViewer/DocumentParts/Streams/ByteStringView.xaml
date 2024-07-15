@@ -38,6 +38,7 @@
                 <MenuItem Header="Color Picker" Click="{eventBindings:EventBinding ShowAsIccColorPickerAsync}"></MenuItem>
                 <MenuItem Header="Repl" Click="{eventBindings:EventBinding ShowPdfRepl}"></MenuItem>
                 <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFileAsync}"></MenuItem>
+                <MenuItem Header="Eexec Decode" Click="{eventBindings:EventBinding EexecDecode}"></MenuItem>
             </MenuItem>
         </Menu>
     </Grid>

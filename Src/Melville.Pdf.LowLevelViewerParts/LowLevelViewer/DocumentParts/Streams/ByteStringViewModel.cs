@@ -1,12 +1,15 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.INPC;
 using Melville.Linq;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -21,9 +24,9 @@ public readonly partial struct XmlRepresentationNode
     public string Content => elt.Nodes().OfType<XText>().Select(i=>i.Value).ConcatenateStrings();
 }
 
-public class ByteStringViewModel
+public partial class ByteStringViewModel
 {
-    public byte[] Bytes { get; }
+    [AutoNotify] private byte[] bytes;
     public XmlRepresentationNode[]? XmlRepresentation { get; }
     public string Title => "Raw";
 
@@ -64,4 +67,21 @@ public class ByteStringViewModel
         dlg.ShowPopupWindow(
             await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream(Bytes)),
             800, 400, "Color Picker");
+
+    [GeneratedRegex(@"\seexec\s+(.*)", RegexOptions.Singleline)]
+    private static partial Regex FindEexecPath();
+
+    public void EexecDecode()
+    {
+        var replstring = FindEexecPath().Replace(AsAsciiString, DecodeString);
+        Bytes = replstring.AsExtendedAsciiBytes();
+    }
+
+    private string DecodeString(Match match)
+    {
+        var span = bytes.AsSpan(match.Groups[1].Index);
+        // code is 55665
+        var decoded = DecodeType1Encoding.DecodeSpan(span, 55665, 4);
+        return " eexec \r\n" + decoded.ExtendedAsciiString();
+    }
 }
