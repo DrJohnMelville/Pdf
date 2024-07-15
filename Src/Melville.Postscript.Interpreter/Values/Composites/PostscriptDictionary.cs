@@ -14,6 +14,11 @@ public interface IPostscriptDictionary : IPostscriptComposite
     /// </summary>
     /// <param name="key"></param>
     public void Undefine(PostscriptValue key);
+
+    /// <summary>
+    /// The number of keys in the dictionary
+    /// </summary>
+    public int MaxLength { get; }
 }
 
 internal abstract class PostscriptDictionary:

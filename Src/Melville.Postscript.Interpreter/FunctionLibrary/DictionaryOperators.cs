@@ -12,7 +12,7 @@ internal static partial class DictionaryOperators
         PostscriptValueFactory.CreateSizedDictionary(length);
 
     [PostscriptMethod("maxlength")]
-    private static int DictCapacity(PostscriptDictionary dict) => dict.MaxLength;
+    private static int DictCapacity(IPostscriptDictionary dict) => dict.MaxLength;
 
     [PostscriptMethod("<<")]
     private static PostscriptValue BeginLiteralDict() => PostscriptValueFactory.CreateMark();
@@ -43,11 +43,11 @@ internal static partial class DictionaryOperators
         dicts.Store(key, value);
 
     [PostscriptMethod("known")]
-    private static bool Known(PostscriptDictionary dict, in PostscriptValue key) =>
+    private static bool Known(IPostscriptDictionary dict, in PostscriptValue key) =>
         dict.TryGet(key, out _);
 
     [PostscriptMethod("undef")]
-    private static void Undefine(PostscriptDictionary dict, in PostscriptValue key) =>
+    private static void Undefine(IPostscriptDictionary dict, in PostscriptValue key) =>
         dict.Undefine(key);
 
     [PostscriptMethod("where")]

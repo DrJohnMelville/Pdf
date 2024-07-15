@@ -22,6 +22,8 @@ internal sealed partial class SharedContentDictionary:
 
     public int Length => innerDictionary.Length + (localChanges?.Length ?? 0);
 
+    public int MaxLength => innerDictionary.MaxLength + localChanges?.MaxLength ??3;
+
     public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target) =>
         localChanges.CopyFrom(source, target);
         

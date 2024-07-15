@@ -28,12 +28,15 @@ internal readonly partial struct FreeTypeFontFactory
     public async ValueTask<IRealizedFont> FromCSharpStreamAsync(
         Stream source, int index = 0)
     {
-        var iFace = await StreamToGenericFontFTAsync(source, index).CA();
+        var iFace = await StreamToGenericFontMFAsync(source, index).CA();
         return await FontFromFaceAsync(iFace).CA();
     }
 
-    private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index) =>
-        (await RootFontParser.ParseAsync(MultiplexSourceFactory.Create(source)).CA())[index];
+    private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index)
+    {
+        var font = await RootFontParser.ParseAsync(MultiplexSourceFactory.Create(source)).CA();
+        return font[index];
+    }
 
     private static async Task<IGenericFont> StreamToGenericFontFTAsync(Stream source, int index)
     {
