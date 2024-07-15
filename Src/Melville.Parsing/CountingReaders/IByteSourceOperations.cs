@@ -16,12 +16,16 @@ public static class IByteSourceOperations
     /// <param name="source">The bytsource to read from.</param>
     /// <param name="length">The minimum required length</param>
     /// <returns>A ReadResult from the successful ReadAsync operation</returns>
-    public static async ValueTask<ReadResult> ReadAtLeastAsync(this IByteSource source, int length)
+    public static async ValueTask<ReadResult> ReadAtLeastAsync(this IByteSource source, int length) 
     {
         while (true)
         {
             var result = await source.ReadAsync().CA();
-            if (HaveEnoughBytes(length, result)) return result;
+            if (HaveEnoughBytes(length, result))
+            {
+                return result;
+            }
+
             source.MarkSequenceAsExamined();
         }
     }
