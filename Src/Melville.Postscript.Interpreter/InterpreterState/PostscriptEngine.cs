@@ -40,6 +40,8 @@ public class PostscriptEngine
     /// </summary>
     public ITokenSource? TokenSource { get; private set; }
 
+    public long CurrentProgramOffset => TokenSource.CodeSource.Position;
+
     /// <summary>
     /// The postscript engine itself never touches this value.  Various Procsets can use this
     /// value as a "target" for the procedure.  For example, the ContentStreamParser stores the
@@ -145,7 +147,6 @@ public class PostscriptEngine
     {
         while (await ExecutionStack.NextInstructionAsync() is {} token)
         {
-            
             if (ShouldExecuteToken(token)) await ExecuteTokenAsync(token);
             CheckForOpenProcToken(token);
         }

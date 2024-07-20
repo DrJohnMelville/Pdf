@@ -26,7 +26,7 @@ public readonly partial struct HybridEnumerator<T>
     public HybridEnumerator(IAsyncEnumerator<T> enumerator) => InnerEnumerator = enumerator;
     
     /// <summary>
-    /// Create a HybridEnumerator from an AsyncEnumerator
+    /// Create a HybridEnumerator from an IEnumerator
     /// </summary>
     /// <param name="enumerator">The source enumerator</param>
     public HybridEnumerator(IEnumerator<T> enumerator) => InnerEnumerator = enumerator;

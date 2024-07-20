@@ -84,4 +84,9 @@ public partial class ByteStringViewModel
         var decoded = DecodeType1Encoding.DecodeSpan(span, 55665, 4);
         return " eexec \r\n" + decoded.ExtendedAsciiString();
     }
+
+    public void DebugPostscript([FromServices] IMvvmDialog dlg)
+    {
+        
+    }
 }

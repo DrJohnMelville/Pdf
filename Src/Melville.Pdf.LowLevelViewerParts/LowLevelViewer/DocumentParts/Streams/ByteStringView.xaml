@@ -39,6 +39,7 @@
                 <MenuItem Header="Repl" Click="{eventBindings:EventBinding ShowPdfRepl}"></MenuItem>
                 <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFileAsync}"></MenuItem>
                 <MenuItem Header="Eexec Decode" Click="{eventBindings:EventBinding EexecDecode}"></MenuItem>
+                <MenuItem Header="PostScript Debugger" Click="{eventBindings:EventBinding DebugPostscript}"></MenuItem>
             </MenuItem>
         </Menu>
     </Grid>
