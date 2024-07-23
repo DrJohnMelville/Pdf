@@ -65,7 +65,19 @@ public partial class CMapFactory
 
     #region Cmap Sources
     private static readonly IPostscriptDictionary dict =
-        PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
+        PostscriptOperatorCollections.BaseLanguage()
+            .With(CmapParserOperations.AddOperations);
+    /// <summary>
+    /// Create a new postscript engine that could evaluate a cmap.
+    /// </summary>
+    /// <returns>A new postscript engine initalized to this factory</returns>
+    public PostscriptEngine CmapPostscriptEngine()
+    {
+        var parser = new PostscriptEngine(dict) { Tag = this }.WithImmutableStrings();
+        parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
+        parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
+        return parser;
+    }
 
 
     internal async ValueTask ReadFromPdfValueAsync(PdfDirectObject encoding)
@@ -87,10 +99,7 @@ public partial class CMapFactory
     {
         try
         {
-            var parser = new PostscriptEngine(dict) { Tag = this }.WithImmutableStrings();
-            parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
-            parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
-            await parser.ExecuteAsync(source).CA();
+            await CmapPostscriptEngine().ExecuteAsync(source).CA();
         }
         finally
         {

@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="Melville.Pdf.LowLevelViewerParts.PostscriptDebuggers.PostscriptDebuggerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.PostscriptDebuggers"
+             xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid PreviewKeyDown="{eventBindings:EventBinding KeyDown}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+         </Grid.ColumnDefinitions>
+          <WrapPanel>
+              <Button Click="{eventBindings:EventBinding StepOver}">Step to Next Line (F10)</Button>
+              <Button Click="{eventBindings:EventBinding StepInto}">Step In to (F11)</Button>
+              <ComboBox Width="160" SelectedIndex="{Binding InterpreterStyle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                  <ComboBox.Items>
+                      <system:String>Standard Postscript</system:String>
+                      <system:String>Type 4 Functions</system:String>
+                      <system:String>Type 1 Ascii Font</system:String>
+                  </ComboBox.Items>
+              </ComboBox>
+          </WrapPanel>
+          <TextBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Text="{Binding Path=Code, Mode=TwoWay}"
+                   local:TextBoxSetSelectionImplementation.SetSelectionStart="{Binding SelectionStart}" 
+                   local:TextBoxSetSelectionImplementation.SetSelectionLength="{Binding SelectionLength}"
+                    IsInactiveSelectionHighlightEnabled="True" AcceptsReturn="True"
+                   Margin="0 0 5 0" />
+          <TextBlock Grid.Column="1" FontSize="18" Text="{Binding CurrentToken}"/>
+          <GridSplitter Grid.Row="1" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+          <viewFrames:ViewFrame Grid.Row="1" Grid.Column="1" Content="{Binding OperandStack}"/>
+          <viewFrames:ViewFrame Grid.Row="2" Grid.Column="1" Content="{Binding DictionaryStack}"/>
+    </Grid>
+</UserControl>

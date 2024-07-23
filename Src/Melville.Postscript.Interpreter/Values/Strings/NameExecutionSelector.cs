@@ -16,6 +16,7 @@ internal sealed partial class NameExecutionSelector : IExecutionSelector
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value) => engine.OperandStack.Push(value);
         public override bool IsExecutable => false;
-        public override string WrapTextDisplay(string text) => "/" + base.WrapTextDisplay(text);
+        public override string WrapTextDisplay(string text) => 
+            "/" + base.WrapTextDisplay(text);
     }
 }

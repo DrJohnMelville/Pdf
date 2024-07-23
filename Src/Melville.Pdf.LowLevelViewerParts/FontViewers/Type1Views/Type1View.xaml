@@ -9,13 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <TabControl>
         <TabItem Header="Dictionary">
-            <TreeView ItemsSource="{Binding Dictionary}">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <TextBlock Text="{Binding Text}"/>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <viewFrames:ViewFrame Content="{Binding Dictionary}"></viewFrames:ViewFrame>
         </TabItem>
         <TabItem Header="Glyph View">
             <viewFrames:ViewFrame Content="{Binding GlyphView}"/>

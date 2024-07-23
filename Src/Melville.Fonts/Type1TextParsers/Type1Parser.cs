@@ -10,24 +10,42 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Fonts.Type1TextParsers;
 
-internal readonly struct Type1Parser(IMultiplexSource source)
+/// <summary>
+/// This is an internal class that parses type 1 ascii fonts.  it is public so the
+/// comparing reader can get the postscript interpreter for the debugger
+/// </summary>
+/// <param name="source"></param>
+public readonly struct Type1Parser(IMultiplexSource source)
 {
     private readonly EexecDecryptingByteSource eexecDecryptingSource = new(source);
-    private readonly Type1FontFactory factory = new();
 
-    public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
+    internal async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
     {
-        var parser = new PostscriptEngine(
-            PostscriptOperatorCollections.BaseLanguage()
-                .With(AddEexec));
+        var parser = CreateEngine();
         await parser.ExecuteAsync(new Tokenizer(eexecDecryptingSource)).CA();
-        return factory.Result;
+        return ExtractFont(parser);
     }
+
+    private static IReadOnlyList<IGenericFont> ExtractFont(PostscriptEngine parser) => 
+        parser.Tag as IReadOnlyList<IGenericFont> ?? [];
+
+    /// <summary>
+    /// Create a postscriptengine with extra functions to parse the font.
+    /// </summary>
+    /// <returns>A new postscript engine ready to read this font</returns>
+    public PostscriptEngine CreateEngine() =>
+        new(PostscriptOperatorCollections.BaseLanguage().With(AddEexec));
 
     private void AddEexec(IPostscriptDictionary obj)
     {
-        obj.Put("eexec", PostscriptValueFactory.Create((IExternalFunction)eexecDecryptingSource));
-        obj.Put("definefont", PostscriptValueFactory.Create(factory));
+        var internalDict = PostscriptValueFactory.CreateDictionary(
+            "/FlxProc", PostscriptValueFactory.CreateArray(Array.Empty<PostscriptValue>()));
+        obj.Put("/internaldict", internalDict);
+
+        obj.Put("eexec", PostscriptValueFactory.Create(
+            (IExternalFunction)eexecDecryptingSource));
+        obj.Put("definefont", PostscriptValueFactory.Create(
+            DefineFontImplementation.Instance));
         obj.Put("StandardEncoding", PostscriptValueFactory.CreateArray([
             MakeName("notdef"u8),
             MakeName("notdef"u8),

@@ -9,6 +9,7 @@ using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
+using Melville.Pdf.LowLevelViewerParts.PostscriptDebuggers;
 using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
@@ -87,6 +88,7 @@ public partial class ByteStringViewModel
 
     public void DebugPostscript([FromServices] IMvvmDialog dlg)
     {
-        
+        dlg.ShowPopupWindow(new PostscriptDebuggerViewModel(AsAsciiString),
+            800, 400, "Postscript Debugger");
     }
 }

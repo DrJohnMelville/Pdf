@@ -1,5 +1,4 @@
-﻿using Melville.Hacks.Reflection;
-using Melville.INPC;
+﻿using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -29,5 +28,3 @@ internal partial class EexecDecryptingByteSource :
 
     private const ushort eexecDecodeKey = 55665;
 }
-
-#pragma warning disable CS1734, CS1735

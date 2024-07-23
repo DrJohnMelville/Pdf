@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
@@ -136,20 +138,43 @@ public class PostscriptEngine
     /// <param name="tokens">A tokenizer containing the program to execute.</param>
     public async ValueTask ExecuteAsync(ITokenSource tokens)
     {
+        InitalizeEngine(tokens);
+        await MainExecutionLoopAsync();
+    }
+
+    private void InitalizeEngine(ITokenSource tokens)
+    {
         Debug.Assert(ExecutionStack.Count == 0);
         TokenSource = tokens;
         ExecutionStack.Push(new(tokens.TokensAsync().GetAsyncEnumerator()), 
             "Async Parser"u8);
-        await MainExecutionLoopAsync();
+    }
+
+    public async IAsyncEnumerable<PostscriptValue?> SingleStep(ITokenSource source)
+    {
+        Debug.Assert(ExecutionStack.Count == 0);
+        TokenSource = source;
+        ExecutionStack.Push(new(source.TokensAsync().GetAsyncEnumerator()),
+            "Async Parser"u8);
+        while (await ExecutionStack.NextInstructionAsync() is { } token)
+        {
+            yield return token;
+            await RunSingleStepAsync(token).CA();
+        }
     }
 
     private async ValueTask MainExecutionLoopAsync()
     {
         while (await ExecutionStack.NextInstructionAsync() is {} token)
         {
-            if (ShouldExecuteToken(token)) await ExecuteTokenAsync(token);
-            CheckForOpenProcToken(token);
+            await RunSingleStepAsync(token).CA();
         }
+    }
+
+    private async Task RunSingleStepAsync(PostscriptValue token)
+    {
+        if (ShouldExecuteToken(token)) await ExecuteTokenAsync(token);
+        CheckForOpenProcToken(token);
     }
 
     private async ValueTask ExecuteTokenAsync(PostscriptValue token)

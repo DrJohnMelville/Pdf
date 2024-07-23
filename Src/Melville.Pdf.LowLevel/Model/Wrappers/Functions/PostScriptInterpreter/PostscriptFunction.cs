@@ -9,11 +9,19 @@ using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-internal static class SharedPostscriptParser
+/// <summary>
+/// This is a factory class for the postscript interpreter used to interpret type 4 PDF
+/// functions implemented in postscript.
+/// </summary>
+public static class SharedPostscriptParser
 {
     private static readonly IPostscriptDictionary operations =
         PostscriptOperatorCollections.BaseLanguage();
 
+    /// <summary>
+    /// This is the basic postscript engine used to interpret postscript functions.
+    /// </summary>
+    /// <returns>A new postscript engine</returns>
     public static PostscriptEngine BasicPostscriptEngine() => new PostscriptEngine(operations).WithImmutableStrings();
 }
 
