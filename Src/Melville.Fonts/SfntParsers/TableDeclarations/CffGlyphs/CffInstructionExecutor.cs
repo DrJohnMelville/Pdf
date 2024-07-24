@@ -178,6 +178,7 @@ internal partial class CffInstructionExecutor<T>:
             case CharStringOperators.Seac:  break; 
             case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
             case CharStringOperators.Hsbw: DoSetBearingAndWidth2();  break;
+            case CharStringOperators.DotSection: break;
 #warning implement CallOtherSubr and pop
 
             /*
