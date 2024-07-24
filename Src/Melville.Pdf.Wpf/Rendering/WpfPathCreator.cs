@@ -55,11 +55,7 @@ internal class WpfPathCreator : IDrawTarget
             (pathFigure.Segments.Count == 1 && pathFigure.Segments[0] is not LineSegment)) return true;
         return false;
     }
-
-    public virtual void SetDrawingTransform(in Matrix3x2 transform)
-    {
-    }
-
+    
     public virtual void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
     }

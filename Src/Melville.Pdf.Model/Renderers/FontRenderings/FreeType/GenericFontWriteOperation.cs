@@ -15,7 +15,7 @@ internal class GenericFontWriteOperation(IGenericFont parent, IDrawTarget target
     public async ValueTask<double> AddGlyphToCurrentStringAsync(
         uint character, uint glyph, Matrix3x2 textMatrix)
     {
-        target.SetDrawingTransform(textMatrix);
+//        target.SetDrawingTransform(textMatrix);
         await (await parent.GetGlyphSourceAsync().CA())
             .RenderGlyphAsync(glyph, target, textMatrix).CA();
         return (await parent.GlyphWidthSourceAsync().CA())

@@ -21,13 +21,7 @@ internal class WpfDrawTarget : WpfPathCreator
         if (Geometry is null) geoGroup.Children.Add(base.RequireGeometry());
         return Geometry;
     }
-
-    public override void SetDrawingTransform(in Matrix3x2 transform)
-    {
-        SetGeometry(new PathGeometry() { Transform = transform.WpfTransform() });
-        geoGroup.Children.Add(Geometry);
-    }
-
+    
     public void AddGeometry(PathGeometry geometry)
     {
         SetGeometry(geometry);

@@ -15,11 +15,6 @@ public partial class NullDrawTarget : IDrawTarget
     }
 
     /// <inheritdoc />
-    public void SetDrawingTransform(in Matrix3x2 transform)
-    {
-    }
-
-    /// <inheritdoc />
     public void MoveTo(Vector2 startPoint)
     {
     }
