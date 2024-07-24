@@ -34,18 +34,20 @@ public readonly struct Type1Parser(IMultiplexSource source)
     /// </summary>
     /// <returns>A new postscript engine ready to read this font</returns>
     public PostscriptEngine CreateEngine() =>
-        new(PostscriptOperatorCollections.BaseLanguage().With(AddEexec));
+        new(PostscriptOperatorCollections.BaseLanguage()
+            .With(Type1FontPostscriptOperations.AddOperations)
+            .With(AddEexec));
 
     private void AddEexec(IPostscriptDictionary obj)
     {
         var internalDict = PostscriptValueFactory.CreateDictionary(
             "/FlxProc", PostscriptValueFactory.CreateArray(Array.Empty<PostscriptValue>()));
-        obj.Put("/internaldict", internalDict);
+//        obj.Put("/internaldict", internalDict);
 
         obj.Put("eexec", PostscriptValueFactory.Create(
             (IExternalFunction)eexecDecryptingSource));
-        obj.Put("definefont", PostscriptValueFactory.Create(
-            DefineFontImplementation.Instance));
+        // obj.Put("definefont", PostscriptValueFactory.Create(
+        //     DefineFontImplementation.Instance));
         obj.Put("StandardEncoding", PostscriptValueFactory.CreateArray([
             MakeName("notdef"u8),
             MakeName("notdef"u8),
