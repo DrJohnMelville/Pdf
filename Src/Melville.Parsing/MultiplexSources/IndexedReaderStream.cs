@@ -39,7 +39,7 @@ internal partial class IndexedReaderStreamFactory : ObjectPoolBase<IndexedReader
 internal class IndexedReaderStream(IndexedReaderStreamFactory home) : 
     DefaultBaseStream(true, false, true)
 {
-    private IIndexedReader source;
+    private IIndexedReader source = null!;
 
     public IndexedReaderStream ReadFrom(IIndexedReader source, long position)
     {

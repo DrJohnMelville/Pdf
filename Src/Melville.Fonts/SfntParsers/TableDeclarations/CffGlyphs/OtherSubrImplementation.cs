@@ -8,7 +8,7 @@ internal partial class CffInstructionExecutor<T> : IDisposable where T : ICffGly
     private int flexPosition = 0;
     private bool ShouldSuppressRmove => flexPosition > 0;
 
-    private ValueTask<int> DoOtherSubr()
+    private ValueTask<int> DoOtherSubrAsync()
     {
         switch (CurrentStackSpan[^1].IntValue)
         {
@@ -42,7 +42,7 @@ internal partial class CffInstructionExecutor<T> : IDisposable where T : ICffGly
         return ValueTask.FromResult(0);
     }
 
-    private ValueTask<int> DoPop() => ValueTask.FromResult(0);
+    private ValueTask<int> DoPopAsync() => ValueTask.FromResult(0);
 
 
     [System.Runtime.CompilerServices.InlineArray(8)]

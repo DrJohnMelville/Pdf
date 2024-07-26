@@ -18,13 +18,11 @@ internal partial class EnsureByteSourceDisposed: IByteSource
     [FromConstructor] private string fileName;
     [FromConstructor] private int lineNumber;
 
-    private string stacktrace;
-
 
     public void Dispose()
     {
         inner.Dispose();
-        inner = null; // this will cause an error if I use after free
+        inner = null!; // this will cause an error if I use after free
         GC.SuppressFinalize(this);
     }
 
@@ -63,10 +61,8 @@ internal partial class EnsureByteSourceDisposed: IByteSource
 /// </summary>
 public class ReusableStreamPipeReader : IClearable, IByteSource
 {
-    private static readonly LinkedListNode EmptyNode = new LinkedListNode();
-
     private static readonly LinkedListPosition EmptyPosition =
-        new LinkedListPosition(EmptyNode, 0);
+        new LinkedListPosition(LinkedListNode.Empty, 0);
 
     private Stream? stream;
     private bool leaveOpen;
@@ -152,7 +148,7 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
     /// <inheritdoc />
     public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
     {
-        Debug.Assert(EmptyNode.RunningIndex == 0);
+        Debug.Assert(LinkedListNode.Empty.RunningIndex == 0);
         if (AllBytesHaveBeenExamined() && !atSourceEnd && stream is not null)
         {
             (bufferEnd, atSourceEnd) =

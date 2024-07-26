@@ -26,8 +26,7 @@ namespace Melville.Parsing.MultiplexSources
         /// Return a pipe reader starting at a given point in the stream.
         /// This may be optimized to reuse buffers
         /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
+        /// <param name="position">index into the source to start reading from</param>
 #if DEBUG
 IByteSource ReadPipeFrom(long position,
         [CallerFilePath] string? filename = null,

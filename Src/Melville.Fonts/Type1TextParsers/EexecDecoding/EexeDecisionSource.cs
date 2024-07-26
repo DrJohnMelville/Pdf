@@ -31,13 +31,13 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         {
             if (setReader is not null)
             {
-                await CreateDecodingReader().ConfigureAwait(false);
+                await CreateDecodingReaderAsync().ConfigureAwait(false);
             }
 
             return await inner.ReadAsync(cancellationToken).CA();
         }
 
-        private async Task CreateDecodingReader()
+        private async Task CreateDecodingReaderAsync()
         {
             await SkipWhitespaceAsync().CA();
 

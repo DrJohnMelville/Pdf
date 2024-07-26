@@ -31,7 +31,6 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
 
     /// <inheritdoc />
     public int GlyphCount => index.TotalGlyphs;
-    #warning -- need an allocation free version of this method
 
     /// <inheritdoc />
     public async ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) 

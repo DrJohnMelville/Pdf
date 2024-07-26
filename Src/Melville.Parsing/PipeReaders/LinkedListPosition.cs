@@ -22,7 +22,7 @@ internal readonly partial struct LinkedListPosition
         new SequencePosition(llp.Node, llp.Index);
 
     public static implicit operator LinkedListPosition(SequencePosition sp) =>
-        new LinkedListPosition((LinkedListNode)sp.GetObject(), sp.GetInteger());
+        new(sp.GetObject() as LinkedListNode ?? LinkedListNode.Empty, sp.GetInteger());
 
     public void ClearTo(LinkedListPosition target)
     {
@@ -34,6 +34,11 @@ internal readonly partial struct LinkedListPosition
             current = next;
         }
     }
+
+    public override bool Equals(object? obj) => 
+        obj is LinkedListPosition other && this == other;
+
+    public override int GetHashCode() => HashCode.Combine(Node, Index);
 
     public static bool operator==(in LinkedListPosition a, in LinkedListPosition b) =>
         a.Node== b.Node && a.Index == b.Index;

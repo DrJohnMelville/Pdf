@@ -11,12 +11,10 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 
-public interface ICffInstructionExecutor
+internal interface ICffInstructionExecutor
 {
     ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence);
 }
-
-#warning this class needs allocation free implementation
 
 internal partial class CffInstructionExecutor<T>:
     ICffInstructionExecutor, IDisposable, IClearable where T:ICffGlyphTarget
@@ -28,7 +26,7 @@ internal partial class CffInstructionExecutor<T>:
     private const int MaximumCffInstructionOperands = 1024;
     private const int MamimumTransientArraySize = 32;
 
-    private T target;
+    private T target = default!;
     private Matrix3x2 transform;
     private IGlyphSubroutineExecutor globalSuboutines = NullExecutorSelector.Instance;
     private IGlyphSubroutineExecutor localSubroutines = NullExecutorSelector.Instance;
@@ -179,24 +177,8 @@ internal partial class CffInstructionExecutor<T>:
             case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
             case CharStringOperators.Hsbw: DoSetBearingAndWidth2();  break;
             case CharStringOperators.DotSection: break;
-#warning implement CallOtherSubr and pop
-
-            /*
-             * I think I understand this
-             * Otherubrs 0, 1, and 2 implement flex as documented in the manner -- careful about order because othersubr/pop reverses things
-             * Othersubrs 3 can just pop the 1 and the subr number off of the stack
-             * this will leave the new metrics subr on the stack --  
-             * nothing we are good to go.
-             *
-             * I can implement the other subrs from the supplement.
-             *
-             * It looks like we always pop the values off the stack so we ought to not need a separate subrstack, but we do need a
-             * flex coordinates structure,
-             */
-#warning implement othersubrs
-
-            case CharStringOperators.CallOtherSubr:  return DoOtherSubr();
-            case CharStringOperators.Pop:  return DoPop();
+            case CharStringOperators.CallOtherSubr:  return DoOtherSubrAsync();
+            case CharStringOperators.Pop:  return DoPopAsync();
             case CharStringOperators.SetCurrentPoint: DoSetCurrentPoint();  break;
             default:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");

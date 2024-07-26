@@ -37,7 +37,6 @@ internal readonly struct PrivateCff2DictionaryParser(
 
         for (int i = 0; i < count; i++)
         {
-            #warning -- can I use the same pipe
             using var p2 = source.ReadPipeFrom((uint)offsets[i]);
             var result = await p2.ReadAtLeastAsync(offsets[count+ i]).CA();
             var trimmed = result.Buffer.Slice(0, offsets[count + i]);
@@ -53,7 +52,7 @@ internal readonly struct PrivateCff2DictionaryParser(
                 procIndexes[i] = new CffIndex(source, 0, 0);
                 continue;
             }
-            #warning -- can I use the same pipe
+
             var indexOffset = offsets[i]+offsets[i+count];
             using var  p2 = source.ReadPipeFrom(indexOffset);
             procIndexes[i] = await new CFFIndexParser(source.OffsetFrom(

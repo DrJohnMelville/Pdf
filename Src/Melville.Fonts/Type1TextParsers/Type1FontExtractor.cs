@@ -99,7 +99,7 @@ internal ref struct Type1FontExtractor
 
     private Memory<byte>[] SubrsArray()
     {
-        if (!privateDict.TryGetAs("/Subrs", out IPostscriptArray subrsSource))
+        if (!privateDict.TryGetAs("/Subrs", out IPostscriptArray? subrsSource))
             return [];
         var ret = new Memory<byte>[subrsSource.Length];
 

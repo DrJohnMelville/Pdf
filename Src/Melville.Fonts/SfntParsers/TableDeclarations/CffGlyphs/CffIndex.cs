@@ -28,7 +28,7 @@ internal readonly partial struct CffIndex
         if ((uint)index >= Length)
             throw new IndexOutOfRangeException("Index is bigger than the index length");
         var pipe = source.ReadPipeFrom(0);
-        pipe.SkipForwardToAsync(offsetSize * index).CA();
+        await pipe.SkipForwardToAsync(offsetSize * index).CA();
         var itemOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         var nextOffset = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         Debug.Assert(nextOffset >= itemOffset);

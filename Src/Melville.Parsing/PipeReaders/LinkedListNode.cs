@@ -7,11 +7,12 @@ namespace Melville.Parsing.PipeReaders
 {
     internal class LinkedListNode : ReadOnlySequenceSegment<byte>, IClearable
     {
+        public static readonly LinkedListNode Empty = new LinkedListNode();
         private byte[] buffer = [];
 
         public int LocalLength => buffer.Length;
         
-        public LinkedListNode With(int desiredLength, LinkedListNode next = null)
+        public LinkedListNode With(int desiredLength, LinkedListNode? next = null)
         {
             Debug.Assert(desiredLength > 0);
             buffer = ArrayPool<byte>.Shared.Rent(desiredLength);
