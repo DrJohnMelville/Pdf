@@ -54,4 +54,9 @@ public class SFntTableName
     /// Table name 'post'
     /// </summary>
     public const uint PostscriptData = 0x706f7374;
+
+    /// <summary>
+    /// Table name 'name'
+    /// </summary>
+    public const uint Name = 0x6E616D65;
 }

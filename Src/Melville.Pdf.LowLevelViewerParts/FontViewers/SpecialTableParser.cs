@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevelViewerParts.FontViewers.CFFGlyphViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.GlyphViewer;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.HeadViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.MetricViewers;
+using Melville.Pdf.LowLevelViewerParts.FontViewers.NameViews;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
@@ -71,8 +72,15 @@ public static class SpecialTableParser
             SFntTableName.MaximumProfile => ParsedMaximumsProfileAsync(font),
             SFntTableName.HorizontalMetrics => ParseHorizontalMetricsAsync(font),
             SFntTableName.GlyphLocations => ParseLocationsAsync(font),
+            SFntTableName.Name => ParseNamesAsync(font),
             _ => new ValueTask<object?>((object?)null)
         };
+
+    private static async ValueTask<object?> ParseNamesAsync(SFnt font)
+    {
+        var fonts = await (await font.GetNamesAsync()).GetAllNamesAsync();
+        return new NamesTableViewModel(fonts);
+    }
 
     private static async ValueTask<object?> ParseCmapAsync(SFnt font)
     {

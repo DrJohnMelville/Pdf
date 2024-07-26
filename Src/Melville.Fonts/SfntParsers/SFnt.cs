@@ -5,6 +5,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
+using Melville.Fonts.SfntParsers.TableDeclarations.Names;
 using Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
@@ -22,7 +23,6 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 {
     private IMultiplexSource source;
 
-
     private readonly TableRecord[] tables;
     private readonly Lazy<Task<IGlyphSource>> glyphSource;
     private readonly Lazy<Task<ICMapSource>> cmapSource;
@@ -32,10 +32,10 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private readonly Lazy<Task<ParsedMaximums>> maxSource;
     private readonly Lazy<Task<IGlyphLocationSource?>> glyphLocationSource;
     private readonly Lazy<Task<PostscriptData>> postscriptDataSource;
+    private readonly Lazy<Task<INameTableView>> namesSource;
 
 
-    /// <summary>
-    /// Create a SFnt
+    /// <summary> Create a SFnt
     /// </summary>
     /// <param name="source">A MultiplexSource to get font data from.</param>
     /// <param name="tables">The TableRecords that describe locations of tables in the font data</param>
@@ -51,6 +51,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         maxSource = new(LoadMaxProfileAsync);
         glyphLocationSource = new(LoadGlyphLocationsAsync);
         postscriptDataSource = new(LoadPostscriptDataAsync);
+        namesSource = new(LoadNameTableAsync);
     }
 
     /// <inheritdoc />
@@ -232,4 +233,18 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     /// <inheritdoc />
     public override async ValueTask<string[]> GlyphNamesAsync() =>
         (await GetPostscriptDataAsync().CA()).GlyphNames;
+
+    /// <summary>
+    /// Parse the name table from the font
+    /// </summary>
+    /// <returns>An object representing the parsed name table</returns>
+    public Task<INameTableView> GetNamesAsync() => namesSource.Value;
+    private async Task<INameTableView> LoadNameTableAsync()
+    {
+        return FindTable(SFntTableName.Name) is {} table
+            ? await new NameTableParser(source.OffsetFrom(table.Offset))
+                .ParseAsync().CA()
+            : new NullNameTableView();
+    }
+
 }

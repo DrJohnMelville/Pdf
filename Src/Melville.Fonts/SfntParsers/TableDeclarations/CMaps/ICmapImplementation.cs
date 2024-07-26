@@ -1,8 +1,4 @@
-﻿using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.MultiplexSources;
-
-namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+﻿namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 /// <summary>
 /// This is the functional mapping for a Cmap table.
