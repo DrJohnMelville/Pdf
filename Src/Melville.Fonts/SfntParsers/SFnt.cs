@@ -248,7 +248,11 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     }
 
     /// <inheritdoc />
-    public override async ValueTask<string> FontNameAsync() => 
-        await (await GetNamesAsync().CA()).GetNameAsync(SfntNameKey.FullFontName).CA()
+    public override async ValueTask<string> FontFamilyNameAsync() => 
+        await (await GetNamesAsync().CA()).GetNameAsync(SfntNameKey.FontFamilyName).CA()
         ??"";
+
+    /// <inheritdoc />
+    public override async ValueTask<MacStyles> GetFontStyleAsync() =>
+        (await HeadTableAsync().CA()).MacStyle;
 }

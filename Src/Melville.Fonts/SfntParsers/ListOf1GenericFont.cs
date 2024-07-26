@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.Contracts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 
 namespace Melville.Fonts.SfntParsers;
 
@@ -37,5 +38,8 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
     public abstract ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync();
 
     /// <inheritdoc />
-    public abstract ValueTask<string> FontNameAsync();
+    public abstract ValueTask<string> FontFamilyNameAsync();
+
+    /// <inheritdoc />
+    public abstract ValueTask<MacStyles> GetFontStyleAsync();
 }

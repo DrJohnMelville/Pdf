@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
+using Melville.Hacks.Reflection;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -63,8 +64,10 @@ public readonly struct FontReader
               ).CA();
 
     private async ValueTask<IRealizedFont> SystemFontByNameAsync(PdfFont font, FreeTypeFontFactory factory) =>
-        await defaultMapper
-            .FontFromName(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA())
+        await ( await defaultMapper
+            .FontFromNameAsync(
+                await font.OsFontNameAsync().CA(), 
+                await font.FontFlagsAsync().CA()).CA())
             .ToFontAsync(factory).CA();
 }
 

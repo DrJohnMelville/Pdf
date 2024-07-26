@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 namespace Melville.Fonts;
@@ -37,5 +38,11 @@ public interface IGenericFont
     /// Retrieves the name of the font
     /// </summary>
     /// <returns>String name of the font, or empty string if the font is unnamed</returns>
-    ValueTask<string> FontNameAsync();
+    ValueTask<string> FontFamilyNameAsync();
+
+    /// <summary>
+    /// Gets a bitfield that represents the visual style of the font.
+    /// </summary>
+    /// <returns>A MacStyles enum.  This may be syntesized on non SFnt fonts.</returns>
+    ValueTask<MacStyles> GetFontStyleAsync();
 }

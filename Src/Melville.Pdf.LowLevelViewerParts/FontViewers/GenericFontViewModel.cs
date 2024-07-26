@@ -19,7 +19,7 @@ public partial class GenericFontViewModel
     }
     public async void LoadCmap()
     {
-        fontName = await Font.FontNameAsync();
+        fontName = await Font.FontFamilyNameAsync();
         GlyphViewModel = new MultiGlyphViewModel((await Font.GetGlyphSourceAsync()));
         CmapViewModel = (await Font.GetCmapSourceAsync()).PrintCMap();
         GlyphNames = new MultiStringViewModel(LoadGlyphsAsync, "Glyph Names");

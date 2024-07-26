@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -31,5 +32,5 @@ public interface IDefaultFontMapper
     /// <param name="font">The PDFName of the font</param>
     /// <param name="flags">The fontflags from the font structure</param>
     /// <returns>A DefaultFontReference from which the font can be built.</returns>
-    DefaultFontReference FontFromName(PdfDirectObject font, FontFlags flags);
+    ValueTask<DefaultFontReference> FontFromNameAsync(PdfDirectObject font, FontFlags flags);
 }

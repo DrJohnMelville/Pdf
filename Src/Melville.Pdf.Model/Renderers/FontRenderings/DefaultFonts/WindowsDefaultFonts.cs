@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -26,80 +28,75 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static ReadOnlySpan<byte> SegoeUISymbol => "Segoe UI Symbol"u8;
 
     /// <inheritdoc />
-    public DefaultFontReference FontFromName(PdfDirectObject font, FontFlags fontFlags)
+    public async ValueTask<DefaultFontReference> FontFromNameAsync(
+        PdfDirectObject font, FontFlags flags)
+    {
+        return FontFromName(font, flags, await SystemFontLibraryAsync().CA());
+    }
+
+    private DefaultFontReference FontFromName(
+        PdfDirectObject font, FontFlags fontFlags, FontLibrary fl)
     {
         return font switch
         {
-            _ when font.Equals(KnownNames.Courier) => SystemFont(CourierNew,  false, false),
-            _ when font.Equals(KnownNames.CourierBold) => SystemFont(CourierNew,  true, false),
-            _ when font.Equals(KnownNames.CourierOblique) => SystemFont(CourierNew,  false, true),
-            _ when font.Equals(KnownNames.CourierBoldOblique) => SystemFont(CourierNew,  true, true),
-            _ when font.Equals(KnownNames.CourierItalic) => SystemFont(CourierNew,  false, true),
-            _ when font.Equals(KnownNames.CourierBoldItalic) => SystemFont(CourierNew,  true, true),
-            _ when font.Equals(KnownNames.Helvetica) => SystemFont(Arial,  false, false),
-            _ when font.Equals(KnownNames.HelveticaBold) => SystemFont(Arial,  true, false),
-            _ when font.Equals(KnownNames.HelveticaOblique) => SystemFont(Arial,  false, true),
-            _ when font.Equals(KnownNames.HelveticaBoldOblique) => SystemFont(Arial,  true, true),
-            _ when font.Equals(KnownNames.HelveticaItalic) => SystemFont(Arial,  false, true),
-            _ when font.Equals(KnownNames.HelveticaBoldItalic) => SystemFont(Arial,  true, true),
-            _ when font.Equals(KnownNames.TimesRoman) => SystemFont(TimesNewRoman,  false, false),
-            _ when font.Equals(KnownNames.TimesBold) => SystemFont(TimesNewRoman,  true, false),
-            _ when font.Equals(KnownNames.TimesOblique) => SystemFont(TimesNewRoman,  false, true),
-            _ when font.Equals(KnownNames.TimesBoldOblique) => SystemFont(TimesNewRoman,  true, true),
-            _ when font.Equals(KnownNames.TimesItalic) => SystemFont(TimesNewRoman,  false, true),
-            _ when font.Equals(KnownNames.TimesBoldItalic) => SystemFont(TimesNewRoman,  true, true),
-            _ when font.Equals(KnownNames.Symbol) => SystemFont(SegoeUISymbol,  false, false), 
-            _ when font.Equals(KnownNames.ZapfDingbats) => SystemFont(SegoeUISymbol,  false, false),
+            _ when font.Equals(KnownNames.Courier) => SystemFont(CourierNew,  false, false, fl),
+            _ when font.Equals(KnownNames.CourierBold) => SystemFont(CourierNew,  true, false, fl),
+            _ when font.Equals(KnownNames.CourierOblique) => SystemFont(CourierNew,  false, true, fl),
+            _ when font.Equals(KnownNames.CourierBoldOblique) => SystemFont(CourierNew,  true, true, fl),
+            _ when font.Equals(KnownNames.CourierItalic) => SystemFont(CourierNew,  false, true, fl),
+            _ when font.Equals(KnownNames.CourierBoldItalic) => SystemFont(CourierNew,  true, true, fl),
+            _ when font.Equals(KnownNames.Helvetica) => SystemFont(Arial,  false, false, fl),
+            _ when font.Equals(KnownNames.HelveticaBold) => SystemFont(Arial,  true, false, fl),
+            _ when font.Equals(KnownNames.HelveticaOblique) => SystemFont(Arial,  false, true, fl),
+            _ when font.Equals(KnownNames.HelveticaBoldOblique) => SystemFont(Arial,  true, true, fl),
+            _ when font.Equals(KnownNames.HelveticaItalic) => SystemFont(Arial,  false, true, fl),
+            _ when font.Equals(KnownNames.HelveticaBoldItalic) => SystemFont(Arial,  true, true, fl),
+            _ when font.Equals(KnownNames.TimesRoman) => SystemFont(TimesNewRoman,  false, false, fl),
+            _ when font.Equals(KnownNames.TimesBold) => SystemFont(TimesNewRoman,  true, false, fl),
+            _ when font.Equals(KnownNames.TimesOblique) => SystemFont(TimesNewRoman,  false, true, fl),
+            _ when font.Equals(KnownNames.TimesBoldOblique) => SystemFont(TimesNewRoman,  true, true, fl),
+            _ when font.Equals(KnownNames.TimesItalic) => SystemFont(TimesNewRoman,  false, true, fl),
+            _ when font.Equals(KnownNames.TimesBoldItalic) => SystemFont(TimesNewRoman,  true, true, fl),
+            _ when font.Equals(KnownNames.Symbol) => SystemFont(SegoeUISymbol,  false, false, fl), 
+            _ when font.Equals(KnownNames.ZapfDingbats) => SystemFont(SegoeUISymbol,  false, false, fl),
             _ => TrySystemFont(font, 
-                        fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))??
-                 FontFromName(fontFlags.MapBuiltInFont(), fontFlags)
+                        fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic), fl)??
+                 FontFromName(fontFlags.MapBuiltInFont(), fontFlags, fl)
         };
     }
 
     private  DefaultFontReference SystemFont(
-        ReadOnlySpan<byte> name, bool bold, bool italic)
+        ReadOnlySpan<byte> name, bool bold, bool italic, FontLibrary fl)
     {
-        var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
+        var fontReference = fl.FontFromName(name, bold, italic);
         return fontReference?.AsDefaultFontReference()
                ?? throw new IOException("Could not find required font file.");
     }
     private  DefaultFontReference? TrySystemFont(
-        PdfDirectObject pdfName, bool bold, bool italic)
+        PdfDirectObject pdfName, bool bold, bool italic, FontLibrary fl)
     {
         Span<byte> name = pdfName.Get<StringSpanSource>().GetSpan();
-        var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
+        var fontReference = fl.FontFromName(name, bold, italic);
         return fontReference?.AsDefaultFontReference();
     }
 
 
-    private static FontLibrary? systemFontLibrary;
-
-    private static FontLibrary SystemFontLibrary()
-    {
-        if (systemFontLibrary is null)
-        {
-            SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
-        }
-
-        return systemFontLibrary;
-    }
+    private static Lazy<Task<FontLibrary>> systemFontLibrary =
+        CreateFontSource(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
+    private static Task<FontLibrary> SystemFontLibraryAsync() => systemFontLibrary.Value;
 
     /// <summary>
     /// Sets the folder from which Melville.Pdf will look for system font files.
     /// </summary>
     /// <param name="fontFolder">The folder to look in for font files.</param>
     [MemberNotNull(nameof(systemFontLibrary))]
-    public static void SetFontDirectory(string fontFolder)
+    public static void SetFontDirectory(string fontFolder) =>
+        systemFontLibrary = CreateFontSource(fontFolder);
+
+    private static Lazy<Task<FontLibrary>> CreateFontSource(string fontFolder)
     {
-        GlobalFreeTypeMutex.WaitFor();
-        try
-        {
-            systemFontLibrary =
-                new FontLibraryBuilder().BuildFrom(fontFolder);
-        }
-        finally
-        {
-            GlobalFreeTypeMutex.Release();
-        }
+        return new(() => new FontLibraryBuilder()
+            .BuildFromAsync(fontFolder)
+            .AsTask());
     }
 }

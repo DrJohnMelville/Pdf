@@ -9,7 +9,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.SharpFont;
 
-namespace Performance.Playground.Rendering;
+namespace Performance.Playground.Rendering; 
 
 [MemoryDiagnoser]
 [InProcess]

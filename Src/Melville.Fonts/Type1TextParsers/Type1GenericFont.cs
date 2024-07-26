@@ -4,6 +4,7 @@ using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
@@ -108,7 +109,12 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     /// <inheritdoc />
     public float GlyphWidth(ushort glyph) => 0;
 
-    public override ValueTask<string> FontNameAsync() =>
+    /// <inheritdoc />
+    public override ValueTask<string> FontFamilyNameAsync() =>
         new(
-            Dictionary.TryGetAs("/FontName", out string value) ? value : "");
+            Dictionary.TryGetAs("/FontName", out string? value) ? value : "");
+
+    // because windows does not include type 1 fonts I so not need this method
+    /// <inheritdoc />
+    public override ValueTask<MacStyles> GetFontStyleAsync() => new(MacStyles.None);
 }

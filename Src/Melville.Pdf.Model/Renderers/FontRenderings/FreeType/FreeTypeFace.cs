@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -69,9 +70,14 @@ internal class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource
         return (float) font.Glyph.Advance.X / 64;
     }
 
-    public ValueTask<string> FontNameAsync()
+    public ValueTask<string> FontFamilyNameAsync()
     {
         return new(font.FamilyName);
+    }
+
+    public ValueTask<MacStyles> GetFontStyleAsync()
+    {
+        return new ValueTask<MacStyles>(MacStyles.None);
     }
 }
 

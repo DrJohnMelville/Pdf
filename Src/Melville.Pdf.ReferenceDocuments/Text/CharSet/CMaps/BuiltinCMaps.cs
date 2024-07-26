@@ -57,13 +57,13 @@ public abstract partial class BuiltinCMaps : Card3x5
     {
         page.AddResourceObject(ResourceTypeName.Font, fontName, CreateCIDFont);
     }
-
     private PdfIndirectObject CreateCIDFont(IPdfObjectCreatorRegistry register)
     {
         var fontStream = register.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Subtype, KnownNames.OpenType)
             .AsStream(SelfContainedDefaultFonts.Instance
-                .FontFromName(KnownNames.TimesRoman, FontFlags.Serif).Source));
+                .FontFromNameAsync(KnownNames.TimesRoman, FontFlags.Serif)
+                .GetAwaiter().GetResult().Source));
         var cidSystemInfo = register.Add(new   DictionaryBuilder()
             .WithItem(KnownNames.Ordering, "Identity")
             .WithItem(KnownNames.Registry, "Adobe")
