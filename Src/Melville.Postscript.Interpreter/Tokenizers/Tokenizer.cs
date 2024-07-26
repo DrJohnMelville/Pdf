@@ -25,7 +25,7 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
-        this(ReusableStreamPipeReader.Create(source, false))
+        this(ReusableStreamByteSource.Rent(source, false))
     {
     }
 

@@ -44,8 +44,8 @@ public partial class PostscriptDebuggerViewModel
     [FromConstructor] [AutoNotify] private string code = "";
     [AutoNotify] private int selectionStart = -1;
     [AutoNotify] private int selectionLength= -1;
-    [AutoNotify] private TextTreeViewModel operandStack;
-    [AutoNotify] private TextTreeViewModel dictionaryStack;
+    [AutoNotify] private TextTreeViewModel operandStack = TextTreeViewModel.Empty;
+    [AutoNotify] private TextTreeViewModel dictionaryStack = TextTreeViewModel.Empty;
     [AutoNotify] private string currentToken = "";
     [AutoNotify] private int interpreterStyle;
 
@@ -57,6 +57,8 @@ public partial class PostscriptDebuggerViewModel
     private void OnInterpreterStyleChanged() => SetupEngine();
 
     [MemberNotNull(nameof(engine))]
+    [MemberNotNull(nameof(tokens))]
+    [MemberNotNull(nameof(pausedProgram))]
     partial void OnConstructed()
     {
         SetupEngine();
@@ -64,13 +66,12 @@ public partial class PostscriptDebuggerViewModel
 
     [MemberNotNull(nameof(engine))]
     [MemberNotNull(nameof(tokens))]
-    [MemberNotNull(nameof(operandStack))]
-    [MemberNotNull(nameof(dictionaryStack))]
+    [MemberNotNull(nameof(pausedProgram))]
     private void SetupEngine()
     {
         tokens = new Tokenizer(code);
         engine = CreateEngine();
-        pausedProgram = engine.SingleStep(tokens).GetAsyncEnumerator();
+        pausedProgram = engine.SingleStepAsync(tokens).GetAsyncEnumerator();
         StepInto();
     }
 
@@ -87,7 +88,7 @@ public partial class PostscriptDebuggerViewModel
 
     public async void StepInto()
     {
-        await InnerStep();
+        await InnerStepAsync();
         DisplayOnPause();
     }
 
@@ -98,7 +99,7 @@ public partial class PostscriptDebuggerViewModel
         DictionaryStack = TextTreeViewModel.ReadDictionaryStack(engine.DictionaryStack);
     }
 
-    private async Task InnerStep()
+    private async Task InnerStepAsync()
     {
         SelectionStart = (int)tokens.CodeSource.Position;
         CurrentToken = await pausedProgram.MoveNextAsync()
@@ -113,7 +114,7 @@ public partial class PostscriptDebuggerViewModel
         while (tokens.CodeSource.Position is {} pos && pos <= next && pos < Code.Length-1 &&
                CurrentToken != "End of Program")
         {
-            await InnerStep();
+            await InnerStepAsync();
         }
         DisplayOnPause();
     }

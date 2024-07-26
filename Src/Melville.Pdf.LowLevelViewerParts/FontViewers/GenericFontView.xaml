@@ -7,15 +7,19 @@
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <TabControl>
-        <TabItem Header="Glyphs">
-            <viewFrames:ViewFrame Content="{Binding GlyphViewModel}"></viewFrames:ViewFrame>
-        </TabItem>
-        <TabItem Header="Cmaps">
-            <viewFrames:ViewFrame Content="{Binding CmapViewModel}"></viewFrames:ViewFrame>
-        </TabItem>
-        <TabItem Header="Glyph Names">
-            <viewFrames:ViewFrame Content="{Binding GlyphNames}"></viewFrames:ViewFrame>
-        </TabItem>
-    </TabControl>
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" FontSize="18" Text="{Binding FontName}"/>
+        <TabControl>
+            <TabItem Header="Glyphs">
+                <viewFrames:ViewFrame Content="{Binding GlyphViewModel}"></viewFrames:ViewFrame>
+            </TabItem>
+            <TabItem Header="Cmaps">
+                <viewFrames:ViewFrame Content="{Binding CmapViewModel}"></viewFrames:ViewFrame>
+            </TabItem>
+            <TabItem Header="Glyph Names">
+                <viewFrames:ViewFrame Content="{Binding GlyphNames}"></viewFrames:ViewFrame>
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
 </UserControl>

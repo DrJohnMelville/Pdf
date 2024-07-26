@@ -247,4 +247,8 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
             : new NullNameTableView();
     }
 
+    /// <inheritdoc />
+    public override async ValueTask<string> FontNameAsync() => 
+        await (await GetNamesAsync().CA()).GetNameAsync(SfntNameKey.FullFontName).CA()
+        ??"";
 }

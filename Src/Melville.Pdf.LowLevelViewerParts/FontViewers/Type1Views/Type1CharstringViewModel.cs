@@ -21,7 +21,7 @@ public class Type1CharstringViewModel :CharStringViewModel, ICreateView
     protected override ValueTask RenderGlyphAsync(ICffGlyphTarget renderTemp)
     {
         if (font == null) return ValueTask.CompletedTask;
-        return font.RenderToCffGlyphTarget(
+        return font.RenderToCffGlyphTargetAsync(
             (uint)PageSelector.Page, renderTemp, Matrix3x2.Identity);
     }
 

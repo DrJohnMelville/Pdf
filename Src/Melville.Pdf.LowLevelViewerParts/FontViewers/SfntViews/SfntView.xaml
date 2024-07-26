@@ -8,24 +8,22 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" FontSize="18">Placeholder for font name</TextBlock>
-        <ListBox ItemsSource="{Binding Tables}" Grid.Row="1" x:Name="TableList">
+        <ListBox ItemsSource="{Binding Tables}" x:Name="TableList">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Title}" ToolTip="{Binding ToolTip}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <viewFrames:ViewFrame Content="{Binding SelectedItem, ElementName=TableList}" Grid.Row="1" Grid.Column="1"
+        <viewFrames:ViewFrame Content="{Binding SelectedItem, ElementName=TableList}" Grid.Column="1"
                               Margin="5 0 0 0"/>
-        <GridSplitter Grid.Row="1" Grid.Column="1" Width="5"
+        <GridSplitter  Grid.Column="1" Width="5"
                       HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
 
     </Grid>

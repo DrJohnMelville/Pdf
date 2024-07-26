@@ -45,15 +45,8 @@ public sealed partial class EmptyCodeSource : IByteSource
     /// <inheritdoc />
     public long Position => 0;
 
-    public void Complete(Exception? exception = null)
-    {
-    }
-
-    public ValueTask CompleteAsync(Exception? exception = null) =>
-        ValueTask.CompletedTask;
-
+    /// <inheritdoc />
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 }

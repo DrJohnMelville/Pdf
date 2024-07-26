@@ -24,7 +24,7 @@ public static class CmykIccProfile
         await LoadProfileAsync().CA();
     
     private static ValueTask<IccProfile> LoadProfileAsync() =>
-        new IccParser(ReusableStreamPipeReader.Create(
+        new IccParser(ReusableStreamByteSource.Rent(
             GetCmykProfileStream(), false)).ParseAsync();
 
     /// <summary>

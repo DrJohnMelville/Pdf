@@ -59,7 +59,7 @@ internal partial class EnsureByteSourceDisposed: IByteSource
 /// This is a pipe reader that knows its location, and uses an allocation free
 /// linked list of buffers
 /// </summary>
-public class ReusableStreamPipeReader : IClearable, IByteSource
+public class ReusableStreamByteSource : IClearable, IByteSource
 {
     private static readonly LinkedListPosition EmptyPosition =
         new LinkedListPosition(LinkedListNode.Empty, 0);
@@ -73,9 +73,16 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
     private LinkedListPosition bufferEnd = EmptyPosition;
     private LinkedListPosition examined = EmptyPosition;
 
-    public static ReusableStreamPipeReader Create(
+    /// <summary>
+    /// Rent a ReusableStreamPipeReader from the pool
+    /// </summary>
+    /// <param name="stream">The stream to read from</param>
+    /// <param name="leaveOpen">True to leave underlying stream open when this reader is clearewd.</param>
+    /// <param name="desiredBufferSize">Minimum desired buffer block size in bytes.  (Default is 4096)</param>
+    /// <returns>A ByteSource that is ready to read the given souorce.  Dispose of it to return it to the pool.</returns>
+    public static ReusableStreamByteSource Rent(
         Stream stream, bool leaveOpen, int desiredBufferSize = 4096) =>
-        ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+        ObjectPool<ReusableStreamByteSource>.Shared.Rent()
             .WithParameters(stream, leaveOpen, desiredBufferSize);
 
 
@@ -86,7 +93,7 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
     /// <param name="leaveOpen">Close the stream when completed?</param>
     /// <param name="desiredBufferSize">Desired size for each block of the buffer</param>
     /// <returns>The configured reader</returns>
-    public ReusableStreamPipeReader WithParameters(
+    public ReusableStreamByteSource WithParameters(
         Stream stream, bool leaveOpen, int desiredBufferSize = 4096)
     {
         this.stream = stream;
@@ -101,7 +108,13 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
         return this;
     }
 
-    public ReusableStreamPipeReader WithStartingPosition(long startAt)
+    /// <summary>
+    /// Set the index of the current position without moving the actual read position.  This is useful when
+    /// a file format includes offsets from a point other than the start of the stream.
+    /// </summary>
+    /// <param name="startAt">The number that should be the index of the current position.</param>
+    /// <returns>The configured reader.</returns>
+    public ReusableStreamByteSource WithStartingPosition(long startAt)
     {
         bufferStart.RenumberCurrentPosition(startAt);
         return this;
@@ -133,7 +146,7 @@ public class ReusableStreamPipeReader : IClearable, IByteSource
         }
 
        stream = null;
-       ObjectPool<ReusableStreamPipeReader>.Shared.Return(this);
+       ObjectPool<ReusableStreamByteSource>.Shared.Return(this);
     }
 
     /// <summary>

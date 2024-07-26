@@ -28,6 +28,14 @@ public interface INameTableView
     /// </summary>
     /// <returns>An array of table lines</returns>
     public ValueTask<NameTableLine[]> GetAllNamesAsync();
+
+    /// <summary>
+    /// Get a name from the table.
+    /// </summary>
+    /// <param name="nameId">The specific name requested.</param>
+    /// <param name="desiredPlatform">The preferred platform</param>
+    /// <returns>The given name as a string.</returns>
+    ValueTask<string?> GetNameAsync(SfntNameKey nameId, ushort desiredPlatform = 0xFFFF);
 }
 
 internal class ParsedNameTable(IMultiplexSource source, NameTableHeader header):

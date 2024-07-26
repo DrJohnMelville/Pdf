@@ -128,7 +128,7 @@ public class OperatorsTest
     [InlineData("3 string dup currentfile exch readstring ", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
     [InlineData("3 string dup currentfile exch readstring", "01: false\r\n02: ()\r\n03: (\u0000\u0000\u0000)")]
     [InlineData("3 currentfile closefile", "01: 3")]
-    public Task WithFileOperators(string code, string result) =>
+    public Task WithFileOperatorsAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine(
             PostscriptOperatorCollections.Empty().WithBaseLanguage()));
     

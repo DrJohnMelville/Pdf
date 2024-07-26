@@ -84,16 +84,16 @@ public partial class Type1GenericFont: ListOf1GenericFont,
 
     /// <inheritdoc />
     public ValueTask RenderGlyphAsync<T>(uint glyph, T target, Matrix3x2 transform) where T : IGlyphTarget => 
-        RenderToCffGlyphTarget(glyph, new CffGlyphTargetWrapper<T>(target), transform);
+        RenderToCffGlyphTargetAsync(glyph, new CffGlyphTargetWrapper<T>(target), transform);
 
     /// <summary>
-    /// Render a chisen glyph to an ICffGlyphTarget
+    /// Render a chosen glyph to an ICffGlyphTarget
     /// </summary>
     /// <param name="glyph">Index of the glypg to render</param>
     /// <param name="targetWrapper">The target to render the glyph on.</param>
     /// <param name="transform">A transform matrix to apply to all the point in the glyph</param>
     /// <typeparam name="T">The concrete type of the ICffGlyphVTarget</typeparam>
-    public async ValueTask RenderToCffGlyphTarget<T>(
+    public async ValueTask RenderToCffGlyphTargetAsync<T>(
         uint glyph, T targetWrapper, Matrix3x2 transform) where T : ICffGlyphTarget
     {
         if (glyph >= charStrings.Length) glyph = (uint)notDefIndex;
@@ -107,4 +107,8 @@ public partial class Type1GenericFont: ListOf1GenericFont,
 
     /// <inheritdoc />
     public float GlyphWidth(ushort glyph) => 0;
+
+    public override ValueTask<string> FontNameAsync() =>
+        new(
+            Dictionary.TryGetAs("/FontName", out string value) ? value : "");
 }

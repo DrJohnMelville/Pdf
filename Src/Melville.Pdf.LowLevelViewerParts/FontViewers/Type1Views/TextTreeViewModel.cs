@@ -13,6 +13,7 @@ public partial class TextTree
 
 public partial class TextTreeViewModel
 {
+    public static readonly TextTreeViewModel Empty = new TextTreeViewModel([]);
     public TextTreeViewModel(IPostscriptDictionary? fontDictionary):
         this(new TextTreeFactory().ExtractDictionary(fontDictionary).ToArray())
     {

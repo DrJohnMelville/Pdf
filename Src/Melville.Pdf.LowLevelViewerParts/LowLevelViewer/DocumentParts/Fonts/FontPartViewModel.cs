@@ -14,7 +14,7 @@ public partial class FontPartViewModel: DocumentPart
 {
     private readonly PdfDictionary fontDic;
     [AutoNotify] private IRealizedFont? font;
-    [AutoNotify] private GenericFontViewModel genericFont;
+    [AutoNotify] private GenericFontViewModel? genericFont;
     [AutoNotify] private object? specificFont;
     
     

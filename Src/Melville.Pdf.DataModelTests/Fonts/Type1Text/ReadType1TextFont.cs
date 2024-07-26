@@ -35,6 +35,7 @@ public class ReadType1TextFont()
         (await font.GlyphNamesAsync()).Should().BeEquivalentTo(
             "n",".notdef","one","j");
         (await font.GetCmapSourceAsync()).Count.Should().Be(0);
+        (await font.FontNameAsync()).Should().Be("GODCEN+Dingbats");
     }
     [Fact]
     public async Task REadFullType1Async()

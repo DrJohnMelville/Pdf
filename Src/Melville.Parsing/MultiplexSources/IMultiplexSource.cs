@@ -32,12 +32,11 @@ IByteSource ReadPipeFrom(long position,
         [CallerFilePath] string? filename = null,
             [CallerLineNumber] int lineNo = -1) =>
             new EnsureByteSourceDisposed(
-            ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+            ObjectPool<ReusableStreamByteSource>.Shared.Rent()
                 .WithParameters(ReadFrom(position), false), filename, lineNo); 
 #else
         IByteSource ReadPipeFrom(long position) =>
-                ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
-                    .WithParameters(ReadFrom(position), false);
+            ReusableStreamByteSource.Rent(ReadFrom(position), false);
 #endif
 
         /// <summary>

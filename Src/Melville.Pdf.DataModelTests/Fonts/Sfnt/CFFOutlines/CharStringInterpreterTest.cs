@@ -446,13 +446,13 @@ public class CharStringInterpreterTest
         1c0001 1c0002 1c0003 1c0004 0c07
         1c0000 04
         0E
-        """, 4f)]
+        """)]
     [InlineData("""
         1c0001 1c0003 0D
         1c0000 04
         0E
-        """, 0f)]
-    public async Task TestSbwAndHsbwAsync(string code, float yValue)
+        """)]
+    public async Task TestSbwAndHsbwAsync(string code)
     {
         await ExecuteInstructionAsync(code);
         target.Verify(i=>i.RelativeCharWidth(3));

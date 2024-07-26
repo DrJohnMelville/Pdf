@@ -166,7 +166,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync() =>
         await new ContentStreamParser(this).ParseAsync(
-            ReusableStreamPipeReader.Create(await page.GetContentBytesAsync().CA(), false)).CA();
+            ReusableStreamByteSource.Rent(await page.GetContentBytesAsync().CA(), false)).CA();
 
     #endregion
     

@@ -68,6 +68,11 @@ internal class FreeTypeFace(Face font) : IGenericFont, ICMapSource, IGlyphSource
         LoadGlyph(glyph);
         return (float) font.Glyph.Advance.X / 64;
     }
+
+    public ValueTask<string> FontNameAsync()
+    {
+        return new(font.FamilyName);
+    }
 }
 
 internal class FreeTypeCmapImplementation (CharMap charmap) : ICmapImplementation

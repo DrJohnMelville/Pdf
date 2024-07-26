@@ -16,7 +16,7 @@ namespace Performance.Playground.Rendering;
 public class FontRendering
 {
     private static readonly Byte[] data = File.ReadAllBytes(
-        @"C:\Users\jom252\source\repos\DrJohnMelville\Pdf\Src\Melville.Pdf.ReferenceDocuments\Text\GFSEustace.otf");
+        @"C:\Users\jmelv\source\repos\DrJohnMelville\Pdf\Src\Melville.Pdf.ReferenceDocuments\Text\GFSEustace.otf");
 
     private IGenericFont freeType = new FreeTypeFace(NewMemoryFace());
 
@@ -31,11 +31,11 @@ public class FontRendering
     }
 
     [Benchmark]
-    public Task FreeType() => Render(freeType);
+    public Task FreeTypeAsync() => RenderAsync(freeType);
     [Benchmark(Baseline = true)]
-    public async Task Melville() => Render(await mt.Value);
+    public async Task MelvilleAsync() => await RenderAsync(await mt.Value);
 
-    private static async Task Render(IGenericFont genericFont)
+    private static async Task RenderAsync(IGenericFont genericFont)
     {
         var glyphSourceAsync = await genericFont.GetGlyphSourceAsync();
         for (uint i = 0; i < glyphSourceAsync.GlyphCount; i++)

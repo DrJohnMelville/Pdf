@@ -32,4 +32,10 @@ public interface IGenericFont
     /// </summary>
     /// <returns></returns>
     ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync();
+
+    /// <summary>
+    /// Retrieves the name of the font
+    /// </summary>
+    /// <returns>String name of the font, or empty string if the font is unnamed</returns>
+    ValueTask<string> FontNameAsync();
 }

@@ -42,12 +42,15 @@ public class PostscriptEngine
     /// </summary>
     public ITokenSource? TokenSource { get; private set; }
 
-    public long CurrentProgramOffset => TokenSource.CodeSource.Position;
+    /// <summary>
+    /// Retrieves the current offset in the root script being executed.
+    /// </summary>
+    public long CurrentProgramOffset => TokenSource?.CodeSource.Position ?? 0;
 
     /// <summary>
     /// The postscript engine itself never touches this value.  Various Procsets can use this
     /// value as a "target" for the procedure.  For example, the ContentStreamParser stores the
-    /// IContentStreamOperations that iis being rendered to in this field.
+    /// IContentStreamOperations that is being rendered to in this field.
     /// </summary>
     public object Tag { get; set; }
 
@@ -150,7 +153,13 @@ public class PostscriptEngine
             "Async Parser"u8);
     }
 
-    public async IAsyncEnumerable<PostscriptValue?> SingleStep(ITokenSource source)
+    /// <summary>
+    /// This returns an async enumerable that the debugger can use to single-step execute
+    /// the gvien postscript token source.
+    /// </summary>
+    /// <param name="source">The source to execute</param>
+    /// <returns>An IAsyncEnumerable that will return each token before executing it.</returns>
+    public async IAsyncEnumerable<PostscriptValue?> SingleStepAsync(ITokenSource source)
     {
         Debug.Assert(ExecutionStack.Count == 0);
         TokenSource = source;

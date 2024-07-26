@@ -58,7 +58,7 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         private IByteSource ConstructNewByteSource(Stream input, int startpos)
         {
             return 
-                ReusableStreamPipeReader.Create(new EexecDecodeStream(
+                ReusableStreamByteSource.Rent(new EexecDecodeStream(
                         input, key), false).WithStartingPosition(startpos);
         }
 

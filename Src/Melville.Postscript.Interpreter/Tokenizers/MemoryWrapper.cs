@@ -67,6 +67,7 @@ public partial class MemoryWrapper : IByteSource
     /// <inheritdoc />
     public long Position { get; private set; }
 
+    // <inheritdoc />
     public void Dispose()
     {
     }

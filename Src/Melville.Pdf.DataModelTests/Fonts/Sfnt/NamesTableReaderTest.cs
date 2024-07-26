@@ -12,7 +12,7 @@ public class NamesTableReaderTest
     [Theory]
     [InlineData(SfntNameKey.FullFontName, 0xFFFF, "Myanmar Text Bold")]
     [InlineData(SfntNameKey.FullFontName, 1, "Myanmar Text Bold")]
-    [InlineData(SfntNameKey.FullFontName, 3, "Myanmar Text Bold")]
+    [InlineData(SfntNameKey.FullFontName, 3, "Myanmar Text Negreta")]
     [InlineData(SfntNameKey.FontFamilyName, 0xFFFF, "Myanmar Text")]
     public async Task ReadStringTableAsync(
         SfntNameKey item, ushort platform, string result)
@@ -20,7 +20,7 @@ public class NamesTableReaderTest
         var table = await new NameTableParser(MultiplexSourceFactory.Create(
             sampleData.BitsFromHex())).ParseAsync();
 
-        (await table.GetNameAsync(item))
+        (await table.GetNameAsync(item, platform))
             .Should().Be(result);
     }
 

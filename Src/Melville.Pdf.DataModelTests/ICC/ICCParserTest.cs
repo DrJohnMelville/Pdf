@@ -20,7 +20,7 @@ public class ICCParserTest
     public async Task SizeFieldAsync()
     {
         var source = LoadSampleData();
-        var profile = await new IccParser( ReusableStreamPipeReader.Create(source, false)).ParseAsync();
+        var profile = await new IccParser( ReusableStreamByteSource.Rent(source, false)).ParseAsync();
 
         Assert.Equal(60960u, profile.Header.Size);
         Assert.Equal(0u, profile.Header.CmmType);

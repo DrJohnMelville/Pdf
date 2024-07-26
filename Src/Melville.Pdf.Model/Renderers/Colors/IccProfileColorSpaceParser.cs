@@ -67,7 +67,7 @@ public static class IccProfileColorSpaceParser
     public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
         
-        var profile = await new IccParser(ObjectPool<ReusableStreamPipeReader>.Shared.Rent()
+        var profile = await new IccParser(ObjectPool<ReusableStreamByteSource>.Shared.Rent()
             .WithParameters(source, false)).ParseAsync().CA();
         return new IccColorSpace(profile.DeviceToSrgb());
     }

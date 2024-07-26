@@ -33,7 +33,7 @@ public partial class ByteStringViewModel
 
     public ByteStringViewModel(byte[] bytes)
     {
-        Bytes = bytes;
+        this.bytes = bytes;
         XmlRepresentation = ParseXml(bytes);
     }
 

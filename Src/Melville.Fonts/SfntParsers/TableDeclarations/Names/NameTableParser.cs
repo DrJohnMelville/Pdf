@@ -52,4 +52,6 @@ internal readonly partial struct NameRecord
 internal class NullNameTableView: INameTableView
 {
     public ValueTask<NameTableLine[]> GetAllNamesAsync() => new([]);
+    public ValueTask<string?> GetNameAsync(SfntNameKey nameId, ushort desiredPlatform = 65535) => 
+        new("");
 }
