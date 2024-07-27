@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Graphics;
@@ -30,5 +31,12 @@ public class CffParserTest
     {
         var table = await new CffGlyphSourceParser(source, 1).ParseAsync();
         table.GlyphCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task ParseBareCffFormatAsync()
+    {
+        var gf = await RootFontParser.ParseAsync(source);
+        gf.Count.Should().Be(1);
     }
 }

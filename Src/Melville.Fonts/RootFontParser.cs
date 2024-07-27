@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using Melville.Fonts.RawCffParsers;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.Type1TextParsers;
@@ -30,6 +31,10 @@ public static class RootFontParser
     private const uint trueFmt = 0x74_72_75_65;
     private const uint typ1Fmt = 0x74_79_70_31;
     private const uint ttcfFmt = 0x74_74_63_66;
+    private const uint CffFmt1 = 0x01_00_04_01;
+    private const uint CffFmt2 = 0x01_00_04_02;
+    private const uint CffFmt3 = 0x01_00_04_03;
+    private const uint CffFmt4 = 0x01_00_04_04;
     private const uint Type1Format = 0x25_21_00_00;
 
     private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
@@ -39,6 +44,8 @@ public static class RootFontParser
         {
             openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
             ttcfFmt => new FontCollectionParser(src).ParseAsync(),
+            CffFmt1 or CffFmt2 or CffFmt3 or CffFmt4 => 
+                new RawCffParser(src).ParseAsync(),
             var x when (x & 0xFFFF0000) == Type1Format => new Type1Parser(src).ParseAsync(),
             _ => new([])
         };
