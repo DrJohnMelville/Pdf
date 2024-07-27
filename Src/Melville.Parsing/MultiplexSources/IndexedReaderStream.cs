@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.AwaitConfiguration;
+﻿using System.Diagnostics.CodeAnalysis;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
 
@@ -39,7 +40,7 @@ internal partial class IndexedReaderStreamFactory : ObjectPoolBase<IndexedReader
 internal class IndexedReaderStream(IndexedReaderStreamFactory home) : 
     DefaultBaseStream(true, false, true)
 {
-    private IIndexedReader source = null!;
+    private IIndexedReader? source = null;
 
     public IndexedReaderStream ReadFrom(IIndexedReader source, long position)
     {
@@ -50,14 +51,23 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
 
     public override int Read(Span<byte> buffer)
     {
+        VerifyInitialized();
         var ret = source.Read(Position, buffer);
         Position += ret;
         return ret;
     }
 
+    [MemberNotNull(nameof(source))]
+    private void VerifyInitialized()
+    {
+        if (source is null) 
+            throw new InvalidOperationException("Reader has no stream");
+    }
+
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
+        VerifyInitialized();
         var ret = await source.ReadAsync(Position, buffer, cancellationToken).CA();
         Position += ret;
         return ret;
@@ -71,14 +81,16 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
         {
             SeekOrigin.Begin => offset,
             SeekOrigin.Current => Position + offset,
-            SeekOrigin.End => source.Length + offset,
+            SeekOrigin.End => (source?.Length??0) + offset,
             _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
         };
 
-    public override long Length => source.Length;
+    public override long Length => source?.Length ?? 0;
 
     protected override void Dispose(bool disposing)
     {
+        if (source is null) return; // prevents recursion
+        source = null;
         base.Dispose(disposing);
         home.Return(this);
     }
