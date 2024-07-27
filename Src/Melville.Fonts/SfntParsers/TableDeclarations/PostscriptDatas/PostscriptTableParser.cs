@@ -50,6 +50,8 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             for (int i = 0; i <= count; i++)
             {
                 var result = await source.ReadAsync().CA();
+                // if (result.Buffer.FirstSpan.Length < 1)
+                //     ;
                 var strLen = result.Buffer.FirstSpan[0];
                 source.AdvanceTo(result.Buffer.GetPosition(1));
                 result = await source.ReadAtLeastAsync(strLen).CA();

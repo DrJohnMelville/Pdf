@@ -16,7 +16,7 @@ public class Startup:StartupBase
     [STAThread]
     public static void Main(string[] arguments)
     {
-        ApplicationRootImplementation.Run(new Startup(arguments));
+         ApplicationRootImplementation.Run(new Startup(arguments));
     }
 
     private Startup(string[] arguments) : base(arguments)

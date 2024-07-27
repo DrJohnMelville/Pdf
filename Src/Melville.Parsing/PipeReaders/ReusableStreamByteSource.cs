@@ -133,7 +133,18 @@ public class ReusableStreamByteSource : IClearable, IByteSource
         this.examined = examined;
     }
 
+    private LinkedListPosition CheckForEndOfSegment(LinkedListPosition consumed)
+    {
+        if (consumed.Node.Next is { } next &&
+            consumed.Index >= consumed.Node.LocalLength)
+            return new((LinkedListNode)next, 0);
+        else
+        {
+            return consumed;
+        }
 
+        ;
+    }
 
     /// <inheritdoc />
     public void Dispose()
@@ -174,8 +185,11 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     private ReadResult CreateReadResult() => 
         new(BufferAsReadOnlySequence(), false, atSourceEnd);
 
-    private ReadOnlySequence<byte> BufferAsReadOnlySequence() =>
-        new(bufferStart.Node, bufferStart.Index, bufferEnd.Node, bufferEnd.Index);
+    private ReadOnlySequence<byte> BufferAsReadOnlySequence()
+    {
+        var first = CheckForEndOfSegment(bufferStart);
+        return new ReadOnlySequence<byte>(first.Node, first.Index, bufferEnd.Node, bufferEnd.Index);
+    }
 
     private bool AllBytesHaveBeenExamined() => bufferEnd == examined;
 
@@ -197,10 +211,6 @@ public class ReusableStreamByteSource : IClearable, IByteSource
         result = CreateReadResult();
         return bufferStart != bufferEnd;
     }
-
-    /// <inheritdoc />
-    public void CancelPendingRead() => 
-        throw new NotSupportedException("Cancellation is not supported.");
 
     /// <inheritdoc />
     public void MarkSequenceAsExamined() => examined = bufferEnd;
