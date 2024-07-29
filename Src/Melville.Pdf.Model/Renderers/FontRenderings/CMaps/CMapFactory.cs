@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
-using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
 using Melville.Postscript.Interpreter.FunctionLibrary;

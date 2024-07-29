@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.PipeReaders;
 
 namespace Melville.Pdf.Model.Renderers.Colors.Profiles;

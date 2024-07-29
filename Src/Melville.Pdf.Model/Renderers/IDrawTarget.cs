@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using Melville.Fonts;
 
 namespace Melville.Pdf.Model.Renderers;

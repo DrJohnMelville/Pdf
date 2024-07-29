@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
-using Melville.Pdf.LowLevel.Model.Objects;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
-using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 

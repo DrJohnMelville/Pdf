@@ -1,6 +1,5 @@
 ﻿using System;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
-using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;

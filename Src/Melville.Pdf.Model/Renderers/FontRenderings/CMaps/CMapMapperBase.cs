@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Diagnostics;
 using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;

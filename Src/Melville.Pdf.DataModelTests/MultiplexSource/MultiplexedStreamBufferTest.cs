@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Parsing.MultiplexSources;
-using Melville.SharpFont;
 using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Pdf.DataModelTests.MultiplexSource;
 

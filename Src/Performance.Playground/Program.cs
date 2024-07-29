@@ -10,17 +10,16 @@ switch (1)
 {
     case 0:
         Console.WriteLine("Begin");
-        await new FontRendering().MelvilleAsync();
+        new BitmapWriting().Generic();
         Console.WriteLine("done");
         break;
     case 1:
-        BenchmarkRunner.Run<FontRendering>();
+        BenchmarkRunner.Run<BitmapWriting>();
         break;
     case 2:
-        var ren = new FontRendering();
         for (int i = 0; i < 1_000; i++)
         {
-            await ren.MelvilleAsync();
+            new BitmapWriting().Generic();
         }
         break;
 }

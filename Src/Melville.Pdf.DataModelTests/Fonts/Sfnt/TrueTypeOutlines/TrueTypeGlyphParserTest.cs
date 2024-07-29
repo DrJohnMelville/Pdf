@@ -1,13 +1,9 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Melville.Fonts;
-using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Melville.SharpFont.PostScript.Internal;
 using Moq;
 using Xunit;
 

@@ -5,7 +5,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -42,23 +41,10 @@ internal partial class GenericToRealizedFontWrapper : IRealizedFont, IDisposable
         """;
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) =>
-        Face is FreeTypeFace ? // this is a hack but FreeTypeFace is going away
-            new MutexHoldingWriteOperation(Face, target.CreateDrawTarget()):
-            new GenericFontWriteOperation(Face, target.CreateDrawTarget());
+        new GenericFontWriteOperation(Face, target.CreateDrawTarget());
 
     public double CharacterWidth(uint character, double defaultWidth) =>
         fontWidthComputer.GetWidth(character, defaultWidth);
-
-    [FromConstructor]
-    private sealed partial class MutexHoldingWriteOperation : GenericFontWriteOperation
-    {
-        partial void OnConstructed()
-        {
-            GlobalFreeTypeMutex.WaitFor();
-        }
-
-        public override void Dispose() => GlobalFreeTypeMutex.Release();
-    }
 
     public bool IsCachableFont => true;
 }

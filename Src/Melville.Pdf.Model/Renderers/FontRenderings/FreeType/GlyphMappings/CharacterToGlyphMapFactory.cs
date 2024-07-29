@@ -1,18 +1,13 @@
 ﻿using System.IO.Pipelines;
-using System.Linq;
 using System.Threading.Tasks;
 using Melville.Fonts;
-using Melville.Hacks.Reflection;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
@@ -55,9 +50,6 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
 
         return new CharacterToGlyphArray(ret);
     }
-
-    private CharMap? ValidCharMap(CharMap? input) => 
-        input?.AllMappings().Any()??false?input:null;
 
     private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMappingAsync()
     {

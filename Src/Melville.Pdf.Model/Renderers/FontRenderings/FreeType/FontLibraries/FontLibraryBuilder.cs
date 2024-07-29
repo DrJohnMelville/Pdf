@@ -7,7 +7,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 

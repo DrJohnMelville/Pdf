@@ -5,7 +5,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
-using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Documents;
 

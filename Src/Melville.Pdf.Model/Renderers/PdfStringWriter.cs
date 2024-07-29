@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers.FontRenderings;

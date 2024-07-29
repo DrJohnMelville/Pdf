@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;

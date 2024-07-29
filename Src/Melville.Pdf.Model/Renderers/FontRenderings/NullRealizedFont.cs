@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;

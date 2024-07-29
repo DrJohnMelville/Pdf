@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Melville.Pdf.Model.Renderers.Colors;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

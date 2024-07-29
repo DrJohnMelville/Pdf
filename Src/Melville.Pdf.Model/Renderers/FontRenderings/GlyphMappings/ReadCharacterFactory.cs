@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO.Pipelines;
-using System.Reflection;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
@@ -10,7 +8,6 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
-using Melville.Postscript.Interpreter.Values;
 using SingleByteCharacters = Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters;
 using TwoByteCharacters = Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Melville.INPC;
-using Melville.Parsing.SpanAndMemory;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 

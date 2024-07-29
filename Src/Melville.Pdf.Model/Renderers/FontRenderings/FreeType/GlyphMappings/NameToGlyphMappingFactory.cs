@@ -7,7 +7,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
@@ -41,9 +40,6 @@ internal readonly struct NameToGlyphMappingFactory(IGenericFont font)
         return cmap != null ? 
             new UnicodeGlyphNameMapper(MappingToDictionary(cmap)) : null;
     }
-
-    private static Dictionary<uint, uint> MappingToDictionary(CharMap mapping) => 
-        mapping.AllMappings().ToDictionary(i => i.Char, i => i.Glyph);
 
     private static Dictionary<uint, uint> MappingToDictionary(ICmapImplementation mapping) => 
         mapping.AllMappings().ToDictionary(i => i.Character, i => i.Glyph);

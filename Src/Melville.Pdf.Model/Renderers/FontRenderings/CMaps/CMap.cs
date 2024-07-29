@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Melville.INPC;
 using Melville.Linq;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 

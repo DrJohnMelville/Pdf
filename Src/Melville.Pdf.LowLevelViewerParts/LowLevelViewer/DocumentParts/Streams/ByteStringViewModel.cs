@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml;
 using System.Xml.Linq;
 using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.INPC;
@@ -10,7 +9,6 @@ using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
 using Melville.Pdf.LowLevelViewerParts.PostscriptDebuggers;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 

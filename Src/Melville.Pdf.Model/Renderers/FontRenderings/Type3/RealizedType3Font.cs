@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
