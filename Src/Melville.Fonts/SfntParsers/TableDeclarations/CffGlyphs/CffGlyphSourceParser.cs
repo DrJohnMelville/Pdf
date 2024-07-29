@@ -52,27 +52,37 @@ internal readonly struct CffGlyphSourceParser(
         using var firstFontTopDictData = await topIndex.ItemDataAsync(index).CA();
         ParseTopDict(
             firstFontTopDictData.Sequence, out var charStringOffset,
-            out var privateOffset, out var privateSize, out var charSetOffset);
+            out var privateOffset, out var privateSize, out var charSetOffset,
+            out var encodingOffset);
         var font = new CffGenericFont(source, unitsPerEm,
             fontName,stringIndexOffset, charStringOffset,
-            privateOffset, privateSize, globalSubroutineExecutor, charSetOffset);
+            privateOffset, privateSize, globalSubroutineExecutor, charSetOffset,
+            encodingOffset);
         return font;
     }
 
     //per Adobe Technical note 5716 page 15
     private const int charSetInstruction = 15;
+    private const int encodingInstruction = 16;
     private const int charStringsInstruction = 17;
     private const int privateInstruction = 18;
     private static void ParseTopDict(ReadOnlySequence<byte> first, 
-        out long charStringOffset, out long privateOffset, out long privateSize, out long charSetOffset)
+        out long charStringOffset, 
+        out long privateOffset, 
+        out long privateSize, 
+        out long charSetOffset,
+        out long encodingOffset)
     {
-        charStringOffset = privateOffset = privateSize = charSetOffset = 0;
+        charStringOffset = privateOffset = privateSize = charSetOffset = encodingOffset = 0;
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             switch (instr)
             {
+                case encodingInstruction:
+                    encodingOffset= result[0].IntValue;
+                    break;
                 case charSetInstruction:
                     charSetOffset = result[0].IntValue;
                     break;

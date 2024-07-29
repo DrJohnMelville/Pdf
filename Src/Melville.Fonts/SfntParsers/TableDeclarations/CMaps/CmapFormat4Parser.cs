@@ -89,7 +89,11 @@ internal class CmapFormat4Implementation (
 
     private uint MapUsingGlyphArray(int index, uint character, int rangeOffset) =>
         MapNonZerosByDelta(index, 
-            glyphIdArray[GlyphArrayIndex(index, character, rangeOffset)]);
+            AccessArray(GlyphArrayIndex(index, character, rangeOffset)));
+
+    private ushort AccessArray(long glyphArrayIndex) =>
+        ((uint)glyphArrayIndex) < ((uint) glyphIdArray.Length)?
+            glyphIdArray[glyphArrayIndex]: (ushort)0;
 
 
     private long GlyphArrayIndex(int index, uint character, int gylphDelta)

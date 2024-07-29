@@ -10,8 +10,9 @@ using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal partial class CffGenericFont: ListOf1GenericFont, ICMapSource, IGlyphWidthSource
-{   [FromConstructor] private readonly IMultiplexSource source;
+internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphWidthSource
+{
+    [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] private readonly ushort unitsPerEm;
     [FromConstructor] public string Name { get; }
     [FromConstructor] private readonly long stringIndexOffset;
@@ -20,18 +21,20 @@ internal partial class CffGenericFont: ListOf1GenericFont, ICMapSource, IGlyphWi
     [FromConstructor] private readonly long privateSize;
     [FromConstructor] private readonly GlyphSubroutineExecutor globalSubroutineExecutor;
     [FromConstructor] private readonly long charSetOffset;
+    [FromConstructor] private readonly long encodingOffset;
 
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
-    public override async ValueTask<IGlyphSource> GetGlyphSourceAsync() => 
-        new CffGlyphSource(await ReadCharStringIndexAsync(charStringOffset).CA(), 
-            globalSubroutineExecutor, 
-            new GlyphSubroutineExecutor(await GetPrivateSubrsAsync(privateOffset, privateSize).CA()), 
-            Matrix3x2.CreateScale(1f/unitsPerEm),[]);
+
+    public override async ValueTask<IGlyphSource> GetGlyphSourceAsync() =>
+        new CffGlyphSource(await ReadCharStringIndexAsync(charStringOffset).CA(),
+            globalSubroutineExecutor,
+            new GlyphSubroutineExecutor(await GetPrivateSubrsAsync(privateOffset, privateSize).CA()),
+            Matrix3x2.CreateScale(1f / unitsPerEm), []);
 
     private async ValueTask<CffIndex> ReadCharStringIndexAsync(long charStringOffset)
     {
         using var pipe = source.ReadPipeFrom(charStringOffset, charStringOffset);
-        var charStringsIndex= await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var charStringsIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         return charStringsIndex;
     }
 
@@ -51,6 +54,7 @@ internal partial class CffGenericFont: ListOf1GenericFont, ICMapSource, IGlyphWi
 
     // Per Adobe Technical Note 5176 page 24
     private const int subrsInstruction = 19;
+
     private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
     {
         Span<DictValue> result = stackalloc DictValue[1];
@@ -64,39 +68,51 @@ internal partial class CffGenericFont: ListOf1GenericFont, ICMapSource, IGlyphWi
     {
 #warning chek for predefined charsets see page 22-23 of adobe technical note 5176
         var charStringindex = await ReadCharStringIndexAsync(charStringOffset).CA();
-        using var stringsPipe = 
+        using var stringsPipe =
             source.ReadPipeFrom(stringIndexOffset, stringIndexOffset);
         var strings = new CffStringIndex(await new CFFIndexParser(source, stringsPipe)
             .ParseCff1Async().CA());
         using var charsetPipe =
             source.ReadPipeFrom(charSetOffset, charSetOffset);
         return await new CharSetReader(strings, charsetPipe, charStringindex.Length
-            ).ReadCharSetAsync().CA();
+        ).ReadCharSetAsync().CA();
     }
+
     public override ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => new(this);
     public override ValueTask<string> FontFamilyNameAsync() => new(Name);
     public override ValueTask<MacStyles> GetFontStyleAsync() => new(MacStyles.None);
 
-    int ICMapSource.Count => 0;
+    int ICMapSource.Count => 1;
 
-    public ValueTask<ICmapImplementation> GetByIndexAsync(int index) => new(new SingleArrayCmap<byte>(1, 0, Array.Empty<byte>()));
-    public ValueTask<ICmapImplementation?> GetByPlatformEncodingAsync(int platform, int encoding) => new((ICmapImplementation?)null);
-    public (int platform, int encoding) GetPlatformEncoding(int index) => (0, 0);
+    public async ValueTask<ICmapImplementation> GetByIndexAsync(int index) =>
+        new SingleArrayCmap<byte>(1, 0,
+            encodingOffset switch
+            {
+#warning check for standard encodings as per adobe technical note 5176 page 20
+                _ => await new CffEncodingReader(source.ReadPipeFrom(encodingOffset)).ParseAsync().CA()
+            });
+
+    public ValueTask<ICmapImplementation?> GetByPlatformEncodingAsync(int platform, int encoding) =>
+        new((ICmapImplementation?)null);
+
+    public (int platform, int encoding) GetPlatformEncoding(int index) => (4, 0);
     public float GlyphWidth(ushort glyph) => 0f;
-
 }
 
-internal class CharSetReader(CffStringIndex strings, IByteSource charsetPipe,
+internal class CharSetReader(
+    CffStringIndex strings,
+    IByteSource charsetPipe,
     long numGlyphs)
 {
     private readonly string[] finalBuffer = new string[numGlyphs];
+
     public async ValueTask<string[]> ReadCharSetAsync()
     {
         finalBuffer[0] = ".notdef";
         var type = await charsetPipe.ReadBigEndianUintAsync(1).CA();
         switch (type)
         {
-            case 0: 
+            case 0:
                 await ParseType0SetAsync().CA();
                 break;
             case 1:
@@ -128,11 +144,10 @@ internal class CharSetReader(CffStringIndex strings, IByteSource charsetPipe,
         {
             var first = (int)await charsetPipe.ReadBigEndianUintAsync(2).CA();
             var count = (int)await charsetPipe.ReadBigEndianUintAsync(nLength).CA();
-            for (int i = 0; i < count+1; i++)
+            for (int i = 0; i < count + 1; i++)
             {
                 finalBuffer[position++] = await strings.GetNameAsync(first + i).CA();
             }
         }
     }
-
 }
