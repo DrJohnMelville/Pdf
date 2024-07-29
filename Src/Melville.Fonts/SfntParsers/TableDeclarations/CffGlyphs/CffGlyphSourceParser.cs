@@ -12,13 +12,6 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal readonly struct CffGlyphSourceParser(
     IMultiplexSource source, ushort unitsPerEm)
 {
-    public async Task<IGlyphSource> ParseForGlyphSource()
-    {
-        var font = await ParseGenericFontAsync().ConfigureAwait(false);
-
-        return await font[0].GetGlyphSourceAsync().CA();
-    }
-
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseGenericFontAsync()
     {
         using var pipe = source.ReadPipeFrom(0);

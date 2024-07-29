@@ -186,13 +186,20 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         return await parser.ParseAsync().CA();
     }
 
-    private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff)
+    public ValueTask<IReadOnlyList<IGenericFont>> InnerGenericFontsAsync() =>
+        FindTable(SFntTableName.CFF) is { } cff ? 
+            LoadInnerCffFont(cff) : new([]);
+
+    private async ValueTask<IReadOnlyList<IGenericFont>> LoadInnerCffFont(TableRecord cff)
     {
         var head = await HeadTableAsync().CA();
         var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
             head.UnitsPerEm);
-        return await parser.ParseForGlyphSource().CA();
+        return await parser.ParseGenericFontAsync().CA();
     }
+
+    private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff) => 
+        await (await LoadInnerCffFont(cff).CA())[0].GetGlyphSourceAsync().CA();
 
     private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
     {

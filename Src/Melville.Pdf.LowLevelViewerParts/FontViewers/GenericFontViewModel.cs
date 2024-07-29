@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 public partial class GenericFontViewModel
 {
     [FromConstructor] public IGenericFont Font { get; }
-    public string Title => "Generic Font View";
+    [FromConstructor] public string Title { get; }
     public string? ToolTip => null;
     [AutoNotify] private string fontName = "";
     [AutoNotify] private object? glyphViewModel = null;

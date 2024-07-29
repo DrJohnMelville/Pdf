@@ -29,7 +29,9 @@ public class CffParserTest
     [Fact]
     public async Task ParseCFFStreamAsync()
     {
-        var table = await new CffGlyphSourceParser(source, 1).ParseForGlyphSource();
+        var table = await 
+            (await new CffGlyphSourceParser(source, 1).ParseGenericFontAsync())[0]
+            .GetGlyphSourceAsync();
         table.GlyphCount.Should().Be(2);
     }
 

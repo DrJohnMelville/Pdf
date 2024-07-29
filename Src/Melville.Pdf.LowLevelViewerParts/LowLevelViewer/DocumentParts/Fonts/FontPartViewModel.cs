@@ -40,7 +40,7 @@ public partial class FontPartViewModel: DocumentPart
             var generic = Font.ExtractGenericFont();
             if (generic == null) return;
 
-            GenericFont = new GenericFontViewModel(generic);
+            GenericFont = new GenericFontViewModel(generic, "Generic Font");
             SpecificFont = generic.CreateSpecificViewModel();
         }
         catch (Exception)

@@ -8,7 +8,7 @@ public partial class Type1ViewModel
 {
     public Type1ViewModel(Type1GenericFont Font)
     {
-        gf = new(() => new(Font));
+        gf = new(() => new(Font, "Generic Font"));
         dict = new(() => new TextTreeViewModel(Font.Dictionary));
         GlyphView = new Type1CharstringViewModel(Font);
     }

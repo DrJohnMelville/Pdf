@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.Design;
 using Melville.Fonts;
+using Melville.INPC;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 public partial class SingleFontViewModel(IGenericFont font)
 {
-    public IReadOnlyList<object> Tables { get; protected set; } = 
-        [new GenericFontViewModel(font)];
+    [AutoNotify] private IReadOnlyList<object> tables =
+        [new GenericFontViewModel(font, "Generic Font View")];
 }
