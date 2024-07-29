@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using System.Numerics;
+using System.Text;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -11,76 +12,83 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal readonly struct CffGlyphSourceParser(
     IMultiplexSource source, ushort unitsPerEm)
 {
-    public async Task<IGlyphSource> ParseAsync()
+    public async Task<IGlyphSource> ParseForGlyphSource()
+    {
+        var font = await ParseGenericFontAsync().ConfigureAwait(false);
+
+        return await font[0].GetGlyphSourceAsync().CA();
+    }
+
+    public async ValueTask<IReadOnlyList<IGenericFont>> ParseGenericFontAsync()
     {
         using var pipe = source.ReadPipeFrom(0);
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
         var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var stringIndexOffset = pipe.Position;
         var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        var globalSubroutineExecutor = new GlyphSubroutineExecutor(globalSubrIndex);
 
+        if (topIndex.Length == 1) 
+            return await CreateSingleFontAsync(
+                topIndex, stringIndexOffset, globalSubroutineExecutor, 0, 
+                await GetName(nameIndex, 0).CA()).CA();
 
-        using var firstFontTopDictData = await topIndex.ItemDataAsync(0).CA();
+        var ret = new IGenericFont[topIndex.Length];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = await CreateSingleFontAsync(
+                topIndex, stringIndexOffset, globalSubroutineExecutor, i, 
+                await GetName(nameIndex, i).CA()).CA();
+        }
+
+        return ret;
+    }
+
+    private async ValueTask<string> GetName(CffIndex nameIndex, int item)
+    {
+        using var bits = await nameIndex.ItemDataAsync(item).CA();
+        return Encoding.UTF8.GetString(bits.Sequence);
+    }
+
+    private async Task<CffGenericFont> CreateSingleFontAsync(CffIndex topIndex, long stringIndexOffset,
+        GlyphSubroutineExecutor globalSubroutineExecutor, int index, string fontName)
+    {
+        using var firstFontTopDictData = await topIndex.ItemDataAsync(index).CA();
         ParseTopDict(
             firstFontTopDictData.Sequence, out var charStringOffset,
-            out var privateOffset, out var privateSize);
-        
-        await pipe.AdvanceToLocalPositionAsync(charStringOffset).CA();
-        var charStringsIndex= await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-        
-        var privateSubrs = await GetPrivateSubrsAsync(pipe, privateOffset, privateSize).CA();
-
-        return new CffGlyphSource(charStringsIndex, 
-            new GlyphSubroutineExecutor(globalSubrIndex), 
-            new GlyphSubroutineExecutor(privateSubrs), 
-            Matrix3x2.CreateScale(1f/unitsPerEm),[]);
-    }
-
-    private async ValueTask<CffIndex> GetPrivateSubrsAsync(IByteSource pipe, int privateOffset, int privateSize)
-    {
-        await pipe.AdvanceToLocalPositionAsync(privateOffset).CA();
-        var privateDictBytes = await pipe.ReadAtLeastAsync(privateSize).CA();
-        var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
-            privateDictBytes.Buffer.Slice(0, privateSize));
-
-        if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0);
-
-        await pipe.AdvanceToLocalPositionAsync(privateSubrsOffset+privateOffset).CA();
-        return await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-    }
-
-    // Per Adobe Technical Note 5176 page 24
-    private const int subrsInstruction = 19;
-    private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
-    {
-        Span<DictValue> result = stackalloc DictValue[1];
-        return new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(slice), result)
-            .TryFindEntry(subrsInstruction)
-            ? result[0].IntValue
-            : 0;
+            out var privateOffset, out var privateSize, out var charSetOffset);
+        var font = new CffGenericFont(source, unitsPerEm,
+            fontName,stringIndexOffset, charStringOffset,
+            privateOffset, privateSize, globalSubroutineExecutor, charSetOffset);
+        return font;
     }
 
     //per Adobe Technical note 5716 page 15
+    private const int charSetInstruction = 15;
     private const int charStringsInstruction = 17;
     private const int privateInstruction = 18;
     private static void ParseTopDict(ReadOnlySequence<byte> first, 
-        out int charStringOffset, out int privateOffset, out int privateSize)
+        out long charStringOffset, out long privateOffset, out long privateSize, out long charSetOffset)
     {
-        charStringOffset = privateOffset = privateSize = 0;
+        charStringOffset = privateOffset = privateSize = charSetOffset = 0;
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             switch (instr)
             {
+                case charSetInstruction:
+                    charSetOffset = result[0].IntValue;
+                    break;
                 case charStringsInstruction:
-                    charStringOffset = (int)result[0].IntValue;
+                    charStringOffset = result[0].IntValue;
                     break;
                 case privateInstruction:
-                    privateSize = (int)result[0].IntValue;
-                    privateOffset = (int)result[1].IntValue;
+                    privateSize = result[0].IntValue;
+                    privateOffset = result[1].IntValue;
                     break;
             }
         }

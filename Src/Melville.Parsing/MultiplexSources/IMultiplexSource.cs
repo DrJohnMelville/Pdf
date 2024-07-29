@@ -28,15 +28,17 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         /// <param name="position">index into the source to start reading from</param>
 #if DEBUG
-IByteSource ReadPipeFrom(long position,
+IByteSource ReadPipeFrom(long position, long startingPosition = 0,
         [CallerFilePath] string? filename = null,
             [CallerLineNumber] int lineNo = -1) =>
             new EnsureByteSourceDisposed(
             ObjectPool<ReusableStreamByteSource>.Shared.Rent()
-                .WithParameters(ReadFrom(position), false), filename, lineNo); 
+                .WithParameters(ReadFrom(position), false)
+                .WithStartingPosition(startingPosition), filename!, lineNo); 
 #else
-        IByteSource ReadPipeFrom(long position) =>
-            ReusableStreamByteSource.Rent(ReadFrom(position), false);
+        IByteSource ReadPipeFrom(long position , long startingPosition = 0) =>
+            ReusableStreamByteSource.Rent(ReadFrom(position), false)
+            .WithStartingPosition(startingPosition);
 #endif
 
         /// <summary>

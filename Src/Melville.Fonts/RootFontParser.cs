@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
-using Melville.Fonts.RawCffParsers;
 using Melville.Fonts.SfntParsers;
+using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.Type1TextParsers;
 using Melville.Parsing.AwaitConfiguration;
@@ -40,12 +40,12 @@ public static class RootFontParser
     private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
         IMultiplexSource src, ulong tag)
     {
-        return tag switch
+       return tag switch
         {
             openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
             ttcfFmt => new FontCollectionParser(src).ParseAsync(),
             CffFmt1 or CffFmt2 or CffFmt3 or CffFmt4 => 
-                new RawCffParser(src).ParseAsync(),
+                new CffGlyphSourceParser(src, 1000).ParseGenericFontAsync(),
             var x when (x & 0xFFFF0000) == Type1Format => new Type1Parser(src).ParseAsync(),
             _ => new([])
         };

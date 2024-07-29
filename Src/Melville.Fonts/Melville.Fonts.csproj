@@ -28,4 +28,8 @@
 		<ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="RawCffParsers\" />
+	</ItemGroup>
+
 </Project>

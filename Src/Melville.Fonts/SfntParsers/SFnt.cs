@@ -191,7 +191,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var head = await HeadTableAsync().CA();
         var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
             head.UnitsPerEm);
-        return await parser.ParseAsync().CA();
+        return await parser.ParseForGlyphSource().CA();
     }
 
     private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
