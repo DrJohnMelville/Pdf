@@ -20,10 +20,9 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     IGenericFont, ICMapSource, IGlyphSource, IGlyphWidthSource
 {
     /// <summary>
-    /// The dictionary that was used tooo create the font.
-    /// (this may always be null in release builds.)
+    /// The dictionary that was used to create the font.
     /// </summary>
-    public IPostscriptDictionary? Dictionary { get; }
+    public IPostscriptDictionary Dictionary { get; }
     private readonly string[] glyphNames;
     private readonly Memory<byte>[] charStrings;
     private readonly int notDefIndex;
@@ -32,7 +31,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     private readonly IPostscriptArray otherSubrs;
 
     internal Type1GenericFont(
-        IPostscriptDictionary? dictionary, 
+        IPostscriptDictionary dictionary, 
         string[] glyphNames, 
         Memory<byte>[] charStrings, 
         int notDefIndex, 

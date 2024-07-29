@@ -22,7 +22,7 @@ public class CharSetReaderTest
         return ret;
     }
 
-    private async ValueTask<string[]> TeadTable(string hexBytes, int length)
+    private async ValueTask<string[]> ReadTableAsync(string hexBytes, int length)
     {
         var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
@@ -34,19 +34,19 @@ public class CharSetReaderTest
     [Fact]
     public async Task ReadType0Async()
     {
-        (await TeadTable("00 0001 0002 0100", 4))
+        (await ReadTableAsync("00 0001 0002 0100", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
     [Fact]
     public async Task ReadType1Async()
     {
-        (await TeadTable("01 0001 01 0100 00", 4))
+        (await ReadTableAsync("01 0001 01 0100 00", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
     [Fact]
     public async Task ReadType2Async()
     {
-        (await TeadTable("02 0001 0001 0100 0000", 4))
+        (await ReadTableAsync("02 0001 0001 0100 0000", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
 }

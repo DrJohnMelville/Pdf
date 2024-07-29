@@ -27,20 +27,20 @@ internal readonly struct CffGlyphSourceParser(
         if (topIndex.Length == 1) 
             return await CreateSingleFontAsync(
                 topIndex, stringIndexOffset, globalSubroutineExecutor, 0, 
-                await GetName(nameIndex, 0).CA()).CA();
+                await GetNameAsync(nameIndex, 0).CA()).CA();
 
         var ret = new IGenericFont[topIndex.Length];
         for (int i = 0; i < ret.Length; i++)
         {
             ret[i] = await CreateSingleFontAsync(
                 topIndex, stringIndexOffset, globalSubroutineExecutor, i, 
-                await GetName(nameIndex, i).CA()).CA();
+                await GetNameAsync(nameIndex, i).CA()).CA();
         }
 
         return ret;
     }
 
-    private async ValueTask<string> GetName(CffIndex nameIndex, int item)
+    private async ValueTask<string> GetNameAsync(CffIndex nameIndex, int item)
     {
         using var bits = await nameIndex.ItemDataAsync(item).CA();
         return Encoding.UTF8.GetString(bits.Sequence);

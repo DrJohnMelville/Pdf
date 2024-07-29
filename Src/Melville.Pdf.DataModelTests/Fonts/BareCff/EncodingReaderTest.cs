@@ -9,39 +9,39 @@ namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
 public class EncodingReaderTest
 {
-    private ValueTask<byte[]> Parse(string hexBits) =>
+    private ValueTask<byte[]> ParseAsync(string hexBits) =>
         new CffEncodingReader(
                 MultiplexSourceFactory.Create(hexBits.BitsFromHex()).ReadPipeFrom(0))
             .ParseAsync();
 
     [Fact]
-    public async Task ReadType0Encoding()
+    public async Task ReadType0EncodingAsync()
     {
         var ret = new byte[256];
         ret[10] = 1;
         ret[255] = 2;
         ret[32] = 3;
-        (await Parse("00 03 0A FF 20"))
+        (await ParseAsync("00 03 0A FF 20"))
             .Should().BeEquivalentTo(ret);
     }
     [Fact]
-    public async Task ReadType0ExtendedEncoding()
+    public async Task ReadType0ExtendedEncodingAsync()
     {
         var ret = new byte[256];
         ret[10] = 1;
         ret[255] = 2;
         ret[32] = 3;
-        (await Parse("80 03 0A FF 20 02 "))
+        (await ParseAsync("80 03 0A FF 20 02 "))
             .Should().BeEquivalentTo(ret);
     }
     [Fact]
-    public async Task ReadType1Encoding()
+    public async Task ReadType1EncodingAsync()
     {
         var ret = new byte[256];
         ret[10] = 1;
         ret[11] = 2;
         ret[32] = 3;
-        (await Parse("01 02 0A 02 20 01"))
+        (await ParseAsync("01 02 0A 02 20 01"))
             .Should().BeEquivalentTo(ret);
     }
 

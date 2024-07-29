@@ -8,9 +8,9 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
     public ValueTask<string> GetNameAsync(int index) =>
         index < standardStrings.Length? 
             new(standardStrings[index]):
-            LoadCustomString(index - standardStrings.Length);
+            LoadCustomStringAsync(index - standardStrings.Length);
 
-    private async ValueTask<string> LoadCustomString(int localIndex)
+    private async ValueTask<string> LoadCustomStringAsync(int localIndex)
     {
         using var data = await customStrings.ItemDataAsync(localIndex).CA();
         return Encoding.UTF8.GetString(

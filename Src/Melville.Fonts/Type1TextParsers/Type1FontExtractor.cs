@@ -26,18 +26,9 @@ internal ref struct Type1FontExtractor
         var (names, charstrings) = ProcessCharString(
             dictionary.GetAs<IPostscriptDictionary>("/CharStrings"));
         return new Type1GenericFont(
-            ReportedDictionary(),
+            dictionary,
             names, charstrings, notDefIndex,
             ComputeGlyphTransfor(), ReadSubrs(), ReadOtherSubrs());
-    }
-
-    private IPostscriptDictionary? ReportedDictionary()
-    {
-#if DEBUG
-            return dictionary;
-#else
-        return null;
-#endif
     }
 
     private Matrix3x2 ComputeGlyphTransfor() =>

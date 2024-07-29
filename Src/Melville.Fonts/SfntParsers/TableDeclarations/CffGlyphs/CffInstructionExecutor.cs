@@ -172,8 +172,9 @@ internal partial class CffInstructionExecutor<T>:
             case CharStringOperators.ClosePath: break; // all paths are closed.
             case CharStringOperators.HStem3:  break;
             case CharStringOperators.VStem3:  break;
-            #warning implement the seac command
-            case CharStringOperators.Seac:  break; 
+            case CharStringOperators.Seac:
+                // right now I just do not render seac characters.  I can do this later if I need to
+                break; 
             case CharStringOperators.SbW: DoSetBearingAndWidth4(); break;
             case CharStringOperators.Hsbw: DoSetBearingAndWidth2();  break;
             case CharStringOperators.DotSection: break;

@@ -186,11 +186,16 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         return await parser.ParseAsync().CA();
     }
 
+    /// <summary>
+    /// Try to get inner Generic fonts from a CFF1 Sfnt file.
+    /// </summary>
+    /// <returns>Any internal generic fonts if this is a CFF1 font, or an empty
+    /// array otherwise.</returns>
     public ValueTask<IReadOnlyList<IGenericFont>> InnerGenericFontsAsync() =>
         FindTable(SFntTableName.CFF) is { } cff ? 
-            LoadInnerCffFont(cff) : new([]);
+            LoadInnerCffFontAsync(cff) : new([]);
 
-    private async ValueTask<IReadOnlyList<IGenericFont>> LoadInnerCffFont(TableRecord cff)
+    private async ValueTask<IReadOnlyList<IGenericFont>> LoadInnerCffFontAsync(TableRecord cff)
     {
         var head = await HeadTableAsync().CA();
         var parser = new CffGlyphSourceParser(source.OffsetFrom(cff.Offset),
@@ -199,7 +204,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     }
 
     private async Task<IGlyphSource> LoadCffGlyphSourceAsync(TableRecord cff) => 
-        await (await LoadInnerCffFont(cff).CA())[0].GetGlyphSourceAsync().CA();
+        await (await LoadInnerCffFontAsync(cff).CA())[0].GetGlyphSourceAsync().CA();
 
     private async Task<IGlyphSource> LoadTrueTypeGlyphSourceAsync(TableRecord table)
     {
