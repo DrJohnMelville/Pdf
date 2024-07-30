@@ -6,9 +6,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal readonly struct CffStringIndex(CffIndex customStrings)
 {
     public ValueTask<string> GetNameAsync(int index) =>
-        index < standardStrings.Length? 
-            new(standardStrings[index]):
-            LoadCustomStringAsync(index - standardStrings.Length);
+        index < Type1StandardStrings.Instance.Length? 
+            new(Type1StandardStrings.Instance[index]):
+            LoadCustomStringAsync(index - Type1StandardStrings.Instance.Length);
 
     private async ValueTask<string> LoadCustomStringAsync(int localIndex)
     {
@@ -16,399 +16,98 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
         return Encoding.UTF8.GetString(
             data.Sequence);
     }
+}
 
-    private static readonly string[] standardStrings = [
-            //Appendix A: Standard Strings pg 31 of the CFF spec
-            ".notdef",
-            "space",
-            "exclam",
-            "quotedbl",
-            "numbersign",
-            "dollar",
-            "percent",
-            "ampersand",
-            "quoteright",
-            "parenleft",
-            "parenright",
-            "asterisk",
-            "plus",
-            "comma",
-            "hyphen",
-            "period",
-            "slash",
-            "zero",
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "colon",
-            "semicolon",
-            "less",
-            "equal",
-            "greater",
-            "question",
-            "at",
-            "A",
-            "B",
-            "C",
-            "D",
-            "E",
-            "F",
-            "G",
-            "H",
-            "I",
-            "J",
-            "K",
-            "L",
-            "M",
-            "N",
-            "O",
-            "P",
-            "Q",
-            "R",
-            "S",
-            "T",
-            "U",
-            "V",
-            "W",
-            "X",
-            "Y",
-            "Z",
-            "bracketleft",
-            "backslash",
-            "bracketright",
-            "asciicircum",
-            "underscore",
-            "quoteleft",
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-            "f",
-            "g",
-            "h",
-            "i",
-            "j",
-            "k",
-            "l",
-            "m",
-            "n",
-            "o",
-            "p",
-            "q",
-            "r",
-            "s",
-            "t",
-            "u",
-            "v",
-            "w",
-            "x",
-            "y",
-            "z",
-            "braceleft",
-            "bar",
-            "braceright",
-            "asciitilde",
-            "exclamdown",
-            "cent",
-            "sterling",
-            "fraction",
-            "yen",
-            "florin",
-            "section",
-            "currency",
-            "quotesingle",
-            "quotedblleft",
-            "guillemotleft",
-            "guilsinglleft",
-            "guilsinglright",
-            "fi",
-            "fl",
-            "endash",
-            "dagger",
-            "daggerdbl",
-            "periodcentered",
-            "paragraph",
-            "bullet",
-            "quotesinglbase",
-            "quotedblbase",
-            "quotedblright",
-            "guillemotright",
-            "ellipsis",
-            "perthousand",
-            "questiondown",
-            "grave",
-            "acute",
-            "circumflex",
-            "tilde",
-            "macron",
-            "breve",
-            "dotaccent",
-            "dieresis",
-            "ring",
-            "cedilla",
-            "hungarumlaut",
-            "ogonek",
-            "caron",
-            "emdash",
-            "AE",
-            "ordfeminine",
-            "Lslash",
-            "Oslash",
-            "OE",
-            "ordmasculine",
-            "ae",
-            "dotlessi",
-            "lslash",
-            "oslash",
-            "oe",
-            "germandbls",
-            "onesuperior",
-            "logicalnot",
-            "mu",
-            "trademark",
-            "Eth",
-            "onehalf",
-            "plusminus",
-            "Thorn",
-            "onequarter",
-            "divide",
-            "brokenbar",
-            "degree",
-            "thorn",
-            "threequarters",
-            "twosuperior",
-            "registered",
-            "minus",
-            "eth",
-            "multiply",
-            "threesuperior",
-            "copyright",
-            "Aacute",
-            "Acircumflex",
-            "Adieresis",
-            "Agrave",
-            "Aring",
-            "Atilde",
-            "Ccedilla",
-            "Eacute",
-            "Ecircumflex",
-            "Edieresis",
-            "Egrave",
-            "Iacute",
-            "Icircumflex",
-            "Idieresis",
-            "Igrave",
-            "Ntilde",
-            "Oacute",
-            "Ocircumflex",
-            "Odieresis",
-            "Ograve",
-            "Otilde",
-            "Scaron",
-            "Uacute",
-            "Ucircumflex",
-            "Udieresis",
-            "Ugrave",
-            "Yacute",
-            "Ydieresis",
-            "Zcaron",
-            "aacute",
-            "acircumflex",
-            "adieresis",
-            "agrave",
-            "aring",
-            "atilde",
-            "ccedilla",
-            "eacute",
-            "ecircumflex",
-            "edieresis",
-            "egrave",
-            "iacute",
-            "icircumflex",
-            "idieresis",
-            "igrave",
-            "ntilde",
-            "oacute",
-            "ocircumflex",
-            "odieresis",
-            "ograve",
-            "otilde",
-            "scaron",
-            "uacute",
-            "ucircumflex",
-            "udieresis",
-            "ugrave",
-            "yacute",
-            "ydieresis",
-            "zcaron",
-            "exclamsmall",
-            "Hungarumlautsmall",
-            "dollaroldstyle",
-            "dollarsuperior",
-            "ampersandsmall",
-            "Acutesmall",
-            "parenleftsuperior",
-            "parenrightsuperior",
-            "twodotenleader",
-            "onedotenleader",
-            "zerooldstyle",
-            "oneoldstyle",
-            "twooldstyle",
-            "threeoldstyle",
-            "fouroldstyle",
-            "fiveoldstyle",
-            "sixoldstyle",
-            "sevenoldstyle",
-            "eightoldstyle",
-            "nineoldstyle",
-            "commasuperior",
-            "threequartersemdash",
-            "periodsuperior",
-            "questionsmall",
-            "asuperior",
-            "bsuperior",
-            "centsuperior",
-            "dsuperior",
-            "esuperior",
-            "isuperior",
-            "lsuperior",
-            "msuperior",
-            "nsuperior",
-            "osuperior",
-            "rsuperior",
-            "ssuperior",
-            "tsuperior",
-            "ff",
-            "ffi",
-            "ffl",
-            "parenleftinferior",
-            "parenrightinferior",
-            "Circumflexsmall",
-            "hyphensuperior",
-            "Gravesmall",
-            "Asmall",
-            "Bsmall",
-            "Csmall",
-            "Dsmall",
-            "Esmall",
-            "Fsmall",
-            "Gsmall",
-            "Hsmall",
-            "Ismall",
-            "Jsmall",
-            "Ksmall",
-            "Lsmall",
-            "Msmall",
-            "Nsmall",
-            "Osmall",
-            "Psmall",
-            "Qsmall",
-            "Rsmall",
-            "Ssmall",
-            "Tsmall",
-            "Usmall",
-            "Vsmall",
-            "Wsmall",
-            "Xsmall",
-            "Ysmall",
-            "Zsmall",
-            "colonmonetary",
-            "onefitted",
-            "rupiah",
-            "Tildesmall",
-            "exclamdownsmall",
-            "centoldstyle",
-            "Lslashsmall",
-            "Scaronsmall",
-            "Zcaronsmall",
-            "Dieresissmall",
-            "Brevesmall",
-            "Caronsmall",
-            "Dotaccentsmall",
-            "Macronsmall",
-            "figuredash",
-            "hypheninferior",
-            "Ogoneksmall",
-            "Ringsmall",
-            "Cedillasmall",
-            "questiondownsmall",
-            "oneeighth",
-            "threeeighths",
-            "fiveeighths",
-            "seveneighths",
-            "onethird",
-            "twothirds",
-            "zerosuperior",
-            "foursuperior",
-            "fivesuperior",
-            "sixsuperior",
-            "sevensuperior",
-            "eightsuperior",
-            "ninesuperior",
-            "zeroinferior",
-            "oneinferior",
-            "twoinferior",
-            "threeinferior",
-            "fourinferior",
-            "fiveinferior",
-            "sixinferior",
-            "seveninferior",
-            "eightinferior",
-            "nineinferior",
-            "centinferior",
-            "dollarinferior",
-            "periodinferior",
-            "commainferior",
-            "Agravesmall",
-            "Aacutesmall",
-            "Acircumflexsmall",
-            "Atildesmall",
-            "Adieresissmall",
-            "Aringsmall",
-            "AEsmall",
-            "Ccedillasmall",
-            "Egravesmall",
-            "Eacutesmall",
-            "Ecircumflexsmall",
-            "Edieresissmall",
-            "Igravesmall",
-            "Iacutesmall",
-            "Icircumflexsmall",
-            "Idieresissmall",
-            "Ethsmall",
-            "Ntildesmall",
-            "Ogravesmall",
-            "Oacutesmall",
-            "Ocircumflexsmall",
-            "Otildesmall",
-            "Odieresissmall",
-            "OEsmall",
-            "Oslashsmall",
-            "Ugravesmall",
-            "Uacutesmall",
-            "Ucircumflexsmall",
-            "Udieresissmall",
-            "Yacutesmall",
-            "Thornsmall",
-            "Ydieresissmall",
-            "001.000",
-            "001.001",
-            "001.002",
-            "001.003",
-            "Black",
-            "Bold",
-            "Book",
-            "Light",
-            "Medium",
-            "Regular",
-            "Roman",
-            "Semibold"];//390
+internal ref struct StandardCharsetFactory
+{
+    private string[] result = [];
+    private int index = 0;
+
+    public StandardCharsetFactory()
+    {
+    }
+
+    public string[] FromByte(long charSetOffset) => charSetOffset switch
+    {
+        0 => IsoAdobe(),
+        1 => Expert(),
+        2 => ExpertSubset(),
+        _ => throw new InvalidDataException("Invalid standard charset idnex")
+    };
+
+    private string[] IsoAdobe()
+    {
+        CreateResult(229);
+        AddSpan(0, 228);
+        return result;
+    }
+
+    private void CreateResult(int length)
+    {
+        result = new string[length];
+    }
+
+    private void AddSpan(int minimum, int maximum)
+    {
+        for (int i = minimum; i <= maximum; i++)
+        {
+            AddSpan(i);
+        }
+    }
+
+    private string AddSpan(int i) => result[index++] = Type1StandardStrings.Instance[i];
+
+    private string[] Expert()
+    {
+        CreateResult(166);
+        AddSpan(0,1);
+        AddSpan(229,238);
+        AddSpan(13,15);
+        AddSpan(99);
+        AddSpan(239,248);
+        AddSpan(27,28);
+        AddSpan(249,265);
+        AddSpan(266);
+        AddSpan(109, 110);
+        AddSpan(267, 318);
+        AddSpan(158);
+        AddSpan(155);
+        AddSpan(163);
+        AddSpan(319,326);
+        AddSpan(150);
+        AddSpan(164);
+        AddSpan(169);
+        AddSpan(327, 378);
+        return result;
+    }
+
+    private string[] ExpertSubset()
+    {
+        CreateResult(87);
+        AddSpan(0, 1);
+        AddSpan(231, 232);
+        AddSpan(235, 238);
+        AddSpan(13, 15);
+        AddSpan(99);
+        AddSpan(239, 248);
+        AddSpan(27,28);
+        AddSpan(249, 251);
+        AddSpan(253, 266);
+        AddSpan(109,110);
+        AddSpan(267,270);
+        AddSpan(272);
+        AddSpan(300,302);
+        AddSpan(305);
+        AddSpan(314, 315);
+        AddSpan(158);
+        AddSpan(155);
+        AddSpan(163);
+        AddSpan(320,326);
+        AddSpan(150);
+        AddSpan(164);
+        AddSpan(169);
+        AddSpan(327, 346);
+        return result;
+    }
 
 }

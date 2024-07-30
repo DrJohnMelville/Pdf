@@ -1,4 +1,5 @@
-﻿using Melville.INPC;
+﻿using System.Diagnostics;
+using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps
 {
