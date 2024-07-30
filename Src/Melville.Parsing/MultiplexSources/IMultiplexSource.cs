@@ -27,19 +27,10 @@ namespace Melville.Parsing.MultiplexSources
         /// This may be optimized to reuse buffers
         /// </summary>
         /// <param name="position">index into the source to start reading from</param>
-#if DEBUG
-IByteSource ReadPipeFrom(long position, long startingPosition = 0,
-        [CallerFilePath] string? filename = null,
-            [CallerLineNumber] int lineNo = -1) =>
-            new EnsureByteSourceDisposed(
-            ObjectPool<ReusableStreamByteSource>.Shared.Rent()
-                .WithParameters(ReadFrom(position), false)
-                .WithStartingPosition(startingPosition), filename!, lineNo); 
-#else
+        /// <param name="startingPosition">Sets the initial position of the ByteSource to the given position</param>
         IByteSource ReadPipeFrom(long position , long startingPosition = 0) =>
             ReusableStreamByteSource.Rent(ReadFrom(position), false)
             .WithStartingPosition(startingPosition);
-#endif
 
         /// <summary>
         /// The length of the represented data.

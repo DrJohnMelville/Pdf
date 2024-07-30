@@ -12,49 +12,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.PipeReaders;
 
-internal partial class EnsureByteSourceDisposed: IByteSource
-{
-    [FromConstructor] [DelegateTo] private IByteSource inner;
-    [FromConstructor] private string fileName;
-    [FromConstructor] private int lineNumber;
-
-
-    public void Dispose()
-    {
-        inner.Dispose();
-        inner = null!; // this will cause an error if I use after free
-        GC.SuppressFinalize(this);
-    }
-
-    ~EnsureByteSourceDisposed()
-    {
-        UdpConsole.WriteLine($"""
-            Undisposed reader {fileName}({lineNumber})
-            """);
-    }
-
-    public static class UdpConsole
-    {
-        private static UdpClient? client = null;
-        private static UdpClient Client
-        {
-            get
-            {
-                client ??= new UdpClient();
-                return client;
-            }
-        }
-
-        public static string WriteLine(string str)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-            Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
-            return str;
-        }
-    }
-}
-
-
 /// <summary>
 /// This is a pipe reader that knows its location, and uses an allocation free
 /// linked list of buffers
