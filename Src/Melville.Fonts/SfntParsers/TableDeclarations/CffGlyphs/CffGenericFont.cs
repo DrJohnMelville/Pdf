@@ -113,7 +113,7 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
                 0 => new PredefinedEncodings(sidDecoder).Standard(),
                 1 => new PredefinedEncodings(sidDecoder).Expert(),
                 _ => await new CffEncodingReader(
-                    source.ReadPipeFrom(encodingOffset)).ParseAsync().CA()
+                    source.ReadPipeFrom(encodingOffset), sidDecoder).ParseAsync().CA()
             });
     }
 

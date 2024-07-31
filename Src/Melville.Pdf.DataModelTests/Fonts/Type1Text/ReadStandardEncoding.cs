@@ -555,7 +555,7 @@ public class ReadStandardEncoding
 
     private static async Task<ICmapImplementation> LoadCmap(long index)
     {
-        var sut = FontWithEncodingOffset(index, 256, 1);
+        var sut = FontWithEncodingOffset(index, 256, index);
         var cmaps = await sut.GetCmapSourceAsync();
         cmaps.Count.Should().Be(1);
         var map = await cmaps.GetByIndexAsync(0);

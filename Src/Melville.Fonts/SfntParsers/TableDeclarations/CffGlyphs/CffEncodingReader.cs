@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices.ComTypes;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -6,7 +7,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal readonly struct CffEncodingReader(IByteSource source)
+internal readonly struct CffEncodingReader(IByteSource source, GlyphFromSid sidDecoder)
 {
     private readonly byte[] result = new byte[256];
     public async ValueTask<byte[]> ParseAsync()
@@ -22,6 +23,11 @@ internal readonly struct CffEncodingReader(IByteSource source)
                 break;
             default:
                 throw new InvalidDataException("Invalid encoding type");
+        }
+
+        if ((type & 0x80) == 0x80)
+        {
+            await ReadSupplementalMappingsAsync().CA();
         }
         source.Dispose();
         return result;
@@ -66,6 +72,24 @@ internal readonly struct CffEncodingReader(IByteSource source)
             {
                 result[first + j] = glyph++;
             }
+        }
+    }
+
+    private async Task ReadSupplementalMappingsAsync()
+    {
+        var count = await source.ReadBigEndianUintAsync(1).CA();
+        var supplementLength = (int)count*3;
+        var result= await source.ReadAtLeastAsync(supplementLength).CA();
+        ReadSupplementalMappings(result.Buffer.Slice(0, supplementLength));
+    }
+
+    private void ReadSupplementalMappings(ReadOnlySequence<byte> slice)
+    {
+        var reader = new SequenceReader<byte>(slice);
+        while (reader.TryReadBigEndianInt8(out var code) &&
+               reader.TryReadBigEndianUint16(out var sid))
+        {
+            result[code] = (byte)sidDecoder.Search(sid);
         }
     }
 }
