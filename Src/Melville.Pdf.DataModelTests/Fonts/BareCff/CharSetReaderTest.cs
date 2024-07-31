@@ -42,7 +42,7 @@ public class CharSetReaderTest
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
     [Fact]
-    public async Task ReadType0toInts()
+    public async Task ReadType0toIntsAsync()
     {
         var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);

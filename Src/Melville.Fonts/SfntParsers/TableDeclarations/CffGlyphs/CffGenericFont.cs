@@ -63,7 +63,7 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
         var strings = await ReadStringIndexAsync().CA();
         var target = new StringTarget(strings, charStringIndex.Length);
 
-        return (await MapCharSet(target).CA()).Result;
+        return (await MapCharSetAsync(target).CA()).Result;
     }
 
     private async Task<CffStringIndex> ReadStringIndexAsync()
@@ -84,10 +84,10 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
         return strings;
     }
 
-    private ValueTask<T> MapCharSet<T>(T target) where T: ICharSetTarget
+    private ValueTask<T> MapCharSetAsync<T>(T target) where T: ICharSetTarget
     {
         if (charSetOffset < 3)
-            return new StandardCharsetFactory<T>(target).FromByte(charSetOffset);
+            return new StandardCharsetFactory<T>(target).FromByteAsync(charSetOffset);
         
         using var charsetPipe = source.ReadPipeFrom(charSetOffset, charSetOffset);
         return new CharSetReader<T>(charsetPipe, target).ReadCharSetAsync();
@@ -103,7 +103,7 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
     {
         var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
         var target = new MemoryTarget(data);
-        await MapCharSet(target).CA();
+        await MapCharSetAsync(target).CA();
 
         var sidDecoder = new GlyphFromSid(data);
 

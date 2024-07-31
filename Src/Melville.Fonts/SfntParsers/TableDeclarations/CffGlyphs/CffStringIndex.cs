@@ -20,11 +20,11 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
 
 internal readonly struct StandardCharsetFactory<T>(T target) where T: ICharSetTarget
 {
-    public ValueTask<T> FromByte(long charSetOffset) => charSetOffset switch
+    public ValueTask<T> FromByteAsync(long charSetOffset) => charSetOffset switch
     {
-        0 => IsoAdobe(),
-        1 => Expert(),
-        2 => ExpertSubset(),
+        0 => IsoAdobeAsync(),
+        1 => ExpertAsync(),
+        2 => ExpertSubsetAsync(),
         _ => throw new InvalidDataException("Invalid standard charset idnex")
     };
 
@@ -32,9 +32,9 @@ internal readonly struct StandardCharsetFactory<T>(T target) where T: ICharSetTa
       (0,228)
     ];
 
-    private ValueTask<T> IsoAdobe() => MapArray(229, IsoAdobeMappings);
+    private ValueTask<T> IsoAdobeAsync() => MapArrayAsync(IsoAdobeMappings);
 
-    private async ValueTask<T> MapArray(int length, (ushort, ushort)[] values)
+    private async ValueTask<T> MapArrayAsync((ushort, ushort)[] values)
     {
         int index = 0;
         foreach (var (min, max) in values)
@@ -71,7 +71,7 @@ internal readonly struct StandardCharsetFactory<T>(T target) where T: ICharSetTa
     ];
 
 
-    private ValueTask<T> Expert() => MapArray(166, ExpertMappings);
+    private ValueTask<T> ExpertAsync() => MapArrayAsync(ExpertMappings);
 
     private static readonly (ushort, ushort)[] ExpertSubsetMappings =
     [
@@ -100,7 +100,7 @@ internal readonly struct StandardCharsetFactory<T>(T target) where T: ICharSetTa
         (327, 346),
     ];
 
-    private ValueTask<T> ExpertSubset() =>
-        MapArray(87, ExpertSubsetMappings);
+    private ValueTask<T> ExpertSubsetAsync() =>
+        MapArrayAsync(ExpertSubsetMappings);
 
 }

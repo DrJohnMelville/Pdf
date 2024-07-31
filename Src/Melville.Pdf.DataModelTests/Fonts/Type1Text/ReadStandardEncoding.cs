@@ -16,12 +16,12 @@ public class ReadStandardEncoding
         long offset, uint glyphCount, long charSetOffset) =>
         new(MultiplexSourceFactory.Create([]),
             1000, "Fake Font", 0,
-            new CffIndex(null, glyphCount, 1), 0, 0, null!, charSetOffset, offset);
+            new CffIndex(null!, glyphCount, 1), 0, 0, null!, charSetOffset, offset);
 
     [Fact]
-    public async Task StandardEncoding()
+    public async Task StandardEncodingAsync()
     {
-        var map = await LoadCmap(0);
+        var map = await LoadCmapAsync(0);
         map.AllMappings().Should().BeEquivalentTo([
             (1, 0, 0),
             (1, 1, 0),
@@ -283,7 +283,7 @@ public class ReadStandardEncoding
     }
 
     [Fact]
-    public async Task ExpertEncoding()
+    public async Task ExpertEncodingAsync()
     {
         var sut = FontWithEncodingOffset(1, 256, 1);
         var cmaps = await sut.GetCmapSourceAsync();
@@ -553,7 +553,7 @@ public class ReadStandardEncoding
         ];
 
 
-    private static async Task<ICmapImplementation> LoadCmap(long index)
+    private static async Task<ICmapImplementation> LoadCmapAsync(long index)
     {
         var sut = FontWithEncodingOffset(index, 256, index);
         var cmaps = await sut.GetCmapSourceAsync();

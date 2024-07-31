@@ -28,7 +28,7 @@ public class EncodingReaderTest
             .Should().BeEquivalentTo(ret);
     }
     [Fact]
-    public async Task ReadType0EncodingAsyncWithExtra()
+    public async Task ReadType0EncodingWithExtraAsync()
     {
         var ret = new byte[256];
         ret[10] = 1;

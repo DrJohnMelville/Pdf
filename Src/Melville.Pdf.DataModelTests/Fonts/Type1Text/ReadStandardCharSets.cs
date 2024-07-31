@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 public class ReadStandardCharSets
 {
     [Fact]
-    public async Task IsoAdobeCharsetIncomplete()
+    public async Task IsoAdobeCharsetIncompleteAsync()
     {
         var sut = FontWithCharsetOffset(0, 5);
         var result = await sut.GlyphNamesAsync();
@@ -27,7 +27,7 @@ public class ReadStandardCharSets
             """));
     }
     [Fact]
-    public async Task IsoAdobeCharset()
+    public async Task IsoAdobeCharsetAsync()
     {
         var sut = FontWithCharsetOffset(0, 229);
         var result = await sut.GlyphNamesAsync();
@@ -273,7 +273,7 @@ public class ReadStandardCharSets
             1000, "Fake Font", 0, new CffIndex(null!, glyphCount, 1), 0, 0, null!, offset, 0);
 
     [Fact]
-    public async Task ExpertCharset()
+    public async Task ExpertCharsetAsync()
     {
         var sut = FontWithCharsetOffset(1, 166);
         var result = await sut.GlyphNamesAsync();
@@ -447,7 +447,7 @@ public class ReadStandardCharSets
             """));
     }
     [Fact]
-    public async Task ExpertSubsetCharset()
+    public async Task ExpertSubsetCharsetAsync()
     {
         var sut = FontWithCharsetOffset(2, 87);
         var result = await sut.GlyphNamesAsync();
