@@ -18,16 +18,9 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
     }
 }
 
-internal ref struct StandardCharsetFactory
+internal readonly struct StandardCharsetFactory<T>(T target) where T: ICharSetTarget
 {
-    private string[] result = [];
-    private int index = 0;
-
-    public StandardCharsetFactory()
-    {
-    }
-
-    public string[] FromByte(long charSetOffset) => charSetOffset switch
+    public ValueTask<T> FromByte(long charSetOffset) => charSetOffset switch
     {
         0 => IsoAdobe(),
         1 => Expert(),
@@ -35,79 +28,79 @@ internal ref struct StandardCharsetFactory
         _ => throw new InvalidDataException("Invalid standard charset idnex")
     };
 
-    private string[] IsoAdobe()
-    {
-        CreateResult(229);
-        AddSpan(0, 228);
-        return result;
-    }
+    private static readonly (ushort, ushort)[] IsoAdobeMappings = [
+      (0,228)
+    ];
 
-    private void CreateResult(int length)
-    {
-        result = new string[length];
-    }
+    private ValueTask<T> IsoAdobe() => MapArray(229, IsoAdobeMappings);
 
-    private void AddSpan(int minimum, int maximum)
+    private async ValueTask<T> MapArray(int length, (ushort, ushort)[] values)
     {
-        for (int i = minimum; i <= maximum; i++)
+        int index = 0;
+        foreach (var (min, max) in values)
         {
-            AddSpan(i);
+            for (var i = min; i <= max; i++)
+            {
+                await target.SetGlyphNameAsync(index++, i).CA();
+                if (index >= target.Count) return target;
+            }
         }
+        return target;
     }
 
-    private string AddSpan(int i) => result[index++] = Type1StandardStrings.Instance[i];
+    private static readonly (ushort, ushort)[] ExpertMappings =
+    [
+        (0, 1),
+        (229, 238),
+        (13, 15),
+        (99, 99),
+        (239, 248),
+        (27, 28),
+        (249, 265),
+        (266, 266),
+        (109, 110),
+        (267, 318),
+        (158, 158),
+        (155, 155),
+        (163, 163),
+        (319, 326),
+        (150, 150),
+        (164, 164),
+        (169, 169),
+        (327, 378)
+    ];
 
-    private string[] Expert()
-    {
-        CreateResult(166);
-        AddSpan(0,1);
-        AddSpan(229,238);
-        AddSpan(13,15);
-        AddSpan(99);
-        AddSpan(239,248);
-        AddSpan(27,28);
-        AddSpan(249,265);
-        AddSpan(266);
-        AddSpan(109, 110);
-        AddSpan(267, 318);
-        AddSpan(158);
-        AddSpan(155);
-        AddSpan(163);
-        AddSpan(319,326);
-        AddSpan(150);
-        AddSpan(164);
-        AddSpan(169);
-        AddSpan(327, 378);
-        return result;
-    }
 
-    private string[] ExpertSubset()
-    {
-        CreateResult(87);
-        AddSpan(0, 1);
-        AddSpan(231, 232);
-        AddSpan(235, 238);
-        AddSpan(13, 15);
-        AddSpan(99);
-        AddSpan(239, 248);
-        AddSpan(27,28);
-        AddSpan(249, 251);
-        AddSpan(253, 266);
-        AddSpan(109,110);
-        AddSpan(267,270);
-        AddSpan(272);
-        AddSpan(300,302);
-        AddSpan(305);
-        AddSpan(314, 315);
-        AddSpan(158);
-        AddSpan(155);
-        AddSpan(163);
-        AddSpan(320,326);
-        AddSpan(150);
-        AddSpan(164);
-        AddSpan(169);
-        AddSpan(327, 346);
-        return result;
-    }
+    private ValueTask<T> Expert() => MapArray(166, ExpertMappings);
+
+    private static readonly (ushort, ushort)[] ExpertSubsetMappings =
+    [
+        (0, 1),
+        (231, 232),
+        (235, 238),
+        (13, 15),
+        (99, 99),
+        (239, 248),
+        (27,28),
+        (249, 251),
+        (253, 266),
+        (109,110),
+        (267,270),
+        (272,272),
+        (300,302),
+        (305,305),
+        (314, 315),
+        (158, 158),
+        (155, 155),
+        (163, 163),
+        (320,326),
+        (150, 150),
+        (164, 164),
+        (169, 169),
+        (327, 346),
+    ];
+
+    private ValueTask<T> ExpertSubset() =>
+        MapArray(87, ExpertSubsetMappings);
 
 }

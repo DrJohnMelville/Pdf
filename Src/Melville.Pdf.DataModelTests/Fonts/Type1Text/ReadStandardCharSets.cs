@@ -10,20 +10,26 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
-public class ReadStandardEncoding
-{
-    private static CffGenericFont FontWithEncodingOffset(long offset) =>
-        new(MultiplexSourceFactory.Create([]),
-            1000, "Fake Font", 0, 0, 0, 0, null!, 0, offset);
-
-}
-
 public class ReadStandardCharSets
 {
     [Fact]
+    public async Task IsoAdobeCharsetIncomplete()
+    {
+        var sut = FontWithCharsetOffset(0, 5);
+        var result = await sut.GlyphNamesAsync();
+
+        result.Should().BeEquivalentTo(Extract("""
+            .notdef
+            space
+            exclam
+            quotedbl
+            numbersign
+            """));
+    }
+    [Fact]
     public async Task IsoAdobeCharset()
     {
-        var sut = FontWithCharsetOffset(0);
+        var sut = FontWithCharsetOffset(0, 229);
         var result = await sut.GlyphNamesAsync();
 
         result.Should().BeEquivalentTo(Extract("""
@@ -262,14 +268,14 @@ public class ReadStandardCharSets
     private IEnumerable<string> Extract(string s) => 
         s.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-    private static CffGenericFont FontWithCharsetOffset(long offset) =>
+    private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount) =>
         new(MultiplexSourceFactory.Create([]),
-            1000, "Fake Font", 0, 0, 0, 0, null!, offset, 0);
+            1000, "Fake Font", 0, new CffIndex(null!, glyphCount, 1), 0, 0, null!, offset, 0);
 
     [Fact]
     public async Task ExpertCharset()
     {
-        var sut = FontWithCharsetOffset(1);
+        var sut = FontWithCharsetOffset(1, 166);
         var result = await sut.GlyphNamesAsync();
         result.Should().BeEquivalentTo(Extract("""
             .notdef
@@ -443,7 +449,7 @@ public class ReadStandardCharSets
     [Fact]
     public async Task ExpertSubsetCharset()
     {
-        var sut = FontWithCharsetOffset(2);
+        var sut = FontWithCharsetOffset(2, 87);
         var result = await sut.GlyphNamesAsync();
         var expectation = Extract("""
             .notdef

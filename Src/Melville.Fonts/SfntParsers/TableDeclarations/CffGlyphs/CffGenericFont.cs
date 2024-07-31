@@ -16,7 +16,7 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
     [FromConstructor] private readonly ushort unitsPerEm;
     [FromConstructor] public string Name { get; }
     [FromConstructor] private readonly long stringIndexOffset;
-    [FromConstructor] private readonly long charStringOffset;
+    [FromConstructor] private readonly CffIndex charStringIndex;
     [FromConstructor] private readonly long privateOffset;
     [FromConstructor] private readonly long privateSize;
     [FromConstructor] private readonly GlyphSubroutineExecutor globalSubroutineExecutor;
@@ -26,17 +26,11 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
 
     public override async ValueTask<IGlyphSource> GetGlyphSourceAsync() =>
-        new CffGlyphSource(await ReadCharStringIndexAsync(charStringOffset).CA(),
+        new CffGlyphSource(charStringIndex,
             globalSubroutineExecutor,
-            new GlyphSubroutineExecutor(await GetPrivateSubrsAsync(privateOffset, privateSize).CA()),
+            new GlyphSubroutineExecutor(
+                await GetPrivateSubrsAsync(privateOffset, privateSize).CA()),
             Matrix3x2.CreateScale(1f / unitsPerEm), []);
-
-    private async ValueTask<CffIndex> ReadCharStringIndexAsync(long charStringOffset)
-    {
-        using var pipe = source.ReadPipeFrom(charStringOffset, charStringOffset);
-        var charStringsIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-        return charStringsIndex;
-    }
 
     private async ValueTask<CffIndex> GetPrivateSubrsAsync(long privateOffset, long privateSize)
     {
@@ -66,18 +60,37 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
 
     public override async ValueTask<string[]> GlyphNamesAsync()
     {
-        if (charSetOffset < 3)
-            return new StandardCharsetFactory().FromByte(charSetOffset);
+        var strings = await ReadStringIndexAsync().CA();
+        var target = new StringTarget(strings, charStringIndex.Length);
 
-        var charStringindex = await ReadCharStringIndexAsync(charStringOffset).CA();
+        return (await MapCharSet(target).CA()).Result;
+    }
+
+    private async Task<CffStringIndex> ReadStringIndexAsync()
+    {
+        // this is not the specified behavior, which is that an empty string index
+        // is represented as an empty index.  However special indexes are used for
+        // standard encodings and names so this is a reasonable possibility somoene
+        // would try this, and it makes testing easier.  An offset of 0 would be an
+        // invalid file otherwise, so this is not going to misread any valid font
+        // file.
+        if (stringIndexOffset == 0)
+            return new CffStringIndex(new CffIndex(source, 0, 0));
+
         using var stringsPipe =
             source.ReadPipeFrom(stringIndexOffset, stringIndexOffset);
         var strings = new CffStringIndex(await new CFFIndexParser(source, stringsPipe)
             .ParseCff1Async().CA());
-        using var charsetPipe =
-            source.ReadPipeFrom(charSetOffset, charSetOffset);
-        return await new CharSetReader(strings, charsetPipe, charStringindex.Length
-        ).ReadCharSetAsync().CA();
+        return strings;
+    }
+
+    private ValueTask<T> MapCharSet<T>(T target) where T: ICharSetTarget
+    {
+        if (charSetOffset < 3)
+            return new StandardCharsetFactory<T>(target).FromByte(charSetOffset);
+        
+        using var charsetPipe = source.ReadPipeFrom(charSetOffset, charSetOffset);
+        return new CharSetReader<T>(charsetPipe, target).ReadCharSetAsync();
     }
 
     public override ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() => new(this);
@@ -86,13 +99,23 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
 
     int ICMapSource.Count => 1;
 
-    public async ValueTask<ICmapImplementation> GetByIndexAsync(int index) =>
-        new SingleArrayCmap<byte>(1, 0,
+    public async ValueTask<ICmapImplementation> GetByIndexAsync(int index)
+    {
+        var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
+        var target = new MemoryTarget(data);
+        await MapCharSet(target).CA();
+
+        var sidDecoder = new GlyphFromSid(data);
+
+        return new SingleArrayCmap<byte>(1, 0,
             encodingOffset switch
             {
-#warning check for standard encodings as per adobe technical note 5176 page 20
-                _ => await new CffEncodingReader(source.ReadPipeFrom(encodingOffset)).ParseAsync().CA()
+                0 => new PredefinedEncodings(sidDecoder).Standard(),
+                1 => new PredefinedEncodings(sidDecoder).Expert(),
+                _ => await new CffEncodingReader(
+                    source.ReadPipeFrom(encodingOffset)).ParseAsync().CA()
             });
+    }
 
     public ValueTask<ICmapImplementation?> GetByPlatformEncodingAsync(int platform, int encoding) =>
         new((ICmapImplementation?)null);

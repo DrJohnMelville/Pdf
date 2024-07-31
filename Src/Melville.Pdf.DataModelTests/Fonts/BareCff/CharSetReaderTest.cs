@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
@@ -26,9 +27,12 @@ public class CharSetReaderTest
     {
         var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
-        var reader = new CharSetReader(
-            new CffStringIndex(await NamesIndexAsync()), pipe, length);
-        return await reader.ReadCharSetAsync();
+
+        var target = new StringTarget(new CffStringIndex(await NamesIndexAsync()), 
+            length);
+        return (await new CharSetReader<StringTarget>(pipe, target)
+            .ReadCharSetAsync().CA()).Result;
+
     }
 
     [Fact]
@@ -36,6 +40,17 @@ public class CharSetReaderTest
     {
         (await ReadTableAsync("00 0001 0002 0100", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
+    }
+    [Fact]
+    public async Task ReadType0toInts()
+    {
+        var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
+        using var pipe = source.ReadPipeFrom(0);
+
+        var target = new MemoryTarget(new ushort[4]);
+        (await new CharSetReader<MemoryTarget>(pipe, target)
+            .ReadCharSetAsync().CA()).Target.ToArray().Should().BeEquivalentTo(
+            [0, 01, 02, 256]);
     }
     [Fact]
     public async Task ReadType1Async()

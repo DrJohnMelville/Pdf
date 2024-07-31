@@ -55,12 +55,20 @@ internal readonly struct CffGlyphSourceParser(
             out var privateOffset, out var privateSize, out var charSetOffset,
             out var encodingOffset);
         var font = new CffGenericFont(source, unitsPerEm,
-            fontName,stringIndexOffset, charStringOffset,
+            fontName,stringIndexOffset, 
+            await ReadCharStringIndexAsync(charStringOffset).CA(),
             privateOffset, privateSize, globalSubroutineExecutor, charSetOffset,
             encodingOffset);
         return font;
     }
 
+    private async ValueTask<CffIndex> ReadCharStringIndexAsync(long charStringOffset)
+    {
+        using var pipe = source.ReadPipeFrom(charStringOffset, charStringOffset);
+        var charStringsIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        return charStringsIndex;
+    }
+ 
     //per Adobe Technical note 5716 page 15
     private const int charSetInstruction = 15;
     private const int encodingInstruction = 16;
