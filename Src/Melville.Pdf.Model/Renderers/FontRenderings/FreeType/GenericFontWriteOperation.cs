@@ -12,15 +12,17 @@ internal class GenericFontWriteOperation(IGenericFont parent, IDrawTarget target
     {
     }
 
-    public async ValueTask<double> AddGlyphToCurrentStringAsync(
+    public async ValueTask AddGlyphToCurrentStringAsync(
         uint character, uint glyph, Matrix3x2 textMatrix)
     {
         await (await parent.GetGlyphSourceAsync().CA())
             .RenderGlyphAsync(glyph, target, textMatrix).CA();
-        return (await parent.GlyphWidthSourceAsync().CA())
-            .GlyphWidth((ushort)glyph);
 #warning See if we can move the width calculation to only execute when needed.
     }
+
+    public async ValueTask<double> NativeWidthOfLastGlyph(uint glyph) =>
+        (await parent.GlyphWidthSourceAsync().CA())
+        .GlyphWidth((ushort)glyph);
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
     {

@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
@@ -30,7 +31,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         return target.RenderType3CharacterAsync(
             characters[glyph].CreateReader(), fontMatrix, rawFont);
     }
-    public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
+    public double? CharacterWidth(uint character) => default;
 
     public int GlyphCount => characters.Length;
     public string FamilyName => "Type 3 Font";
@@ -41,6 +42,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
     {
         private readonly RealizedType3Font parent;
         private readonly IFontTarget target;
+        private double cachedGlyphWidth;
 
         public Type3Writer(RealizedType3Font parent, IFontTarget target)
         {
@@ -48,9 +50,11 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
             this.target = target;
         }
 
-        public ValueTask<double> AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix) => 
-            parent.AddGlyphToCurrentStringAsync(glyph, textMatrix, target);
-        
+        public async ValueTask AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix) => 
+            cachedGlyphWidth = await parent.AddGlyphToCurrentStringAsync(glyph, textMatrix, target).CA();
+
+        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(cachedGlyphWidth);
+
         public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
         { }
 

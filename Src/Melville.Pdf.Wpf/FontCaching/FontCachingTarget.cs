@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Numerics;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -24,20 +25,33 @@ internal class FontCachingTarget : WpfPathCreator, IFontTarget
     public async ValueTask<CachedGlyph> RenderGlyphAsync(
         IFontWriteOperation innerender, uint character, uint glyph)
     {
-        var width = await innerender.AddGlyphToCurrentStringAsync(character, glyph, Matrix3x2.Identity);
+        await innerender.AddGlyphToCurrentStringAsync(character, glyph, Matrix3x2.Identity);
         var finalGeometry = Geometry ?? new PathGeometry();
-        return new CachedGlyph(finalGeometry, Fill(), width);
+        return new CachedGlyph(finalGeometry, Fill());
     }
 }
 
 internal record CachedGlyph(
-    PathGeometry Figures, FillRule Rule, double Width)
+    PathGeometry Figures, FillRule Rule)
 {
-    public PathGeometry CreateInstance(in Transform transform) => new(Figures.Figures, Rule, transform);
+    private double? width;
+
+    public PathGeometry CreateInstance(in Transform transform) => 
+        new(Figures.Figures, Rule, transform);
 
     public PathGeometry Original(in Transform transform)
     {
         Figures.Transform = transform;
         return Figures;
+    }
+
+    public ValueTask<double> ComputeWidthAsync(IFontWriteOperation innerWriter, uint glyph)
+    {
+        return width.HasValue?new(width.Value):InnerCreateWidthAsync(innerWriter, glyph);
+    }
+
+    private async ValueTask<double> InnerCreateWidthAsync(IFontWriteOperation innerWriter, uint glyph)
+    {
+        return (width = await innerWriter.NativeWidthOfLastGlyph(glyph))??0;
     }
 }

@@ -27,7 +27,7 @@ public interface IRealizedFont
     /// <param name="character">The character to be rendered.</param>
     /// <param name="defaultWidth">The measured width of the character.</param>
     /// <returns>The effective width of the character, usually taken from the PDF font definition.</returns>
-    double CharacterWidth(uint character, double defaultWidth);
+    double? CharacterWidth(uint character);
 
     /// <summary>
     /// Begin writing a string to a target.

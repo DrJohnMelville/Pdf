@@ -37,7 +37,9 @@ internal partial class WpfCachedFont : IRealizedFont
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }
-    public double CharacterWidth(uint character, double defaultWidth) => inner.CharacterWidth(character, defaultWidth);
+
+    internal CachedGlyph ForcedLookupGlyph(uint glyph) => cache[glyph];
+    public double? CharacterWidth(uint character) => inner.CharacterWidth(character);
 
 
     private class CachedOperation : IFontWriteOperation, IFontTarget
@@ -54,19 +56,28 @@ internal partial class WpfCachedFont : IRealizedFont
             innerWriter = parent.inner.BeginFontWrite(this);
         }
         
-        public async ValueTask<double> AddGlyphToCurrentStringAsync(
+        public async ValueTask AddGlyphToCurrentStringAsync(
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
             if (drawTarget is not WpfDrawTarget wpfDrawTarget)
-                  return await innerWriter.AddGlyphToCurrentStringAsync(character, glyph, textMatrix);
+            {
+                await innerWriter.AddGlyphToCurrentStringAsync(character, glyph, textMatrix);
+                return;
+            }
 
             var (cachedCharacter, geometry) = 
                 await parent.GetGlyphAsync(character,glyph, textMatrix.WpfTransform(), innerWriter).CA();
             geometry.Freeze();
             wpfDrawTarget.AddGeometry(geometry);
-            return (cachedCharacter.Width);
         }
-        
+
+        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph)
+        {
+            // cache must hit because we just drew the glyph
+            var cache = parent.ForcedLookupGlyph(glyph);
+            return cache.ComputeWidthAsync(innerWriter, glyph);
+        }
+
         public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix) => 
             innerWriter.RenderCurrentString(stroke, fill, clip, textMatrix);
 

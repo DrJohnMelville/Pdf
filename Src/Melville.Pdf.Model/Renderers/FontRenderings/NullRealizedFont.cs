@@ -13,10 +13,12 @@ internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFo
     public IReadCharacter ReadCharacter => SingleByteCharacters.Instance;
     public IMapCharacterToGlyph MapCharacterToGlyph => IdentityCharacterToGlyph.Instance;
 
-    public ValueTask<double> AddGlyphToCurrentStringAsync(
-        uint character, uint glyph, Matrix3x2 textMatrix) => new(0.0);
+    public ValueTask AddGlyphToCurrentStringAsync(
+        uint character, uint glyph, Matrix3x2 textMatrix) => default;
 
-    public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
+    public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(0.0);
+    
+    public double? CharacterWidth(uint character) => default;
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
     {

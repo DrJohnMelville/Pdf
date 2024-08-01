@@ -45,9 +45,12 @@ internal sealed class PdfStringWriter : ISpacedStringBuilder
             {
                 var character = characters.Span[i];
                 var glyph = font.MapCharacterToGlyph.GetGlyph(character);
-                var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
+                await writer.AddGlyphToCurrentStringAsync(
                     character, glyph, CharacterPositionMatrix()).CA();
-                AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
+                
+                AdjustTextPositionForCharacter(
+                    font.CharacterWidth(character)??
+                    await writer.NativeWidthOfLastGlyph(glyph).CA(), character);
             }
         }
     }

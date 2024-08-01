@@ -24,13 +24,15 @@ internal partial class ExtractingFont : IRealizedFont
     {
         [FromConstructor] private readonly IExtractedTextTarget output;
 
-        public ValueTask<double> AddGlyphToCurrentStringAsync(
+        public ValueTask AddGlyphToCurrentStringAsync(
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
             output.WriteCharacter(
                 (char)character, textMatrix);
-            return new(10);
+            return default;
         }
+
+        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(10);
 
         public void RenderCurrentString(
             bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix)

@@ -17,7 +17,18 @@ public interface IFontWriteOperation: IDisposable
     /// <param name="glyph">Index of the glyph to render.</param>
     /// <param name="textMatrix">The current text matrix</param>
     /// <returns>The width of the rendered glyph</returns>
-    ValueTask<double> AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix);
+    ValueTask AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix);
+
+    /// <summary>
+    /// Get the native width of the last rendered glyph in text units.
+    ///
+    /// Glyph must be the last glyph rendered.  Some fonts compute the width as a separate
+    /// operation, whereas others compute the width as part of the AddGlyphToCurrentString
+    /// operation and just return the cached width from the draw operation 
+    /// </summary>
+    /// <param name="glyph"></param>
+    /// <returns></returns>
+    ValueTask<double> NativeWidthOfLastGlyph(uint glyph);
 
     /// <summary>
     /// Render the glyph outlines previously added to this object.

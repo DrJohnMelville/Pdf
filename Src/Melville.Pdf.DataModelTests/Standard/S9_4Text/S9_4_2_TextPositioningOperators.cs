@@ -58,7 +58,7 @@ public class S9_4_2_TextPositioningOperators
 
         public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
 
-        public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
+        public double? CharacterWidth(uint character) => default;
 
         public int GlyphCount => 0;
         public string FamilyName => "";
@@ -69,7 +69,8 @@ public class S9_4_2_TextPositioningOperators
     private void SetupMockRealizedFont()
     {
         fw.Setup(i => i.AddGlyphToCurrentStringAsync(It.IsAny<uint>(), It.IsAny<uint>(), It.IsAny<Matrix3x2>()))
-            .Returns( ValueTask.FromResult(10.0));
+            .Returns( ValueTask.CompletedTask);
+        fw.Setup(i => i.NativeWidthOfLastGlyph(It.IsAny<uint>())).ReturnsAsync(10.0);  
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<Matrix3x2>()));
         state.StronglyTypedCurrentState().SetTypeface(rf);
     }
