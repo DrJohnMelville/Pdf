@@ -44,7 +44,7 @@ internal partial class GenericToRealizedFontWrapper : IRealizedFont, IDisposable
         new GenericFontWriteOperation(Face, target.CreateDrawTarget());
 
     public double CharacterWidth(uint character, double defaultWidth) =>
-        fontWidthComputer.GetWidth(character, defaultWidth);
+        fontWidthComputer.TryGetWidth(character)?? defaultWidth;
 
     public bool IsCachableFont => true;
 }

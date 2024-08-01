@@ -9,9 +9,9 @@ internal sealed  partial class ArrayFontWidthComputer : IFontWidthComputer
     [FromConstructor]private readonly IReadOnlyList<double> widths;
     [FromConstructor]private readonly double sizeFactor;
     
-    public double GetWidth(uint character, double defaultWidth) =>
-        TryLookupWidth(character - firstChar, defaultWidth);
-
-    private double TryLookupWidth(uint value, double defaultWidth) =>
-        value < widths.Count ? widths[(int)value]*sizeFactor : defaultWidth;
+    public double? TryGetWidth(uint character)
+    {
+        var index = character - firstChar;
+        return index < widths.Count ? widths[(int)index] * sizeFactor : default;
+    }
 }
