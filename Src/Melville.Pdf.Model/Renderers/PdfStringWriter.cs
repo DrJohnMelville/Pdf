@@ -50,7 +50,7 @@ internal sealed class PdfStringWriter : ISpacedStringBuilder
                 
                 AdjustTextPositionForCharacter(
                     font.CharacterWidth(character)??
-                    await writer.NativeWidthOfLastGlyph(glyph).CA(), character);
+                    await writer.NativeWidthOfLastGlyphAsync(glyph).CA(), character);
             }
         }
     }
@@ -84,7 +84,6 @@ internal sealed class PdfStringWriter : ISpacedStringBuilder
     {
         ArrayPool<uint>.Shared.Return(buffer);
         writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
-        writer.Dispose();
         return ValueTask.CompletedTask;
     }
 }

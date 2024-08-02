@@ -70,7 +70,7 @@ public class S9_4_2_TextPositioningOperators
     {
         fw.Setup(i => i.AddGlyphToCurrentStringAsync(It.IsAny<uint>(), It.IsAny<uint>(), It.IsAny<Matrix3x2>()))
             .Returns( ValueTask.CompletedTask);
-        fw.Setup(i => i.NativeWidthOfLastGlyph(It.IsAny<uint>())).ReturnsAsync(10.0);  
+        fw.Setup(i => i.NativeWidthOfLastGlyphAsync(It.IsAny<uint>())).ReturnsAsync(10.0);  
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<Matrix3x2>()));
         state.StronglyTypedCurrentState().SetTypeface(rf);
     }

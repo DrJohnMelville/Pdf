@@ -1,4 +1,8 @@
-﻿using Melville.Parsing.MultiplexSources;
+﻿using System.Buffers;
+using System.Diagnostics;
+using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
@@ -8,46 +12,65 @@ namespace Melville.Parsing.Streams;
 /// </summary>
 public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
 {
-    private protected readonly MultiBuffer multiBuffer;
-    private MultiBufferPosition position;
-
-    internal MultiBufferStream(MultiBuffer multiBuffer) : base(true, true, true)
-    {
-        this.multiBuffer = multiBuffer;
-        position = multiBuffer.StartOfStream();
-    }
+    private LinkedListPosition startPosition;
+    private LinkedListPosition endPosition;
+    private LinkedListPosition currentPosition;
+    private readonly int blockLength;
 
     /// <summary>
     /// Create a MultDufferStream
     /// </summary>
     /// <param name="blockLength">The default block length when the stream creates blocks.</param>
-    public MultiBufferStream(int blockLength = 4096) : this(new MultiBuffer(blockLength))
+    public MultiBufferStream(int blockLength = 4096): base(true, true, true)
     {
+        this.blockLength = blockLength;
+        startPosition = endPosition = currentPosition = 
+            new LinkedListPosition(RentNewBlock(), 0);
     }
+
+    private LinkedListNode RentNewBlock() => LinkedListNode.Rent(blockLength);
 
     /// <summary>
     /// Create a multibufferstream that contains the given data
     /// </summary>
     /// <param name="firstBuffer"></param>
-    public MultiBufferStream(byte[] firstBuffer) : this(new MultiBuffer(firstBuffer))
+    public MultiBufferStream(byte[] firstBuffer) : base(true, false, true)
     {
+        blockLength = 0;
+        var node = ObjectPool<LinkedListNode>.Shared.Rent().With(firstBuffer, null);
+        startPosition = currentPosition =
+            new LinkedListPosition(node, 0);
+        endPosition = new LinkedListPosition(node, firstBuffer.Length);
     }
 
-    /// <inheritdoc />
-    public override int Read(Span<byte> buffer) =>
-        UpdatePosition(multiBuffer.Read(position, buffer));
+    private bool AtEndOfData() => currentPosition == endPosition;
 
-    private int UpdatePosition(in MultiBufferPosition newPosition)
+    /// <inheritdoc />
+    public override int Read(Span<byte> buffer)
     {
-        var ret = (int)(newPosition.StreamPosition - position.StreamPosition);
-        position = newPosition;
-        return ret;
+        var seq = currentPosition.SequenceTo(endPosition);
+        var length = Math.Min(seq.Length, buffer.Length);
+        var reader = new SequenceReader<byte>(seq);
+        reader.TryCopyTo(buffer.Slice(0, (int)length));
+        currentPosition = seq.GetPosition(length);
+        return (int)length;
     }
 
     /// <inheritdoc />
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        UpdatePosition(multiBuffer.Write(position, buffer));
+        if (!CanWrite)
+            throw new NotSupportedException("This stream is read only");
+
+        if (currentPosition == endPosition)
+        {
+            currentPosition = endPosition = currentPosition.Append(buffer, blockLength);
+        }
+        else
+        {
+            currentPosition = 
+                currentPosition.WriteTo(buffer, blockLength, ref endPosition);
+        }
     }
 
     /// <inheritdoc />
@@ -56,22 +79,40 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
 
 
     /// <inheritdoc />
-    public override void SetLength(long value) => multiBuffer.SetLength(value);
+    public override void SetLength(long value) => 
+      endPosition = GetPosition(value);
+
+    private SequencePosition GetPosition(long value)
+    {
+        if (value < 0 || value > endPosition.GlobalPosition)
+            throw new ArgumentOutOfRangeException(nameof(value), "Position is invalid");
+        return startPosition.SequenceTo(endPosition).GetPosition(value);
+    }
 
     /// <inheritdoc />
-    public override long Length => multiBuffer.Length;
+    public override long Length => endPosition.GlobalPosition;
 
     /// <inheritdoc />
     public override long Position
     {
-        get => position.StreamPosition;
-        set => position = multiBuffer.FindPosition(value);
+        get => currentPosition.GlobalPosition;
+        set => currentPosition =  GetPosition(value);
     }
 
     /// <summary>
     /// Create a reader that has its own unique position pointer into the buffer.
     /// </summary>
-    public MultiBufferStream CreateReader() => new MultiBufferReader(multiBuffer);
+    public MultiBufferStream CreateReader() => new(startPosition, endPosition);
+
+    private MultiBufferStream(
+        LinkedListPosition startPosition, 
+        LinkedListPosition endPosition): base(true, false, true)
+    {
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+        currentPosition = startPosition;
+        blockLength = 0;
+    }
 
     /// <inheritdoc />
     Stream IMultiplexSource.ReadFrom(long position)
@@ -79,18 +120,5 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
         var ret = CreateReader();
         ret.Seek(position, SeekOrigin.Begin);
         return ret;
-    }
-
-
-    private class MultiBufferReader : MultiBufferStream
-    {
-        public MultiBufferReader(MultiBuffer multiBuffer) : base(multiBuffer)
-        {
-        }
-
-        public override void Write(ReadOnlySpan<byte> buffer) =>
-            throw new NotSupportedException();
-
-        public override bool CanWrite => false;
     }
 }

@@ -32,7 +32,7 @@ internal partial class ExtractingFont : IRealizedFont
             return default;
         }
 
-        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(10);
+        public ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph) => new(10);
 
         public void RenderCurrentString(
             bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix)
@@ -43,9 +43,5 @@ internal partial class ExtractingFont : IRealizedFont
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
             new WriteOperation(output);
-
-        public void Dispose()
-        {
-        }
     }
 }

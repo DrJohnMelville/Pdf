@@ -16,7 +16,7 @@ internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFo
     public ValueTask AddGlyphToCurrentStringAsync(
         uint character, uint glyph, Matrix3x2 textMatrix) => default;
 
-    public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(0.0);
+    public ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph) => new(0.0);
     
     public double? CharacterWidth(uint character) => default;
 
@@ -31,6 +31,4 @@ internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFo
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
     public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => this;
     public bool IsCachableFont => false;
-
-    public void Dispose() { }
 }

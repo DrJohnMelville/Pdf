@@ -8,6 +8,10 @@ namespace Melville.Parsing.PipeReaders
     internal class LinkedListNode : ReadOnlySequenceSegment<byte>, IClearable
     {
         public static readonly LinkedListNode Empty = new LinkedListNode();
+        public static LinkedListNode Rent(int length) =>
+            ObjectPool<LinkedListNode>.Shared.Rent().With(length);
+
+
         private byte[] buffer = [];
 
         public int LocalLength => buffer.Length;
@@ -15,7 +19,12 @@ namespace Melville.Parsing.PipeReaders
         public LinkedListNode With(int desiredLength, LinkedListNode? next = null)
         {
             Debug.Assert(desiredLength > 0);
-            buffer = ArrayPool<byte>.Shared.Rent(desiredLength);
+            return With(ArrayPool<byte>.Shared.Rent(desiredLength), next);
+        }
+
+        public LinkedListNode With (byte[] buffer, LinkedListNode? next)
+        {
+            this.buffer = buffer;
             Memory = buffer;
             Next = next;
             RunningIndex = 0;
@@ -42,6 +51,14 @@ namespace Melville.Parsing.PipeReaders
 
         public int FillFrom(Stream stream, int index) => 
             stream.Read(buffer.AsSpan(index));
+
+        public int FillFrom(ReadOnlySpan<byte> source, int index)
+        {
+            var target = buffer.AsSpan(index);
+            var length = Math.Min(target.Length, source.Length);
+            source[..length].CopyTo(target);
+            return length;
+        }
 
         public void RenumberStartingPosition(long startAt)
         {

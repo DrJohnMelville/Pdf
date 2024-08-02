@@ -24,7 +24,7 @@ public abstract class ObjectPoolBase<T> where T : class
     private VectorBuffer buffer = new();
     private int nextSlot;
 
-    #warning use new lock object in .net 9.0
+    #warning use new lock object in .net 9.0  search for \block\s*\( to find all the places
     private object mutex = new();
     
     /// <summary>

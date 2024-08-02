@@ -25,7 +25,6 @@ public interface IRealizedFont
     /// The width, in text units, of a given character.  This is used to adjust the text matrix in a write operation.
     /// </summary>
     /// <param name="character">The character to be rendered.</param>
-    /// <param name="defaultWidth">The measured width of the character.</param>
     /// <returns>The effective width of the character, usually taken from the PDF font definition.</returns>
     double? CharacterWidth(uint character);
 

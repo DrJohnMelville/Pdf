@@ -52,6 +52,6 @@ internal record CachedGlyph(
 
     private async ValueTask<double> InnerCreateWidthAsync(IFontWriteOperation innerWriter, uint glyph)
     {
-        return (width = await innerWriter.NativeWidthOfLastGlyph(glyph))??0;
+        return (width = await innerWriter.NativeWidthOfLastGlyphAsync(glyph))??0;
     }
 }

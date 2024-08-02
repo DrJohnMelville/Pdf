@@ -8,19 +8,12 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 internal class GenericFontWriteOperation(IGenericFont parent, IDrawTarget target) : IFontWriteOperation
 {
-    public virtual void Dispose()
-    {
-    }
-
     public async ValueTask AddGlyphToCurrentStringAsync(
-        uint character, uint glyph, Matrix3x2 textMatrix)
-    {
+        uint character, uint glyph, Matrix3x2 textMatrix) =>
         await (await parent.GetGlyphSourceAsync().CA())
             .RenderGlyphAsync(glyph, target, textMatrix).CA();
-#warning See if we can move the width calculation to only execute when needed.
-    }
 
-    public async ValueTask<double> NativeWidthOfLastGlyph(uint glyph) =>
+    public async ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph) =>
         (await parent.GlyphWidthSourceAsync().CA())
         .GlyphWidth((ushort)glyph);
 
@@ -30,7 +23,6 @@ internal class GenericFontWriteOperation(IGenericFont parent, IDrawTarget target
         {
             target.PaintPath(stroke, fill, GlyphRequiresEvenOddFill());
         }
-
         if (clip)
         {
             target.ClipToPath(GlyphRequiresEvenOddFill());

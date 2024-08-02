@@ -71,7 +71,7 @@ internal partial class WpfCachedFont : IRealizedFont
             wpfDrawTarget.AddGeometry(geometry);
         }
 
-        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph)
+        public ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph)
         {
             // cache must hit because we just drew the glyph
             var cache = parent.ForcedLookupGlyph(glyph);
@@ -90,8 +90,6 @@ internal partial class WpfCachedFont : IRealizedFont
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
             new CachedOperation(parent, target);
-
-        public void Dispose() => innerWriter.Dispose();
 
         public IRenderTarget RenderTarget => fontTarget.RenderTarget;
     }

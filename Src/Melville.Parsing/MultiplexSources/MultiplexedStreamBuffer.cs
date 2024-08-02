@@ -62,7 +62,7 @@ internal class MultiplexedStreamBuffer(Stream innerStream, int blockLength = 409
 
     private class Reader(MultiplexedStreamBuffer parent) : DefaultBaseStream(true, false, true)
     {
-        private readonly MultiBufferStream source = new (parent.multiBuffer);
+        private readonly MultiBufferStream2 source = new (parent.multiBuffer);
 
         public override long Length => parent.Length;
 

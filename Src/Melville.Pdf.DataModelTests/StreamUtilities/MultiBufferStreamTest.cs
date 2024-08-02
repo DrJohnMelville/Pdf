@@ -60,7 +60,8 @@ public class MultiBufferStreamTest
     [InlineData(5)]
     public void WriteByte(long position)
     {
-        var sut = CreateStream("ABCDE");
+        var sut = new MultiBufferStream(16);
+        sut.Write("ABCDE".AsExtendedAsciiBytes());
         sut.Seek(position, SeekOrigin.Begin);
         sut.WriteByte((byte)'Z');
         sut.Seek(position, SeekOrigin.Begin);
@@ -116,7 +117,7 @@ public class MultiBufferStreamTest
         }
         else
         {
-            Assert.Throws<ArgumentException>(() => sut.Position = location);
+            Assert.Throws<ArgumentOutOfRangeException>(() => sut.Position = location);
         }
     }
 

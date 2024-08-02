@@ -53,12 +53,11 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         public async ValueTask AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix) => 
             cachedGlyphWidth = await parent.AddGlyphToCurrentStringAsync(glyph, textMatrix, target).CA();
 
-        public ValueTask<double> NativeWidthOfLastGlyph(uint glyph) => new(cachedGlyphWidth);
+        public ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph) => new(cachedGlyphWidth);
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
         { }
 
-        public void Dispose() { }
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => new Type3Writer(parent, target);
     }
 }

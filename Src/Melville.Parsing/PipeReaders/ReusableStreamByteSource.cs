@@ -18,17 +18,14 @@ namespace Melville.Parsing.PipeReaders;
 /// </summary>
 public class ReusableStreamByteSource : IClearable, IByteSource
 {
-    private static readonly LinkedListPosition EmptyPosition =
-        new LinkedListPosition(LinkedListNode.Empty, 0);
-
     private Stream? stream;
     private bool leaveOpen;
     private int desiredBufferSize;
     private bool atSourceEnd;
 
-    private LinkedListPosition bufferStart = EmptyPosition;
-    private LinkedListPosition bufferEnd = EmptyPosition;
-    private LinkedListPosition examined = EmptyPosition;
+    private LinkedListPosition bufferStart = LinkedListPosition.Position;
+    private LinkedListPosition bufferEnd = LinkedListPosition.Position;
+    private LinkedListPosition examined = LinkedListPosition.Position;
 
     /// <summary>
     /// Rent a ReusableStreamPipeReader from the pool
@@ -56,8 +53,7 @@ public class ReusableStreamByteSource : IClearable, IByteSource
         this.stream = stream;
         this.leaveOpen = leaveOpen;
         this.desiredBufferSize = desiredBufferSize;
-        var block = ObjectPool<LinkedListNode>.Shared.Rent()
-            .With(this.desiredBufferSize);
+        var block = LinkedListNode.Rent(this.desiredBufferSize);
         bufferStart = new SequencePosition(block, 0);
         bufferEnd = bufferStart;
         examined = bufferStart;
@@ -73,6 +69,7 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     /// <returns>The configured reader.</returns>
     public ReusableStreamByteSource WithStartingPosition(long startAt)
     {
+#warning -- if we might reuse the linked list this may not be ok.
         bufferStart.RenumberCurrentPosition(startAt);
         return this;
     }
@@ -88,19 +85,6 @@ public class ReusableStreamByteSource : IClearable, IByteSource
         bufferStart.ClearTo(lpConsumed);
         bufferStart = lpConsumed;
         this.examined = examined;
-    }
-
-    private LinkedListPosition CheckForEndOfSegment(LinkedListPosition consumed)
-    {
-        if (consumed.Node.Next is { } next &&
-            consumed.Index >= consumed.Node.LocalLength)
-            return new((LinkedListNode)next, 0);
-        else
-        {
-            return consumed;
-        }
-
-        ;
     }
 
     /// <inheritdoc />
@@ -122,8 +106,8 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     /// </summary>
     public void Clear()
     {
-        bufferStart.ClearTo(EmptyPosition); // return all nodes
-        bufferStart = bufferEnd = examined = EmptyPosition;
+        bufferStart.ClearTo(LinkedListPosition.Position); // return all nodes
+        bufferStart = bufferEnd = examined = LinkedListPosition.Position;
     }
 
     /// <inheritdoc />
@@ -142,11 +126,8 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     private ReadResult CreateReadResult() => 
         new(BufferAsReadOnlySequence(), false, atSourceEnd);
 
-    private ReadOnlySequence<byte> BufferAsReadOnlySequence()
-    {
-        var first = CheckForEndOfSegment(bufferStart);
-        return new ReadOnlySequence<byte>(first.Node, first.Index, bufferEnd.Node, bufferEnd.Index);
-    }
+    private ReadOnlySequence<byte> BufferAsReadOnlySequence() => 
+        bufferStart.SequenceTo(bufferEnd);
 
     private bool AllBytesHaveBeenExamined() => bufferEnd == examined;
 
@@ -158,7 +139,6 @@ public class ReusableStreamByteSource : IClearable, IByteSource
             (bufferEnd, atSourceEnd) =
                 bufferEnd.GetMoreBytes(stream, desiredBufferSize);
         }
-
         return CreateReadResult();
     }
 

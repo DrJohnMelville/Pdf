@@ -8,7 +8,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 /// <summary>
 /// This interface manages a single font writing operation.
 /// </summary>
-public interface IFontWriteOperation: IDisposable
+public interface IFontWriteOperation
 {
     /// <summary>
     /// Add a glyph outline to the current string.
@@ -28,7 +28,7 @@ public interface IFontWriteOperation: IDisposable
     /// </summary>
     /// <param name="glyph"></param>
     /// <returns></returns>
-    ValueTask<double> NativeWidthOfLastGlyph(uint glyph);
+    ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph);
 
     /// <summary>
     /// Render the glyph outlines previously added to this object.
