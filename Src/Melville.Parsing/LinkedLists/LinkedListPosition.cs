@@ -61,8 +61,7 @@ internal readonly partial struct LinkedListPosition
 
     private LinkedListNode CreateNewNode(int desiredLength)
     {
-        var newNode = ObjectPool<LinkedListNode>.Shared.Rent()
-            .With(desiredLength);
+        var newNode = LinkedListNode.Rent(desiredLength);
         Node.Append(newNode);
         return newNode;
     }

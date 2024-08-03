@@ -11,20 +11,22 @@ namespace Melville.Parsing.LinkedLists
         public static readonly LinkedListNode Empty = new LinkedListNode();
         public static LinkedListNode Rent(int length) =>
             ObjectPool<LinkedListNode>.Shared.Rent().With(length);
+     public static LinkedListNode Rent(ReadOnlyMemory<byte> source) =>
+            ObjectPool<LinkedListNode>.Shared.Rent().With(source);
 
 
         private byte[]? buffer = null;
 
         public int LocalLength => Memory.Length;
 
-        public LinkedListNode With(int desiredLength)
+        private LinkedListNode With(int desiredLength)
         {
             Debug.Assert(desiredLength > 0);
             buffer = ArrayPool<byte>.Shared.Rent(desiredLength);
             return With(buffer);
         }
 
-        public LinkedListNode With(ReadOnlyMemory<byte> memory)
+        private LinkedListNode With(ReadOnlyMemory<byte> memory)
         {
             Memory = memory;
             Next = null;
