@@ -47,15 +47,23 @@ internal readonly partial struct LinkedListPosition
 
     public static bool operator !=(LinkedListPosition a, LinkedListPosition b) => !(a == b);
 
+
+
+    public (LinkedListPosition bufferEnd, bool atSourceEnd)
+        GetMoreBytes(Stream stream, int desiredBufferSize) =>
+        NextWriteTarget(desiredBufferSize).FillBufferFrom(stream);
+     
     public ValueTask<(LinkedListPosition bufferEnd, bool atSourceEnd)>
         GetMoreBytesAsync(Stream stream, int desiredLength) =>
         NextWriteTarget(desiredLength).FillBufferFromAsync(stream);
 
     private LinkedListPosition NextWriteTarget(int desiredLength) =>
-        (NodeHasEmptySpace() ? this : StartOfNewBlock(desiredLength));
+        (NodeHasEmptySpace() ? this : StartOfNextBlock(desiredLength));
 
-    private LinkedListPosition StartOfNewBlock(int desiredLength) => 
-        new(CreateNewNode(desiredLength), 0);
+    private LinkedListPosition StartOfNextBlock(int desiredLength) =>
+        Node.Next is null
+            ? new(CreateNewNode(desiredLength), 0)
+            : new LinkedListPosition((LinkedListNode)Node.Next, 0);
 
     private bool NodeHasEmptySpace() => Index < Node.LocalLength;
 
@@ -75,9 +83,7 @@ internal readonly partial struct LinkedListPosition
             bytesRead == 0);
     }
 
-    public (LinkedListPosition bufferEnd, bool atSourceEnd)
-        GetMoreBytes(Stream stream, int desiredBufferSize) =>
-        NextWriteTarget(desiredBufferSize).FillBufferFrom(stream);
+
 
     private (LinkedListPosition bufferEnd, bool atSourceEnd) FillBufferFrom(Stream stream)
     {
@@ -107,18 +113,11 @@ internal readonly partial struct LinkedListPosition
             : this;
 
     public LinkedListPosition WriteTo(
-        ReadOnlySpan<byte> buffer, int blockSize, ref LinkedListPosition endPosition)
+        ReadOnlySpan<byte> buffer, int blockSize)
     {
         var extendedPos = ExtendTo(GlobalPosition + buffer.Length, blockSize);
         CopyDataToList(buffer);
-        TryExtendEndPosition(ref endPosition, extendedPos);
         return extendedPos;
-    }
-
-    private static void TryExtendEndPosition(ref LinkedListPosition endPosition, LinkedListPosition extendedPos)
-    {
-        if (extendedPos.GlobalPosition > endPosition.GlobalPosition)
-            endPosition = extendedPos;
     }
 
     private void CopyDataToList(ReadOnlySpan<byte> buffer)
@@ -152,7 +151,7 @@ internal readonly partial struct LinkedListPosition
                 <= 0 => node,
                 var x when x <= node.SpaceInCurrentNode =>
                     new LinkedListPosition(node.Node, node.Index + (int)x),
-                _ => node.StartOfNewBlock(blockSize)
+                _ => node.StartOfNextBlock(blockSize)
 
             };
         }

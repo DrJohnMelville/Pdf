@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.Streams;
+﻿using Melville.Parsing.LinkedLists;
+using Melville.Parsing.Streams;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -18,7 +19,7 @@ public static class MultiplexSourceFactory
             IMultiplexSource ims => ims, // MultiBufferStream implements IMultiplexSource
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
-            {CanSeek: false} => new MultiplexedStreamBuffer(source),
+            {CanSeek: false} => StreamBackedBuffer.Create(source),
             _ => new MultiplexedStream(source)
         };
 

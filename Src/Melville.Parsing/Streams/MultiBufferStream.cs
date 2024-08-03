@@ -17,7 +17,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     private LinkedList data;
     private LinkedListPosition currentPosition;
 
-    private MultiBufferStream(LinkedList data, bool canWrite): 
+    internal MultiBufferStream(LinkedList data, bool canWrite): 
         base(true, canWrite, true)
     { 
         this.data = data;

@@ -2,18 +2,52 @@
 using System.Buffers;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.Streams;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
 
 internal partial class StreamBackedBuffer: LinkedList<StreamBackedBuffer>
 {
-    public static LinkedList Create(Stream source, int bufferSize = 4096)
+    public static MultiBufferStream Create(Stream source, int bufferSize = 4096)
     {
-        return new StreamBackedBuffer(source).With(bufferSize);
+        var buffer = new StreamBackedBuffer(source);
+        var linkedList = buffer.With(bufferSize);
+        buffer.nextByteToRead = buffer.StartPosition;
+        return new MultiBufferStream(linkedList, false);
     }
 
     [FromConstructor] private readonly Stream source;
+    private LinkedListPosition nextByteToRead = default;
+
+   
+
+    protected override long BytesAvailableAfter(LinkedListPosition origin)
+    {
+        var desiredPosition = origin.GlobalPosition;
+
+        while (true)
+        {
+            var delta = nextByteToRead.GlobalPosition - desiredPosition;
+            if (delta > 0) return delta;
+            (nextByteToRead, var done) = LoadFrom(source, nextByteToRead);
+            if (done) return nextByteToRead.GlobalPosition - desiredPosition;
+        }
+    }
+
+    protected override async ValueTask<long> BytesAvailableAfterAsync(
+        LinkedListPosition origin)
+    {
+        var desiredPosition = origin.GlobalPosition;
+
+        while (true)
+        {
+            var delta = nextByteToRead.GlobalPosition - desiredPosition;
+            if (delta > 0) return delta;
+            (nextByteToRead, var done) = await LoadFromAsync(source, nextByteToRead).CA();
+            if (done) return nextByteToRead.GlobalPosition - desiredPosition;
+        }
+    }
 }
 
 internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>
@@ -100,7 +134,14 @@ internal abstract class LinkedList
 
     public LinkedListPosition Write(
         LinkedListPosition currentPosition, ReadOnlySpan<byte> buffer) =>
-        currentPosition.WriteTo(buffer, blockSize, ref endPosition);
+        UpdateEndIfGreater(currentPosition.WriteTo(buffer, blockSize));
+
+    public LinkedListPosition UpdateEndIfGreater(LinkedListPosition newPos)
+    {
+        if (newPos.GlobalPosition > endPosition.GlobalPosition)
+            endPosition = newPos;
+        return newPos;
+    }
 
     public void Truncate(long value)
     {
@@ -111,6 +152,22 @@ internal abstract class LinkedList
 
     public void EnsureHasLocation(long value)
     {
-        endPosition = EndPosition.ExtendTo(value, blockSize);
+        UpdateEndIfGreater(EndPosition.ExtendTo(value, blockSize));
     }
+
+    protected (LinkedListPosition, bool atEnd) LoadFrom(
+        Stream stream, LinkedListPosition readpos)
+    {
+        var ret = readpos.GetMoreBytes(stream, blockSize);
+        UpdateEndIfGreater(ret.bufferEnd);
+        return ret;
+    }
+    protected async ValueTask<(LinkedListPosition, bool)> LoadFromAsync(
+        Stream stream, LinkedListPosition readpos)
+    {
+        var ret = await readpos.GetMoreBytesAsync(stream, blockSize).CA();
+        UpdateEndIfGreater(ret.bufferEnd);
+        return ret;
+    }
+
 }
