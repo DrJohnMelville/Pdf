@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
+using Melville.Parsing.Streams;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -41,7 +43,8 @@ public partial class Tokenizer : ITokenSource
     /// Create a tokenizer from a block of Memory.
     /// </summary>
     /// <param name="source">The code to execute.</param>
-    public Tokenizer(Memory<byte> source) : this(new MemoryWrapper(source))
+    public Tokenizer(Memory<byte> source) : this(
+        MultiplexSourceFactory.Create(source).ReadPipeFrom(0))
     {
     }
 
@@ -83,7 +86,10 @@ public partial class Tokenizer : ITokenSource
             CodeSource.AdvanceTo(source.Buffer.GetPosition(reader.Consumed));
             return true;
         }
-
+        else
+        {
+            CodeSource.MarkSequenceAsExamined();
+        }
         return false;
     }
 

@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using Melville.INPC;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal readonly struct LinkedListBehavior
-{
-
-}
-
 internal class LinkedList
 {
-    private LinkedListBehavior behavior = default;
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
     public LinkedListPosition EndPosition => endPosition;

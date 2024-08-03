@@ -15,7 +15,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public sealed partial class EmptyCodeSource : IByteSource
 {
     /// <inheritdoc/>
-    public ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default) =>
+    public ValueTask<ReadResult> ReadAsync() =>
         new(((IByteSource)this).Read());
 
     /// <inheritdoc/>

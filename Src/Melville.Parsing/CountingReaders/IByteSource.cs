@@ -19,9 +19,8 @@ public interface IByteSource: IDisposable
     /// return previously read, but unexamined, bytes, this could read additional data
     /// from the source, or it could report that no more bytes are available.
     /// </summary>
-    /// <param name="cancellationToken">A cancellationtoken to govern this operation.</param>
     /// <returns>A ReadResult with the resulting data.</returns>
-    ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default);
+    ValueTask<ReadResult> ReadAsync();
     
     /// <summary>
     /// Ensures that there are unexamined bytes in the returned ReadResult.  This could

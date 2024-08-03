@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Melville.INPC;
+using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 
@@ -113,8 +115,9 @@ internal sealed partial class
 
     public void GetToken(OperandStack stack)
     {
-        var wrapper = new MemoryWrapper(value);
+        var wrapper = MultiplexSourceFactory.Create(value).ReadPipeFrom(0);
         var tokenizer = new Tokenizer(wrapper);
+
         using var enumerator = tokenizer.Tokens().GetEnumerator();
         if (enumerator.MoveNext()) 
         {

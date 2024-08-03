@@ -111,7 +111,7 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     }
 
     /// <inheritdoc />
-    public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<ReadResult> ReadAsync()
     {
         Debug.Assert(LinkedListNode.Empty.RunningIndex == 0);
         if (AllBytesHaveBeenExamined() && !atSourceEnd && stream is not null)

@@ -16,24 +16,30 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     private LinkedList data;
     private LinkedListPosition currentPosition;
 
+    private MultiBufferStream(LinkedList data, bool canWrite): 
+        base(true, canWrite, true)
+    { 
+        this.data = data;
+        data.AddReference();
+        currentPosition = data.StartPosition;
+    }
+    
     /// <summary>
     /// Create a MultDufferStream
     /// </summary>
     /// <param name="blockLength">The default block length when the stream creates blocks.</param>
-    public MultiBufferStream(int blockLength = 4096): base(true, true, true)
+    public MultiBufferStream(int blockLength = 4096): this(
+        LinkedList.WritableList(blockLength), true)
     {
-        data = LinkedList.WritableList(blockLength);
-        currentPosition = data.StartPosition;
     }
     
     /// <summary>
     /// Create a readonly multibufferstream that contains the given data
     /// </summary>
     /// <param name="firstBuffer">Make a multibufferStream with an initial buffer</param>
-    public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) : base(true, false, true)
+    public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) : 
+        this(LinkedList.SingleItemList(firstBuffer), false)
     {
-        data = LinkedList.SingleItemList(firstBuffer);
-        currentPosition = data.StartPosition;
     }
 
 
@@ -71,14 +77,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     /// <summary>
     /// Create a reader that has its own unique position pointer into the buffer.
     /// </summary>
-    public MultiBufferStream CreateReader() => new(data);
-
-    private MultiBufferStream(LinkedList data): base(true, false, true)
-    { 
-        this.data = data;
-        data.AddReference();
-        currentPosition = data.StartPosition;
-    }
+    public MultiBufferStream CreateReader() => new(data, false);
 
     /// <inheritdoc />
     Stream IMultiplexSource.ReadFrom(long position)

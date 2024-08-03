@@ -20,8 +20,8 @@ internal partial class SubsetByteSource : IByteSource
         return true;
     }
 
-    public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default) =>
-        ClipResult(await inner.ReadAsync(cancellationToken).CA());
+    public async ValueTask<ReadResult> ReadAsync() =>
+        ClipResult(await inner.ReadAsync().CA());
 
     private ReadResult ClipResult(ReadResult result) =>
         ResultDoesNotOverflowAllowedLength(result) ? 

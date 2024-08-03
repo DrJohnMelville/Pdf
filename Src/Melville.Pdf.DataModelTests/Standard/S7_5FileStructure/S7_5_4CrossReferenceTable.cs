@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -15,10 +17,11 @@ public class S7_5_4CrossReferenceTable
 
     private async ValueTask<long> ReadTableAsync(string data)
     {
-        var reader = new MemoryWrapper(data.AsExtendedAsciiBytes());
+        var reader = MultiplexSourceFactory.Create(data.AsExtendedAsciiBytes())
+            .ReadPipeFrom(0);
         var parser = new CrossReferenceTableParser(reader, resolver.Object);
         await parser.ParseAsync();
-        return reader.GlobalPosition;
+        return reader.Position;
     }
 
     [Fact]

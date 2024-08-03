@@ -27,14 +27,14 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         public ReadResult Read() =>
             throw new NotSupportedException("Must read asynchronously");
 
-        public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
+        public async ValueTask<ReadResult> ReadAsync()
         {
             if (setReader is not null)
             {
                 await CreateDecodingReaderAsync().ConfigureAwait(false);
             }
 
-            return await inner.ReadAsync(cancellationToken).CA();
+            return await inner.ReadAsync().CA();
         }
 
         private async Task CreateDecodingReaderAsync()
