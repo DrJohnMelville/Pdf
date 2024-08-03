@@ -1,68 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.Streams;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
-
-internal partial class StreamBackedBuffer: LinkedList<StreamBackedBuffer>
-{
-    public static MultiBufferStream Create(Stream source, int bufferSize = 4096)
-    {
-        var buffer = new StreamBackedBuffer(source);
-        var linkedList = buffer.With(bufferSize);
-        buffer.nextByteToRead = buffer.StartPosition;
-        return new MultiBufferStream(linkedList, false);
-    }
-
-    [FromConstructor] private readonly Stream source;
-    private LinkedListPosition nextByteToRead = default;
-
-   
-
-    protected override long BytesAvailableAfter(LinkedListPosition origin)
-    {
-        var desiredPosition = origin.GlobalPosition;
-
-        while (true)
-        {
-            var delta = nextByteToRead.GlobalPosition - desiredPosition;
-            if (delta > 0) return delta;
-            (nextByteToRead, var done) = LoadFrom(source, nextByteToRead);
-            if (done) return nextByteToRead.GlobalPosition - desiredPosition;
-        }
-    }
-
-    protected override async ValueTask<long> BytesAvailableAfterAsync(
-        LinkedListPosition origin)
-    {
-        var desiredPosition = origin.GlobalPosition;
-
-        while (true)
-        {
-            var delta = nextByteToRead.GlobalPosition - desiredPosition;
-            if (delta > 0) return delta;
-            (nextByteToRead, var done) = await LoadFromAsync(source, nextByteToRead).CA();
-            if (done) return nextByteToRead.GlobalPosition - desiredPosition;
-        }
-    }
-}
-
-internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>
-{
-    public static LinkedList WritableList(int blockSize) =>
-        new MultiBufferStreamList().With(blockSize);
-    public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
-        new MultiBufferStreamList().With(source);
-
-}
-
-internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>
-{
-
-}
 
 internal abstract class LinkedList
 {
@@ -103,24 +44,28 @@ internal abstract class LinkedList
 
     public ReadOnlySequence<byte> AsSequence() => SequenceAfter(StartPosition);
 
-    private ReadOnlySequence<byte> SequenceAfter(LinkedListPosition start) =>
+    public ReadOnlySequence<byte> SequenceAfter(LinkedListPosition start) =>
         start.SequenceTo(EndPosition);
 
+    public ReadOnlySequence<byte> ValidSequence(LinkedListPosition start) =>
+        start.SequenceTo(FirstInvalidPosition());
+
+    public virtual LinkedListPosition FirstInvalidPosition() => EndPosition;
+
     public (int, LinkedListPosition) Read(LinkedListPosition origin, Span<byte> buffer) => 
-        ReadCore(origin, buffer, BytesAvailableAfter(origin));
+        ReadCore(origin, buffer, PrepareForRead(origin));
 
-
-    protected virtual long BytesAvailableAfter(LinkedListPosition origin) => 
+    public virtual long PrepareForRead(LinkedListPosition origin) => 
         endPosition.GlobalPosition - origin.GlobalPosition;
 
     public async ValueTask<(int, LinkedListPosition)> ReadAsync(
         LinkedListPosition origin, Memory<byte> buffer)
     {
-        var bytesToRead = await BytesAvailableAfterAsync(origin).CA();
+        var bytesToRead = await PrepareForReadAsync(origin).CA();
         return ReadCore(origin, buffer.Span, bytesToRead);
     }
 
-    protected virtual ValueTask<long> BytesAvailableAfterAsync(LinkedListPosition origin) => 
+    public virtual ValueTask<long> PrepareForReadAsync(LinkedListPosition origin) => 
         new(endPosition.GlobalPosition - origin.GlobalPosition);
 
     private (int, LinkedListPosition) ReadCore(LinkedListPosition origin, Span<byte> buffer, long availableBytes)
@@ -169,5 +114,17 @@ internal abstract class LinkedList
         UpdateEndIfGreater(ret.bufferEnd);
         return ret;
     }
+
+    public virtual bool DoneGrowing() => blockSize == 0;
+
+    public virtual void HasReadTo(SequencePosition consumed)
+    {
+        // some descendants use the method to release buffers that will not be
+        // reused.
+    }
+}
+
+internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>
+{
 
 }

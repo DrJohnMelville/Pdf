@@ -9,15 +9,9 @@ using Xunit;
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
 #warning -- maybe can simplify this test
-public class MultiplexMultBufferTest : MultiplexedStreamTest
-{
-    protected override IMultiplexSource CreateSut(byte[] data) =>
-        new MultiBufferStream(data);
-
-}
-
 public class MultiplexedStreamTest
 {
+
     private readonly IMultiplexSource sut;
 
     public MultiplexedStreamTest()
@@ -26,8 +20,8 @@ public class MultiplexedStreamTest
         sut = CreateSut(data);
     }
 
-    protected virtual IMultiplexSource CreateSut(byte[] data) => 
-        new MultiplexedStream(new MemoryStream(data));
+    protected IMultiplexSource CreateSut(byte[] data) =>
+        new MultiBufferStream(data);
 
     private void VerifyRead(Stream reader, params byte[] data)
     {
