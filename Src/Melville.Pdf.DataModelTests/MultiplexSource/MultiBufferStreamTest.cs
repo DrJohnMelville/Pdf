@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Hacks;
+using Melville.Icc.Model.Tags;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.SpanShould;
@@ -25,6 +26,20 @@ public class MultiBufferStreamTest
         var reader = sut.CreateReader();
         buf2.FillBuffer(0, 256, reader.Read);
         buf2.Should().BeEquivalentTo(numberedBuffer);
+    }
+
+    [Fact]
+    public void SeekOfEndExtendsStream()
+    {
+        var sut = new MultiBufferStream(16);
+        sut.Write([1,2,3]);
+        sut.Seek(256, SeekOrigin.Begin);
+        sut.Length.Should().Be(256);
+        sut.Seek(0, SeekOrigin.Begin);
+        var buffer = new byte[256];
+        sut.Read(buffer);
+        buffer.Should().StartWith(new byte[] { 1, 2, 3 });
+        // the contents of jumped over sections are undefined.
     }
 
     [Fact]

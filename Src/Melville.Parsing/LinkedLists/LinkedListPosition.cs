@@ -109,35 +109,51 @@ internal readonly partial struct LinkedListPosition
     public LinkedListPosition WriteTo(
         ReadOnlySpan<byte> buffer, int blockSize, ref LinkedListPosition endPosition)
     {
-        var consumed = FillCurrentNode(ref buffer);
-        if (buffer.Length == 0)
+        var extendedPos = ExtendTo(GlobalPosition + buffer.Length, blockSize);
+        CopyDataToList(buffer);
+        TryExtendEndPosition(ref endPosition, extendedPos);
+        return extendedPos;
+    }
+
+    private static void TryExtendEndPosition(ref LinkedListPosition endPosition, LinkedListPosition extendedPos)
+    {
+        if (extendedPos.GlobalPosition > endPosition.GlobalPosition)
+            endPosition = extendedPos;
+    }
+
+    private void CopyDataToList(ReadOnlySpan<byte> buffer)
+    {
+        var position = this;
+        FillCurrentNode(ref buffer);
+        while (buffer.Length > 0)
         {
-            var newPosition = new LinkedListPosition(Node, Index + consumed);
-            if (newPosition.Node == endPosition.Node && 
-                    newPosition.Index > endPosition.Index)
-                endPosition = newPosition;
-            return newPosition;
+            position = FindNextNode(position);
+            position.FillCurrentNode(ref buffer);
         }
-
-        if (Node.Next is LinkedListNode next)
-            return new LinkedListPosition(next,0).WriteTo(
-                buffer, blockSize, ref endPosition);
-
-        return endPosition = StartOfNewBlock(blockSize).Append(buffer, blockSize);
     }
 
-    private int FillCurrentNode(ref ReadOnlySpan<byte> buffer)
+    private static LinkedListPosition FindNextNode(LinkedListPosition position) => 
+        new((LinkedListNode)position.Node.Next!, 0);
+
+    private void FillCurrentNode(ref ReadOnlySpan<byte> buffer) => 
+        buffer = buffer.Slice(Node.FillFrom(buffer, Index));
+
+    public LinkedListPosition ExtendTo(long value, int blockSize)
     {
-        var ret = Node.FillFrom(buffer, Index);
-        buffer = buffer.Slice(ret);
-        return ret;
+        var node = this;
+        while (value - node.GlobalPosition is > 0 and var delta)
+        {
+            node = (delta) switch
+            {
+                <= 0 => node,
+                var x when x <= node.SpaceInCurrentNode =>
+                    new LinkedListPosition(node.Node, node.Index + (int)x),
+                _ => node.StartOfNewBlock(blockSize)
+
+            };
+        }
+        return node;
     }
 
-    public LinkedListPosition Append(ReadOnlySpan<byte> buffer, int blockSize)
-    {
-        var consumed = FillCurrentNode(ref buffer);
-        return buffer.Length == 0 ? 
-            new LinkedListPosition(Node, Index + consumed) : 
-            StartOfNewBlock(blockSize).Append(buffer, blockSize);
-    }
+    private int SpaceInCurrentNode => Node.LocalLength - Index;
 }

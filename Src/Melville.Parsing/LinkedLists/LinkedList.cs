@@ -5,7 +5,30 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal class LinkedList
+internal partial class StreamBackedBuffer: LinkedList<StreamBackedBuffer>
+{
+    public static LinkedList Create(Stream source, int bufferSize = 4096)
+    {
+        return new StreamBackedBuffer(source).With(bufferSize);
+    }
+
+    [FromConstructor] private readonly Stream source;
+}
+
+internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>
+{
+    public static LinkedList WritableList(int blockSize) =>
+        new MultiBufferStreamList().With(blockSize);
+    public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
+        new MultiBufferStreamList().With(source);
+
+}
+
+internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>
+{
+
+}
+internal abstract class LinkedList
 {
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
@@ -13,14 +36,9 @@ internal class LinkedList
     private int references;
     private int blockSize;
 
-    private LinkedList()
+    protected internal LinkedList()
     {
     }
-
-    public static LinkedList WritableList(int blockSize) =>
-        new LinkedList().With(blockSize);
-    public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
-        new LinkedList().With(source);
 
     public void AddReference() => references++;
     public void ReleaseReference() => references--;
@@ -43,6 +61,7 @@ internal class LinkedList
         endPosition = new LinkedListPosition(firstNode, source.Length);
         return this;
     }
+
 
     private LinkedListNode CreateNewBlock() => LinkedListNode.Rent(blockSize);
 
@@ -71,4 +90,9 @@ internal class LinkedList
     }
 
     public long Length() => EndPosition.GlobalPosition;
+
+    public void EnsureHasLocation(long value)
+    {
+        endPosition = EndPosition.ExtendTo(value, blockSize);
+    }
 }

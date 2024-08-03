@@ -105,9 +105,9 @@ public class MultiBufferStreamTest
     [InlineData(1, true)]
     [InlineData(3, true)]
     [InlineData(5, true)]
-    [InlineData(6, false)]
-    [InlineData(7, false)]
-    [InlineData(17, false)]
+    [InlineData(6, true)]
+    [InlineData(7, true)]
+    [InlineData(17, true)]
     public void ValidAndInvalidSeekTest(int location, bool valid)
     {
         var sut = CreateStream("ABCDE");

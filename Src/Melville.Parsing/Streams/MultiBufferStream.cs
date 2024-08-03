@@ -29,7 +29,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     /// </summary>
     /// <param name="blockLength">The default block length when the stream creates blocks.</param>
     public MultiBufferStream(int blockLength = 4096): this(
-        LinkedList.WritableList(blockLength), true)
+        MultiBufferStreamList.WritableList(blockLength), true)
     {
     }
     
@@ -38,7 +38,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     /// </summary>
     /// <param name="firstBuffer">Make a multibufferStream with an initial buffer</param>
     public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) : 
-        this(LinkedList.SingleItemList(firstBuffer), false)
+        this(MultiBufferStreamList.SingleItemList(firstBuffer), false)
     {
     }
 
@@ -71,7 +71,13 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     public override long Position
     {
         get => currentPosition.GlobalPosition;
-        set => currentPosition =  data.AsSequence().GetPosition(value);
+        set
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            data.EnsureHasLocation(value);
+            currentPosition = data.AsSequence().GetPosition(value);
+        }
     }
 
     /// <summary>
