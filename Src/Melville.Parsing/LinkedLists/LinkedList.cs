@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
@@ -28,6 +29,7 @@ internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>
 {
 
 }
+
 internal abstract class LinkedList
 {
     public LinkedListPosition StartPosition { get; private set; }
@@ -70,14 +72,30 @@ internal abstract class LinkedList
     private ReadOnlySequence<byte> SequenceAfter(LinkedListPosition start) =>
         start.SequenceTo(EndPosition);
 
-    public int Read(ref LinkedListPosition origin, Span<byte> buffer)
+    public (int, LinkedListPosition) Read(LinkedListPosition origin, Span<byte> buffer) => 
+        ReadCore(origin, buffer, BytesAvailableAfter(origin));
+
+
+    protected virtual long BytesAvailableAfter(LinkedListPosition origin) => 
+        endPosition.GlobalPosition - origin.GlobalPosition;
+
+    public async ValueTask<(int, LinkedListPosition)> ReadAsync(
+        LinkedListPosition origin, Memory<byte> buffer)
     {
+        var bytesToRead = await BytesAvailableAfterAsync(origin).CA();
+        return ReadCore(origin, buffer.Span, bytesToRead);
+    }
+
+    protected virtual ValueTask<long> BytesAvailableAfterAsync(LinkedListPosition origin) => 
+        new(endPosition.GlobalPosition - origin.GlobalPosition);
+
+    private (int, LinkedListPosition) ReadCore(LinkedListPosition origin, Span<byte> buffer, long availableBytes)
+    {
+        var length = (int )Math.Min(availableBytes, buffer.Length);
         var seq = SequenceAfter(origin);
-        var length = Math.Min(seq.Length, buffer.Length);
         var reader = new SequenceReader<byte>(seq);
-        reader.TryCopyTo(buffer.Slice(0, (int)length));
-        origin = seq.GetPosition(length);
-        return (int) length;
+        reader.TryCopyTo(buffer[..length]);
+        return (length, seq.GetPosition(length));
     }
 
     public LinkedListPosition Write(

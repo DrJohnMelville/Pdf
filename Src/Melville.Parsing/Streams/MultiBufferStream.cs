@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Runtime.InteropServices;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
@@ -44,7 +45,21 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
 
 
     /// <inheritdoc />
-    public override int Read(Span<byte> buffer) => data.Read(ref currentPosition, buffer);
+    public override int Read(Span<byte> buffer)
+    {
+        (var ret, currentPosition) = data.Read(currentPosition, buffer);
+        return ret;
+    }
+
+
+    /// <inheritdoc />
+    public override async ValueTask<int> ReadAsync(
+        Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+    {
+        (var ret, currentPosition) = 
+            await data.ReadAsync(currentPosition, buffer).CA();
+        return ret;
+    }
 
     /// <inheritdoc />
     public override void Write(ReadOnlySpan<byte> buffer)

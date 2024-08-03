@@ -140,6 +140,10 @@ internal readonly partial struct LinkedListPosition
 
     public LinkedListPosition ExtendTo(long value, int blockSize)
     {
+        if (value <= GlobalPosition) return this;
+        if (blockSize == 0)
+            throw new ArgumentOutOfRangeException(nameof(blockSize), 
+                "Cannot extend a read only Linked List");
         var node = this;
         while (value - node.GlobalPosition is > 0 and var delta)
         {
