@@ -1,7 +1,5 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams.Bases;
 
@@ -28,7 +26,8 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
             new LinkedListPosition(RentNewBlock(), 0);
     }
 
-    private LinkedListNode RentNewBlock() => LinkedListNode.Rent(blockLength);
+    private LinkedListNode RentNewBlock() => 
+        new LinkedListNode().With(new byte[blockLength], null);
 
     /// <summary>
     /// Create a multibufferstream that contains the given data
@@ -37,7 +36,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     public MultiBufferStream(byte[] firstBuffer) : base(true, false, true)
     {
         blockLength = 0;
-        var node = ObjectPool<LinkedListNode>.Shared.Rent().With(firstBuffer, null);
+        var node = new LinkedListNode().With(firstBuffer, null);
         startPosition = currentPosition =
             new LinkedListPosition(node, 0);
         endPosition = new LinkedListPosition(node, firstBuffer.Length);
@@ -121,4 +120,11 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
         ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
+#warning Implement IMultiplexSource.ReadPipeFrom
+    // IByteSource IMultiplexSource.ReadPipeFrom(
+    //     long position, long startingPosition = 0)
+    // {
+    //     return new SequenceByteReader(
+    //         startPosition.SequenceTo(endPosition).Slice(position), startingPosition);
+    // }
 }

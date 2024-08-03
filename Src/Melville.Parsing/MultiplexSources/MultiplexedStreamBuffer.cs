@@ -1,7 +1,6 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Parsing.Streams.Bases;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.MultiplexSources;
 

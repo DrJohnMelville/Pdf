@@ -9,7 +9,7 @@ namespace Melville.Parsing.PipeReaders;
 
 internal readonly partial struct LinkedListPosition
 {
-    public static readonly LinkedListPosition Position = new(LinkedListNode.Empty, 0);
+    public static readonly LinkedListPosition NullPosition = new(LinkedListNode.Empty, 0);
 
     [FromConstructor] public LinkedListNode Node { get; }
     [FromConstructor] public int Index { get; }
@@ -125,7 +125,7 @@ internal readonly partial struct LinkedListPosition
             return new LinkedListPosition(next,0).WriteTo(
                 buffer, blockSize, ref endPosition);
 
-        return endPosition = NextWriteTarget(blockSize).Append(buffer, blockSize);
+        return endPosition = StartOfNewBlock(blockSize).Append(buffer, blockSize);
     }
 
     private int FillCurrentNode(ref ReadOnlySpan<byte> buffer)
