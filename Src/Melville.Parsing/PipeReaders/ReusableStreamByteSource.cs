@@ -7,6 +7,7 @@ using Melville.Hacks.Reflection;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.LinkedLists;
 using Melville.Parsing.ObjectRentals;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,9 +24,9 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     private int desiredBufferSize;
     private bool atSourceEnd;
 
-    private LinkedListPosition bufferStart = LinkedListPosition.NullPosition;
-    private LinkedListPosition bufferEnd = LinkedListPosition.NullPosition;
-    private LinkedListPosition examined = LinkedListPosition.NullPosition;
+    private LinkedLists.LinkedListPosition bufferStart = LinkedLists.LinkedListPosition.NullPosition;
+    private LinkedLists.LinkedListPosition bufferEnd = LinkedLists.LinkedListPosition.NullPosition;
+    private LinkedLists.LinkedListPosition examined = LinkedLists.LinkedListPosition.NullPosition;
 
     /// <summary>
     /// Rent a ReusableStreamPipeReader from the pool
@@ -80,7 +81,7 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     /// <inheritdoc />
     public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
     {
-        LinkedListPosition lpConsumed = consumed;
+        LinkedLists.LinkedListPosition lpConsumed = consumed;
         bufferStart.ClearTo(lpConsumed);
         bufferStart = lpConsumed;
         this.examined = examined;
@@ -105,8 +106,8 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     /// </summary>
     public void Clear()
     {
-        bufferStart.ClearTo(LinkedListPosition.NullPosition); // return all nodes
-        bufferStart = bufferEnd = examined = LinkedListPosition.NullPosition;
+        bufferStart.ClearTo(LinkedLists.LinkedListPosition.NullPosition); // return all nodes
+        bufferStart = bufferEnd = examined = LinkedLists.LinkedListPosition.NullPosition;
     }
 
     /// <inheritdoc />

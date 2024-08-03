@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.MultiplexSources;
+﻿using Melville.Parsing.Streams;
+
+namespace Melville.Parsing.MultiplexSources;
 
 /// <summary>
 /// Creates a IMultiplexedSource from a stream.  Many special cases exist.
@@ -32,14 +34,15 @@ public static class MultiplexSourceFactory
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(MemoryStream source) => Create(MemoryStreamToMemory(source));
+    public static IMultiplexSource Create(MemoryStream source) => 
+        Create(MemoryStreamToMemory(source));
 
     /// <summary>
     /// Create an IMultiplexedSource from a source as optimally as possible
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(Memory<byte> source) => new MemorySource(source);
+    public static IMultiplexSource Create(Memory<byte> source) => new MultiBufferStream(source);
 
     private static Memory<byte> MemoryStreamToMemory(MemoryStream ms) =>
         ms.TryGetBuffer(out var buffer)

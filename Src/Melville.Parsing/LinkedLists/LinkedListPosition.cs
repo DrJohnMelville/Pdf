@@ -3,9 +3,8 @@ using System.Diagnostics;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
-using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Melville.Parsing.PipeReaders;
+namespace Melville.Parsing.LinkedLists;
 
 internal readonly partial struct LinkedListPosition
 {

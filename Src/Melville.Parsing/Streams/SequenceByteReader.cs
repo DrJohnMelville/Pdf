@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
-using Melville.Parsing.PipeReaders;
+using Melville.Parsing.LinkedLists;
 
 namespace Melville.Parsing.Streams;
 

@@ -1,9 +1,10 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 
-namespace Melville.Parsing.PipeReaders
+namespace Melville.Parsing.LinkedLists
 {
     internal class LinkedListNode : ReadOnlySequenceSegment<byte>, IClearable
     {
@@ -12,28 +13,29 @@ namespace Melville.Parsing.PipeReaders
             ObjectPool<LinkedListNode>.Shared.Rent().With(length);
 
 
-        private byte[] buffer = [];
+        private byte[]? buffer = null;
 
-        public int LocalLength => buffer.Length;
-        
-        public LinkedListNode With(int desiredLength, LinkedListNode? next = null)
+        public int LocalLength => Memory.Length;
+
+        public LinkedListNode With(int desiredLength)
         {
             Debug.Assert(desiredLength > 0);
-            return With(ArrayPool<byte>.Shared.Rent(desiredLength), next);
+            buffer = ArrayPool<byte>.Shared.Rent(desiredLength);
+            return With(buffer);
         }
 
-        public LinkedListNode With (byte[] buffer, LinkedListNode? next)
+        public LinkedListNode With(ReadOnlyMemory<byte> memory)
         {
-            this.buffer = buffer;
-            Memory = buffer;
-            Next = next;
+            Memory = memory;
+            Next = null;
             RunningIndex = 0;
             return this;
         }
 
         public void Clear()
         {
-            ArrayPool<byte>.Shared.Return(buffer);  
+            if (buffer is not null)
+                ArrayPool<byte>.Shared.Return(buffer);
             Memory = ReadOnlyMemory<byte>.Empty;
             Next = null;
             buffer = [];
@@ -43,17 +45,31 @@ namespace Melville.Parsing.PipeReaders
         {
             Debug.Assert(next.LocalLength > 0);
             Next = next;
-            next.RunningIndex = RunningIndex + buffer.Length;
+            next.RunningIndex = RunningIndex + Memory.Length;
         }
 
-        public ValueTask<int> FillFromAsync(Stream s, int startAt) =>
-            s.ReadAsync(buffer.AsMemory(startAt));
+        [MemberNotNull(nameof(buffer))]
+        private void AssertWritableNode()
+        {
+            if (buffer is null)
+                throw new InvalidOperationException("Cannot write to a read only node");
+        }
 
-        public int FillFrom(Stream stream, int index) => 
-            stream.Read(buffer.AsSpan(index));
+        public ValueTask<int> FillFromAsync(Stream s, int startAt)
+        {
+            AssertWritableNode();
+            return s.ReadAsync(buffer.AsMemory(startAt));
+        }
+
+        public int FillFrom(Stream stream, int index)
+        {
+            AssertWritableNode();
+            return stream.Read(buffer.AsSpan(index));
+        }
 
         public int FillFrom(ReadOnlySpan<byte> source, int index)
         {
+            AssertWritableNode();
             var target = buffer.AsSpan(index);
             var length = Math.Min(target.Length, source.Length);
             source[..length].CopyTo(target);
@@ -64,7 +80,7 @@ namespace Melville.Parsing.PipeReaders
         {
             RunningIndex = startAt;
             if (Next is LinkedListNode lln)
-                lln.RenumberStartingPosition(startAt+buffer.Length);
+                lln.RenumberStartingPosition(startAt + buffer.Length);
         }
     }
 }

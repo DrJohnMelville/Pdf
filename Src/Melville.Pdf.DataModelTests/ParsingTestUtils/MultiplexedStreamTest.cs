@@ -8,12 +8,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
-public class MultiplexMemoryTest : MultiplexedStreamTest
-{
-    protected override IMultiplexSource CreateSut(byte[] data) => 
-        new MemorySource(data.AsMemory());
-}
-
+#warning -- maybe can simplify this test
 public class MultiplexMultBufferTest : MultiplexedStreamTest
 {
     protected override IMultiplexSource CreateSut(byte[] data) =>

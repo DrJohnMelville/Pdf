@@ -1,7 +1,9 @@
 ﻿using System.Buffers;
+using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams.Bases;
+using LinkedListPosition = Melville.Parsing.LinkedLists.LinkedListPosition;
 
 namespace Melville.Parsing.Streams;
 
@@ -23,20 +25,20 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     {
         this.blockLength = blockLength;
         startPosition = endPosition = currentPosition = 
-            new LinkedListPosition(RentNewBlock(), 0);
+            new LinkedListPosition(CreateNewBlock(), 0);
     }
 
-    private LinkedListNode RentNewBlock() => 
-        new LinkedListNode().With(new byte[blockLength], null);
+    private LinkedListNode CreateNewBlock() => 
+        new LinkedListNode().With(blockLength);
 
     /// <summary>
-    /// Create a multibufferstream that contains the given data
+    /// Create a readonly multibufferstream that contains the given data
     /// </summary>
-    /// <param name="firstBuffer"></param>
-    public MultiBufferStream(byte[] firstBuffer) : base(true, false, true)
+    /// <param name="firstBuffer">Make a multibufferStream with an initial buffer</param>
+    public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) : base(true, false, true)
     {
         blockLength = 0;
-        var node = new LinkedListNode().With(firstBuffer, null);
+        var node = new LinkedListNode().With(firstBuffer);
         startPosition = currentPosition =
             new LinkedListPosition(node, 0);
         endPosition = new LinkedListPosition(node, firstBuffer.Length);
