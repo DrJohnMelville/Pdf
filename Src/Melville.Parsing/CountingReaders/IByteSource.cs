@@ -55,4 +55,30 @@ public interface IByteSource: IDisposable
     /// The current position in the source stream.
     /// </summary>
     public long Position { get; }
+
+    /// <summary>
+    /// This method does not change the position in the source stream, it sets the
+    /// number assigned to the current position.  This is useful when parsing formats
+    /// with offsets from a point other than the start of the stream.
+    /// </summary>
+    /// <param name="newPosition">The new value for the current position</param>
+    public void RemapCurrentPosition(long newPosition);
+}
+
+public static class ByteSourceExtensions
+{
+    /// <summary>
+    /// This is a convenience method to create a byte source and then assign it
+    /// a current position
+    /// </summary>
+    /// <typeparam name="T">The type or the receiver</typeparam>
+    /// <param name="source">The IByteSource to modify</param>
+    /// <param name="newPosition">The desired index for the current position.</param>
+    /// <returns>The modified IByteSource</returns>
+    public static T WithCurrentPosition<T>(
+        this T source, long newPosition) where T : IByteSource
+    {
+        source.RemapCurrentPosition(newPosition);
+        return source;
+    }
 }

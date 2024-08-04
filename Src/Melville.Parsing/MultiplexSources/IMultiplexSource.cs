@@ -30,7 +30,7 @@ namespace Melville.Parsing.MultiplexSources
         /// <param name="startingPosition">Sets the initial position of the ByteSource to the given position</param>
         IByteSource ReadPipeFrom(long position , long startingPosition = 0) =>
             ReusableStreamByteSource.Rent(ReadFrom(position), false)
-            .WithStartingPosition(startingPosition);
+            .WithCurrentPosition(startingPosition);
 
         /// <summary>
         /// The length of the represented data.

@@ -59,7 +59,7 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         {
             return 
                 ReusableStreamByteSource.Rent(new EexecDecodeStream(
-                        input, key), false).WithStartingPosition(startpos);
+                        input, key), false).WithCurrentPosition(startpos);
         }
 
         private bool IsHex(ReadOnlySequence<byte> buffer)

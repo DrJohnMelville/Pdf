@@ -16,7 +16,7 @@ internal partial class ParsingReader
     public ParsingReader(ParsingFileOwner owner, Stream input, long lastSeek) :
         this(owner, 
             ObjectPool<ReusableStreamByteSource>.Shared.Rent()
-                .WithParameters(input, true).WithStartingPosition(lastSeek))
+                .WithParameters(input, true).WithCurrentPosition(lastSeek))
     {
     }
 }

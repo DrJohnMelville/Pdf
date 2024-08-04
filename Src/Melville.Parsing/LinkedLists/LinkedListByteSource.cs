@@ -4,13 +4,11 @@ using Melville.Parsing.CountingReaders;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal class LinkedListByteSource(LinkedList data, long startingPosition = 0) : IByteSource
+internal class LinkedListByteSource(LinkedList data) : IByteSource
 {
     private LinkedListPosition nextByte = data.StartPosition;
     private LinkedListPosition unexaminedByte = data.StartPosition;
-    private readonly long positionOffset = 
-        startingPosition - data.StartPosition.GlobalPosition;
-
+    private long positionOffset;
 
     public void Dispose()
     {
@@ -35,6 +33,12 @@ internal class LinkedListByteSource(LinkedList data, long startingPosition = 0) 
         return CreateReadResult();
     }
 
+    public ReadResult Read()
+    {
+        data.PrepareForRead(unexaminedByte);
+        return CreateReadResult();
+    }
+
     public void AdvanceTo(SequencePosition consumed) => AdvanceTo(consumed, consumed);
 
     public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
@@ -50,4 +54,7 @@ internal class LinkedListByteSource(LinkedList data, long startingPosition = 0) 
     }
 
     public long Position => nextByte.GlobalPosition+positionOffset;
+
+    public void RemapCurrentPosition(long newPosition) =>
+        positionOffset = newPosition - nextByte.GlobalPosition;
 }

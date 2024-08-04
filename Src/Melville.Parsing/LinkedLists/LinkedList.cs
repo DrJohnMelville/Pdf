@@ -39,7 +39,6 @@ internal abstract class LinkedList
         return this;
     }
 
-
     private LinkedListNode CreateNewBlock() => LinkedListNode.Rent(blockSize);
 
     public ReadOnlySequence<byte> AsSequence() => SequenceAfter(StartPosition);
@@ -121,6 +120,18 @@ internal abstract class LinkedList
     {
         // some descendants use the method to release buffers that will not be
         // reused.
+    }
+
+    public LinkedListPosition PositionAt(long position)
+    {
+        EnsureHasLocation(position);
+        var node = StartPosition.Node!;
+        while (node.NextNodeIndex() <= position)
+        {
+            node =node.Next as LinkedListNode ??
+                  throw new InvalidOperationException("Should never be null");
+        }
+        return new (node, (int)(position - node.RunningIndex));
     }
 }
 

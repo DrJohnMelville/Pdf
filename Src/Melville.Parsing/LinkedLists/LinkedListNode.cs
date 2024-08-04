@@ -47,8 +47,10 @@ namespace Melville.Parsing.LinkedLists
         {
             Debug.Assert(next.LocalLength > 0);
             Next = next;
-            next.RunningIndex = RunningIndex + Memory.Length;
+            next.RunningIndex = NextNodeIndex();
         }
+
+        public long NextNodeIndex() => RunningIndex + Memory.Length;
 
         [MemberNotNull(nameof(buffer))]
         private void AssertWritableNode()

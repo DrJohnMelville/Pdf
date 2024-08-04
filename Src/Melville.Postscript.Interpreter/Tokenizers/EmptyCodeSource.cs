@@ -43,10 +43,12 @@ public sealed partial class EmptyCodeSource : IByteSource
     }
 
     /// <inheritdoc />
-    public long Position => 0;
+    public long Position { get; private set; }
 
     /// <inheritdoc />
     public void Dispose()
     {
     }
+
+    public void RemapCurrentPosition(long newPosition) => Position = newPosition;
 }

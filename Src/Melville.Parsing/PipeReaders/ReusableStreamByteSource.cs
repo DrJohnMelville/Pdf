@@ -17,6 +17,8 @@ namespace Melville.Parsing.PipeReaders;
 /// This is a pipe reader that knows its location, and uses an allocation free
 /// linked list of buffers
 /// </summary>
+#warning -- this can probably move over to the linked list platform.
+// do this next
 public class ReusableStreamByteSource : IClearable, IByteSource
 {
     private Stream? stream;
@@ -24,9 +26,9 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     private int desiredBufferSize;
     private bool atSourceEnd;
 
-    private LinkedLists.LinkedListPosition bufferStart = LinkedLists.LinkedListPosition.NullPosition;
-    private LinkedLists.LinkedListPosition bufferEnd = LinkedLists.LinkedListPosition.NullPosition;
-    private LinkedLists.LinkedListPosition examined = LinkedLists.LinkedListPosition.NullPosition;
+    private LinkedListPosition bufferStart = LinkedListPosition.NullPosition;
+    private LinkedListPosition bufferEnd = LinkedListPosition.NullPosition;
+    private LinkedListPosition examined = LinkedListPosition.NullPosition;
 
     /// <summary>
     /// Rent a ReusableStreamPipeReader from the pool
@@ -62,26 +64,18 @@ public class ReusableStreamByteSource : IClearable, IByteSource
         return this;
     }
 
-    /// <summary>
-    /// Set the index of the current position without moving the actual read position.  This is useful when
-    /// a file format includes offsets from a point other than the start of the stream.
-    /// </summary>
-    /// <param name="startAt">The number that should be the index of the current position.</param>
-    /// <returns>The configured reader.</returns>
-    public ReusableStreamByteSource WithStartingPosition(long startAt)
-    {
-        bufferStart.RenumberCurrentPosition(startAt);
-        return this;
-    }
+    /// <inheritdoc />
+    public void RemapCurrentPosition(long newPosition) => 
+        bufferStart.RenumberCurrentPosition(newPosition);
 
 
     /// <inheritdoc />
-    public void AdvanceTo(SequencePosition consumed) => this.AdvanceTo(consumed, consumed);
+    public void AdvanceTo(SequencePosition consumed) => AdvanceTo(consumed, consumed);
 
     /// <inheritdoc />
     public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
     {
-        LinkedLists.LinkedListPosition lpConsumed = consumed;
+        LinkedListPosition lpConsumed = consumed;
         bufferStart.ClearTo(lpConsumed);
         bufferStart = lpConsumed;
         this.examined = examined;
@@ -92,7 +86,7 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     {
         if (stream == null) 
             return;
-        if (!this.leaveOpen)
+        if (!leaveOpen)
         {
             stream.Dispose();
         }
@@ -106,8 +100,8 @@ public class ReusableStreamByteSource : IClearable, IByteSource
     /// </summary>
     public void Clear()
     {
-        bufferStart.ClearTo(LinkedLists.LinkedListPosition.NullPosition); // return all nodes
-        bufferStart = bufferEnd = examined = LinkedLists.LinkedListPosition.NullPosition;
+        bufferStart.ClearTo(LinkedListPosition.NullPosition); // return all nodes
+        bufferStart = bufferEnd = examined = LinkedListPosition.NullPosition;
     }
 
     /// <inheritdoc />
