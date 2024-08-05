@@ -65,6 +65,9 @@ public interface IByteSource: IDisposable
     public void RemapCurrentPosition(long newPosition);
 }
 
+/// <summary>
+/// This implementation class defines a fluent adapter for creating IByteSources
+/// </summary>
 public static class ByteSourceExtensions
 {
     /// <summary>

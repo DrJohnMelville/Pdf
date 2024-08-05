@@ -1,10 +1,4 @@
-﻿using System.ComponentModel;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
-using Melville.INPC;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
+﻿using Melville.Parsing.CountingReaders;
 
 namespace Melville.Parsing.MultiplexSources
 {
@@ -21,7 +15,6 @@ namespace Melville.Parsing.MultiplexSources
         /// <returns></returns>
         Stream ReadFrom(long position);
 
-#warning -- there is an opportunity to do optimized pipe readers here.
         /// <summary>
         /// Return a pipe reader starting at a given point in the stream.
         /// This may be optimized to reuse buffers
@@ -37,7 +30,6 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         long Length { get; }
 
-#warning -- opportunity to optimize the memory multiplex source
         /// <summary>
         /// Returns a multiplex source with an offset from the current source
         /// </summary>

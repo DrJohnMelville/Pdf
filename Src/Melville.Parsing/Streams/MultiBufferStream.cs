@@ -109,8 +109,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
         return ret;
     }
 
-    IByteSource IMultiplexSource.ReadPipeFrom(
-        long position, long startingPosition = 0)
+    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition)
     {
         var ret = new LinkedListByteSource(data);
         if (position > 0)

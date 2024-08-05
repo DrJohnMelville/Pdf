@@ -79,12 +79,5 @@ namespace Melville.Parsing.LinkedLists
             source[..length].CopyTo(target);
             return length;
         }
-
-        public void RenumberStartingPosition(long startAt)
-        {
-            RunningIndex = startAt;
-            if (Next is LinkedListNode lln)
-                lln.RenumberStartingPosition(startAt + buffer.Length);
-        }
     }
 }
