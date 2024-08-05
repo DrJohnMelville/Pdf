@@ -58,8 +58,8 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         private IByteSource ConstructNewByteSource(Stream input, int startpos)
         {
             return 
-                ReusableStreamByteSource.Rent(new EexecDecodeStream(
-                        input, key), false).WithCurrentPosition(startpos);
+                MultiplexSourceFactory.SingleReaderForStream(new EexecDecodeStream(
+                    input, key), false).WithCurrentPosition(startpos);
         }
 
         private bool IsHex(ReadOnlySequence<byte> buffer)

@@ -10,17 +10,17 @@ internal abstract class LinkedList
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
     public LinkedListPosition EndPosition => endPosition;
-    private int references;
+    protected int references;
     private int blockSize;
 
     protected internal LinkedList()
     {
     }
 
-    public void AddReference() => references++;
+    public virtual void AddReference() => references++;
     public void ReleaseReference() => references--;
 
-    public LinkedList With(int blockSize)
+    public virtual LinkedList With(int blockSize)
     {
         this.blockSize = blockSize;
         LinkedListNode firstNode = CreateNewBlock();
@@ -132,6 +132,13 @@ internal abstract class LinkedList
                   throw new InvalidOperationException("Should never be null");
         }
         return new (node, (int)(position - node.RunningIndex));
+    }
+
+    protected void PruneFromFront(SequencePosition consumed)
+    {
+        var oldStartPosition = StartPosition;
+        StartPosition = consumed;
+        oldStartPosition.ClearTo(consumed);
     }
 }
 

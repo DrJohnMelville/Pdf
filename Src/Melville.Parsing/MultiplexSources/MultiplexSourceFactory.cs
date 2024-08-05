@@ -1,4 +1,7 @@
-﻿using Melville.Parsing.LinkedLists;
+﻿using Melville.Parsing.CountingReaders;
+using Melville.Parsing.LinkedLists;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -19,7 +22,7 @@ public static class MultiplexSourceFactory
             IMultiplexSource ims => ims, // MultiBufferStream implements IMultiplexSource
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
-            {CanSeek: false} => StreamBackedBuffer.Create(source),
+            {CanSeek: false} => MakeStreamSeekableSource.Create(source),
             _ => new MultiplexedStream(source)
         };
 
@@ -56,4 +59,7 @@ public static class MultiplexSourceFactory
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
     public static IMultiplexSource Create(byte[] source) => Create(source.AsMemory());
+
+    public static IByteSource SingleReaderForStream(Stream input, bool leaveOpen = false) =>
+        SingleReadStreamBuffer.Create(input, leaveOpen).ReadPipeFrom(0);
 }

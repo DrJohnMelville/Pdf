@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -65,8 +67,8 @@ public static class IccProfileColorSpaceParser
     public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
         
-        var profile = await new IccParser(ObjectPool<ReusableStreamByteSource>.Shared.Rent()
-            .WithParameters(source, false)).ParseAsync().CA();
+        var profile = await new IccParser(MultiplexSourceFactory.SingleReaderForStream(source, false))
+            .ParseAsync().CA();
         return new IccColorSpace(profile.DeviceToSrgb());
     }
 }

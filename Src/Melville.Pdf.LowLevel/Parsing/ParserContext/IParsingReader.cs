@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -15,8 +16,7 @@ internal partial class ParsingReader
 
     public ParsingReader(ParsingFileOwner owner, Stream input, long lastSeek) :
         this(owner, 
-            ObjectPool<ReusableStreamByteSource>.Shared.Rent()
-                .WithParameters(input, true).WithCurrentPosition(lastSeek))
+            MultiplexSourceFactory.SingleReaderForStream(input, true).WithCurrentPosition(lastSeek))
     {
     }
 }

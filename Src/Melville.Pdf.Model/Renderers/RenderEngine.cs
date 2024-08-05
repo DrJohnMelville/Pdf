@@ -4,6 +4,8 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -161,7 +163,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync() =>
         await new ContentStreamParser(this).ParseAsync(
-            ReusableStreamByteSource.Rent(await page.GetContentBytesAsync().CA(), false)).CA();
+            MultiplexSourceFactory.SingleReaderForStream(await page.GetContentBytesAsync().CA(), false)).CA();
 
     #endregion
     

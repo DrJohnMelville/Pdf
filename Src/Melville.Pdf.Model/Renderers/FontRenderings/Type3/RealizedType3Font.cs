@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
@@ -12,7 +13,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
 {
-    [FromConstructor]private readonly MultiBufferStream[] characters;
+    [FromConstructor]private readonly IMultiplexSource[] characters;
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
     [FromConstructor]private readonly PdfDictionary rawFont;
@@ -29,7 +30,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         Matrix3x2 charMatrix, IFontTarget target)
     {
         return target.RenderType3CharacterAsync(
-            characters[glyph].CreateReader(), fontMatrix, rawFont);
+            characters[glyph].ReadFrom(0), fontMatrix, rawFont);
     }
     public double? CharacterWidth(uint character) => default;
 
