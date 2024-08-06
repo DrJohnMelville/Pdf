@@ -32,13 +32,13 @@ public class RoundTripEncryptedFiles
     
     private async Task TestEncryptedFileAsync(CreatePdfParser gen, int V, int R, int keyLengthInBits)
     {
-        var target = await gen.AsMultiBufAsync();
+        var target = (await gen.AsMultiBufAsync()).ReadFrom(0);
         await VerifyUserPasswordWorksAsync(V, R, keyLengthInBits, gen.HelpText, target);
         await ParseTargetAsync(target, PasswordType.Owner, "Owner");
     }
 
     private async Task VerifyUserPasswordWorksAsync(int V, int R, int keyLengthInBits,
-        string text, MultiBufferStream target)
+        string text, Stream target)
     {
         var doc = await ParseTargetAsync(target, PasswordType.User, "User");
         var encrypt = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Encrypt);
@@ -64,7 +64,7 @@ public class RoundTripEncryptedFiles
     }
 
     private static ValueTask<PdfLoadedLowLevelDocument> ParseTargetAsync(
-        MultiBufferStream target, PasswordType passwordType, string password) =>
+        Stream target, PasswordType passwordType, string password) =>
         new PdfLowLevelReader(new ConstantPasswordSource(passwordType, password))
             .ReadFromAsync(target);
 

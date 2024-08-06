@@ -20,6 +20,8 @@ internal partial class SubsetByteSource : IByteSource
         return true;
     }
 
+    public ReadResult Read() => ClipResult(inner.Read());
+
     public async ValueTask<ReadResult> ReadAsync() =>
         ClipResult(await inner.ReadAsync().CA());
 

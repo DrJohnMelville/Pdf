@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+﻿using Melville.INPC;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
@@ -11,7 +12,7 @@ public class Jpeg2000Image: DisplayImageTest
 
     protected override PdfStream CreateImage()
     {
-        using var img = GetType().Assembly
+        var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg2000.jp2");
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)

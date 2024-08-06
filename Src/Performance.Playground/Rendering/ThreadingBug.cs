@@ -4,6 +4,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.SkiaSharp;
 
@@ -29,6 +30,6 @@ public class ThreadingBug
             FileMode.Open);
         var ret = new MultiBufferStream();
         doc.CopyTo(ret);
-        return ret.CreateReader();
+        return ((IMultiplexSource)ret).ReadFrom(0);
     }
 }

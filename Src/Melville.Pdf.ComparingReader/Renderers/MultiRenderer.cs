@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Melville.INPC;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
@@ -68,10 +69,10 @@ public abstract partial class MultiRenderer : IMultiRenderer
         pageSelector.SetPageSilent(showPage);
         foreach (var renderer in Renderers)
         {
-            renderer.SetTarget(pdfBits.CreateReader(), 
+            renderer.SetTarget(((IMultiplexSource)pdfBits).ReadFrom(0), 
                 new OneShotPasswordSource(passwordSource));
         }
     }
 
-    public Stream GetCurrentTargetReader() => currentTarget?.CreateReader() as Stream ?? new MemoryStream();
+    public Stream GetCurrentTargetReader() => (currentTarget != null ? ((IMultiplexSource)currentTarget).ReadFrom(0) : null) as Stream ?? new MemoryStream();
 }

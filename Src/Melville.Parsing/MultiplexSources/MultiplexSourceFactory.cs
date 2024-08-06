@@ -61,6 +61,29 @@ public static class MultiplexSourceFactory
     public static IMultiplexSource Create(byte[] source) => Create(source.AsMemory());
 
     /// <summary>
+    /// Create an IMultiplexedSource from a source as optimally as possible
+    /// </summary>
+    /// <param name="source">The data to be accessed</param>
+    /// <returns>A IMultiplexedSource representing the passed in date </returns>
+    public static IMultiplexSource Create(ReadOnlySpan<byte> source) => 
+        Create(source.ToArray());
+
+    /// <summary>
+    /// Create an IMultiplexedSource from a source as optimally as possible
+    /// </summary>
+    /// <param name="source">The data to be accessed</param>
+    /// <returns>A IMultiplexedSource representing the passed in date </returns>
+    public static IMultiplexSource Create(string source)
+    {
+        var buffer = new byte[source.Length];
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            buffer[i] = (byte)source[i];
+        }
+        return Create(buffer);
+    }
+
+    /// <summary>
     /// Create an IByteSource that reads its values from a stream
     /// </summary>
     /// <param name="input">The stream to read from.</param>

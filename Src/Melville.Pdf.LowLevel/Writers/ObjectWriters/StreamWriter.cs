@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -49,6 +50,6 @@ internal static class StreamWriter
 
         var mbs = new MultiBufferStream(2048);
         await rawStream.CopyToAsync(mbs).CA();
-        return mbs.CreateReader();
+        return ((IMultiplexSource)mbs).ReadFrom(0);
     }
 }

@@ -10,7 +10,7 @@ public class JpegHuffmanBug: DisplayImageTest
     
     protected override PdfStream CreateImage()
     {
-        using var img = GetType().Assembly
+        var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg.JpegHuffmanBug.jpg");
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)

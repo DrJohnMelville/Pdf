@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
+using Melville.Pdf.ReferenceDocuments.Graphics.Drawing;
+using Melville.Pdf.ReferenceDocuments.Graphics.Images;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
@@ -26,11 +29,14 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     public static IEnumerable<object[]> GeneratorTests() =>
         GeneratorFactory.AllGenerators.Select(i => new object[] { i.Prefix, i });
 
-    [WpfTheory]                                                         
+    [WpfTheory]
     [MemberData(nameof(GeneratorTests))]
-    public async Task WpfRenderingTestAsync(string shortName, IPdfGenerator generator) =>
-        hashes.AssertDatabase(await ComputeWpfHashAsync(generator), "wpf" + shortName);
-    
+    public async Task WpfRenderingTestAsync(string shortName, IPdfGenerator generator)
+    {
+        var computeWpfHashAsync = await ComputeWpfHashAsync(generator);
+        hashes.AssertDatabase(computeWpfHashAsync, "wpf" + shortName);
+    }
+
     private Task<string> ComputeWpfHashAsync(IPdfGenerator generator) =>
         ComputeGenericHashAsync(generator, AsWpfPageAsync);
 
@@ -39,7 +45,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         var rtdg = new RenderToDrawingGroup(documentRenderer, 0);
         return rtdg.RenderToPngStreamAsync(target);
     }
-
+    
     [Theory]
     [MemberData(nameof(GeneratorTests))]
     public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator) => 
@@ -57,7 +63,8 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
             var doc = await RenderTestHelpers.ReadDocumentAsync(generator);
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
-            return target.Computer.GetHash().ToString();
+            var hash = target.Computer.GetHash().ToString();
+            return hash;
         }
         catch (Exception e)
         {

@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.Streams;
+﻿using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model;
@@ -21,6 +22,6 @@ public static class RenderTestHelpers
         MultiBufferStream src = new();
         await generator.WritePdfAsync(src);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFromAsync(src.CreateReader());
+            .ReadFromAsync(((IMultiplexSource)src).ReadFrom(0));
     }
 }

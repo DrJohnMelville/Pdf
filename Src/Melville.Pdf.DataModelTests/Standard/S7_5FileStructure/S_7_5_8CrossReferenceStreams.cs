@@ -1,7 +1,9 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -24,7 +26,7 @@ public class S_7_5_8CrossReferenceStreams
         var ms = new MultiBufferStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), document);
         await writer.WriteAsync();
-        var docAsArrat = ms.CreateReader().ReadToArray();
+        var docAsArrat = ((IMultiplexSource)ms).ReadFrom(0).ReadToArray();
         var fileAsString = docAsArrat.ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");
         var doc = await (fileAsString).ParseDocumentAsync();

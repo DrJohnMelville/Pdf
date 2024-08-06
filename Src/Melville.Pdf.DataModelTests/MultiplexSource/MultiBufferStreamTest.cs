@@ -23,16 +23,17 @@ public class MultiBufferStreamTest
         var sut = new MultiBufferStream(16);
         sut.Write(numberedBuffer, 0, 256);
         var buf2 = new byte[256];
-        var reader = sut.CreateReader();
+        var reader = ((IMultiplexSource)sut).ReadFrom(0);
         buf2.FillBuffer(0, 256, reader.Read);
         buf2.Should().BeEquivalentTo(numberedBuffer);
     }
 
     [Fact]
     public void SeekOfEndExtendsStream()
-    {
-        var sut = new MultiBufferStream(16);
+    { 
+        Stream sut = new MultiBufferStream(16);
         sut.Write([1,2,3]);
+        sut = ((IMultiplexSource)sut).ReadFrom(0);
         sut.Seek(256, SeekOrigin.Begin);
         sut.Length.Should().Be(256);
         sut.Seek(0, SeekOrigin.Begin);
@@ -43,30 +44,13 @@ public class MultiBufferStreamTest
     }
 
     [Fact]
-    public void WriteOffEndOfStream()
-    {
-        var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
-        var sut = new MultiBufferStream(16);
-        sut.Write(numberedBuffer, 0, 256);
-        sut.Seek(100, SeekOrigin.Begin);
-        sut.Write(numberedBuffer, 0, 256);
-        sut.Position.Should().Be(356);
-        sut.Length.Should().Be(356);
-        var buf2 = new byte[256];
-        var reader = sut.CreateReader();
-        reader.Seek(-256, SeekOrigin.End);
-        reader.Position.Should().Be(100);
-        buf2.FillBuffer(0, 256, reader.Read);
-        buf2.Should().BeEquivalentTo(numberedBuffer);
-    }
-    [Fact]
     public void SerialRead()
     {
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
         var sut = new MultiBufferStream(16);
         sut.Write(numberedBuffer, 0, 256);
         var buf2 = new byte[16];
-        var reader = sut.CreateReader();
+        var reader = ((IMultiplexSource)sut).ReadFrom(0);
         buf2.FillBuffer(0, 16, reader.Read);
         buf2.AsSpan().Should().Be(numberedBuffer.AsSpan()[..16]);
         buf2.FillBuffer(0, 16, reader.Read);
@@ -79,7 +63,7 @@ public class MultiBufferStreamTest
         var sut = new MultiBufferStream(16);
         await sut.WriteAsync(numberedBuffer, 0, 256);
         var buf2 = new byte[256];
-        var reader = sut.CreateReader();
+        var reader = ((IMultiplexSource)sut).ReadFrom(0);
         await buf2.FillBufferAsync(0, 256, reader);
         buf2.Should().BeEquivalentTo(numberedBuffer);
     }

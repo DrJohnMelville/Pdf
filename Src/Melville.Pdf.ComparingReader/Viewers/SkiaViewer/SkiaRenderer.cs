@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.FontLibrary;
@@ -17,7 +19,7 @@ public class SkiaRenderer: MelvillePdfRenderer
         var buffer = new MultiBufferStream();
         await RenderWithSkia.ToPngStreamAsync(source, page, buffer, -1, 4096);
         return BitmapFrame.Create(
-            buffer.CreateReader(), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+            ((IMultiplexSource)buffer).ReadFrom(0), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
     }
 
     protected override IDefaultFontMapper FontSource() => SelfContainedDefaultFonts.Instance;

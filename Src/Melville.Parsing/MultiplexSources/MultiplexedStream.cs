@@ -25,7 +25,7 @@ internal sealed class MultiplexedStream : IMultiplexSource, IIndexedReader
     /// <inheritdoc />
     public void Dispose()
     {
-        mutex.Dispose();
+        mutex.Dispose(); 
         source.Dispose();
     }
 

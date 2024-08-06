@@ -10,7 +10,7 @@ public class CmykJpegImage: DisplayImageTest
     
     protected override PdfStream CreateImage()
     {
-        using var img = GetType().Assembly
+        var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.CMYKJpeg.jpg");
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)

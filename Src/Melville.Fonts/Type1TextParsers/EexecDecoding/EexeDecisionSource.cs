@@ -31,7 +31,7 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         {
             if (setReader is not null)
             {
-                await CreateDecodingReaderAsync().ConfigureAwait(false);
+                await CreateDecodingReaderAsync().CA();
             }
 
             return await inner.ReadAsync().CA();

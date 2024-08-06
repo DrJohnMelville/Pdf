@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
@@ -29,7 +31,7 @@ public class LowLevelDocumentModifierTest
     {
         var ms = new MultiBufferStream();
         await doc.WriteToAsync(ms);
-        return await new PdfLowLevelReader().ReadFromAsync(ms.CreateReader());
+        return await new PdfLowLevelReader().ReadFromAsync(((IMultiplexSource)ms).ReadFrom(0));
     }
 
     private async Task DoDocumentModificationTestsAsync(

@@ -101,8 +101,7 @@ internal class PdfObjectWriter
         int objNum, int generation, PdfDirectObject value)
     {
         currentIndirectObject =
-            value.TryGet(out PdfDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
-                (-1,-1): (objNum, generation); ;
+            value.TryGet(out PdfDictionary? pvd) && encryptor.BlockEncryption(pvd) ? (-1,-1): (objNum, generation); 
         return this.WriteObjectDefinitionAsync(objNum, generation, value);
     }
 

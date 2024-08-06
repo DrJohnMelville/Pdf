@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
@@ -126,7 +127,7 @@ public class S7_5_7ObjectStreams
         var ms = new MultiBufferStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
         await writer.WriteAsync();
-        var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
+        var fileAsString = ((IMultiplexSource)ms).ReadFrom(0).ReadToArray().ExtendedAsciiString();
         return fileAsString;
     }
 

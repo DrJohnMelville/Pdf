@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -17,7 +18,7 @@ public static class BuilderShortcuts
         var doc = creator.CreateDocument(major, minor);
         var output = new MultiBufferStream();
         await doc.WriteToAsync(output);
-        return output.CreateReader();
+        return ((IMultiplexSource)output).ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) => 
@@ -34,7 +35,7 @@ public static class BuilderShortcuts
         var doc = creator;
         var output = new MultiBufferStream();
         await doc.WriteToAsync(output);
-        return output.CreateReader();
+        return ((IMultiplexSource)output).ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this PdfLowLevelDocument creator) => 

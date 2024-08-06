@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
@@ -18,8 +19,9 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     private LinkedList data;
     private LinkedListPosition currentPosition;
 
-    internal MultiBufferStream(LinkedList data, bool canWrite): 
-        base(true, canWrite, true)
+    internal MultiBufferStream(LinkedList data, 
+        bool canRead, bool canWrite, bool canSeek): 
+        base(canRead, canWrite, canSeek)
     { 
         this.data = data;
         data.AddReference();
@@ -31,16 +33,16 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     /// </summary>
     /// <param name="blockLength">The default block length when the stream creates blocks.</param>
     public MultiBufferStream(int blockLength = 4096): this(
-        MultiBufferStreamList.WritableList(blockLength), true)
+        MultiBufferStreamList.WritableList(blockLength), false, true, true)
     {
     }
-    
+
     /// <summary>
     /// Create a readonly multibufferstream that contains the given data
     /// </summary>
     /// <param name="firstBuffer">Make a multibufferStream with an initial buffer</param>
     public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) : 
-        this(MultiBufferStreamList.SingleItemList(firstBuffer), false)
+        this(MultiBufferStreamList.SingleItemList(firstBuffer), true, false, true)
     {
     }
 
@@ -48,6 +50,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     /// <inheritdoc />
     public override int Read(Span<byte> buffer)
     {
+        Debug.Assert(CanRead);
         (var ret, currentPosition) = data.Read(currentPosition, buffer);
         return ret;
     }
@@ -57,6 +60,7 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
+        Debug.Assert(CanRead);
         (var ret, currentPosition) = 
             await data.ReadAsync(currentPosition, buffer).CA();
         return ret;
@@ -72,8 +76,11 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
     }
 
     /// <inheritdoc />
-    public override long Seek(long offset, SeekOrigin origin) =>
-        Position = offset + this.SeekOriginLocation(origin);
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        Debug.Assert(CanSeek);
+        return Position = offset + this.SeekOriginLocation(origin);
+    }
 
 
     /// <inheritdoc />
@@ -96,16 +103,11 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
         }
     }
 
-    /// <summary>
-    /// Create a reader that has its own unique position pointer into the buffer.
-    /// </summary>
-    public MultiBufferStream CreateReader() => new(data, false);
-
     /// <inheritdoc />
     Stream IMultiplexSource.ReadFrom(long position)
     {
-        var ret = CreateReader();
-        ret.Seek(position, SeekOrigin.Begin);
+        var ret = new MultiBufferStream(data, true, false, true);
+        if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
 

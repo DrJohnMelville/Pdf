@@ -11,7 +11,7 @@ internal partial class MakeStreamSeekableSource : StreamBackedBuffer<MakeStreamS
     public static IMultiplexSource Create(Stream source, int bufferSize = 4096)
     {
         var linkedList = new MakeStreamSeekableSource(source, false).With(bufferSize);
-        return new MultiBufferStream(linkedList, false);
+        return new MultiBufferStream(linkedList, true, false, true);
     }
 
    private SemaphoreSlim mutex = new(1, 1);

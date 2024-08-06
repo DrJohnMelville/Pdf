@@ -1,45 +1,41 @@
-﻿namespace Melville.Parsing.Streams;
+﻿using Melville.INPC;
+using Melville.Parsing.MultiplexSources;
+
+namespace Melville.Parsing.Streams;
 
 /// <summary>
-/// Th is struct is used to allow many different types to convert implicitly to a multibufferstream
+/// This is struct is used to allow many different types to convert implicitly to a multibufferstream
 /// </summary>
-public readonly struct MultiBufferStreamSource
+public readonly partial struct MultiBufferStreamSource
 {
+    /// <summary>
+    /// Tuhe source of the bits for the source
+    /// </summary>
+    [FromConstructor] private readonly IMultiplexSource source;
+
     /// <summary>
     /// The MultiBufferStream that contains the data.
     /// </summary>
-    public MultiBufferStream Stream { get; }
+    public Stream Stream => source.ReadFrom(0);
 
-    /// <summary>
-    /// Create a MultiBufferStreamSource from a MultiBufferStream
-    /// </summary>
-    /// <param name="stream"></param>
-    public MultiBufferStreamSource(MultiBufferStream stream)
-    {
-        Stream = stream;
-    }
-
-    /// <summary>
-    /// Implicitly convert a MultiBufferStream to a MultiBufferStreamSource
-    /// </summary>
-    /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(MultiBufferStream mbs) => new(mbs);
     /// <summary>
     /// Implicitly convert a stream to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(Stream mbs) => new(ForceMultiBufferStream(mbs));
+    public static implicit operator MultiBufferStreamSource(Stream mbs) => 
+        new(MultiplexSourceFactory.Create(mbs));
     /// <summary>
     /// Implicitly convert a byte array to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(byte[] mbs) => new(new(mbs));
+    public static implicit operator MultiBufferStreamSource(byte[] mbs) => 
+        new(MultiplexSourceFactory.Create(mbs));
     /// <summary>
     /// Implicitly convert a string to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
     public static implicit operator MultiBufferStreamSource(string mbs) => 
-        new(new(ToBytes(mbs)));
+        new(MultiplexSourceFactory.Create(ToBytes(mbs)));
 
     private static byte[] ToBytes(string mbs)
     {
@@ -51,18 +47,4 @@ public readonly struct MultiBufferStreamSource
 
         return ret;
     }
-    private static MultiBufferStream ForceMultiBufferStream(Stream s) => 
-        s is MultiBufferStream mbs ? mbs : CopyToMultiBufferStream(s);
-
-    private static MultiBufferStream CopyToMultiBufferStream(Stream s)
-    {
-        var ret = new MultiBufferStream(DesiredStreamLength(s));
-        s.CopyTo(ret);
-        ret.Seek(0, SeekOrigin.Begin); // the returned steam must be immediately readable.
-        return ret;
-    }
-
-    private static int DesiredStreamLength(Stream s) => 
-        s.Length > 0?(int)s.Length:4096;
-
 }

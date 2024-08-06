@@ -10,7 +10,7 @@ internal partial class SingleReadStreamBuffer: StreamBackedBuffer<SingleReadStre
     public static IMultiplexSource Create(Stream source, bool leaveOpen, int bufferSize = 4096)
     {
         var linkedList = new SingleReadStreamBuffer(source, leaveOpen).With(bufferSize);
-        return new MultiBufferStream(linkedList, false);
+        return new MultiBufferStream(linkedList, true, false, false);
     }
 
     public override void HasReadTo(SequencePosition consumed)

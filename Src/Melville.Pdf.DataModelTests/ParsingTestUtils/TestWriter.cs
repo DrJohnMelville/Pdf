@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -19,7 +21,7 @@ public class TestWriter
     }
 
     public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
-        target.CreateReader().ReadToArray());
+        ((IMultiplexSource)target).ReadFrom(0).ReadToArray());
 }
 
 public static class TestWriterOperations

@@ -8,7 +8,6 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
-#warning -- maybe can simplify this test
 public class MultiplexedStreamTest
 {
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
@@ -19,12 +20,12 @@ public class MultiBufferStreamTest
     public void AllowedOperations()
     {
         var sut = CreateEmptyStream(1);
-        Assert.True(sut.CanRead);
+        Assert.False(sut.CanRead);
         Assert.True(sut.CanWrite);
         Assert.True(sut.CanSeek);
         Assert.False(sut.CanTimeout);
 
-        var reader = sut.CreateReader();
+        var reader = ((IMultiplexSource)sut).ReadFrom(0);
         Assert.True(reader.CanRead);
         Assert.True(reader.CanSeek);
         Assert.False(reader.CanWrite);
@@ -61,11 +62,9 @@ public class MultiBufferStreamTest
     public void WriteByte(long position)
     {
         var sut = new MultiBufferStream(16);
-        sut.Write("ABCDE".AsExtendedAsciiBytes());
         sut.Seek(position, SeekOrigin.Begin);
         sut.WriteByte((byte)'Z');
-        sut.Seek(position, SeekOrigin.Begin);
-        Assert.Equal('Z', sut.ReadByte());
+        Assert.Equal('Z', ((IMultiplexSource)sut).ReadFrom(position).ReadByte());
     }
     [Fact]
     public void SimpleStreamLength()
@@ -155,9 +154,8 @@ public class MultiBufferStreamTest
         Assert.Equal(0, sut.Length);
         sut.Write("ABCDE".AsExtendedAsciiBytes(), 0, 5);
         Assert.Equal(5, sut.Length);
-        sut.Seek(0, SeekOrigin.Begin);
         var ret = new byte[10];
-        Assert.Equal(5, sut.Read(ret, 0, 10));
+        Assert.Equal(5, ((IMultiplexSource)sut).ReadFrom(0).Read(ret, 0, 10));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
     }
     [Fact]
@@ -167,9 +165,8 @@ public class MultiBufferStreamTest
         Assert.Equal(0, sut.Length);
         await sut.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5);
         Assert.Equal(5, sut.Length);
-        sut.Seek(0, SeekOrigin.Begin);
         var ret = new byte[10];
-        Assert.Equal(5, await sut.ReadAsync(ret, 0, 10));
+        Assert.Equal(5, await ((IMultiplexSource)sut).ReadFrom(0).ReadAsync(ret, 0, 10));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
     }
         
@@ -181,9 +178,8 @@ public class MultiBufferStreamTest
         {
             sut.Write("ABCDEFG".AsExtendedAsciiBytes().AsSpan());
         }
-        sut.Seek(0, SeekOrigin.Begin);
         Span<byte> ret = stackalloc byte[21];
-        Assert.Equal(21, sut.Read(ret));
+        Assert.Equal(21, ((IMultiplexSource)sut).ReadFrom(0).Read(ret));
         Assert.Equal("ABCDEFGABCDEFGABCDEFG", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
     }
         

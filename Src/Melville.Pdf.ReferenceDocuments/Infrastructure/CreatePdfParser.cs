@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.Streams;
+﻿using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
 using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
@@ -21,7 +22,7 @@ public abstract class CreatePdfParser : IPdfGenerator
 
 public static class CreatePdfParserOperations
 {
-    public static async ValueTask<MultiBufferStream> AsMultiBufAsync(this CreatePdfParser source)
+    public static async ValueTask<IMultiplexSource> AsMultiBufAsync(this CreatePdfParser source)
     {
         var target = new MultiBufferStream();
         await source.WritePdfAsync(target);
@@ -29,7 +30,8 @@ public static class CreatePdfParserOperations
     }
 
     public static async ValueTask<string> AsStringAsync(this CreatePdfParser source) =>
-        await new StreamReader((await source.AsMultiBufAsync()).CreateReader()).ReadToEndAsync();
+        await new StreamReader((await source.AsMultiBufAsync()).ReadFrom(0))
+            .ReadToEndAsync();
 
     public static async ValueTask<DocumentRenderer> AsDocumentRendererAsync(
         this CreatePdfParser source) =>

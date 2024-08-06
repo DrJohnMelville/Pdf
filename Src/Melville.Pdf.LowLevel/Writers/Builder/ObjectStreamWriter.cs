@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.StreamFilters;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -59,5 +61,5 @@ internal readonly struct ObjectStreamWriter
             .AsStream(FinalStreamContent());        
     }
     private ConcatStream FinalStreamContent() => 
-        new ConcatStream(refs.CreateReader(), objects.CreateReader());
+        new ConcatStream(((IMultiplexSource)refs).ReadFrom(0), ((IMultiplexSource)objects).ReadFrom(0));
 }

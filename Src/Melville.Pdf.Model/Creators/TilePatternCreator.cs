@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -51,7 +52,7 @@ public enum PatternTileType
 /// </summary>
 public class TilePatternCreator : ContentStreamCreator
 {
-    private MultiBufferStream? content;
+    private Stream? content;
 
     /// <summary>
     /// Create a TilePatternCreator

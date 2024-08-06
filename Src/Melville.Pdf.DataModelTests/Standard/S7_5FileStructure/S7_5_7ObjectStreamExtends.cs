@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -22,7 +23,7 @@ public readonly struct MultiBufferWriter
         return buffer.Length;
     }
 
-    public Stream CreateReader() => buffer.CreateReader();
+    public Stream CreateReader() => ((IMultiplexSource)buffer).ReadFrom(0);
 }
 
 public class S7_5_7ObjectStreamExtends

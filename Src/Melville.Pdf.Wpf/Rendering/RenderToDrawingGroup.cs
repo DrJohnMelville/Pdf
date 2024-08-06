@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Wpf.Controls;
@@ -36,8 +37,8 @@ public readonly struct RenderToDrawingGroup
     /// </summary>
     /// <param name="stream">Writeable stream to receive the PNG bits.</param>
     public async ValueTask RenderToPngStreamAsync(Stream stream) =>
-        await WriteToBufferStream(
-                DrawingGroupToBitmap(await RenderAsync())).CreateReader()
+        await ((IMultiplexSource)WriteToBufferStream(
+                DrawingGroupToBitmap(await RenderAsync()))).ReadFrom(0)
             .CopyToAsync(stream);
 
     private static RenderTargetBitmap DrawingGroupToBitmap(DrawingGroup doc)

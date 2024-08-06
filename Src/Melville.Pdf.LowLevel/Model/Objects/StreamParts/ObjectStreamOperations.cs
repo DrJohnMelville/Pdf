@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
-using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
 

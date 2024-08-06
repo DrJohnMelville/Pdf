@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -20,6 +22,6 @@ public abstract class WriterTest
     protected async Task<string> WrittenTextAsync()
     {
         await destPipe.FlushAsync();
-        return await destStream.CreateReader().ReadAsStringAsync();
+        return await ((IMultiplexSource)destStream).ReadFrom(0).ReadAsStringAsync();
     }
 }

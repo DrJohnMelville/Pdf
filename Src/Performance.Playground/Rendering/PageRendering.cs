@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using BenchmarkDotNet.Attributes;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
@@ -39,5 +41,5 @@ public class PageRendering
 
     private async Task<DocumentRenderer> LoadDocumentAsync() =>
         await DocumentRendererFactory.CreateRendererAsync(
-            await PdfDocument.ReadAsync(data.CreateReader()), WindowsDefaultFonts.Instance);
+            await PdfDocument.ReadAsync(((IMultiplexSource)data).ReadFrom(0)), WindowsDefaultFonts.Instance);
 }

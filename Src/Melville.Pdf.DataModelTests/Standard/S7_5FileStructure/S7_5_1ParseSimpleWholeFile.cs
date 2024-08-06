@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -21,7 +22,7 @@ public class S7_5_1ParseSimpleWholeFile
         var target = new MultiBufferStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc);
         await writer.WriteAsync();
-        return target.CreateReader().ReadToArray().ExtendedAsciiString();
+        return ((IMultiplexSource)target).ReadFrom(0).ReadToArray().ExtendedAsciiString();
     }
     private async Task<string> OutputTwoItemDocumentAsync(byte majorVersion = 1, byte minorVersion = 7)
     {

@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -22,7 +23,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         var target = new MultiBufferStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc, "User");
         await writer.WriteAsync();
-        return target.CreateReader().ReadToArray().ExtendedAsciiString();
+        return ((IMultiplexSource)target).ReadFrom(0).ReadToArray().ExtendedAsciiString();
     }
 
     [Fact]

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
@@ -55,7 +57,7 @@ public class AcroFormReaderTest
         var stream = new MultiBufferStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(stream);
 
-        var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
+        var f2 = await FormReaderFacade.ReadFormAsync(((IMultiplexSource)stream).ReadFrom(0));
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
     [Fact]
@@ -67,7 +69,7 @@ public class AcroFormReaderTest
         var stream = new MultiBufferStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(stream);
 
-        var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
+        var f2 = await FormReaderFacade.ReadFormAsync(((IMultiplexSource)stream).ReadFrom(0));
         f2.Fields[0].Value.DecodedString().Should().Be("Foo\x2013Bar");
     }
 
