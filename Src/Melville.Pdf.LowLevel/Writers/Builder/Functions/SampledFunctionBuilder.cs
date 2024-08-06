@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
@@ -149,13 +151,14 @@ public readonly struct SampledFunctionBuilder
         return outputs.All(i => i.DecodeTrivial());
     }
 
-    private async ValueTask<MultiBufferStream> SamplesStreamAsync()
+    private async ValueTask<Stream> SamplesStreamAsync()
     {
-        var ret = new MultiBufferStream();
-        var bitWriter = new BitStreamWriter(ret, bitsPerSample);
+        using var ret = WritableBuffer.Create();
+        await using var writingStream = ret.WritingStream();
+        var bitWriter = new BitStreamWriter(writingStream, bitsPerSample);
         WriteSamplesToWriter(bitWriter);
         await bitWriter.FinishAsync().CA();
-        return ret;
+        return ret.ReadFrom(0);
     }
 
     private void WriteSamplesToWriter(in BitStreamWriter bitWriter) => 

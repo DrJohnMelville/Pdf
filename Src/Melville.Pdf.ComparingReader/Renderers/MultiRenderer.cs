@@ -20,7 +20,7 @@ public interface IRenderer
 public interface IMultiRenderer
 {
     object RenderTarget { get; }
-    void SetTarget(MultiBufferStream pdfBits, int showPage = 1);
+    void SetTarget(IMultiplexSource pdfBits, int showPage = 1);
     Stream GetCurrentTargetReader();
 }
 
@@ -38,7 +38,7 @@ public abstract partial class MultiRenderer : IMultiRenderer
         .Select(i=>i.Renderer);
     private readonly IPageSelector pageSelector;
     private readonly IPasswordSource passwordSource;
-    private MultiBufferStream? currentTarget;
+    private IMultiplexSource? currentTarget;
 
     protected MultiRenderer(IReadOnlyList<IRenderer> renderers, IPageSelector pageSelector, IPasswordSource passwordSource)
     {
@@ -63,13 +63,13 @@ public abstract partial class MultiRenderer : IMultiRenderer
 
     public object RenderTarget => this;
 
-    public void SetTarget(MultiBufferStream pdfBits, int showPage)
+    public void SetTarget(IMultiplexSource pdfBits, int showPage)
     {
         currentTarget = pdfBits;
         pageSelector.SetPageSilent(showPage);
         foreach (var renderer in Renderers)
         {
-            renderer.SetTarget(((IMultiplexSource)pdfBits).ReadFrom(0), 
+            renderer.SetTarget(pdfBits.ReadFrom(0), 
                 new OneShotPasswordSource(passwordSource));
         }
     }

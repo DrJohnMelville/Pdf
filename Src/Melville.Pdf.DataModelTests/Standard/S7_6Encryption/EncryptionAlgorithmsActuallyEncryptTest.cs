@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
@@ -20,10 +21,10 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         
     private async Task<string> WriteAsync(PdfLowLevelDocument doc)
     {
-        var target = new MultiBufferStream();
+        var target = new MemoryStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc, "User");
         await writer.WriteAsync();
-        return ((IMultiplexSource)target).ReadFrom(0).ReadToArray().ExtendedAsciiString();
+        return target.GetBuffer().AsSpan(0,(int)target.Length).ExtendedAsciiString();
     }
 
     [Fact]

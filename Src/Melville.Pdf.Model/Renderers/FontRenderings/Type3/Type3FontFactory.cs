@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -16,7 +17,7 @@ internal readonly partial struct Type3FontFactory
     {
         var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
         var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).CA();
-        var characters = new MultiBufferStream[1 + lastChar - firstChar];
+        var characters = new IMultiplexSource[1 + lastChar - firstChar];
         var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).CA();
         var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).CA();
         var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).CA();
@@ -26,15 +27,13 @@ internal readonly partial struct Type3FontFactory
             switch (item)
             {
                 case var x when x.TryGet(out int nextChar): 
-                    currentChar = currentChar = nextChar;
+                    currentChar = nextChar;
                     break;
                 case {IsName:true}:
-                    var stream = new MultiBufferStream();
                     var source = 
                         await (await charProcs.GetAsync<PdfStream>(item).CA())
                             .StreamContentAsync().CA();
-                    await source.CopyToAsync(stream).CA();
-                    characters[currentChar - firstChar] = stream;
+                    characters[currentChar - firstChar] = MultiplexSourceFactory.Create(source);
                     currentChar++;
                     break;
             }

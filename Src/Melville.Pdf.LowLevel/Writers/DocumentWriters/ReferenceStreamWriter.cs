@@ -44,8 +44,8 @@ internal readonly struct ReferenceStreamWriter
 
     private async ValueTask<PdfStream> CreateReferenceStreamAsync()
     {
-        var data = new MultiBufferStream(2048);
-        await GenerateXrefStreamAsync(data).CA();
+        using var data = WritableBuffer.Create();
+        await GenerateXrefStreamAsync(data.WritingStream()).CA();
 
         return new DictionaryBuilder()
             .WithMultiItem(document.TrailerDictionary.RawItems
@@ -56,7 +56,7 @@ internal readonly struct ReferenceStreamWriter
             .WithItem(KnownNames.Size, objectOffsets.Entries.Length)
             .WithFilter(FilterName.FlateDecode)
             .WithFilterParam(FilterParam())
-            .AsStream(data);
+            .AsStream(data.ReadFrom(0));
     }
 
     private PdfDictionary FilterParam() => new DictionaryBuilder()

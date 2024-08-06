@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -23,11 +24,10 @@ public class S_7_5_8CrossReferenceStreams
     public async Task GenerateAndParseFileWithReferenceStreamAsync()
     {
         var document = MinimalPdfParser.MinimalPdf();
-        var ms = new MultiBufferStream();
+        var ms = new MemoryStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), document);
         await writer.WriteAsync();
-        var docAsArrat = ((IMultiplexSource)ms).ReadFrom(0).ReadToArray();
-        var fileAsString = docAsArrat.ExtendedAsciiString();
+        var fileAsString = ms.GetBuffer().AsSpan(0, (int)ms.Length).ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");
         var doc = await (fileAsString).ParseDocumentAsync();
         Assert.NotNull(doc.TrailerDictionary);

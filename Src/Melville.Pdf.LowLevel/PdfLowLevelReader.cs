@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -36,6 +37,7 @@ public readonly struct PdfLowLevelReader
         string s => ReadFromFileAsync(s),
         byte[] s => ReadFromAsync(s),
         Stream s => ReadFromAsync(s),
+        IMultiplexSource ims => ReadFromAsync(ims),
         _ => throw new ArgumentException("Must be string, byte array, or stream.", nameof(argument))
     };
 
@@ -54,7 +56,7 @@ public readonly struct PdfLowLevelReader
     /// <param name="input">The byte array to read from</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(byte[] input) =>
-        ReadFromAsync(new MemoryStream(input));
+        ReadFromAsync(MultiplexSourceFactory.Create(input));
 
     /// <summary>
     /// Load a PdfLowLevelDocument from a stream.  After the call, the PdfLowLevelDocument
@@ -63,6 +65,15 @@ public readonly struct PdfLowLevelReader
     /// <param name="input">The stream to read from</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(Stream input) =>
+            ReadFromAsync(MultiplexSourceFactory.Create(input));
+
+    /// <summary>
+    /// Load a PdfLowLevelDocument from a stream.  After the call, the PdfLowLevelDocument
+    /// owns the stream, and the caller may not change it.
+    /// </summary>
+    /// <param name="input">The stream to read from</param>
+    /// <returns> The PdfLowLevelDocument read;</returns>
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(IMultiplexSource input) =>
         RandomAccessFileParser.ParseAsync(
             new ParsingFileOwner(input, passwordSource));
 }

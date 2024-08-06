@@ -14,9 +14,10 @@ public class ThreadingBug
 {
     public async Task ReadMultiAsync()
     {
-            using var doc = await DocumentRendererFactory.CreateRendererAsync(
+        await using var readFile = ReadFile();
+        using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(
-                    ReadFile()), WindowsDefaultFonts.Instance);
+                    readFile), WindowsDefaultFonts.Instance);
 
             await Parallel.ForEachAsync(Enumerable.Range(1, 1000), async (i, _) =>
             {
@@ -28,8 +29,9 @@ public class ThreadingBug
     {
         using var doc= File.Open(@"C:\Users\jmelv\Documents\Scratch\1Page.pdf",
             FileMode.Open);
-        var ret = new MultiBufferStream();
-        doc.CopyTo(ret);
-        return ((IMultiplexSource)ret).ReadFrom(0);
+        using var ret = WritableBuffer.Create();
+        using var writer = ret.WritingStream();
+        doc.CopyTo(writer);
+        return ret.ReadFrom(0);
     }
 }

@@ -48,8 +48,9 @@ internal static class StreamWriter
     {
         if (rawStream.Length > 0) return rawStream;
 
-        var mbs = new MultiBufferStream(2048);
-        await rawStream.CopyToAsync(mbs).CA();
-        return ((IMultiplexSource)mbs).ReadFrom(0);
+        using var mbs = WritableBuffer.Create();
+        await using var writer = mbs.WritingStream();
+        await rawStream.CopyToAsync(writer).CA();
+        return (mbs).ReadFrom(0);
     }
 }

@@ -19,14 +19,16 @@ public class S7_5_6IncrementalUpdates
         var creator = new LowLevelDocumentBuilder();
         create(creator);
         var doc = creator.CreateDocument();
-        var stream = new MultiBufferStream();
-        await doc.WriteToAsync(stream);
+        using var source = WritableBuffer.Create();
+        await using var writer = source.WritingStream();
+        await doc.WriteToAsync(writer);
+        await using var stream = source.ReadFrom(0);
 
         var pdfLowLevelReader = new PdfLowLevelReader();
         var ld = await pdfLowLevelReader.ReadFromAsync(stream);
         var modifier = ld.Modify();
         await modify(ld, modifier);
-        await modifier.WriteModificationTrailerAsync(stream);
+        await modifier.WriteModificationTrailerAsync(writer);
             
         return await pdfLowLevelReader.ReadFromAsync(stream);
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ public class ReadStandardEncoding
 {
     private static CffGenericFont FontWithEncodingOffset(
         long offset, uint glyphCount, long charSetOffset) =>
-        new(MultiplexSourceFactory.Create([]),
+        new(MultiplexSourceFactory.Create(Array.Empty<byte>()),
             1000, "Fake Font", 0,
             new CffIndex(null!, glyphCount, 1), 0, 0, null!, charSetOffset, offset);
 

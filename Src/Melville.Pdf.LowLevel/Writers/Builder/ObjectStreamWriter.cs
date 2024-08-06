@@ -14,18 +14,18 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 internal readonly struct ObjectStreamWriter
 {
-    private readonly MultiBufferStream refs;
-    private readonly CountingPipeWriter referenceStreamWriter;
-    private readonly MultiBufferStream objects;
-    private readonly CountingPipeWriter objectStreamWriter;
+    private readonly IWritableMultiplexSource refs;
+    private readonly Melville.Parsing.Writers.CountingPipeWriter referenceStreamWriter;
+    private readonly IWritableMultiplexSource objects;
+    private readonly Melville.Parsing.Writers.CountingPipeWriter objectStreamWriter;
     private readonly PdfObjectWriter objectWriter;
 
     public ObjectStreamWriter()
     {
-        refs = new();
-        objects = new();
-        referenceStreamWriter = new CountingPipeWriter(PipeWriter.Create(refs));
-        objectStreamWriter = new CountingPipeWriter(PipeWriter.Create(objects));
+        refs = WritableBuffer.Create();
+        objects = WritableBuffer.Create();
+        referenceStreamWriter = refs.WritingPipe();
+        objectStreamWriter = objects.WritingPipe();
         objectWriter = new PdfObjectWriter(objectStreamWriter);
     }
 
@@ -61,5 +61,5 @@ internal readonly struct ObjectStreamWriter
             .AsStream(FinalStreamContent());        
     }
     private ConcatStream FinalStreamContent() => 
-        new ConcatStream(((IMultiplexSource)refs).ReadFrom(0), ((IMultiplexSource)objects).ReadFrom(0));
+        new ConcatStream(refs.ReadFrom(0), objects.ReadFrom(0));
 }

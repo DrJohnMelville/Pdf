@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 /// </summary>
 public class LowLevelDocumentWriter
 {
-    private readonly CountingPipeWriter target;
+    private readonly Melville.Parsing.Writers.CountingPipeWriter target;
     /// <summary>
     /// The pipewriter to which the document is being written.
     /// </summary>
@@ -38,7 +38,7 @@ public class LowLevelDocumentWriter
     public LowLevelDocumentWriter(
         PipeWriter target, PdfLowLevelDocument document, string? userPassword = null)
     {
-        this.target = new CountingPipeWriter(target);
+        this.target = new Melville.Parsing.Writers.CountingPipeWriter(target);
         this.document = document;
         this.userPassword = userPassword;
     }

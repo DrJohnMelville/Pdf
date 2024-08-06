@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Melville.FileSystem;
@@ -9,6 +10,7 @@ using Melville.MVVM.Wpf.Bindings;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
@@ -79,15 +81,7 @@ public partial class MainWindowViewModel
         await LoadFileAsync(file);
     }
 
-    private async Task LoadFileAsync(IFile file)
-    {
-        var src = new MultiBufferStream();
-        await using (var fileStr = await file.OpenRead())
-        {
-            await fileStr.CopyToAsync(src);
-        }
-        Renderer.SetTarget(src);
-    }
+    private async Task LoadFileAsync(IFile file) => Renderer.SetTarget(MultiplexSourceFactory.Create(await file.OpenRead()));
 }
 
 public static class MainWindowConverters

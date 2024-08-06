@@ -50,12 +50,13 @@ public readonly struct RenderToDrawingGroup
         return rtb;
     }
 
-    private static MultiBufferStream WriteToBufferStream(RenderTargetBitmap rtb)
+    private static IMultiplexSource WriteToBufferStream(RenderTargetBitmap rtb)
     {
         var encoder = new JpegBitmapEncoder();
         encoder.Frames.Add(BitmapFrame.Create(rtb));
-        var mbs = new MultiBufferStream();
-        encoder.Save(mbs);
+        var mbs = WritableBuffer.Create();
+        using var writer = mbs.WritingStream();
+        encoder.Save(writer);
         return mbs;
     }
 

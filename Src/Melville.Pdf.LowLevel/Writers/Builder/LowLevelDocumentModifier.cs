@@ -78,9 +78,9 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 
 
     public ValueTask WriteModificationTrailerAsync(PipeWriter cpw, long startPosition) =>
-        WriteModificationTrailerAsync(new CountingPipeWriter(cpw, startPosition));
+        WriteModificationTrailerAsync(new Melville.Parsing.Writers.CountingPipeWriter(cpw, startPosition));
 
-    private async ValueTask WriteModificationTrailerAsync(CountingPipeWriter target)
+    private async ValueTask WriteModificationTrailerAsync(Melville.Parsing.Writers.CountingPipeWriter target)
     {
         var lines = new List<XrefLine>();
         var writer = new PdfObjectWriter(target);
@@ -99,7 +99,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         await TrailerWriter.WriteTrailerWithDictionaryAsync(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 
-    private static void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)
+    private static void WriteRevisedXrefTable(Melville.Parsing.Writers.CountingPipeWriter target, IEnumerable<XrefLine> lines)
     {
         foreach (var segment in XRefSegments(lines))
         {

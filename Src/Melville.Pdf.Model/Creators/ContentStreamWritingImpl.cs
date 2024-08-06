@@ -55,10 +55,10 @@ public static class ContentStreamWritingImpl
     public static async ValueTask AddToContentStreamAsync(
         this ContentStreamCreator pc, DictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
     {
-        var streamData = new MultiBufferStream();
-        var pipe = PipeWriter.Create(streamData);
+        using var streamData = WritableBuffer.Create();
+        var pipe = streamData.WritingPipe();
         await creator(new ContentStreamWriter(pipe)).CA();
         await pipe.FlushAsync().CA();
-        pc.AddToContentStream(dict, streamData);
+        pc.AddToContentStream(dict, streamData.ReadFrom(0));
     }
 }

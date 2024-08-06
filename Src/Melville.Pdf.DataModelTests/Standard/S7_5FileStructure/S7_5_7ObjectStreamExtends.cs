@@ -11,19 +11,21 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public readonly struct MultiBufferWriter
 {
-    private readonly MultiBufferStream buffer = new MultiBufferStream();
+    private readonly IWritableMultiplexSource buffer = WritableBuffer.Create();
 
     public MultiBufferWriter() { }
 
     public long Write(string s)
     {
+        using var writer = buffer.WritingStream();
+        writer.Seek(0, SeekOrigin.End);
         Span<byte> scratch = stackalloc byte[s.Length];
         ExtendedAsciiEncoding.EncodeToSpan(s, scratch);
-        buffer.Write(scratch);
+        writer.Write(scratch);
         return buffer.Length;
     }
 
-    public Stream CreateReader() => ((IMultiplexSource)buffer).ReadFrom(0);
+    public Stream CreateReader() => buffer.ReadFrom(0);
 }
 
 public class S7_5_7ObjectStreamExtends

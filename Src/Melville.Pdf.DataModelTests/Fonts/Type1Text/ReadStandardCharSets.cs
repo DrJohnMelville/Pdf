@@ -269,7 +269,7 @@ public class ReadStandardCharSets
         s.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
     private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount) =>
-        new(MultiplexSourceFactory.Create([]),
+        new(MultiplexSourceFactory.Create(Array.Empty<byte>()),
             1000, "Fake Font", 0, new CffIndex(null!, glyphCount, 1), 0, 0, null!, offset, 0);
 
     [Fact]

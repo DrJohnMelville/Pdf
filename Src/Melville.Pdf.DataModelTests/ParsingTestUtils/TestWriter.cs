@@ -12,16 +12,16 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
 public class TestWriter
 {
-    private readonly MultiBufferStream target = new();
+    private readonly IWritableMultiplexSource target = WritableBuffer.Create();
     public PipeWriter Writer { get; }
 
     public TestWriter()
     {
-        Writer = PipeWriter.Create(target);
+        Writer = target.WritingPipe();
     }
 
     public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
-        ((IMultiplexSource)target).ReadFrom(0).ReadToArray());
+        target.ReadFrom(0).ReadToArray());
 }
 
 public static class TestWriterOperations

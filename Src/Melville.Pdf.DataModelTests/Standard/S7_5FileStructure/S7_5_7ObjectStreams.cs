@@ -124,10 +124,10 @@ public class S7_5_7ObjectStreams
 
     private static async Task<string> DocCreatorToStringAsync(ILowLevelDocumentCreator builder)
     {
-        var ms = new MultiBufferStream();
+        var ms = new MemoryStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
         await writer.WriteAsync();
-        var fileAsString = ((IMultiplexSource)ms).ReadFrom(0).ReadToArray().ExtendedAsciiString();
+        var fileAsString = ms.GetBuffer().AsSpan(0,(int)ms.Length).ExtendedAsciiString();
         return fileAsString;
     }
 

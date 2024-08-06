@@ -105,7 +105,7 @@ internal partial class ParsingFileOwner
 
         #endregion
 
-        #region Writer methods
+        #region WritingStream methods
 
         private int CheckLength(int len)
         {

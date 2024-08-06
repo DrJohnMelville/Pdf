@@ -20,7 +20,7 @@ public class MultiplexedStreamTest
     }
 
     protected IMultiplexSource CreateSut(byte[] data) =>
-        new MultiBufferStream(data);
+        MultiplexSourceFactory.Create(data);
 
     private void VerifyRead(Stream reader, params byte[] data)
     {

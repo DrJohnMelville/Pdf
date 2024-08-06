@@ -35,16 +35,18 @@ internal partial class AcroFieldWithAppearance: AcroFormField
         var original = new MemoryStream(); 
         await (await templateStream.StreamContentAsync().CA()).CopyToAsync(original).CA();
 
-        var stm = new MultiBufferStream();
-        WriteNewAppearnce(appearanceString, stm, textValue.Span, AsSpan(original));
-        target.ReplaceReferenceObject(apStreamRef, builder.AsStream(stm));
+        using var stm = WritableBuffer.Create();
+        await using var writer = stm.WritingStream();
+        WriteNewAppearnce(appearanceString, writer, textValue.Span, AsSpan(original));
+        await using var reader = stm.ReadFrom(0);
+        target.ReplaceReferenceObject(apStreamRef, builder.AsStream(reader));
     }
 
     private static Span<byte> AsSpan(MemoryStream original) => 
         original.GetBuffer().AsSpan(0,(int)original.Length);
 
     private static void WriteNewAppearnce(
-        PdfDirectObject appearanceString, MultiBufferStream stm, ReadOnlySpan<char> textValue,
+        PdfDirectObject appearanceString, Stream stm, ReadOnlySpan<char> textValue,
         in ReadOnlySpan<byte> priorText)
     {
 
@@ -59,7 +61,7 @@ internal partial class AcroFieldWithAppearance: AcroFormField
         stm.Write(SuffixFrom(priorText));
     }
 
-    private static void WriteEncodedStringValue(MultiBufferStream stm, ReadOnlySpan<char> textValue)
+    private static void WriteEncodedStringValue(Stream stm, ReadOnlySpan<char> textValue)
     {
         Span<byte> translatedSpan = stackalloc byte[textValue.Length];
         PdfDocEncoding.Instance.GetBytes(textValue, translatedSpan);

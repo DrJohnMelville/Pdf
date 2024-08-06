@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.MVVM.Wpf.DiParameterSources;
@@ -38,9 +39,12 @@ public partial class ReplViewModel
     private async void OnContentStreamTextChanged(string newValue)
     {
         if (buffer.Length == 0) return; // heppens in testing
-        var target = await CopyOriginalFileAsync();
+
+        using var target = WritableBuffer.Create();
+        await using var writer = target.WritingStream();
+        await writer.WriteAsync(buffer);
         var doc = await new PdfLowLevelReader().ReadFromAsync(buffer);
-        await WriteStreamModificationBlockAsync(doc, await CreateReplacementStreamAsync(newValue), target);                                                                       
+        await WriteStreamModificationBlockAsync(doc, await CreateReplacementStreamAsync(newValue), writer);                                                                       
         renderer.SetTarget(target, page.Page);
     }
 
@@ -52,18 +56,11 @@ public partial class ReplViewModel
     }
 
     private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfStream newStream,
-        MultiBufferStream target)
+        Stream target)
     {
         var modifier = doc.Modify();
         modifier.ReplaceReferenceObject(contentStream, newStream);
         await modifier.WriteModificationTrailerAsync(target);
-    }
-
-    private async Task<MultiBufferStream> CopyOriginalFileAsync()
-    {
-        var target = new MultiBufferStream();
-        await target.WriteAsync(buffer.AsMemory());
-        return target;
     }
 
     private static PdfStream StreamWithContent(PdfDirectObject source, string newValue)

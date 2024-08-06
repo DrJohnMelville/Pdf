@@ -16,9 +16,10 @@ public static class BuilderShortcuts
     public static async Task<Stream> AsStreamAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7)
     {
         var doc = creator.CreateDocument(major, minor);
-        var output = new MultiBufferStream();
-        await doc.WriteToAsync(output);
-        return ((IMultiplexSource)output).ReadFrom(0);
+        using var output = WritableBuffer.Create();
+        using var writer = output.WritingStream();
+        await doc.WriteToAsync(writer);
+        return output.ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) => 
@@ -33,9 +34,10 @@ public static class BuilderShortcuts
     public static async Task<Stream> AsStreamAsync(this PdfLowLevelDocument creator)
     {
         var doc = creator;
-        var output = new MultiBufferStream();
-        await doc.WriteToAsync(output);
-        return ((IMultiplexSource)output).ReadFrom(0);
+        using var output = WritableBuffer.Create();
+        await using var writer = output.WritingStream();
+        await doc.WriteToAsync(writer);
+        return output.ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this PdfLowLevelDocument creator) => 

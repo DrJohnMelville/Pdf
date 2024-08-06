@@ -16,10 +16,10 @@ public class SkiaRenderer: MelvillePdfRenderer
 {
     protected override async ValueTask<ImageSource> RenderAsync(DocumentRenderer source, int page)
     {
-        var buffer = new MultiBufferStream();
-        await RenderWithSkia.ToPngStreamAsync(source, page, buffer, -1, 4096);
-        return BitmapFrame.Create(
-            ((IMultiplexSource)buffer).ReadFrom(0), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+        using var buffer = WritableBuffer.Create();
+        await using var writer = buffer.WritingStream();
+        await RenderWithSkia.ToPngStreamAsync(source, page, writer, -1, 4096);
+        return BitmapFrame.Create(buffer.ReadFrom(0), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
     }
 
     protected override IDefaultFontMapper FontSource() => SelfContainedDefaultFonts.Instance;

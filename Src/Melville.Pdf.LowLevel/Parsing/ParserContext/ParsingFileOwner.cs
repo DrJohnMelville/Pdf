@@ -22,9 +22,14 @@ internal sealed partial class ParsingFileOwner: IDisposable
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
-    public ParsingFileOwner(Stream source, IPasswordSource passwordSource)
+    public ParsingFileOwner(Stream source, IPasswordSource passwordSource) : this(
+        MultiplexSourceFactory.Create(source), passwordSource)
     {
-        this.source = MultiplexSourceFactory.Create(source);
+    }
+
+    public ParsingFileOwner(IMultiplexSource source, IPasswordSource passwordSource)
+    {
+        this.source = source;
         this.passwordSource = passwordSource;
         NewIndirectResolver = new IndirectObjectRegistry(this);
     }

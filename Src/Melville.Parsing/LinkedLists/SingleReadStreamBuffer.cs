@@ -7,11 +7,8 @@ namespace Melville.Parsing.LinkedLists;
 [FromConstructor]
 internal partial class SingleReadStreamBuffer: StreamBackedBuffer<SingleReadStreamBuffer>
 {
-    public static IMultiplexSource Create(Stream source, bool leaveOpen, int bufferSize = 4096)
-    {
-        var linkedList = new SingleReadStreamBuffer(source, leaveOpen).With(bufferSize);
-        return new MultiBufferStream(linkedList, true, false, false);
-    }
+    public static IMultiplexSource Create(Stream source, bool leaveOpen, int bufferSize = 4096) => 
+        new SingleReadStreamBuffer(source, leaveOpen).With(bufferSize);
 
     public override void HasReadTo(SequencePosition consumed)
     {

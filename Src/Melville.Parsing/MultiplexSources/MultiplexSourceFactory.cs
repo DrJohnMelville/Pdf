@@ -46,7 +46,7 @@ public static class MultiplexSourceFactory
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(Memory<byte> source) => new MultiBufferStream(source);
+    public static IMultiplexSource Create(Memory<byte> source) => MultiBufferStreamList.SingleItemList(source);
 
     private static Memory<byte> MemoryStreamToMemory(MemoryStream ms) =>
         ms.TryGetBuffer(out var buffer)

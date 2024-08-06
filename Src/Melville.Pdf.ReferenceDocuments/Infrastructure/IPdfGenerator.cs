@@ -19,9 +19,11 @@ public static class RenderTestHelpers
 {
     public static async ValueTask<DocumentRenderer> ReadDocumentAsync(this IPdfGenerator generator)
     {
-        MultiBufferStream src = new();
-        await generator.WritePdfAsync(src);
+        using var src = WritableBuffer.Create();
+        await using var writer = src.WritingStream();
+        await generator.WritePdfAsync(writer);
+        await using var readFrom = src.ReadFrom(0);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFromAsync(((IMultiplexSource)src).ReadFrom(0));
+            .ReadFromAsync(readFrom);
     }
 }

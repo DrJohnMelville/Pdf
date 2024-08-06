@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 
@@ -15,10 +16,11 @@ public class ReferenceDocumentLeaf: ReferenceDocumentNode
         this.document = document;
     }
 
-    public async ValueTask<MultiBufferStream> GetDocumentAsync()
+    public async ValueTask<IMultiplexSource> GetDocumentAsync()
     {
-        var stream = new MultiBufferStream();
-        await document.WritePdfAsync(stream);
-        return stream;
+        using var buffer = WritableBuffer.Create();
+        using var writer = buffer.WritingStream();
+        await document.WritePdfAsync(writer);
+        return buffer;
     }
 }

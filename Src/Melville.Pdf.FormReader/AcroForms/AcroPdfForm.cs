@@ -50,8 +50,8 @@ internal partial class AcroPdfForm : IPdfForm
             new XElement(DataNs + "data", xfaForm.DataElements())
             );
 
-        var mbs = new MultiBufferStream();
-        var writer = XmlWriter.Create(mbs,
+        using var mbs = WritableBuffer.Create();
+        using var writer = XmlWriter.Create(mbs.WritingStream(),
             new XmlWriterSettings()
             {
                 CheckCharacters = true, 
@@ -66,7 +66,7 @@ internal partial class AcroPdfForm : IPdfForm
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.EmbeddedFile)
                 .WithFilter(FilterName.FlateDecode)
-                .AsStream(mbs)
+                .AsStream(mbs.ReadFrom(0))
             );
     }
 }

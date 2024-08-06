@@ -17,11 +17,12 @@ namespace Performance.Playground.Rendering;
 [MemoryDiagnoser()]
 public class PageRendering
 {
-    MultiBufferStream data = new MultiBufferStream();
+    IWritableMultiplexSource data = WritableBuffer.Create();
     [GlobalSetup]
     public async Task CreateStreamAsync()
     {
-        await new EmbeddedTrueType().WritePdfAsync(data);
+        await using var writer = data.WritingStream();
+        await new EmbeddedTrueType().WritePdfAsync(writer);
     }
     
     [Benchmark]
@@ -39,7 +40,10 @@ public class PageRendering
             return await new RenderToDrawingGroup(dr, 1).RenderToDrawingImageAsync();
     }
 
-    private async Task<DocumentRenderer> LoadDocumentAsync() =>
-        await DocumentRendererFactory.CreateRendererAsync(
-            await PdfDocument.ReadAsync(((IMultiplexSource)data).ReadFrom(0)), WindowsDefaultFonts.Instance);
+    private async Task<DocumentRenderer> LoadDocumentAsync()
+    {
+        var readFrom = data.ReadFrom(0);
+        return await DocumentRendererFactory.CreateRendererAsync(
+            await PdfDocument.ReadAsync(readFrom), WindowsDefaultFonts.Instance);
+    }
 }
