@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Buffers;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal abstract class LinkedList
+internal abstract class LinkedList: IMultiplexSource
 {
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
@@ -140,6 +143,31 @@ internal abstract class LinkedList
         StartPosition = consumed;
         oldStartPosition.ClearTo(consumed);
     }
+
+    Stream IMultiplexSource.ReadFrom(long position)
+    {
+        var ret = new MultiBufferStream(this, true, false, true);
+        if (position > 0) ret.Seek(position, SeekOrigin.Begin);
+        return ret;
+    }
+
+    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition)
+    {
+        var ret = new LinkedListByteSource(this);
+        if (position > 0)
+        {
+            var initial = PositionAt(position);
+            ret.AdvanceTo(initial);
+        }
+
+        return ret.WithCurrentPosition(startingPosition);
+    }
+
+    public void Dispose()
+    {
+    }
+
+    long IMultiplexSource.Length => endPosition.GlobalPosition;
 }
 
 internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>

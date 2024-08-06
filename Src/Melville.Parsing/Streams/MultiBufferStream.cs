@@ -1,11 +1,8 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams.Bases;
 using LinkedListPosition = Melville.Parsing.LinkedLists.LinkedListPosition;
 
@@ -103,23 +100,9 @@ public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
         }
     }
 
-    /// <inheritdoc />
-    Stream IMultiplexSource.ReadFrom(long position)
-    {
-        var ret = new MultiBufferStream(data, true, false, true);
-        if (position > 0) ret.Seek(position, SeekOrigin.Begin);
-        return ret;
-    }
-
-    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition)
-    {
-        var ret = new LinkedListByteSource(data);
-        if (position > 0)
-        {
-            var initial = data.PositionAt(position);
-            ret.AdvanceTo(initial);
-        }
-
-        return ret.WithCurrentPosition(startingPosition);
-    }
+    Stream IMultiplexSource.ReadFrom(long position) =>
+      ((IMultiplexSource)this).ReadFrom(position);
+   
+    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition)=>
+        ((IMultiplexSource)this).ReadPipeFrom(position, startingPosition);
 }
