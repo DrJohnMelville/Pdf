@@ -35,7 +35,7 @@ public abstract class ObjectPoolBase<T> where T : class
     {
         lock (mutex)
         {
-            return nextSlot == 0 ? Create() : ClearAndReturnSlot();
+            return RecordCheckOut(nextSlot == 0 ? Create() : ClearAndReturnSlot());
         }
     }
 
@@ -48,9 +48,11 @@ public abstract class ObjectPoolBase<T> where T : class
     {
         lock(mutex)
         {
+            RecordCheckIn(item);
             if (nextSlot >= bufferLength)
             {
-                (item as IDisposable)?.Dispose();
+                if (item is not IClearable) // some clearable classes use Dispose to return to the pool
+                    (item as IDisposable)?.Dispose();
                 return;
             }
 
@@ -82,6 +84,22 @@ public abstract class ObjectPoolBase<T> where T : class
     /// </summary>
     /// <returns>A new object of the pooled type</returns>
     protected abstract T Create();
+
+    #if DEBUG
+    private readonly RentalPolicyChecker policyCheck = new();
+
+    private T RecordCheckOut(T item)
+    {
+        policyCheck.CheckOut(item);
+        return item;
+    }
+
+    private void RecordCheckIn(T item) => policyCheck.CheckIn(item);
+#else
+    private T RecordCheckOut(T item) => item;
+    private void RecordCheckIn(T item){}
+
+#endif
 }
 
 /// <summary>
