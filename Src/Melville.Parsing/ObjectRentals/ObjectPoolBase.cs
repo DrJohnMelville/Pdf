@@ -84,8 +84,8 @@ public abstract class ObjectPoolBase<T> where T : class
     /// </summary>
     /// <returns>A new object of the pooled type</returns>
     protected abstract T Create();
-
-    #if DEBUG
+#warning -- eventually we may be able to use the rental policy checker, but we need more local guidance right now
+#if DEBUG && false
     private readonly RentalPolicyChecker policyCheck = new();
 
     private T RecordCheckOut(T item)
