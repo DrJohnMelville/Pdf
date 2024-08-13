@@ -54,11 +54,6 @@ internal static class FileTrailerLocater
 
     private static bool SearchForS(ReadResult readResult, IByteSource source, long max, out bool foundOne)
     {
-        if (readResult.IsCompleted || source.Position> max)
-        {
-            foundOne = false;
-            return false;
-        }
         var reader = new SequenceReader<byte>(readResult.Buffer);
         if (reader.TryAdvanceTo((byte) 's'))
         {
@@ -70,7 +65,7 @@ internal static class FileTrailerLocater
 
         foundOne = false;
         source.AdvanceTo(readResult.Buffer.End);
-        return true;
+        return !(readResult.IsCompleted || source.Position > max);
     }
 
     private static readonly byte[] StartXRef = "tartxref"u8.ToArray(); 

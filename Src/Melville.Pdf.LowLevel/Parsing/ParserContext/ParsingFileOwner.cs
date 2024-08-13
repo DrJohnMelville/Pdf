@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -38,11 +39,9 @@ internal sealed partial class ParsingFileOwner: IDisposable
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
-    public ParsingReader RentReader(long offset, int objectNumber=-1, int generation = -1)
-    {
-        return ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset);
-
-    }
+    public ParsingReader RentReader(long offset, int objectNumber=-1, int generation = -1) =>
+        new(this, 
+            source.ReadPipeFrom(AdjustOffsetForPreHeaderBytes(offset), offset));
 
     public Stream RentStream(long position, long length) => 
         new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
@@ -50,9 +49,6 @@ internal sealed partial class ParsingFileOwner: IDisposable
 
     public IObjectCryptContext CryptContextForObject(int objectNumber, int generation) =>
         documentCryptContext.ContextForObject(objectNumber, generation);
-
-    public ParsingReader ParsingReaderForStream(Stream s, long position) =>
-        new ParsingReader(this, s, position);
 
     public async ValueTask InitializeDecryptionAsync(PdfDictionary trailerDictionary)
     {
