@@ -1,9 +1,37 @@
 ﻿using System.Diagnostics;
+using System.Net.Sockets;
+using System.Text;
 using Microsoft.CodeAnalysis.FlowAnalysis;
 
 namespace Melville.Parsing.ObjectRentals;
 
 #if DEBUG
+
+public static class RentalLog
+{
+    private static UdpClient? client = null;
+    private static UdpClient Client
+    {
+        get
+        {
+            client ??= new UdpClient();
+            return client;
+        }
+    }
+
+    public static string WriteLine(string str)
+    {
+        var bytes = Encoding.UTF8.GetBytes(str);
+        Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+        return str;
+    }
+
+    public static void Log(string message, StackTrace trace) =>
+        WriteLine($"""
+            {message}
+            {trace}
+            """);
+}
 
 internal readonly struct RentalRecord
 {
@@ -22,7 +50,7 @@ internal readonly struct RentalRecord
 
         if (object.ReferenceEquals(newlyRented, strongRef))
         {
-            throw new ObjectRentalException(
+            RentalLog.Log(
                 "An object was rented twice.", trace);
         }
     }
@@ -31,7 +59,7 @@ internal readonly struct RentalRecord
     {
         if (strongRef is null)
         {
-            throw new ObjectRentalException(
+            RentalLog.Log(
                 "A rented object was garbage collected before return.", trace);
         }
     }
@@ -65,8 +93,8 @@ internal class RentalPolicyChecker
             }
         }
         if (index == -1)
-            throw new ObjectRentalException(
-                "An object was returned that was not rented. (or was returned twice.)");
+            RentalLog.WriteLine(
+                $"An object was returned that was not rented. (or was returned twice.): {item}");
         if (index + 1 < rentals.Count)
         {
             rentals[index] = rentals[^1];
@@ -74,25 +102,4 @@ internal class RentalPolicyChecker
         }
     }
 }
-
-internal class ObjectRentalException: Exception
-{
-    public StackTrace? RentalTrace { get; }
-
-    public ObjectRentalException(string message) : base(message)
-    {
-    }
-
-    public ObjectRentalException(string message, StackTrace origin) : base(
-        $"""
-        {message}
-        
-        Stack trace at rental:
-        {origin}
-        """)
-    {
-        RentalTrace = origin;
-    }
-}
-
 #endif

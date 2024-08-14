@@ -1,4 +1,6 @@
-﻿using Melville.Parsing.ObjectRentals;
+﻿using System.Linq;
+using Melville.Linq;
+using Melville.Parsing.ObjectRentals;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Primatives;
@@ -34,15 +36,16 @@ public class ObjectRentalManager
     [Fact]
     public void DoNotStoreMoreThanTwentyItems()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            sut.Return(new object());
-        }
+        var objs = Enumerable.Range(0, 20).Select(i => sut.Rent()).ToArray();
+        var l1 = sut.Rent();
+        var l2 = sut.Rent();
+        var l3 = sut.Rent();
+        objs.ForEach(i=>sut.Return(i));
         var last = sut.Rent();
         sut.Return(last);
-        sut.Return(new object());
-        sut.Return(new object());
-        sut.Return(new object());
+        sut.Return(l1);
+        sut.Return(l2);
+        sut.Return(l3);
         Assert.Equal(last, sut.Rent());
         
     }
