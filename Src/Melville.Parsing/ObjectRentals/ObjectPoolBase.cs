@@ -85,15 +85,14 @@ public abstract class ObjectPoolBase<T> where T : class
     /// <returns>A new object of the pooled type</returns>
     protected abstract T Create();
 #if DEBUG
-    private readonly RentalPolicyChecker policyCheck = new();
 
     private T RecordCheckOut(T item)
     {
-        policyCheck.CheckOut(item);
+        RentalPolicyChecker.Instance.CheckOut(item);
         return item;
     }
 
-    private void RecordCheckIn(T item) => policyCheck.CheckIn(item);
+    private void RecordCheckIn(T item) => RentalPolicyChecker.Instance.CheckIn(item);
 #else
     private T RecordCheckOut(T item) => item;
     private void RecordCheckIn(T item){}

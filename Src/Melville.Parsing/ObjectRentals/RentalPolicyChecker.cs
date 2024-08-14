@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
+using Melville.INPC;
 using Microsoft.CodeAnalysis.FlowAnalysis;
 
 namespace Melville.Parsing.ObjectRentals;
@@ -29,13 +30,38 @@ public static class RentalLog
     public static void Log(string message, StackTrace trace) =>
         WriteLine($"""
             {message}
-            {trace}
+            {DumpTrace(trace)}
             """);
+
+    private static string DumpTrace(StackTrace trace)
+    {
+        var frames = trace.GetFrames().Select(PrintFrame).ToArray();
+        var last = 0;
+        for (int i = 0; i < frames.Length; i++)
+        {
+            if (frames[i].Contains("Melville")) last = i;
+        }
+
+        var ret = new StringBuilder();
+        for (int i = 0; i <= last; i++)
+        {
+            ret.AppendLine(frames[i]);
+        }
+
+        return ret.ToString();
+    }
+
+    private static string PrintFrame(StackFrame i)
+    {
+        var method = i.GetMethod();
+        if (method is null) return "No Method";
+        return $"{method.DeclaringType}.{method.Name}";
+    }
 }
 
 internal readonly struct RentalRecord
 {
-    private readonly StackTrace trace = new StackTrace(4);
+    public StackTrace Trace { get; } = new StackTrace(4);
     private readonly WeakReference item;
 
     public RentalRecord(object item)
@@ -51,7 +77,7 @@ internal readonly struct RentalRecord
         if (object.ReferenceEquals(newlyRented, strongRef))
         {
             RentalLog.Log(
-                "An object was rented twice.", trace);
+                "An object was rented twice.", Trace);
         }
     }
 
@@ -60,7 +86,7 @@ internal readonly struct RentalRecord
         if (strongRef is null)
         {
             RentalLog.Log(
-                "A rented object was garbage collected before return.", trace);
+                "A rented object was garbage collected before return.", Trace);
         }
     }
 
@@ -72,9 +98,12 @@ internal readonly struct RentalRecord
     }
 }
 
-internal class RentalPolicyChecker
+[StaticSingleton]
+internal partial class RentalPolicyChecker
 {
     private readonly List<RentalRecord> rentals = new();
+
+    public static IDisposable RentalScope() => new RentalScopeImplementation(Instance);
 
     public void CheckOut(object item)
     {
@@ -92,6 +121,7 @@ internal class RentalPolicyChecker
                 index = i;
             }
         }
+
         if (index == -1)
             RentalLog.WriteLine(
                 $"An object was returned that was not rented. (or was returned twice.): {item}");
@@ -99,6 +129,27 @@ internal class RentalPolicyChecker
         {
             rentals[index] = rentals[^1];
             rentals.RemoveAt(rentals.Count - 1);
+        }
+    }
+
+
+    private class RentalScopeImplementation : IDisposable
+    {
+        private readonly RentalPolicyChecker parent;
+
+        public RentalScopeImplementation(RentalPolicyChecker parent)
+        {
+            this.parent = parent;
+            if (parent.rentals.Any())
+                RentalLog.WriteLine("Rental Manager had rentals at the time scope was initialized");
+        }
+
+        public void Dispose()
+        {
+            foreach (var rental in parent.rentals)
+            {
+                RentalLog.Log($"Object not returned at end of rental scope.", rental.Trace);
+            }
         }
     }
 }
