@@ -1,4 +1,5 @@
 ﻿using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Parsing.MultiplexSources
 {
@@ -38,4 +39,4 @@ namespace Melville.Parsing.MultiplexSources
         /// <returns>A, IMultiplexSource that shares data with this one, but with an offset</returns>
         IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
     }
-} 
+}

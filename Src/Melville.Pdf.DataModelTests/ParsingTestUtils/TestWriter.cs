@@ -20,8 +20,20 @@ public class TestWriter
         Writer = target.WritingPipe();
     }
 
-    public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
-        target.ReadFrom(0).ReadToArray());
+    public string Result()
+    {
+        try
+        {
+            using var readFrom = target.ReadFrom(0);
+            return ExtendedAsciiEncoding.ExtendedAsciiString(
+                readFrom.ReadToArray());
+        }
+        finally
+        {
+            Writer.Complete();
+            target.Dispose();
+        }
+    }
 }
 
 public static class TestWriterOperations

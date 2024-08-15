@@ -107,7 +107,7 @@ internal partial class RentalPolicyChecker
 
     public void CheckOut(object item)
     {
-        foreach (var rental in rentals) rental.CheckObjectAtRental(item);
+        foreach (var rental in rentals.ToArray()) rental.CheckObjectAtRental(item);
         rentals.Add(new RentalRecord(item));
     }
 

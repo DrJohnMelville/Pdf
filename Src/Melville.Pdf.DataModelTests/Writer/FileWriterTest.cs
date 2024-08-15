@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -79,8 +80,12 @@ public class FileWriterTest
     [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj")]
     [InlineData("endobj\nxref\n0 2\n0000000000 00000 f\r\n0000000042 00000 n\r\n")]
     [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 2>>\nstartxref\n75\n%%EOF")]
-    public async Task SimpleDocumentContentsAsync(string expected) => 
+    public async Task SimpleDocumentContentsAsync(string expected)
+    {
+#warning come back to this test after writing the Counting on multiplex source
+        //        using var xx = RentalPolicyChecker.RentalScope();
         Assert.Contains(expected, await OutputSimpleDocumentAsync());
+    }
 
     [Theory]
     [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
