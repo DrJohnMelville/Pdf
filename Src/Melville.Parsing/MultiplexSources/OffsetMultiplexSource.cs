@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.MultiplexSources;
+﻿using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 
 /// <summary>
 /// This is an IMultiplexSource that represents a position inside of another IMultiplexSource,
@@ -16,5 +17,10 @@ public class OffsetMultiplexSource(IMultiplexSource inner, long offset) : IMulti
     public Stream ReadFrom(long position) => inner.ReadFrom(position + offset);
 
     /// <inheritdoc />
+    public IByteSource ReadPipeFrom(long position, long startingPosition = 0) =>
+       inner.ReadPipeFrom(position + offset, startingPosition);
+    
+    /// <inheritdoc />
     public long Length => inner.Length - offset;
+#warning and offset from an offset source should reference the original, not this source.
 }

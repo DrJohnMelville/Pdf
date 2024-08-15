@@ -88,11 +88,21 @@ public abstract class ObjectPoolBase<T> where T : class
 
     private T RecordCheckOut(T item)
     {
-        RentalPolicyChecker.Instance.CheckOut(item);
-        return item;
+        lock (RentalPolicyChecker.Instance)
+        {
+            RentalPolicyChecker.Instance.CheckOut(item);
+            return item;
+
+        }
     }
 
-    private void RecordCheckIn(T item) => RentalPolicyChecker.Instance.CheckIn(item);
+    private void RecordCheckIn(T item)
+    {
+        lock (RentalPolicyChecker.Instance)
+        {
+            RentalPolicyChecker.Instance.CheckIn(item);
+        }
+    }
 #else
     private T RecordCheckOut(T item) => item;
     private void RecordCheckIn(T item){}

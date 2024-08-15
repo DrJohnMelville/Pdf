@@ -1,7 +1,9 @@
 ﻿using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
+using Melville.Pdf.FontLibrary;
 using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.ReferenceDocuments.Infrastructure;
 
@@ -35,6 +37,6 @@ public static class CreatePdfParserOperations
             .ReadToEndAsync();
 
     public static async ValueTask<DocumentRenderer> AsDocumentRendererAsync(
-        this CreatePdfParser source) =>
-        await new PdfReader().ReadFromAsync(await source.AsMultiBufAsync());
+        this CreatePdfParser source, IDefaultFontMapper? fonts = null) =>
+        await new PdfReader(fonts?? SelfContainedDefaultFonts.Instance).ReadFromAsync(await source.AsMultiBufAsync());
 }
