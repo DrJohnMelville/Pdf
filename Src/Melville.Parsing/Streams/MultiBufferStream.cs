@@ -14,18 +14,20 @@ internal class MultiBufferStream : DefaultBaseStream
 {
     private LinkedList data;
     private LinkedListPosition currentPosition;
-
+    private CountedSourceTicket ticket;
+    
     internal MultiBufferStream(LinkedList data,
-        bool canRead, bool canWrite, bool canSeek) :
+        bool canRead, bool canWrite, bool canSeek, CountedSourceTicket ticket) :
         base(canRead, canWrite, canSeek)
     {
         this.data = data;
-        data.AddReference();
+        this.ticket = ticket;
         currentPosition = data.StartPosition;
     }
 
+#warning this needs to become a factory method so we can use a real ticket from the MBSL
     public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) :
-        this(MultiBufferStreamList.SingleItemList(firstBuffer), true, false, true)
+        this(MultiBufferStreamList.SingleItemList(firstBuffer), true, false, true, default)
     {
     }
 
@@ -65,7 +67,7 @@ internal class MultiBufferStream : DefaultBaseStream
     public override void SetLength(long value) =>
         data.Truncate(value);
 
-    public override long Length => data.Length();
+    public override long Length => data.Length;
 
     public override long Position
     {
@@ -77,5 +79,11 @@ internal class MultiBufferStream : DefaultBaseStream
             data.EnsureHasLocation(value);
             currentPosition = data.AsSequence().GetPosition(value);
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        ticket.TryRelease();
     }
 }

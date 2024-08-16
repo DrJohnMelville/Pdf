@@ -1,10 +1,11 @@
 ﻿using System.IO.Pipelines;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal class LinkedListByteSource(LinkedList data) : IByteSource
+internal class LinkedListByteSource(LinkedList data, CountedSourceTicket ticket) : IByteSource
 {
     private LinkedListPosition nextByte = data.StartPosition;
     private LinkedListPosition unexaminedByte = data.StartPosition;
@@ -12,7 +13,7 @@ internal class LinkedListByteSource(LinkedList data) : IByteSource
 
     public void Dispose()
     {
-        data.ReleaseReference();
+        ticket.TryRelease();
     }
 
     public bool TryRead(out ReadResult result)

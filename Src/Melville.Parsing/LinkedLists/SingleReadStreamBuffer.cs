@@ -14,12 +14,4 @@ internal partial class SingleReadStreamBuffer: StreamBackedBuffer<SingleReadStre
     {
         PruneFromFront(consumed);
     }
-
-    public override void AddReference()
-    {
-        base.AddReference();
-        if (references > 2)
-            throw new InvalidOperationException(
-                "SingleReadStreamBuffer should only have one reference");
-    }
 }

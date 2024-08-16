@@ -4,30 +4,27 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 
 namespace Melville.Parsing.LinkedLists;
 
-internal abstract class LinkedList: IMultiplexSource
+
+internal abstract class LinkedList: CountedMultiplexSource
 {
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
     public LinkedListPosition EndPosition => endPosition;
-    protected int references;
     private int blockSize;
 
     protected internal LinkedList()
     {
     }
 
-    public virtual void AddReference() => references++;
-    public void ReleaseReference() => references--;
 
     public virtual LinkedList With(int blockSize)
     {
         this.blockSize = blockSize;
         LinkedListNode firstNode = CreateNewBlock();
-        references = 1;
         StartPosition = endPosition = new LinkedListPosition(firstNode, 0);
         return this;
     }
@@ -36,7 +33,6 @@ internal abstract class LinkedList: IMultiplexSource
     {
         LinkedListNode firstNode = LinkedListNode.Rent(source);
         blockSize = 0;
-        references = 1;
         StartPosition = new LinkedListPosition(firstNode, 0);
         endPosition = new LinkedListPosition(firstNode, source.Length);
         return this;
@@ -95,8 +91,6 @@ internal abstract class LinkedList: IMultiplexSource
         endPosition = AsSequence().GetPosition(value);
     }
 
-    public long Length() => EndPosition.GlobalPosition;
-
     public void EnsureHasLocation(long value)
     {
         UpdateEndIfGreater(EndPosition.ExtendTo(value, blockSize));
@@ -144,16 +138,21 @@ internal abstract class LinkedList: IMultiplexSource
         oldStartPosition.ClearTo(consumed);
     }
 
-    Stream IMultiplexSource.ReadFrom(long position)
+
+    #region IMultiplexSource
+
+    public override long Length => endPosition.GlobalPosition;
+
+    public override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {
-        var ret = new MultiBufferStream(this, true, false, true);
+        var ret = new MultiBufferStream(this, true, false, true, ticket);
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
 
-    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition)
+    public override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
     {
-        var ret = new LinkedListByteSource(this);
+        var ret = new LinkedListByteSource(this, ticket);
         if (position > 0)
         {
             var initial = PositionAt(position);
@@ -163,12 +162,13 @@ internal abstract class LinkedList: IMultiplexSource
         return ret.WithCurrentPosition(startingPosition);
     }
 
-    public void Dispose()
-    
+    protected override void CleanUp()
     {
+#warning -- enable list clean up
+        //        StartPosition.ClearTo(LinkedListPosition.NullPosition);
     }
+    #endregion
 
-    long IMultiplexSource.Length => endPosition.GlobalPosition;
 }
 
 internal abstract class LinkedList<T> : LinkedList where T : LinkedList<T>

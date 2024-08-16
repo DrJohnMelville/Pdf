@@ -18,7 +18,10 @@ internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>, IWrita
     public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
         new MultiBufferStreamList().With(source);
 
-    public Stream WritingStream() => new MultiBufferStream(this, false, true, true);
+    public Stream WritingStream() => new MultiBufferStream(this, false, true, true, default);
+    // we can use a default ticket here because it makes no sense for the writing stream to be the only
+    // reference to the multibufferstream list.  Using a default ticket means that not disposing the writing
+    // stream will not hold the buffers open.
 
     public CountingPipeWriter WritingPipe() => new CountingPipeWriter(PipeWriter.Create(WritingStream()));
 }

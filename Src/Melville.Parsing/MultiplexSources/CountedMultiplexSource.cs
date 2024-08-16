@@ -1,34 +1,83 @@
-﻿using Melville.Parsing.CountingReaders;
+﻿using System.Diagnostics;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal abstract class CountedMultiplexSource : IMultiplexSource
+internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSource
 {
+    private CountedSourceState state;
+    private int pendingReaders;
+    private int serialNumber = ICountedSource.NextNonce();
+
     public void Dispose()
     {
+        if (state == CountedSourceState.Closed) return;
+        state = CountedSourceState.WaitingForPendingReaders;
+        TryCleanUp();
+    }
+
+    private void TryCleanUp()
+    {
+        if (ShouldStayOpen()) return;
         CleanUp();
+        state = CountedSourceState.Closed;
+    }
+
+    private bool ShouldStayOpen()
+    {
+        return state == CountedSourceState.Open || pendingReaders > 0;
     }
 
     public Stream ReadFrom(long position)
     {
-        return ReadFromOverride(position);
+        AddReference();
+        return ReadFromOverride(position, CreateSourceTicket());
+    }
+
+    private CountedSourceTicket CreateSourceTicket() => new(this, serialNumber);
+
+    private void AddReference()
+    {
+        Debug.Assert(state == CountedSourceState.Open);
+        pendingReaders++;
+    }
+
+    public bool TryRelease(ref CountedSourceTicket ticket)
+    {
+        if (!ticket.HasNonce(serialNumber)) return false;
+        ticket = default; // clear the ticket so it cannot be fired again
+        ReleaseReference();
+        return true;
+    }
+
+    private void ReleaseReference()
+    {
+        Debug.Assert(state != CountedSourceState.Closed);
+        Debug.Assert(pendingReaders > 0);
+        pendingReaders --;
+        TryCleanUp();
     }
 
     public IByteSource ReadPipeFrom(long position, long startingPosition = 0)
     {
-        return ReadFromPipeOverride(position, startingPosition);
+        AddReference();
+        return ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
     }
 
     public abstract long Length { get; }
 
-    public abstract Stream ReadFromOverride(long position);
-    public virtual IByteSource ReadFromPipeOverride(long position, long startingPosition) =>
-        MultiplexSourceFactory.SingleReaderForStream(this.ReadFromOverride(position))
-            .WithCurrentPosition(startingPosition);
-    //NB -- we call ReadFromOverride rather than ReadFrom, because we only hold one reference to this, which is
-    // the stream reader, but ReadFromPipe already incremented our reference count, which the singlestreamreader will
-    // not clear.  Thus the StreamReader, created without incrementing the count, will decrement the count created for
-    // the IByteSource that does not.
+    public abstract Stream ReadFromOverride(long position, CountedSourceTicket ticket);
 
+    public virtual IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket) =>
+        MultiplexSourceFactory.SingleReaderForStream(this.ReadFromOverride(position, ticket))
+            .WithCurrentPosition(startingPosition);
     protected abstract void CleanUp();
+
+    internal enum CountedSourceState
+    {
+        Open = 0,
+        WaitingForPendingReaders = 1,
+        Closed = 2
+    }
 }
+

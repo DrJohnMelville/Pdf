@@ -41,11 +41,13 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
     DefaultBaseStream(true, false, true)
 {
     private IIndexedReader? source = null;
+    private CountedSourceTicket sourceTicket;
 
-    public IndexedReaderStream ReadFrom(IIndexedReader source, long position)
+    public IndexedReaderStream ReadFrom(IIndexedReader source, long position, CountedSourceTicket ticket)
     {
         this.source = source;
         Position = position;
+        sourceTicket = ticket;
         return this;
     }
 
@@ -91,6 +93,7 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
     {
         if (source is null) return; // prevents recursion
         source = null;
+        sourceTicket.TryRelease();
         base.Dispose(disposing);
         home.Return(this);
     }
