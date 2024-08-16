@@ -143,14 +143,14 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     public override long Length => endPosition.GlobalPosition;
 
-    public override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
+    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {
         var ret = new MultiBufferStream(this, true, false, true, ticket);
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
 
-    public override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
+    protected override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
     {
         var ret = new LinkedListByteSource(this, ticket);
         if (position > 0)

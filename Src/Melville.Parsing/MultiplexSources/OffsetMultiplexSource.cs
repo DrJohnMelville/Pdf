@@ -1,5 +1,7 @@
 ﻿using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
+
+namespace Melville.Parsing.MultiplexSources;
+
 
 /// <summary>
 /// This is an IMultiplexSource that represents a position inside of another IMultiplexSource,
@@ -11,7 +13,7 @@ public class OffsetMultiplexSource(IMultiplexSource inner, long offset) : IMulti
 {
 
     /// <inheritdoc />
-    public void Dispose() => inner.Dispose();
+    public virtual void Dispose() => inner.Dispose();
 
     /// <inheritdoc />
     public Stream ReadFrom(long position) => inner.ReadFrom(position + offset);
@@ -21,6 +23,20 @@ public class OffsetMultiplexSource(IMultiplexSource inner, long offset) : IMulti
        inner.ReadPipeFrom(position + offset, startingPosition);
     
     /// <inheritdoc />
-    public long Length => inner.Length - offset;
-#warning and offset from an offset source should reference the original, not this source.
+      public long Length => inner.Length - offset;
+
+    public IMultiplexSource OffsetFrom(uint newOffset)
+    {
+        return inner.OffsetFrom((uint)offset+newOffset);
+    }
+}
+
+internal class OffsetMultiplexSouceWithTicket(IMultiplexSource inner, long offset, CountedSourceTicket ticket) :
+    OffsetMultiplexSource(inner, offset)
+{
+    public override void Dispose()
+    {
+        base.Dispose();
+        ticket.TryRelease();
+    }
 }

@@ -14,7 +14,7 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
 
     public override long Length => throw new System.NotImplementedException();
 
-    public override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
+    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {
         return new Wrapper(false,false, false, ticket);
     }
