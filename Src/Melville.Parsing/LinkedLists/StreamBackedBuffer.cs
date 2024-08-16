@@ -15,7 +15,7 @@ namespace Melville.Parsing.LinkedLists
         }
 
 #warning need to dispose of the source and have an option to leave it open.
-        [FromConstructor] private readonly Stream source;
+        [FromConstructor] private Stream source;
         [FromConstructor] private bool leaveOpen;
         private LinkedListPosition nextByteToRead = default;
 
@@ -47,5 +47,12 @@ namespace Melville.Parsing.LinkedLists
         public override LinkedListPosition FirstInvalidPosition() => nextByteToRead;
 
         public override bool DoneGrowing() => done;
+
+        protected override void CleanUp()
+        {
+            base.CleanUp();
+            if (!leaveOpen) source.Dispose();
+            source = null!;
+        }
     }
 }

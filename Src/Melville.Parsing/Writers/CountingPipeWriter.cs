@@ -37,7 +37,9 @@ public partial class CountingPipeWriter: PipeWriter, IDisposable, IAsyncDisposab
     public override void OnReaderCompleted(Action<Exception?, object?> callback, object? state) => 
         innerWriter.OnReaderCompleted(callback, state);
 
+    /// <inheritdoc />
     public void Dispose() => Complete(null);
 
+    /// <inheritdoc />
     public ValueTask DisposeAsync() => CompleteAsync(null);
 }

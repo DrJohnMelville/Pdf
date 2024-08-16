@@ -25,6 +25,7 @@ public class OffsetMultiplexSource(IMultiplexSource inner, long offset) : IMulti
     /// <inheritdoc />
       public long Length => inner.Length - offset;
 
+    /// <inheritdoc />
     public IMultiplexSource OffsetFrom(uint newOffset)
     {
         return inner.OffsetFrom((uint)offset+newOffset);

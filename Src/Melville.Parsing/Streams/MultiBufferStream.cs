@@ -1,12 +1,8 @@
 ﻿using System.Diagnostics;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams.Bases;
-using Melville.Parsing.Writers;
-using LinkedListPosition = Melville.Parsing.LinkedLists.LinkedListPosition;
 
 namespace Melville.Parsing.Streams;
 
@@ -24,13 +20,6 @@ internal class MultiBufferStream : DefaultBaseStream
         this.ticket = ticket;
         currentPosition = data.StartPosition;
     }
-
-#warning this needs to become a factory method so we can use a real ticket from the MBSL
-    public MultiBufferStream(ReadOnlyMemory<byte> firstBuffer) :
-        this(MultiBufferStreamList.SingleItemList(firstBuffer), true, false, true, default)
-    {
-    }
-
 
     public override int Read(Span<byte> buffer)
     {
