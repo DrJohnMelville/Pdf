@@ -40,7 +40,7 @@ public class LowLevelDocumentModifierTest
         string expected, Action<PdfLoadedLowLevelDocument, LowLevelDocumentModifier> modifications, 
         PdfLowLevelDocument originalDoc, long offset = 0)
     {
-        var target = new TestWriter();
+        using var target = new TestWriter();
         var doc = await LoadedDocumentAsync(originalDoc);
         var sut = new LowLevelDocumentModifier(doc);
         modifications(doc, sut);

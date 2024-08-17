@@ -16,7 +16,7 @@ public class FileWriterTest
 {
     private async Task<string> WriteAsync(PdfLowLevelDocument doc)
     {
-        var target = new TestWriter();
+        using var target = new TestWriter();
         var writer = new LowLevelDocumentWriter(target.Writer, doc);
         await writer.WriteAsync();
         return target.Result();
@@ -46,7 +46,7 @@ public class FileWriterTest
         builder.Add(PdfDirectObject.CreateNull()); // includes a dead object to be skipped
         builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
         PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
-        var target = new TestWriter();
+        using var target = new TestWriter();
         var writer = new XrefStreamLowLevelDocumentWriter(target.Writer, doc);
         await writer.WriteAsync();
         return target.Result();
