@@ -22,15 +22,16 @@ public class S7_5_6IncrementalUpdates
         using var source = WritableBuffer.Create();
         await using var writer = source.WritingStream();
         await doc.WriteToAsync(writer);
-        await using var stream = source.ReadFrom(0);
 
+
+        await using var stream = source.ReadFrom(0);
         var pdfLowLevelReader = new PdfLowLevelReader();
         var ld = await pdfLowLevelReader.ReadFromAsync(stream);
         var modifier = ld.Modify();
         await modify(ld, modifier);
         await modifier.WriteModificationTrailerAsync(writer);
             
-        return await pdfLowLevelReader.ReadFromAsync(stream);
+        return await pdfLowLevelReader.ReadFromAsync(source.ReadFrom(0));
     }
         
     [Fact]
@@ -49,8 +50,9 @@ public class S7_5_6IncrementalUpdates
                 false);
         });
 
-        
-        Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
+
+        var root = await ld2.TrailerDictionary[KnownNames.Root];
+        Assert.Equal("false", root.ToString());
         Assert.Equal("2", (await ld2.Objects[(2,0)].LoadValueAsync()).ToString());
 
     }

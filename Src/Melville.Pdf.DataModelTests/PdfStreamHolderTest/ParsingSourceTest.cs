@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
@@ -11,7 +12,7 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest;
 
 public class ParsingSourceTest
 {
-    private static MemoryStream IndexedStream()
+    private static IMultiplexSource IndexedStream()
     {
         var ret = new byte[256];
         for (int i = 0; i < ret.Length; i++)
@@ -19,7 +20,7 @@ public class ParsingSourceTest
             ret[i] = (byte)i;
         }
 
-        return new MemoryStream(ret);
+        return MultiplexSourceFactory.Create(ret);
     }
 
     private readonly ParsingFileOwner owner = 

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -42,7 +43,7 @@ public static class TestParser
     internal static ParsingFileOwner AsParsingSource(this string str) =>
         AsParsingSource(str.AsExtendedAsciiBytes());
     internal static ParsingFileOwner AsParsingSource(this byte[] bytes) => 
-        new(new OneCharAtATimeStream(bytes), NullPasswordSource.Instance);
+        new(MultiplexSourceFactory.Create(new OneCharAtATimeStream(bytes)), NullPasswordSource.Instance);
         
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
         RandomAccessFileParser.ParseAsync(str.AsParsingSource(), sizeHint);

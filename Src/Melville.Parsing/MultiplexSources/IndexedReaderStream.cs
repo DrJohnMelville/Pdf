@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
@@ -42,12 +43,16 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
 {
     private IIndexedReader? source = null;
     private CountedSourceTicket sourceTicket;
+#warning -- get rid of the perf hog.
+    private StackTrace? trace;
 
     public IndexedReaderStream ReadFrom(IIndexedReader source, long position, CountedSourceTicket ticket)
     {
+        ArgumentNullException.ThrowIfNull(source);
         this.source = source;
         Position = position;
         sourceTicket = ticket;
+        trace = new StackTrace();
         return this;
     }
 
@@ -63,7 +68,7 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
     private void VerifyInitialized()
     {
         if (source is null) 
-            throw new InvalidOperationException("Reader has no stream");
+            throw new InvalidOperationException($"IndexedReaderStream has no source.\r\n created at {trace}");
     }
 
     public override async ValueTask<int> ReadAsync(

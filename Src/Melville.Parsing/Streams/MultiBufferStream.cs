@@ -6,6 +6,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
+#warning -- consider making this an IMultiplexFactorySource so that I can optimize the unit tests 
 internal class MultiBufferStream : DefaultBaseStream
 {
     private LinkedList data;

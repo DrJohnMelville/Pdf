@@ -22,7 +22,7 @@ public static class RenderTestHelpers
         using var src = WritableBuffer.Create();
         await using var writer = src.WritingStream();
         await generator.WritePdfAsync(writer);
-        await using var readFrom = src.ReadFrom(0);
+        var readFrom = src.ReadFrom(0);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
             .ReadFromAsync(readFrom);
     }

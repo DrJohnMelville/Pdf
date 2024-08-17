@@ -23,11 +23,6 @@ internal sealed partial class ParsingFileOwner: IDisposable
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
-    public ParsingFileOwner(Stream source, IPasswordSource passwordSource) : this(
-        MultiplexSourceFactory.Create(source), passwordSource)
-    {
-    }
-
     public ParsingFileOwner(IMultiplexSource source, IPasswordSource passwordSource)
     {
         this.source = source;

@@ -62,7 +62,7 @@ public static class IByteSourceOperations
     /// <param name="multiplex">The multiplex source the pipe came from</param>
     /// <param name="position">The desired position</param>
     /// <returns>A pipe, possibly the input but maby set positioned at the desired pos</returns>
-    public static IByteSource PipeAtPosition(
+    public static IByteSource AdvanceOrReplacePipe(
         this IByteSource pipe, IMultiplexSource multiplex, long position)
     {
         if (pipe.TryRead(out var result))

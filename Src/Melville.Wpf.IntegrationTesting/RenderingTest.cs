@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Melville.Parsing.Streams;
@@ -68,7 +70,32 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         }
         catch (Exception e)
         {
-            return e.Message;
+            var message = $"""
+                {e.Message}
+                {e.StackTrace}
+                """;
+            UdpConsole.WriteLine(message);
+            return message;
+        }
+    }
+
+    public static class UdpConsole
+    {
+        private static UdpClient? client = null;
+        private static UdpClient Client
+        {
+            get
+            {
+                client ??= new UdpClient();
+                return client;
+            }
+        }
+
+        public static string WriteLine(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+            return str;
         }
     }
 }
