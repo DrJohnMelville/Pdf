@@ -146,10 +146,23 @@ internal partial class RentalPolicyChecker
 
         public void Dispose()
         {
-            foreach (var rental in parent.rentals)
+            for (int i = 0; i < parent.rentals.Count; i++)
             {
-                RentalLog.Log($"Object not returned at end of rental scope.", rental.Trace);
+                RentalLog.Log($"Object not returned at end of rental scope.", 
+                    parent.rentals[i].Trace);
+                
             }
+        }
+    }
+}
+#else 
+public static class RentalPolicyChecker
+{
+    public static IDisposable RentalScope() => new EmptyScope();
+    private class EmptyScope : IDisposable
+    {
+        public void Dispose()
+        {
         }
     }
 }

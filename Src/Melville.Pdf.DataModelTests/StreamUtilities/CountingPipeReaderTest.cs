@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
@@ -14,7 +15,8 @@ public class CountingPipeReaderTest: IDisposable
 
     public CountingPipeReaderTest()
     {
-        sut = MultiplexSourceFactory.Create(new byte[30]).ReadPipeFrom(0);
+        using var multiplexSource = MultiplexSourceFactory.Create(new byte[30]);
+        sut = multiplexSource.ReadPipeFrom(0);
     }
 
     [Fact]
@@ -48,5 +50,8 @@ public class CountingPipeReaderTest: IDisposable
         Assert.Equal(5, sut.Position);
     }
 
-    public void Dispose() => sut.Dispose();
+    public void Dispose()
+    {
+        sut.Dispose();
+    }
 }

@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -7,8 +10,14 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
-public class S7_3_5_NamesDefined
+public class S7_3_5_NamesDefined: IDisposable
 {
+    private IDisposable scope = RentalPolicyChecker.RentalScope();
+    public void Dispose()
+    {
+        scope.Dispose();
+    }
+
     [Theory]
     [InlineData("Foo")]
     [InlineData("Fo\u1234o")]
