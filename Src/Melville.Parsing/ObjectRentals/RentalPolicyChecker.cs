@@ -128,8 +128,8 @@ internal partial class RentalPolicyChecker
         if (index + 1 < rentals.Count)
         {
             rentals[index] = rentals[^1];
-            rentals.RemoveAt(rentals.Count - 1);
         }
+        rentals.RemoveAt(rentals.Count - 1);
     }
 
 
