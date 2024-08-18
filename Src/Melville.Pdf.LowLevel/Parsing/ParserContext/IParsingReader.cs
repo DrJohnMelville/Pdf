@@ -1,16 +1,16 @@
-﻿using System.IO;
-using System.IO.Pipelines;
+﻿using System;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-internal partial class ParsingReader
+internal partial class ParsingReader: IDisposable
 {
     [FromConstructor] public ParsingFileOwner Owner { get; }
     [FromConstructor] public IByteSource Reader { get; }
+
+    public void Dispose()
+    {
+        Reader.Dispose();
+    }
 }

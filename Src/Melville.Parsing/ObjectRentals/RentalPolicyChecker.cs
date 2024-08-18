@@ -63,10 +63,12 @@ internal readonly struct RentalRecord
 {
     public StackTrace Trace { get; } = new StackTrace(4);
     private readonly WeakReference item;
+    public string TypeName { get; }
 
     public RentalRecord(object item)
     {
         this.item = new WeakReference(item);
+        TypeName = item.GetType().ToString();
     }
 
     public void CheckObjectAtRental(object newlyRented)
@@ -148,7 +150,7 @@ internal partial class RentalPolicyChecker
         {
             for (int i = 0; i < parent.rentals.Count; i++)
             {
-                RentalLog.Log($"Object not returned at end of rental scope.", 
+                RentalLog.Log($"Object not returned at end of rental scope.: {parent.rentals[i].TypeName}", 
                     parent.rentals[i].Trace);
                 
             }

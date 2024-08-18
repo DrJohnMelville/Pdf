@@ -12,6 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_5_NamesDefined: IDisposable
 {
+    Continue working here
     private IDisposable scope = RentalPolicyChecker.RentalScope();
     public void Dispose()
     {
