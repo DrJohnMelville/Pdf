@@ -91,6 +91,7 @@ public class LowLevelDocumentWriter
         {
             if (item.Value.IsNull) continue;
             var value = await ResolveValueToWriteAsync(item).CA();
+            //await using var fakeReaderToKeepStreamAlive = await value.Get<PdfStream>().StreamContentAsync().CA();
             if (IsLinearizationDict(value)) continue;
             positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
             await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, positions).CA();

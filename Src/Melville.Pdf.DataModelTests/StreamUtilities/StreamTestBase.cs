@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -14,8 +17,12 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
-public abstract partial class StreamTestBase
+public abstract partial class StreamTestBase: IDisposable
 {
+
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose() => ctx.Dispose();
+
     private readonly string source;
     private readonly string dest;
     private readonly PdfDirectObject compression;
@@ -144,5 +151,6 @@ public abstract partial class StreamTestBase
         var buf = new byte[source.Length+200];
         var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);
         Assert.Equal(source, buf[..read].ExtendedAsciiString());
+        await streamToRead.DisposeAsync();
     }
 }

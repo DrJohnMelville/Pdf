@@ -60,6 +60,5 @@ internal readonly struct ObjectStreamWriter
             .WithItem(KnownNames.First, referenceStreamWriter.BytesWritten)
             .AsStream(FinalStreamContent());        
     }
-    private ConcatStream FinalStreamContent() => 
-        new ConcatStream(refs.ReadFrom(0), objects.ReadFrom(0));
+    private ConcatStream FinalStreamContent() => new(refs.ReadFrom(0), objects.ReadFrom(0));
 }

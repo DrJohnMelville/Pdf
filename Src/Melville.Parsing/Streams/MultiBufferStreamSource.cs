@@ -11,31 +11,43 @@ public readonly partial struct MultiBufferStreamSource
     /// <summary>
     /// Tuhe source of the bits for the source
     /// </summary>
-    [FromConstructor] private readonly IMultiplexSource source;
+    [FromConstructor] private readonly Memory<byte> source;
 
     /// <summary>
     /// The MultiBufferStream that contains the data.
     /// </summary>
-    public Stream Stream => source.ReadFrom(0);
+    public Stream Stream
+    {
+        get
+        {
+            using var src = MultiplexSourceFactory.Create(source);
+            return src.ReadFrom(0);
+        }
+    }
 
     /// <summary>
     /// Implicitly convert a stream to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(Stream mbs) => 
-        new(MultiplexSourceFactory.Create(mbs));
+    public static implicit operator MultiBufferStreamSource(Stream mbs)
+    {
+        var str = mbs.Length> 0 ?new MemoryStream((int)mbs.Length):new MemoryStream();
+        mbs.CopyTo(str);
+        return new(str.GetBuffer().AsMemory(0,(int)str.Length));
+    }
+
     /// <summary>
     /// Implicitly convert a byte array to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
     public static implicit operator MultiBufferStreamSource(byte[] mbs) => 
-        new(MultiplexSourceFactory.Create(mbs));
+        new(mbs);
     /// <summary>
     /// Implicitly convert a string to a MultiBufferStreamSource
     /// </summary>
     /// <param name="mbs">The source data</param>
     public static implicit operator MultiBufferStreamSource(string mbs) => 
-        new(MultiplexSourceFactory.Create(ToBytes(mbs)));
+        new(ToBytes(mbs));
 
     private static byte[] ToBytes(string mbs)
     {
