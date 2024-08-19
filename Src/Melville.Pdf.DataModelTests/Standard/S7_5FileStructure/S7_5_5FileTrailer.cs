@@ -9,10 +9,8 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
-public class S7_5_5FileTrailer: IDisposable
+public class S7_5_5FileTrailer
 {
-    private IDisposable ctx = RentalPolicyChecker.RentalScope();
-    public void Dispose() => ctx.Dispose();
     [Fact]
     public async Task ReadSingleTrailerAsync()
     {

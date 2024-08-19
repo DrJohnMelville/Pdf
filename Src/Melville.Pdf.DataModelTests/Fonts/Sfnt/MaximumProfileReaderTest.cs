@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -13,7 +15,8 @@ public class MaximumProfileReaderTest
 {
     private static async Task<ParsedMaximums> ReadMaximumTableAsync(string data)
     {
-        using var pipe = MultiplexSourceFactory.Create(data.BitsFromHex()).ReadPipeFrom(0);
+        using var multiplexSource = MultiplexSourceFactory.Create(data.BitsFromHex());
+        using var pipe = multiplexSource.ReadPipeFrom(0);
         return await new MaxpParser(
                 pipe)
             .ParseAsync();
