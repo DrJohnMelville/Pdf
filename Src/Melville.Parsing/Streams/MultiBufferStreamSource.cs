@@ -11,7 +11,7 @@ public readonly partial struct MultiBufferStreamSource
     /// <summary>
     /// Tuhe source of the bits for the source
     /// </summary>
-    [FromConstructor] private readonly Memory<byte> source;
+    [FromConstructor] private readonly byte[] source;
 
     /// <summary>
     /// The MultiBufferStream that contains the data.
@@ -20,8 +20,7 @@ public readonly partial struct MultiBufferStreamSource
     {
         get
         {
-            using var src = MultiplexSourceFactory.Create(source);
-            return src.ReadFrom(0);
+            return new MemoryStream(source);
         }
     }
 
@@ -33,7 +32,7 @@ public readonly partial struct MultiBufferStreamSource
     {
         var str = mbs.Length> 0 ?new MemoryStream((int)mbs.Length):new MemoryStream();
         mbs.CopyTo(str);
-        return new(str.GetBuffer().AsMemory(0,(int)str.Length));
+        return new(str.ToArray());
     }
 
     /// <summary>

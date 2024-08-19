@@ -17,8 +17,11 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
-public abstract partial class StreamTestBase
+public abstract partial class StreamTestBase: IDisposable
 {
+    private readonly IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose()=> ctx.Dispose();
+
     private readonly string source;
     private readonly string dest;
     private readonly PdfDirectObject compression;
