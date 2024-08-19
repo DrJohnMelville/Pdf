@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -23,7 +25,7 @@ public class RootFontReaderTest
                 "65666768 0000 0000 0000 0000", 2)]
     public async Task ReadZeroElementFontAsync(string headderHex, int count)
     {
-        var src = MultiplexSourceFactory.Create(headderHex.BitsFromHex());
+        using var src = MultiplexSourceFactory.Create(headderHex.BitsFromHex());
         var parsed = await RootFontParser.ParseAsync(src);
         parsed.Should().HaveCount(count);
         foreach (SFnt font in parsed)

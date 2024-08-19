@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -9,13 +11,16 @@ namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
 public class EncodingReaderTest
 {
-    private ValueTask<byte[]> ParseAsync(string hexBits) =>
-        new CffEncodingReader(
-                MultiplexSourceFactory.Create(hexBits.BitsFromHex()).ReadPipeFrom(0),
+    private ValueTask<byte[]> ParseAsync(string hexBits)
+    {
+        using var multiplexSource = MultiplexSourceFactory.Create(hexBits.BitsFromHex());
+        return new CffEncodingReader(
+                multiplexSource.ReadPipeFrom(0),
                 new GlyphFromSid([
-                0, 256, 257, 258
+                    0, 256, 257, 258
                 ]))
             .ParseAsync();
+    }
 
     [Fact]
     public async Task ReadType0EncodingAsync()

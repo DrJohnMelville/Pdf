@@ -1,21 +1,29 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
-public class CffStringIndexTest
+public class CffStringIndexTest: IDisposable
 {
+    public void Dispose()
+    {
+        source.Dispose();
+    }
+
     private const string ThreeNameIndex = """
-    0003 01 01 02 03 06 61 62 63 64 65
-    """;
+        0003 01 01 02 03 06 61 62 63 64 65
+        """;
+
+    private IMultiplexSource source = MultiplexSourceFactory.Create(ThreeNameIndex.BitsFromHex());
 
     private async ValueTask<CffIndex> NamesIndexAsync()
     {
-        var source = MultiplexSourceFactory.Create(ThreeNameIndex.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
         var ret = await new CFFIndexParser(source, pipe).ParseCff1Async();
         return ret;

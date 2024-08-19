@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks.Reflection;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -10,9 +12,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_8_StreamsDefined
 {
-    private static long GetPosition(PdfStream obj) => 
-        (long)(obj.GetField("source")!.GetField("sourceFilePosition")!);
-
     private const string ObjectPrefix = "1 2 obj ";
 
     // for reference 
@@ -37,7 +36,7 @@ public class S7_3_8_StreamsDefined
     public static async Task RunStreamTestAsync(string data, string expected)
     {
         var (obj, context) = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
-        var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
+        await using var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
         Assert.Equal(expected, await new StreamReader(cSharpStream).ReadToEndAsync());
         context.Dispose();
     }
