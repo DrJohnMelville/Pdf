@@ -12,7 +12,9 @@ public class ObjectRentalManager
     [Fact]
     public void RentalCreatesObject()
     {
-        Assert.NotNull(sut.Rent());
+        var rented = sut.Rent();
+        Assert.NotNull(rented);
+        sut.Return(rented);
     }
 
     [Fact]
@@ -21,6 +23,7 @@ public class ObjectRentalManager
         var obj = sut.Rent();
         sut.Return(obj);
         Assert.Same(obj, sut.Rent());
+        sut.Return(obj);
     }
     [Fact]
     public void ReturnUniqueObjects()
@@ -31,6 +34,8 @@ public class ObjectRentalManager
         sut.Return(obj2);
         Assert.Same(obj2, sut.Rent());
         Assert.Same(obj1, sut.Rent());
+        sut.Return(obj1);
+        sut.Return(obj2);
     }
 
     [Fact]
@@ -47,6 +52,6 @@ public class ObjectRentalManager
         sut.Return(l2);
         sut.Return(l3);
         Assert.Equal(last, sut.Rent());
-        
+        sut.Return(last);
     }
 }
