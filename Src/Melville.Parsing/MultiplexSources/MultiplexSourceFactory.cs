@@ -90,6 +90,9 @@ public static class MultiplexSourceFactory
     /// <param name="leaveOpen">If false, then the source stream will be closed when
     /// the reader is closed</param>
     /// <returns>an IByteSource that reads the given stream</returns>
-    public static IByteSource SingleReaderForStream(Stream input, bool leaveOpen = false) =>
-        SingleReadStreamBuffer.Create(input, leaveOpen).ReadPipeFrom(0);
+    public static IByteSource SingleReaderForStream(Stream input, bool leaveOpen = false)
+    {
+        using var buffer = SingleReadStreamBuffer.Create(input, leaveOpen);
+        return buffer.ReadPipeFrom(0);
+    }
 }

@@ -40,11 +40,11 @@ public class S7_3_7_DictionaryDefined
     [Fact]
     public async Task ParseRootDictionaryAsync()
     {
-        var item = await " 1 2 obj<</Height 213/Width 456>>endobj".ParseRootObjectAsync();
+        var (item, context) = await " 1 2 obj<</Height 213/Width 456>>endobj".ParseRootObjectAsync();
         var dict = item.Get<PdfDictionary>();
         Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
         Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
-
+        context.Dispose();
     }
 
 }

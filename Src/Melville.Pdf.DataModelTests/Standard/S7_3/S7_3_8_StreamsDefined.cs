@@ -36,8 +36,9 @@ public class S7_3_8_StreamsDefined
     [InlineData("<</Length 6>> stream\n\n12345\r\nendstream", "\n12345")]
     public static async Task RunStreamTestAsync(string data, string expected)
     {
-        var obj = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
+        var (obj, context) = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
         var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
         Assert.Equal(expected, await new StreamReader(cSharpStream).ReadToEndAsync());
+        context.Dispose();
     }
 }

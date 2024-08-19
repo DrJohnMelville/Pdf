@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
@@ -30,13 +31,15 @@ public static class TestParser
         return await new RootObjectParser(reader).ParseAsync();
     }
 
-    public static ValueTask<PdfDirectObject> ParseRootObjectAsync(this string s) =>
-        ParseRootObjectAsync(AsParsingSource(s));
-     
+    public static async ValueTask<(PdfDirectObject,IDisposable source)> ParseRootObjectAsync(this string s)
+    {
+        var source = AsParsingSource(s);
+        return (await ParseRootObjectAsync(source), source);
+    }
+
     internal static async ValueTask<PdfDirectObject> ParseRootObjectAsync(
         this ParsingFileOwner source, long position = 0)
     {
-        using var x = source; 
         using var reader = source.RentReader(position);
         return await new RootObjectParser(reader).ParseTopLevelObjectAsync();
     }
