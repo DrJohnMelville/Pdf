@@ -1,15 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
 
-public class CffParserTest
+public class CffParserTest:IDisposable
 {
     private const string CffData = """
         0100 0401 0001 0101 1341 4243 4445 462b
@@ -26,6 +28,9 @@ public class CffParserTest
 
     private readonly IMultiplexSource source = MultiplexSourceFactory.Create(
         CffData.BitsFromHex());
+    
+    public void Dispose() => source.Dispose();
+
     [Fact]
     public async Task ParseCFFStreamAsync()
     {

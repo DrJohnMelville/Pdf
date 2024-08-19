@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.Names;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -17,8 +18,8 @@ public class NamesTableReaderTest
     public async Task ReadStringTableAsync(
         SfntNameKey item, ushort platform, string result)
     {
-        var table = await new NameTableParser(MultiplexSourceFactory.Create(
-            sampleData.BitsFromHex())).ParseAsync();
+        using var multiplexSource = MultiplexSourceFactory.Create(sampleData.BitsFromHex());
+        var table = await new NameTableParser(multiplexSource).ParseAsync();
 
         (await table.GetNameAsync(item, platform))
             .Should().Be(result);
