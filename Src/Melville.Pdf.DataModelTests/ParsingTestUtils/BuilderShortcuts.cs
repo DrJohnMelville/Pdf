@@ -17,7 +17,7 @@ public static class BuilderShortcuts
     {
         var doc = creator.CreateDocument(major, minor);
         using var output = WritableBuffer.Create();
-        using var writer = output.WritingStream();
+        await using var writer = output.WritingStream();
         await doc.WriteToAsync(writer);
         return output.ReadFrom(0);
     }
@@ -40,8 +40,11 @@ public static class BuilderShortcuts
         return output.ReadFrom(0);
     }
 
-    public static async Task<byte[]> AsBytesAsync(this PdfLowLevelDocument creator) => 
-        (await AsStreamAsync(creator)).ReadToArray();
+    public static async Task<byte[]> AsBytesAsync(this PdfLowLevelDocument creator)
+    {
+        await using var stream = await AsStreamAsync(creator);
+        return stream.ReadToArray();
+    }
 
     public static async Task<IFile> AsFileAsync(this PdfLowLevelDocument creator) =>
         new MemoryFile("S:\\d.pdf", await creator.AsBytesAsync());

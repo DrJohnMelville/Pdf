@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -7,8 +9,10 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
-public class S7_5_5FileTrailer
+public class S7_5_5FileTrailer: IDisposable
 {
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose() => ctx.Dispose();
     [Fact]
     public async Task ReadSingleTrailerAsync()
     {
