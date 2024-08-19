@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.INPC;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -12,6 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
 public partial class ParseInlineImage : ParserTest
 {
+
     private partial class DoImpl : MockBase, IContentStreamOperations
     {
         [DelegateTo] private IContentStreamOperations fake = null!;

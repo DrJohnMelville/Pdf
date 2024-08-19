@@ -25,8 +25,11 @@ public abstract class ParserTest
         await sut.ParseAsync(reader);
     }
 
-    private static IByteSource PipeReaderFromString(string s) =>
-        MultiplexSourceFactory.Create(s.AsExtendedAsciiBytes()).ReadPipeFrom(0);
+    private static IByteSource PipeReaderFromString(string s)
+    {
+        using var multiplexSource = MultiplexSourceFactory.Create(s.AsExtendedAsciiBytes());
+        return multiplexSource.ReadPipeFrom(0);
+    }
 
     protected async Task TestInputAsync(
         string input, params Expression<Action<IContentStreamOperations>>[] actions)
