@@ -56,6 +56,8 @@ public class S_7_3_10_IndirectObjectsDefined: IDisposable
 
        Assert.Equal(10, await lld.TrailerDictionary.GetAsync<int>(KnownNames.Root));
     }
+
+   // this is the next test to work on disposal
     [Fact]
     public async Task ParseDoubleDereferenceAsync()
     {
