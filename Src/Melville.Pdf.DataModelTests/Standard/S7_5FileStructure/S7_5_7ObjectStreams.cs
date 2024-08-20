@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
@@ -20,8 +21,11 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
-public class S7_5_7ObjectStreams
+public class S7_5_7ObjectStreams: IDisposable
 {
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose() => ctx.Dispose();
+
     [Theory]
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
@@ -34,7 +38,7 @@ public class S7_5_7ObjectStreams
             .WithItem(KnownNames.First, 8)
             .AsStream(streamText);
 
-        var pfo = new ParsingFileOwner(MultiplexSourceFactory.Create(Array.Empty<byte>()), NullPasswordSource.Instance);
+        using var pfo = new ParsingFileOwner(MultiplexSourceFactory.Create(Array.Empty<byte>()), NullPasswordSource.Instance);
         var res = pfo.NewIndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
         res.RegisterObjectStreamBlock(2, 10, 1);

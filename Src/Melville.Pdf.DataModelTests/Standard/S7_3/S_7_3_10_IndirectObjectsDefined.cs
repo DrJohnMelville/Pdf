@@ -28,11 +28,8 @@ public readonly struct FileBuilder
     public override string ToString() => sb.ToString();
 }
 
-public class S_7_3_10_IndirectObjectsDefined: IDisposable
+public class S_7_3_10_IndirectObjectsDefined
 {
-    private IDisposable ctx = RentalPolicyChecker.RentalScope();
-    public void Dispose() => ctx.Dispose();
-
     [Fact]
     public async Task ParseMinimalLowLevelFileAsync()
     {
@@ -57,7 +54,6 @@ public class S_7_3_10_IndirectObjectsDefined: IDisposable
        Assert.Equal(10, await lld.TrailerDictionary.GetAsync<int>(KnownNames.Root));
     }
 
-   // this is the next test to work on disposal
     [Fact]
     public async Task ParseDoubleDereferenceAsync()
     {
@@ -81,7 +77,7 @@ public class S_7_3_10_IndirectObjectsDefined: IDisposable
        builder.AppendLine("%EOF");
 
        var asStr = builder.ToString();
-       var lld = await new PdfLowLevelReader().ReadFromAsync(asStr.AsExtendedAsciiBytes());
+       using var lld = await new PdfLowLevelReader().ReadFromAsync(asStr.AsExtendedAsciiBytes());
 
        Assert.Equal("John Melville", (await lld.TrailerDictionary[KnownNames.Root]).ToString());
     }
