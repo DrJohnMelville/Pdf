@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -26,8 +28,11 @@ public readonly struct FileBuilder
     public override string ToString() => sb.ToString();
 }
 
-public class S_7_3_10_IndirectObjectsDefined
+public class S_7_3_10_IndirectObjectsDefined: IDisposable
 {
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose() => ctx.Dispose();
+
     [Fact]
     public async Task ParseMinimalLowLevelFileAsync()
     {
@@ -47,7 +52,7 @@ public class S_7_3_10_IndirectObjectsDefined
        builder.AppendLine("%EOF");
 
        var asStr = builder.ToString();
-       var lld = await new PdfLowLevelReader().ReadFromAsync(asStr.AsExtendedAsciiBytes());
+       using var lld = await new PdfLowLevelReader().ReadFromAsync(asStr.AsExtendedAsciiBytes());
 
        Assert.Equal(10, await lld.TrailerDictionary.GetAsync<int>(KnownNames.Root));
     }

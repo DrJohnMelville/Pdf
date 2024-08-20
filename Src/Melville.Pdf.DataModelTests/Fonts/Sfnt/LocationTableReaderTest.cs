@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -23,7 +25,8 @@ public class LocationTableReaderTest
             0007
             0008
             """.BitsFromHex();
-        using var pipe = MultiplexSourceFactory.Create(bitsFromHex).ReadPipeFrom(0); 
+        using var source = MultiplexSourceFactory.Create(bitsFromHex);
+        using var pipe = source.ReadPipeFrom(0); 
         var data = await new LocationTableParser(pipe, 7, 0).ParseAsync();
 
         data.TotalGlyphs.Should().Be(7);
@@ -46,7 +49,8 @@ public class LocationTableReaderTest
             0000000E
             00000010
             """.BitsFromHex();
-        using var pipe = MultiplexSourceFactory.Create(bitsFromHex).ReadPipeFrom(0);
+        using var source = MultiplexSourceFactory.Create(bitsFromHex);
+        using var pipe = source.ReadPipeFrom(0);
         var data = await new LocationTableParser(pipe, 7, 1).ParseAsync();
 
         data.TotalGlyphs.Should().Be(7);
