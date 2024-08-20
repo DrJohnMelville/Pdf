@@ -8,6 +8,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Moq;
@@ -26,11 +27,17 @@ public partial class MockSpanFilter : ICffGlyphTarget
 
 }
 
-public class CharStringInterpreterTest
+public class CharStringInterpreterTest: IDisposable
 {
+    public void Dispose()
+    {
+        source?.Dispose();
+    }
+
     private readonly Mock<ICffGlyphTarget> target = new();
     private readonly Mock<IGlyphSubroutineExecutor> globalSubrs = new();
     private readonly Mock<IGlyphSubroutineExecutor> localSubrs = new();
+    private IMultiplexSource? source;
 
     private IFontDictExecutorSelector CreateSel(Mock<IGlyphSubroutineExecutor> ex)
     {
@@ -44,7 +51,7 @@ public class CharStringInterpreterTest
         var bytes = hex.BitsFromHex();
         byte[] buffer = [00, 01, 01, 01, (byte)(1+bytes.Length),
             ..bytes];
-        var source = MultiplexSourceFactory.Create(buffer);
+        source = MultiplexSourceFactory.Create(buffer);
         using var pipe = source.ReadPipeFrom(0);
         var index = await new CFFIndexParser(source, 
                 pipe)

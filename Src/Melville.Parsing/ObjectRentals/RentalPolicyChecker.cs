@@ -148,11 +148,11 @@ internal partial class RentalPolicyChecker
 
         public void Dispose()
         {
-            for (int i = 0; i < parent.rentals.Count; i++)
+            if (parent.rentals.Count == 0) return;
+            foreach (var rental in parent.rentals.ToArray())
             {
-                RentalLog.Log($"Object not returned at end of rental scope.: {parent.rentals[i].TypeName}", 
-                    parent.rentals[i].Trace);
-                
+                RentalLog.Log($"Object not returned at end of rental scope.: {rental.TypeName}",
+                    rental.Trace);
             }
         }
     }

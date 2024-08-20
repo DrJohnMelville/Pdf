@@ -64,7 +64,7 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         return ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
     }
 
-    public IMultiplexSource OffsetFrom(uint offset) => 
+    public IMultiplexSource  OffsetFrom(uint offset) => 
         new OffsetMultiplexSouceWithTicket(this, offset, CreateSourceTicket());
 
     public abstract long Length { get; }
