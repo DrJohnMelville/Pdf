@@ -25,4 +25,9 @@ public partial class PretokenizedSource : ITokenSource
     /// <inheritdoc/>
     public IAsyncEnumerable<PostscriptValue> TokensAsync() =>
         source.ToAsyncEnumerable();
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+    }
 }

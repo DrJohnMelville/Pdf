@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values;
 
@@ -8,7 +9,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// This is a source of postscript tokens.  This could be a
 /// parser over a stream or an enumeration of pre-tokenized values.
 /// </summary>
-public interface ITokenSource
+public interface ITokenSource: IDisposable
 {
     /// <summary>
     /// The IByteSource reading bytes from
@@ -20,7 +21,7 @@ public interface ITokenSource
     /// </summary>
     public IEnumerable<PostscriptValue> Tokens();
     /// <summary>
-    /// An async enumeration of sll the tokens in a sou0rce.
+    /// An async enumeration of all the tokens in a source.
     /// </summary>
     public IAsyncEnumerable<PostscriptValue> TokensAsync();
 }

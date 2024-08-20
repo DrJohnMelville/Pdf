@@ -34,7 +34,8 @@ public readonly partial struct ContentStreamParser
         var engine = new PostscriptEngine(contentStreamCommands);
         engine.Tag = target;
 
-        await engine.ExecuteAsync(new Tokenizer(source)).CA();
+        using var tokens = new Tokenizer(source);
+        await engine.ExecuteAsync(tokens).CA();
         
         if (engine.ErrorData.TryGetAs("newerror", out bool value) && value)
             throw new PdfParseException("Error parsing content stream;");

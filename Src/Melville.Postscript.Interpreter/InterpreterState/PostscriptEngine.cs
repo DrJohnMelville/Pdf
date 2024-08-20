@@ -126,14 +126,21 @@ public class PostscriptEngine
     /// Execute a postscript program.
     /// </summary>
     /// <param name="code">The program to execute</param>
-    public ValueTask ExecuteAsync(in Memory<byte> code) => ExecuteAsync(
-        new Tokenizer(code));
+    public async ValueTask ExecuteAsync(Memory<byte> code)
+    {
+        using var tokenSource = new Tokenizer(code);
+        await ExecuteAsync(tokenSource);
+    }
+
     /// <summary>
     /// Execute a postscript program.
     /// </summary>
     /// <param name="code">The program to execute</param>
-    public ValueTask ExecuteAsync(Stream code) =>
-        ExecuteAsync(new Tokenizer(code));
+    public async ValueTask ExecuteAsync(Stream code)
+    {
+        using var tokenSource = new Tokenizer(code);
+        await ExecuteAsync(tokenSource);
+    }
 
     /// <summary>
     /// Execute a postscript program.
@@ -215,8 +222,11 @@ public class PostscriptEngine
     /// Execute a postscript program.
     /// </summary>
     /// <param name="code">The program to execute</param>
-    public void Execute(in Memory<byte> code) => Execute(
-        new Tokenizer(code));
+    public void Execute(in Memory<byte> code)
+    {
+        using var tokenSource = new Tokenizer(code);
+        Execute(tokenSource);
+    }
 
     /// <summary>
     /// Execute a postscript program.

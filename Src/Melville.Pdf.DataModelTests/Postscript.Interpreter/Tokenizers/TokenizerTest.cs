@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
@@ -26,7 +28,7 @@ public class TokenizerTest
     [InlineData("exch pop", "exch", "pop")]
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
-        var sut = CreateTokenizer(source);
+        using var sut = CreateTokenizer(source);
         var list = await sut.TokensAsync().ToListAsync();
         Assert.Equal(2, list.Count);
         VerifyToken(list[0], name1);
@@ -36,7 +38,7 @@ public class TokenizerTest
     [Fact]
     public async Task ParseAsyncWithSyncTokenizerAsync()
     {
-        var sut = CreateSyncTokenizer("/App1 %This is a comment\r\r\r\r\nApp2");
+        using var sut = CreateSyncTokenizer("/App1 %This is a comment\r\r\r\r\nApp2");
         var list = await sut.TokensAsync().ToListAsync();
         Assert.Equal(2, list.Count);
         VerifyToken(list[0], "/App1");
@@ -61,7 +63,8 @@ private static void VerifyToken(PostscriptValue token1, string name)
     [InlineData("(He(ll)o)", "(He(ll)o)")]
     public async Task TestStringParseAsync(string source, string result)
     {
-        var token = await CreateTokenizer(source).TokensAsync().FirstAsync();
+        using var tokenizer = CreateTokenizer(source);
+        var token = await tokenizer.TokensAsync().FirstAsync();
         Assert.Equal(result, token.ToString());
     }
 
@@ -90,8 +93,10 @@ private static void VerifyToken(PostscriptValue token1, string name)
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>
         Assert.ThrowsAsync<PostscriptNamedErrorException>(()=>
-            CreateTokenizer(">").TokensAsync().FirstAsync().AsTask()
-        );
+        {
+            using var tokenizer = CreateTokenizer(">");
+            return tokenizer.TokensAsync().FirstAsync().AsTask();
+        });
 
     [Theory]
     [InlineData("1234", 1234)]
@@ -102,7 +107,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     [InlineData("2#1001001", 0b1001001)]
     public async Task ParseIntsAsync(string source, int result)
     {
-        var sut = CreateTokenizer(source);
+        using var sut = CreateTokenizer(source);
         var token = await sut.TokensAsync().FirstAsync();
         Assert.Equal(result, token.Get<int>());
     }
@@ -119,7 +124,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     [InlineData("12500E-2", 125)]
     public async Task ParseFloatAsync(string source, float result)
     {
-        var sut = CreateTokenizer(source);
+        using var sut = CreateTokenizer(source);
         var token = await sut.TokensAsync().FirstAsync();
         Assert.Equal(result, token.Get<double>(), 4);
     }
@@ -127,7 +132,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     [Fact]
     public async Task EnumerateTokensAsync()
     {
-        var sut = CreateTokenizer("123.4 true false (Hello World)");
+        using var sut = CreateTokenizer("123.4 true false (Hello World)");
         Assert.Equal(4, await sut.TokensAsync().CountAsync());
     }
 

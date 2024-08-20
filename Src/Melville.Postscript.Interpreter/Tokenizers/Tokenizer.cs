@@ -22,6 +22,8 @@ public partial class Tokenizer : ITokenSource
     /// <inheritdoc />
     [FromConstructor] public IByteSource CodeSource { get; }
 
+    public void Dispose() => CodeSource.Dispose();
+
     /// <summary>
     /// Create a tokenizer from a stream.
     /// </summary>
@@ -44,8 +46,14 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
     /// <param name="source">The code to execute.</param>
     public Tokenizer(Memory<byte> source) : this(
-        MultiplexSourceFactory.Create(source).ReadPipeFrom(0))
+        PipeFromMemory(source))
     {
+    }
+
+    private static IByteSource PipeFromMemory(Memory<byte> source)
+    {
+        using var multiplexSource = MultiplexSourceFactory.Create(source);
+        return multiplexSource.ReadPipeFrom(0);
     }
 
     private async ValueTask<PostscriptValue> NextTokenAsync()
