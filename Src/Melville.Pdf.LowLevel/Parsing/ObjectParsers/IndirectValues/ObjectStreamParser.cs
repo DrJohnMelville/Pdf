@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -14,7 +15,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal partial class ObjectStreamParser: IInternalObjectTarget
+internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
     [FromConstructor] private readonly SubsetByteSource subsetReader;
@@ -33,6 +34,12 @@ internal partial class ObjectStreamParser: IInternalObjectTarget
 
         
         return new(owner, bytes, parser, desiredObjectNumber, source);
+    }
+
+    
+    public void Dispose()
+    {
+        subsetReader.Dispose();
     }
 
     public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject priorResult)
