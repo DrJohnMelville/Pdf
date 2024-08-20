@@ -164,7 +164,6 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     protected override void CleanUp()
     {
-#warning -- enable list clean up
         StartPosition.ClearTo(LinkedListPosition.NullPosition);
     }
     #endregion

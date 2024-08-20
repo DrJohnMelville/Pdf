@@ -19,6 +19,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
 public abstract partial class StreamTestBase
 {
+    
     private readonly string source;
     private readonly string dest;
     private readonly PdfDirectObject compression;

@@ -20,8 +20,8 @@ internal static class StreamWriter
         PdfObjectWriter innerWriter, PdfStream item,
         IObjectCryptContext encryptor)
     {
-        await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
-        var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
+        var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
+        await using var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
         DictionaryWriter.Write(innerWriter, 
             MergeDictionaryItems(item.RawItems, (KnownNames.Length, diskrep.Length)));
@@ -51,6 +51,7 @@ internal static class StreamWriter
         using var mbs = WritableBuffer.Create();
         await using var writer = mbs.WritingStream();
         await rawStream.CopyToAsync(writer).CA();
+        await rawStream.DisposeAsync().CA();
         return (mbs).ReadFrom(0);
     }
 }
