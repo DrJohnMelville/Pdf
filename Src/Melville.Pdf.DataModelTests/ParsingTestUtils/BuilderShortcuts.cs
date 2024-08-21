@@ -22,8 +22,11 @@ public static class BuilderShortcuts
         return output.ReadFrom(0);
     }
 
-    public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) => 
-        (await AsStreamAsync(creator, major, minor)).ReadToArray();
+    public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7)
+    {
+        await using var asStreamAsync = await AsStreamAsync(creator, major, minor);
+        return asStreamAsync.ReadToArray();
+    }
 
     public static async Task<IFile> AsFileAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) =>
         new MemoryFile("S:\\d.pdf", await creator.AsBytesAsync(major, minor));
