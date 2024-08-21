@@ -4,6 +4,7 @@ using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -17,7 +18,7 @@ public class CharSetReaderTest
 
     private async ValueTask<CffIndex> NamesIndexAsync()
     {
-        var source = MultiplexSourceFactory.Create(ThreeNameIndex.BitsFromHex());
+        using var source = MultiplexSourceFactory.Create(ThreeNameIndex.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
         var ret = await new CFFIndexParser(source, pipe).ParseCff1Async();
         return ret;
@@ -25,7 +26,7 @@ public class CharSetReaderTest
 
     private async ValueTask<string[]> ReadTableAsync(string hexBytes, int length)
     {
-        var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
+        using var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
 
         var target = new StringTarget(new CffStringIndex(await NamesIndexAsync()), 
@@ -44,7 +45,7 @@ public class CharSetReaderTest
     [Fact]
     public async Task ReadType0toIntsAsync()
     {
-        var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
+        using var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
 
         var target = new MemoryTarget(new ushort[4]);

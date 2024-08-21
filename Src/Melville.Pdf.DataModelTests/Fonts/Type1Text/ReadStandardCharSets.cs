@@ -6,6 +6,7 @@ using System.Xml.XPath;
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
@@ -268,9 +269,12 @@ public class ReadStandardCharSets
     private IEnumerable<string> Extract(string s) => 
         s.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-    private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount) =>
-        new(MultiplexSourceFactory.Create(Array.Empty<byte>()),
+    private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount)
+    {
+        using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
+        return new(multiplexSource,
             1000, "Fake Font", 0, new CffIndex(null!, glyphCount, 1), 0, 0, null!, offset, 0);
+    }
 
     [Fact]
     public async Task ExpertCharsetAsync()

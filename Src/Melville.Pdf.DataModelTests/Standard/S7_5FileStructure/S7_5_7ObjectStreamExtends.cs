@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -25,7 +26,17 @@ public readonly struct MultiBufferWriter
         return buffer.Length;
     }
 
-    public Stream CreateReader() => buffer.ReadFrom(0);
+    public Stream CreateReader()
+    {
+        try
+        {
+            return buffer.ReadFrom(0);
+        }
+        finally
+        {
+            buffer.Dispose();
+        }
+    }
 }
 
 public class S7_5_7ObjectStreamExtends
@@ -47,7 +58,8 @@ public class S7_5_7ObjectStreamExtends
         4 0 obj (Placehoder stream) endobj
  
         """);
-        var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
+        await using var r2 = mbs.CreateReader();
+        var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
@@ -76,7 +88,8 @@ public class S7_5_7ObjectStreamExtends
         endstream
  
         """);
-        var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
+        await using var r2 = mbs.CreateReader();
+        var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
 
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
@@ -106,7 +119,8 @@ public class S7_5_7ObjectStreamExtends
         endstream
  
         """);
-        var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
+        await using var r2 = mbs.CreateReader();
+        var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
         Assert.Equal("NewStr", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }

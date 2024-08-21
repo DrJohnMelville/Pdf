@@ -82,8 +82,6 @@ public class FileWriterTest
     [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 2>>\nstartxref\n75\n%%EOF")]
     public async Task SimpleDocumentContentsAsync(string expected)
     {
-#warning come back to this test after writing the Counting on multiplex source
-        //        using var xx = RentalPolicyChecker.RentalScope();
         Assert.Contains(expected, await OutputSimpleDocumentAsync());
     }
 

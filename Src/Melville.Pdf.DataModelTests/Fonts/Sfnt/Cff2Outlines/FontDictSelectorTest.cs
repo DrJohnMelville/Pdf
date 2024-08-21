@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Moq;
 using Xunit;
@@ -38,7 +39,7 @@ public class FontDictSelectorTest
 
     private async Task TestSelectorAsync(uint glyph, int index, string selectorCode)
     {
-        var source = MultiplexSourceFactory.Create(selectorCode.BitsFromHex()
+        using var source = MultiplexSourceFactory.Create(selectorCode.BitsFromHex()
         );
 
         var selector = await new FontDictSelectParser(source, 1, 5).ParseAsync();
