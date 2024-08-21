@@ -56,9 +56,10 @@ public static class ContentStreamWritingImpl
         this ContentStreamCreator pc, DictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
     {
         using var streamData = WritableBuffer.Create();
-        var pipe = streamData.WritingPipe();
+        await using var pipe = streamData.WritingPipe();
         await creator(new ContentStreamWriter(pipe)).CA();
         await pipe.FlushAsync().CA();
-        pc.AddToContentStream(dict, streamData.ReadFrom(0));
+        await using var source = streamData.ReadFrom(0);
+        pc.AddToContentStream(dict, source);
     }
 }

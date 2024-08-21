@@ -15,7 +15,7 @@ internal static class ObjectStreamOperations
         this PdfStream stream, InternalObjectTargetForStream target)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
-        var bytes = MultiplexSourceFactory.SingleReaderForStream(decoded, false);
+        using var bytes = MultiplexSourceFactory.SingleReaderForStream(decoded, false);
 
         await ReportIncludedObjectsAsync(stream, target, bytes).CA();
     }

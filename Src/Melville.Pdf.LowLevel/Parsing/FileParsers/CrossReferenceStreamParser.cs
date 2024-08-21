@@ -18,7 +18,7 @@ public static class CrossReferenceStreamParser
 {
     internal static async Task<PdfStream> ReadAsync(ParsingFileOwner owner, long offset)
     {
-        var context = owner.RentReader(offset);
+        using var context = owner.RentReader(offset);
 
         var xRefStreamAsPdfObject = await new RootObjectParser(context).ParseTopLevelObjectAsync().CA();
 
@@ -40,7 +40,8 @@ public static class CrossReferenceStreamParser
     public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).CreateAsync().CA();
-        await parser.ParseAsync(PipeReader.Create(await crossRefPdfStream.StreamContentAsync().CA())).CA();
+        await using var stream = await crossRefPdfStream.StreamContentAsync().CA();
+        await parser.ParseAsync(PipeReader.Create(stream)).CA();
 
     }
 }

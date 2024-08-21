@@ -52,13 +52,23 @@ internal readonly struct ObjectStreamWriter
 
     public async ValueTask<PdfStream> BuildAsync(DictionaryBuilder builder, int count)
     {
-        await referenceStreamWriter.FlushAsync().CA();
-        await objectStreamWriter.FlushAsync().CA();
-        return builder
-            .WithItem(KnownNames.Type, KnownNames.ObjStm)
-            .WithItem(KnownNames.N, count)
-            .WithItem(KnownNames.First, referenceStreamWriter.BytesWritten)
-            .AsStream(FinalStreamContent());        
+        try
+        {
+            await referenceStreamWriter.FlushAsync().CA();
+            await objectStreamWriter.FlushAsync().CA();
+            await referenceStreamWriter.CompleteAsync().CA();
+            await objectStreamWriter.CompleteAsync().CA();
+            return builder
+                .WithItem(KnownNames.Type, KnownNames.ObjStm)
+                .WithItem(KnownNames.N, count)
+                .WithItem(KnownNames.First, referenceStreamWriter.BytesWritten)
+                .AsStream(FinalStreamContent());
+        }
+        finally
+        {
+            refs.Dispose();
+            objects.Dispose();
+        }
     }
     private ConcatStream FinalStreamContent() => new(refs.ReadFrom(0), objects.ReadFrom(0));
 }

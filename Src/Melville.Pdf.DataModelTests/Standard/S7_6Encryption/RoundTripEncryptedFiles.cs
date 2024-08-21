@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
@@ -19,7 +20,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
 public class RoundTripEncryptedFiles
 {
-
     [Fact]
     public void VerifyThatDefaultPasswordBytesRoundTripInPdfDocEncoding()
     {
@@ -32,7 +32,8 @@ public class RoundTripEncryptedFiles
     
     private async Task TestEncryptedFileAsync(CreatePdfParser gen, int V, int R, int keyLengthInBits)
     {
-        var target = (await gen.AsMultiBufAsync()).ReadFrom(0);
+        using var asMultiBufAsync = await gen.AsMultiBufAsync();
+        await using var target = asMultiBufAsync.ReadFrom(0);
         await VerifyUserPasswordWorksAsync(V, R, keyLengthInBits, gen.HelpText, target);
         await ParseTargetAsync(target, PasswordType.Owner, "Owner");
     }

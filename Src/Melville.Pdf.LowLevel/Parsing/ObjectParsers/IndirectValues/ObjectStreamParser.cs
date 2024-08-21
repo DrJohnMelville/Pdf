@@ -28,7 +28,7 @@ internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
         ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
     {
         var sourceStream = await source.StreamContentAsync().CA();
-        var bytes = new SubsetByteSource( MultiplexSourceFactory.SingleReaderForStream(sourceStream, true));
+        var bytes = new SubsetByteSource( MultiplexSourceFactory.SingleReaderForStream(sourceStream));
         var reader = new ParsingReader(owner, bytes);
         var parser = new RootObjectParser(reader);
 
