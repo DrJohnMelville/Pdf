@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
@@ -14,7 +15,7 @@ public class HorizontalMetricReaderTest
     public async Task ReadHMetricsAsync()
     {
         // 3 hMetrics and 2 left side bearings
-        var data = MultiplexSourceFactory.Create("""
+        using var data = MultiplexSourceFactory.Create("""
             0001 0002
             0003 0004
             0005 0006

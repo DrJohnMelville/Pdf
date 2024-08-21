@@ -210,6 +210,9 @@ public readonly struct SampledFunctionBuilder
     /// </summary>
     /// <param name="members">The DictionaryBuilder which should be used to build the function</param>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members) =>
-        DictionaryEntries(members).AsStream(await SamplesStreamAsync().CA());
+    public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members)
+    {
+        await using var samples = await SamplesStreamAsync().CA();
+        return DictionaryEntries(members).AsStream(samples);
+    }
 }
