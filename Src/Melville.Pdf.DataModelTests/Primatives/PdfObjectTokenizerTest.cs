@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -15,8 +16,9 @@ public class PdfObjectTokenizerTest
     [InlineData("true%hello\r\nfalse", "true", "false")]
     public async Task TwoTokenTestAsync(string content, string text1, string text2)
     {
-        var source = MultiplexSourceFactory.Create(content.AsExtendedAsciiBytes());
-        var parser = new PdfTokenizer(source.ReadPipeFrom(0));
+        using var source = MultiplexSourceFactory.Create(content.AsExtendedAsciiBytes());
+        using var readPipeFrom = source.ReadPipeFrom(0);
+        var parser = new PdfTokenizer(readPipeFrom);
 
         Assert.Equal(text1, (await parser.NextTokenAsync()).ToString());
         Assert.Equal(text2, (await parser.NextTokenAsync()).ToString());

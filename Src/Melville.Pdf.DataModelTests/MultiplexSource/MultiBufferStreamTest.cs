@@ -7,6 +7,7 @@ using FluentAssertions;
 using Melville.Hacks;
 using Melville.Icc.Model.Tags;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.SpanShould;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -53,7 +54,7 @@ public class MultiBufferStreamTest
         using var writer = sut.WritingStream();
         writer.Write(numberedBuffer, 0, 256);
         var buf2 = new byte[16];
-        var reader = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
         buf2.FillBuffer(0, 16, reader.Read);
         buf2.AsSpan().Should().Be(numberedBuffer.AsSpan()[..16]);
         buf2.FillBuffer(0, 16, reader.Read);
@@ -67,7 +68,7 @@ public class MultiBufferStreamTest
         await using var writer = sut.WritingStream();
         await writer.WriteAsync(numberedBuffer, 0, 256);
         var buf2 = new byte[256];
-        var reader = sut.ReadFrom(0);
+        await using var reader = sut.ReadFrom(0);
         await buf2.FillBufferAsync(0, 256, reader);
         buf2.Should().BeEquivalentTo(numberedBuffer);
     }
@@ -79,7 +80,7 @@ public class MultiBufferStreamTest
         await using var writer = sut.WritingStream();
         await writer.WriteAsync(numberedBuffer, 0, 256);
         var buf2 = new byte[240];
-        var reader = ((IMultiplexSource)sut).ReadFrom(16);
+        using var reader = ((IMultiplexSource)sut).ReadFrom(16);
         await buf2.FillBufferAsync(0, 240, reader);
         buf2.AsSpan().Should().Be(numberedBuffer.AsSpan()[16..]);
     }

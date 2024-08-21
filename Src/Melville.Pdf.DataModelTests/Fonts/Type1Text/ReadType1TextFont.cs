@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
@@ -6,12 +7,16 @@ using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.Type1TextParsers;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
-public class ReadType1TextFont()
+public class ReadType1TextFont: IDisposable
 {
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public void Dispose() => ctx.Dispose();
+
     private static byte[] GetFontText(
         string name, [CallerFilePath] string callerPath = "")
     {
@@ -20,8 +25,9 @@ public class ReadType1TextFont()
     }
     private static async Task<IGenericFont> ReadFontAsync(string name)
     {
-        var font = (await new Type1Parser(
-                MultiplexSourceFactory.Create(GetFontText(name)))
+#warning eventually use a file multiplexer here so we can get more testing in that code path.
+        using var multiplexSource = MultiplexSourceFactory.Create(GetFontText(name));
+        var font = (await new Type1Parser(multiplexSource)
             .ParseAsync())[0];
         return font;
     }

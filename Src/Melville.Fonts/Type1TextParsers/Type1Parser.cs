@@ -41,14 +41,9 @@ public readonly struct Type1Parser(IMultiplexSource source)
 
     private void AddEexec(IPostscriptDictionary obj)
     {
-        var internalDict = PostscriptValueFactory.CreateDictionary(
-            "/FlxProc", PostscriptValueFactory.CreateArray(Array.Empty<PostscriptValue>()));
-//        obj.Put("/internaldict", internalDict);
-
         obj.Put("eexec", PostscriptValueFactory.Create(
             (IExternalFunction)eexecDecryptingSource));
-        // obj.Put("definefont", PostscriptValueFactory.Create(
-        //     DefineFontImplementation.Instance));
+
         obj.Put("StandardEncoding", PostscriptValueFactory.CreateArray([
             MakeName("notdef"u8),
             MakeName("notdef"u8),
