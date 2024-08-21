@@ -9,6 +9,7 @@ internal class LinkedListByteSource(LinkedList data, CountedSourceTicket ticket)
 {
     private LinkedListPosition nextByte = data.StartPosition;
     private LinkedListPosition unexaminedByte = data.StartPosition;
+    private CountedSourceTicket ticket = ticket;
     private long positionOffset;
 
     public void Dispose()

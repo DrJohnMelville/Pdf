@@ -21,10 +21,17 @@ public readonly struct Type1Parser(IMultiplexSource source)
 
     internal async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
     {
-        var parser = CreateEngine();
-        using var tokens = new Tokenizer(eexecDecryptingSource);
-        await parser.ExecuteAsync(tokens).CA();
-        return ExtractFont(parser);
+        try
+        {
+            var parser = CreateEngine();
+            using var tokens = new Tokenizer(eexecDecryptingSource);
+            await parser.ExecuteAsync(tokens).CA();
+            return ExtractFont(parser);
+        }
+        finally
+        {
+            eexecDecryptingSource.Dispose();
+        }
     }
 
     private static IReadOnlyList<IGenericFont> ExtractFont(PostscriptEngine parser) => 

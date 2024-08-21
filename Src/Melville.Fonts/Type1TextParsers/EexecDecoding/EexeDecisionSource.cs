@@ -41,18 +41,29 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding
         {
             await SkipWhitespaceAsync().CA();
 
+            // Determine if the encoded stream is hex encoded
             var result = await inner.ReadAtLeastAsync(4).CA();
-            var newInner = IsHex(result.Buffer.Slice(0, 4))
-                ? ConstructNewByteSource(
-                    new DecodeHexStream(multiplexSource.ReadFrom(inner.Position)), (int)inner.Position)
-                : ConstructNewByteSource(multiplexSource.ReadFrom(inner.Position), (int)inner.Position);
+            var isHex = IsHex(result.Buffer.Slice(0, 4));
 
+            // construct the decrypting stream
+            var newInner = ConstructDecryptingStream(isHex);
+
+            // skip the first four (random) bytes
             result = await newInner.ReadAtLeastAsync(4).CA();
             newInner.AdvanceTo(result.Buffer.GetPosition(4));
+
+            // replace the existing with the new reader
             setReader?.Invoke(newInner);
+            setReader = null;
             inner.Dispose();
             inner = newInner;
-            setReader = null;
+        }
+
+        private IByteSource ConstructDecryptingStream(bool isHex)
+        {
+            var encodedStream = multiplexSource.ReadFrom(inner.Position);
+            return ConstructNewByteSource(isHex ? new DecodeHexStream(encodedStream) : encodedStream,
+                (int)inner.Position);
         }
 
         private IByteSource ConstructNewByteSource(Stream input, int startpos)

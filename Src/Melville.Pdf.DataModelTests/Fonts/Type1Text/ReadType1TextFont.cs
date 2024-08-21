@@ -12,21 +12,17 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
-public class ReadType1TextFont: IDisposable
+public class ReadType1TextFont
 {
-    private IDisposable ctx = RentalPolicyChecker.RentalScope();
-    public void Dispose() => ctx.Dispose();
-
-    private static byte[] GetFontText(
+    private static IMultiplexSource GetFontText(
         string name, [CallerFilePath] string callerPath = "")
     {
         var fname = Path.Combine(Path.GetDirectoryName(callerPath)!, name);
-        return File.ReadAllBytes(fname);
+        return MultiplexSourceFactory.Create(File.OpenRead(fname));
     }
     private static async Task<IGenericFont> ReadFontAsync(string name)
     {
-#warning eventually use a file multiplexer here so we can get more testing in that code path.
-        using var multiplexSource = MultiplexSourceFactory.Create(GetFontText(name));
+        using var multiplexSource = GetFontText(name);
         var font = (await new Type1Parser(multiplexSource)
             .ParseAsync())[0];
         return font;

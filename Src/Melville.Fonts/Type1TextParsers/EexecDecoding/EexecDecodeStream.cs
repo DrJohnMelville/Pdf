@@ -21,4 +21,16 @@ internal class EexecDecodeStream(Stream source, ushort pkey)
         DecodeType1Encoding.DecodeSegment(buffer.Span[..ret], ref pkey);
         return ret;
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        source.Dispose();
+        base.Dispose(disposing);
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await source.DisposeAsync().CA();
+        await base.DisposeAsync().CA();
+    }
 }
