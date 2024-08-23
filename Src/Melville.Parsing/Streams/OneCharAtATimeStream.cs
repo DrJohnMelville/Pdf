@@ -35,7 +35,7 @@ public partial class OneCharAtATimeStream : Stream
         source.Read(buffer, offset, 1);
 
     /// <inheritdoc />
-    public override int Read(Span<byte> buffer) => source.Read(buffer.Slice(0, 1));
+    public override int Read(Span<byte> buffer) => buffer.Length > 0?source.Read(buffer.Slice(0, 1)):0;
 
     /// <inheritdoc />
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 

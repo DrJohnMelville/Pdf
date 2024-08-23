@@ -157,6 +157,13 @@ internal partial class RentalPolicyChecker
         }
     }
 }
+
+[Obsolete("Should be used for test only")]
+public class RentalPolicyTestBase : IDisposable
+{
+    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    public virtual void Dispose() => ctx.Dispose();
+}
 #else 
 public static class RentalPolicyChecker
 {

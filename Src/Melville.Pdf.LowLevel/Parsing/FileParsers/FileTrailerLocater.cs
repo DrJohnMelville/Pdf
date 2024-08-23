@@ -19,7 +19,7 @@ internal static class FileTrailerLocater
         while (true)
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            using var context = source.RentReader(start);
+            using var context = source.SubsetReader(start);
             var reader = context.Reader;
             while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
             {

@@ -18,7 +18,7 @@ internal static class PdfTrailerParser
         ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
     {
 
-        using var context = source.RentReader(xrefPosition);
+        using var context = source.SubsetReader(xrefPosition);
         var trailerDictionary = await ReadSingleRefTrailerBlockAsync(context).CA();
 
         if (trailerDictionary != null)

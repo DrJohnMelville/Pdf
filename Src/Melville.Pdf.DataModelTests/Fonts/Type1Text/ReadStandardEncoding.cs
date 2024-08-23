@@ -7,6 +7,7 @@ using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
@@ -14,10 +15,13 @@ namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 public class ReadStandardEncoding
 {
     private static CffGenericFont FontWithEncodingOffset(
-        long offset, uint glyphCount, long charSetOffset) =>
-        new(MultiplexSourceFactory.Create(Array.Empty<byte>()),
+        long offset, uint glyphCount, long charSetOffset)
+    {
+        using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
+        return new(multiplexSource,
             1000, "Fake Font", 0,
             new CffIndex(null!, glyphCount, 1), 0, 0, null!, charSetOffset, offset);
+    }
 
     [Fact]
     public async Task StandardEncodingAsync()

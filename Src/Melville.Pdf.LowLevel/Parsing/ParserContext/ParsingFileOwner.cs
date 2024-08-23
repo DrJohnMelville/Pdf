@@ -34,11 +34,11 @@ internal sealed partial class ParsingFileOwner: IDisposable
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
-    public ParsingReader RentReader(long offset, int objectNumber=-1, int generation = -1) =>
+    public ParsingReader SubsetReader(long offset, int objectNumber=-1, int generation = -1) =>
         new(this, 
             source.ReadPipeFrom(AdjustOffsetForPreHeaderBytes(offset), offset));
 
-    public Stream RentStream(long position, long length) => 
+    public Stream SubsetStream(long position, long length) => 
         new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
 
 

@@ -44,7 +44,7 @@ public class ParsingSourceTest: IDisposable
     [Fact]
     public async Task ReadFiveBytesAsync()
     {
-        using var parsingReader = owner.RentReader(0);
+        using var parsingReader = owner.SubsetReader(0);
         var sut = parsingReader.Reader;
         var result = await sut.ReadAsync();
         var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
@@ -56,7 +56,7 @@ public class ParsingSourceTest: IDisposable
     public async Task ReadThenJumpAsync()
     {
         {
-            using var sut = owner.RentReader(0);
+            using var sut = owner.SubsetReader(0);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Reader.Position);
@@ -65,7 +65,7 @@ public class ParsingSourceTest: IDisposable
         }
 
         {
-            using var sut = owner.RentReader(45);
+            using var sut = owner.SubsetReader(45);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
             sut.Reader.AdvanceTo( sp);

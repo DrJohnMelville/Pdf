@@ -161,9 +161,12 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         pageRenderContext.ItemsBeingRendered.PopItem();
     }
 
-    public async ValueTask RunContentStreamAsync() =>
+    public async ValueTask RunContentStreamAsync()
+    {
+        await using var stream = await page.GetContentBytesAsync().CA();
         await new ContentStreamParser(this).ParseAsync(
-            MultiplexSourceFactory.SingleReaderForStream(await page.GetContentBytesAsync().CA(), false)).CA();
+            MultiplexSourceFactory.SingleReaderForStream(stream, false)).CA();
+    }
 
     #endregion
     
