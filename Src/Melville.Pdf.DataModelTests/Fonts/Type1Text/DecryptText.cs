@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -8,6 +9,7 @@ using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.Hacks;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
@@ -34,7 +36,7 @@ public class DecryptText
     [Fact]
     public async Task DecryptCharstringAsync()
     {
-        var source = MultiplexSourceFactory.Create("""
+        using var source = MultiplexSourceFactory.Create("""
             20202020
             10BF31704FAB5B1F03F9B68B1F39A66521B1841F14
             81697F8E12B7F7DDD6E3D7248D965B1CD45E2114
@@ -56,12 +58,13 @@ public class DecryptText
             BDF9B40D8BEF038BEF01F8ECEF018B16F9
             5006EF07FCEC06F88807F8EC06EF07FD5006090E 
             """.BitsFromHex());
+        stream.Dispose();
     }
 
     [Fact]
     public async Task DecryptTextCharstringAsync()
     {
-        var source = MultiplexSourceFactory.Create("""
+        using var source = MultiplexSourceFactory.Create("""
             10BF31704FAB5B1F03F9B68B1F39A66521B1841F14
             81697F8E12B7F7DDD6E3D7248D965B1CD45E2114
             """u8.ToArray());
@@ -69,7 +72,7 @@ public class DecryptText
         var result = new byte[37];
     
         IByteSource stream;
-        var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ReadPipeFrom(0);
         stream = new EexeDecisionSource(pipe, source, i=>stream = i, 4330);
     
         var rr = await stream.ReadAtLeastAsync(result.Length);
@@ -80,7 +83,7 @@ public class DecryptText
             BDF9B40D8BEF038BEF01F8ECEF018B16F9
             5006EF07FCEC06F88807F8EC06EF07FD5006090E 
             """.BitsFromHex());
-    
+        stream.Dispose();
     }
     
     [Fact]

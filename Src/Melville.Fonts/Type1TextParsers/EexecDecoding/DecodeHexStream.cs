@@ -71,4 +71,16 @@ internal class DecodeHexStream(Stream readFrom) : DefaultBaseStream(true, false,
         >= (byte)'a' and <= (byte)'f' => (byte)(digitChar - 'a' + 10),
         _ => byte.MaxValue
     };
+
+    protected override void Dispose(bool disposing)
+    {
+        readFrom.Dispose();
+        base.Dispose(disposing);
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await readFrom.DisposeAsync().CA();
+        await base.DisposeAsync().CA();
+    }
 }
