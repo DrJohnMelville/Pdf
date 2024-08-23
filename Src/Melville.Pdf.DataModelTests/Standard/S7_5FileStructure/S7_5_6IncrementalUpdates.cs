@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -26,7 +27,7 @@ public class S7_5_6IncrementalUpdates
 
         await using var stream = source.ReadFrom(0);
         var pdfLowLevelReader = new PdfLowLevelReader();
-        var ld = await pdfLowLevelReader.ReadFromAsync(stream);
+        using var ld = await pdfLowLevelReader.ReadFromAsync(stream);
         var modifier = ld.Modify();
         await modify(ld, modifier);
         await modifier.WriteModificationTrailerAsync(writer);
@@ -37,7 +38,7 @@ public class S7_5_6IncrementalUpdates
     [Fact]
     public async Task ParseModificationAsync()
     {
-        var ld2 = await CompositeDocumentAsync(creator =>
+        using var ld2 = await CompositeDocumentAsync(creator =>
         {
             var e1 = creator.Add(true);
             creator.AddToTrailerDictionary(KnownNames.Root, e1);

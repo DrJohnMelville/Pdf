@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,13 +10,18 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CmapsTest;
 
-public class CmapGlobalParserTest
+public class CmapGlobalParserTest: IDisposable
 {
+    public void Dispose() => source?.Dispose();
+
+    private IMultiplexSource? source;
+
     [Fact]
     public async Task ParseRootCmapAsync()
     {
@@ -34,11 +40,11 @@ public class CmapGlobalParserTest
         cmap.Tables[1].Offset.Should().Be(0xDEADBEEF);
     }
 
-    private static async ValueTask<ParsedCmap> ParseCmapAsync(string data)
+    private async ValueTask<ParsedCmap> ParseCmapAsync(string data)
     {
-        IMultiplexSource source = MultiplexSourceFactory.Create(data.BitsFromHex());
+        source = MultiplexSourceFactory.Create(data.BitsFromHex());
         using var pipe = source.ReadPipeFrom(0);
-        return (ParsedCmap)new ParsedCmap(source,
+        return new ParsedCmap(source,
             (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
     }
 

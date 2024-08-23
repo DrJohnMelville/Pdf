@@ -3,6 +3,8 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
+using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -59,7 +61,8 @@ public class S7_5_7ObjectStreams
             .WithItem(KnownNames.First, 0)
             .AsStream(Array.Empty<byte>());
 
-        var pfo = new ParsingFileOwner(MultiplexSourceFactory.Create(Array.Empty<byte>()), NullPasswordSource.Instance);
+        using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
+        var pfo = new ParsingFileOwner(multiplexSource, NullPasswordSource.Instance);
         var res = pfo.NewIndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
         res.RegisterDirectObject(10, 0, os, false);
@@ -155,14 +158,16 @@ public class S7_5_7ObjectStreams
         ms.Seek(0, SeekOrigin.Begin);
         
         // string is inside an encrypted stream and so no plaintext
+        using var msf = MultiplexSourceFactory.Create(ms);
         var doc = await 
-            new PdfLowLevelReader(new ConstantPasswordSource(PasswordType.User, "User")).ReadFromAsync(ms);
+            new PdfLowLevelReader(new ConstantPasswordSource(PasswordType.User, "User")).ReadFromAsync(msf);
         var embeddedStream = "String in Stream Context.";
         Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].LoadValueAsync()).ToString());
         
         // string is not encoded inside stream
         var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfStream>();
-        var strText = await new StreamReader(await objSter.StreamContentAsync()).ReadToEndAsync();
+        await using var streamContentAsync = await objSter.StreamContentAsync();
+        var strText = await new StreamReader(streamContentAsync).ReadToEndAsync();
         Assert.Contains(strText, strText);
     }
 }

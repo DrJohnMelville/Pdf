@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Postscript.Interpreter.Tokenizers;
 using Moq;
 using Xunit;
 
@@ -12,12 +10,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_4CrossReferenceTable
 {
-
     private readonly Mock<IIndirectObjectRegistry> resolver = new();
 
     private async ValueTask<long> ReadTableAsync(string data)
     {
-        var reader = MultiplexSourceFactory.Create(data.AsExtendedAsciiBytes())
+        using var multiplexSource = MultiplexSourceFactory.Create(data.AsExtendedAsciiBytes());
+        using var reader = multiplexSource
             .ReadPipeFrom(0);
         var parser = new CrossReferenceTableParser(reader, resolver.Object);
         await parser.ParseAsync();

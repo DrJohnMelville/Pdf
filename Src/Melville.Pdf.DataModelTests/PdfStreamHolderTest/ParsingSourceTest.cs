@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
@@ -10,8 +11,10 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest;
 
-public class ParsingSourceTest
+public class ParsingSourceTest: IDisposable
 {
+    public void Dispose() => owner.Dispose();
+
     private static IMultiplexSource IndexedStream()
     {
         var ret = new byte[256];
@@ -41,7 +44,8 @@ public class ParsingSourceTest
     [Fact]
     public async Task ReadFiveBytesAsync()
     {
-        var sut = (owner.RentReader(0)).Reader;
+        using var parsingReader = owner.RentReader(0);
+        var sut = parsingReader.Reader;
         var result = await sut.ReadAsync();
         var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
         Assert.Equal(0, sut.Position);
@@ -52,7 +56,7 @@ public class ParsingSourceTest
     public async Task ReadThenJumpAsync()
     {
         {
-            var sut = owner.RentReader(0);
+            using var sut = owner.RentReader(0);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Reader.Position);
@@ -61,7 +65,7 @@ public class ParsingSourceTest
         }
 
         {
-            var sut = owner.RentReader(45);
+            using var sut = owner.RentReader(45);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
             sut.Reader.AdvanceTo( sp);

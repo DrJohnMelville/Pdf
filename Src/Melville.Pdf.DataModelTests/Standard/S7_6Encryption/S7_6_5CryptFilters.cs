@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -20,13 +22,11 @@ public class S7_6_5CryptFilters
         var str = await creator.AsStringAsync();
         Assert.Equal(!hideString, str.Contains("plaintext string"));
         Assert.Equal(!hideStream, str.Contains("plaintext stream"));
-        var doc = await str.ParseDocumentAsync();
+        using var doc = await str.ParseDocumentAsync();
         Assert.Equal(3, doc.Objects.Count);
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].LoadValueAsync()).ToString());
-        Assert.Equal("plaintext stream", await (
-                await (
-                    await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().StreamContentAsync())
-            .ReadAsStringAsync());
+        await using var streamContentAsync = await (await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().StreamContentAsync();
+        Assert.Equal("plaintext stream", await streamContentAsync.ReadAsStringAsync());
     }
 
     private PdfStream InsertedStream(

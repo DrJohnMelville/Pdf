@@ -89,8 +89,8 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private async Task<ICMapSource> LoadCmapSlowAsync(TableRecord table)
     {
         using var pipe = source.ReadPipeFrom(table.Offset);
-        return ((ICMapSource)new ParsedCmap(source.OffsetFrom(table.Offset),
-            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables));
+        return new ParsedCmap(source.OffsetFrom(table.Offset),
+            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
     }
 
     /// <summary>
