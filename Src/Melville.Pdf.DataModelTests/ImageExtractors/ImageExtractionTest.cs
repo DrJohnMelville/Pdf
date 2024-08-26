@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors;
 
-public class ImageExtractionTest : RentalPolicyTestBase
+public class ImageExtractionTest: RentalPolicyTestBase
 {
     private static async Task<IList<IExtractedBitmap>> ImagesFromAsync(CreatePdfParser docGenerator)
     {

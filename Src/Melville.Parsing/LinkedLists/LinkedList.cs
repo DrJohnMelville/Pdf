@@ -23,6 +23,7 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     public virtual LinkedList With(int blockSize)
     {
+        ResetState();
         this.blockSize = blockSize;
         LinkedListNode firstNode = CreateNewBlock();
         StartPosition = endPosition = new LinkedListPosition(firstNode, 0);
@@ -31,6 +32,7 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     public LinkedList With(ReadOnlyMemory<byte> source)
     {
+        ResetState();
         LinkedListNode firstNode = LinkedListNode.Rent(source);
         blockSize = 0;
         StartPosition = new LinkedListPosition(firstNode, 0);

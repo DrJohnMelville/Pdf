@@ -9,6 +9,12 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
     private int pendingReaders;
     private int serialNumber = ICountedSource.NextNonce();
 
+    protected void ResetState()
+    {
+        serialNumber = ICountedSource.NextNonce();
+        state = CountedSourceState.Open;
+    }
+
     public void Dispose()
     {
         if (state == CountedSourceState.Closed) return;
