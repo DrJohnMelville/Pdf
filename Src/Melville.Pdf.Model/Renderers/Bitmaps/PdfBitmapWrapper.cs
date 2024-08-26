@@ -26,8 +26,7 @@ internal class PdfBitmapWrapper(
 
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
-        var source = PipeReader.Create(await attr.Stream.StreamContentAsync().CA());
-//        var source = MultiplexSourceFactory.SingleReaderForStream(await attr.Stream.StreamContentAsync().CA());
+        using var source = MultiplexSourceFactory.SingleReaderForStream(await attr.Stream.StreamContentAsync().CA());
         int row = 0;
         int column = 0;
         while (true)

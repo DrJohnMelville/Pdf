@@ -11,7 +11,7 @@ using Xunit;
 namespace Melville.Pdf.DataModelTests.ImageExtractors;
 
 #warning -- come back to here when stream and reader are rentable.
-public class ImageExtractionTest//: RentalPolicyTestBase
+public class ImageExtractionTest
 {
     private static async Task<IList<IExtractedBitmap>> ImagesFromAsync(CreatePdfParser docGenerator)
     {
