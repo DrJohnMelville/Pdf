@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
 using Xunit;
 

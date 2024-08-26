@@ -23,8 +23,11 @@ public static class CmykIccProfile
     public static async ValueTask<IccProfile> ReadCmykProfileAsync() => cmyk ??=
         await LoadProfileAsync().CA();
     
-    private static ValueTask<IccProfile> LoadProfileAsync() =>
-        new IccParser(MultiplexSourceFactory.SingleReaderForStream(GetCmykProfileStream(), false)).ParseAsync();
+    private static async ValueTask<IccProfile> LoadProfileAsync()
+    {
+        using var singleReaderForStream = MultiplexSourceFactory.SingleReaderForStream(GetCmykProfileStream());
+        return await new IccParser(singleReaderForStream).ParseAsync().CA();
+    }
 
     /// <summary>
     /// Load the CMYK ICC profile as a stream

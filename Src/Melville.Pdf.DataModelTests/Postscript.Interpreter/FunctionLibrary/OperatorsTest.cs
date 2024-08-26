@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Xunit;

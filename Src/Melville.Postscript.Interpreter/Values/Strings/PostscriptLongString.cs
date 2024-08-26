@@ -115,7 +115,8 @@ internal sealed partial class
 
     public void GetToken(OperandStack stack)
     {
-        var wrapper = MultiplexSourceFactory.Create(value).ReadPipeFrom(0);
+        using var multiplexSource = MultiplexSourceFactory.Create(value);
+        using var wrapper = multiplexSource.ReadPipeFrom(0);
         using var tokenizer = new Tokenizer(wrapper);
 
         using var enumerator = tokenizer.Tokens().GetEnumerator();
