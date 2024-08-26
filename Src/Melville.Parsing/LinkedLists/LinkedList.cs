@@ -11,6 +11,15 @@ namespace Melville.Parsing.LinkedLists;
 
 internal abstract class LinkedList: CountedMultiplexSource
 {
+    public static readonly LinkedList Empty = CreateEmpty();
+
+    private static LinkedList CreateEmpty()
+    {
+        var ret = new MultiBufferStreamList();
+        ret.endPosition = ret.StartPosition = LinkedListPosition.NullPosition;
+        return ret;
+    }
+
     public LinkedListPosition StartPosition { get; private set; }
     private LinkedListPosition endPosition;
     public LinkedListPosition EndPosition => endPosition;
@@ -147,14 +156,14 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {
-        var ret = new MultiBufferStream(this, true, false, true, ticket);
+        var ret = MultiBufferStream.Create(this, false, ticket);
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
 
     protected override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
     {
-        var ret = new LinkedListByteSource(this, ticket);
+        var ret = LinkedListByteSource.Create(this, ticket);
         if (position > 0)
         {
             var initial = PositionAt(position);

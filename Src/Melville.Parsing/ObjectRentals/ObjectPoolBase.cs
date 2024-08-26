@@ -25,7 +25,7 @@ public abstract class ObjectPoolBase<T> where T : class
     private int nextSlot;
 
     #warning use new lock object in .net 9.0  search for \block\s*\( to find all the places
-    private object mutex = new();
+    private readonly object mutex = new();
     
     /// <summary>
     /// Get a rented object from the pool.

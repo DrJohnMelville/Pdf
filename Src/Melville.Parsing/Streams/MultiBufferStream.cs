@@ -2,24 +2,40 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
 #warning -- consider making this an IMultiplexFactorySource so that I can optimize the unit tests 
-internal class MultiBufferStream : DefaultBaseStream
+internal class MultiBufferStream : ReadWriteStreamBase
 {
-    private LinkedList data;
+    private LinkedList data = LinkedList.Empty;
     private LinkedListPosition currentPosition;
     private CountedSourceTicket ticket;
-    
-    internal MultiBufferStream(LinkedList data,
-        bool canRead, bool canWrite, bool canSeek, CountedSourceTicket ticket) :
-        base(canRead, canWrite, canSeek)
+    private bool writable;
+
+    internal static MultiBufferStream Create(LinkedList data, bool writable, CountedSourceTicket ticket)
     {
-        this.data = data;
-        this.ticket = ticket;
-        currentPosition = data.StartPosition;
+        var ret = ObjectPool<MultiBufferStream>.Shared.Rent();
+        Debug.Assert(!ret.IsValid());
+        ret.data = data;
+        ret.ticket = ticket;
+        ret.writable = writable;
+        ret.currentPosition = data.StartPosition;
+        return ret;
+    }
+
+    private bool IsValid() => data != LinkedList.Empty;
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!IsValid()) return;
+        ticket.TryRelease();
+        data = LinkedList.Empty;
+        currentPosition = LinkedListPosition.NullPosition;
+        base.Dispose(disposing);
+        ObjectPool<MultiBufferStream>.Shared.Return(this);
     }
 
     public override int Read(Span<byte> buffer)
@@ -47,11 +63,8 @@ internal class MultiBufferStream : DefaultBaseStream
         currentPosition = data.Write(currentPosition, buffer);
     }
 
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        Debug.Assert(CanSeek);
-        return Position = offset + this.SeekOriginLocation(origin);
-    }
+    public override long Seek(long offset, SeekOrigin origin) => 
+        Position = offset + this.SeekOriginLocation(origin);
 
 
     public override void SetLength(long value) =>
@@ -71,9 +84,13 @@ internal class MultiBufferStream : DefaultBaseStream
         }
     }
 
-    protected override void Dispose(bool disposing)
+    public override void Flush()
     {
-        base.Dispose(disposing);
-        ticket.TryRelease();
     }
+
+    public override bool CanRead => !writable;
+
+    public override bool CanSeek => true;
+
+    public override bool CanWrite => writable;
 }

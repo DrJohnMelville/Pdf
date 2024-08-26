@@ -43,8 +43,7 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
 {
     private IIndexedReader? source = null;
     private CountedSourceTicket sourceTicket;
-#warning -- get rid of the perf hog.
-    private StackTrace? trace;
+    private string? trace;
 
     public IndexedReaderStream ReadFrom(IIndexedReader source, long position, CountedSourceTicket ticket)
     {
@@ -52,7 +51,8 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
         this.source = source;
         Position = position;
         sourceTicket = ticket;
-        trace = new StackTrace();
+        trace = "Enable stack tracing in IndexedStreamReader.cs";
+//        trace = new StackTrace();
         return this;
     }
 

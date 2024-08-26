@@ -2,19 +2,34 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Parsing.LinkedLists;
 
-internal class LinkedListByteSource(LinkedList data, CountedSourceTicket ticket) : IByteSource
+internal class LinkedListByteSource : IByteSource
 {
-    private LinkedListPosition nextByte = data.StartPosition;
-    private LinkedListPosition unexaminedByte = data.StartPosition;
-    private CountedSourceTicket ticket = ticket;
+    private LinkedList data = LinkedList.Empty;
+    private CountedSourceTicket ticket = default;
+
+    private LinkedListPosition nextByte;
+    private LinkedListPosition unexaminedByte;
     private long positionOffset;
+
+    public static LinkedListByteSource Create(LinkedList data, CountedSourceTicket ticket)
+    {
+        var ret = ObjectPool<LinkedListByteSource>.Shared.Rent();
+        ret.data = data;
+        ret.ticket = ticket;
+        ret.unexaminedByte = ret.nextByte = data.StartPosition;
+        return ret;
+    }
 
     public void Dispose()
     {
+        if (data == LinkedList.Empty) return;
         ticket.TryRelease();
+        data = LinkedList.Empty;
+        ObjectPool<LinkedListByteSource>.Shared.Return(this);
     }
 
     public bool TryRead(out ReadResult result)
