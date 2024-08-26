@@ -18,7 +18,7 @@ public class ReferenceDocumentLeaf: ReferenceDocumentNode
 
     public async ValueTask<IMultiplexSource> GetDocumentAsync()
     {
-        using var buffer = WritableBuffer.Create();
+        var buffer = WritableBuffer.Create();
         using var writer = buffer.WritingStream();
         await document.WritePdfAsync(writer);
         return buffer;

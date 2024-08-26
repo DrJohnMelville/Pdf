@@ -65,6 +65,7 @@ public abstract partial class MultiRenderer : IMultiRenderer
 
     public void SetTarget(IMultiplexSource pdfBits, int showPage)
     {
+        currentTarget?.Dispose();
         currentTarget = pdfBits;
         pageSelector.SetPageSilent(showPage);
         foreach (var renderer in Renderers)

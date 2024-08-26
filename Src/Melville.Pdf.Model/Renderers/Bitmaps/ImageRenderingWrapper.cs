@@ -23,9 +23,7 @@ internal readonly partial struct ImageRenderingWrapper
     public async ValueTask<IPdfBitmap> AsPdfBitmapAsync() =>
         await WrapWithSoftMaskAsync(
         await WrapWithHardMaskAsync(
-        new PdfBitmapWrapper(
-            PipeReader.Create(await attr.Stream.StreamContentAsync().CA()),
-            attr.Width, attr.Height, shouldInterpolate, Wrap())).CA()).CA();
+        new PdfBitmapWrapper(attr, shouldInterpolate, Wrap())).CA()).CA();
 
     private IByteWriter Wrap()
     {

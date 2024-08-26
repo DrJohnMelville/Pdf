@@ -2,38 +2,20 @@
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-internal abstract partial class ConvertingStream : RentedArrayReadingStream
+internal static class ConvertYCrCb
 {
-    [FromConstructor] private int components;
-    
-    protected override int CopyBytes(Span<byte> source, Span<byte> destination)
+    public static unsafe byte[] Convert(byte[] data, int components)
     {
-        var minLen = Math.Min(source.Length, destination.Length) / components; // integer division
-        ConvertColors(source, destination, minLen);
-        return minLen * components;
-    }
-
-    protected abstract void ConvertColors(ReadOnlySpan<byte> ycbcr, Span<byte> rgb, int count);
-}
-
-internal class YCrCbStream: ConvertingStream
-{
-    public YCrCbStream(byte[] data, int length) : base(data, length, 3)
-    {
-    }
-
-    protected override unsafe void ConvertColors(ReadOnlySpan<byte> ycbcr, Span<byte> rgb, int count)
-    {
-        fixed(byte* sourceBase = ycbcr)
-        fixed (byte* destBase = rgb)
+        fixed (byte* sourceBase = data)
         {
             var sourcePtr = sourceBase;
-            var destPtr = destBase;
-            for (int i = 0; i < count; i++)
+            var destPtr = sourceBase;
+            for (int i = 0; i < components / 3; i++)
             {
-                (*destPtr++,*destPtr++,*destPtr++) = YCbCrToRgbConverter.YCbCrToRGB(
-                    *sourcePtr++,*sourcePtr++,*sourcePtr++);
+                (*destPtr++, *destPtr++, *destPtr++) = YCbCrToRgbConverter.YCbCrToRGB(
+                    *sourcePtr++, *sourcePtr++, *sourcePtr++);
             }
         }
+        return data;
     }
 }

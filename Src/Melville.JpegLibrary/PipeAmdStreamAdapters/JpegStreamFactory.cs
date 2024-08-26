@@ -66,8 +66,8 @@ public readonly partial struct JpegStreamFactory
         if (decoder.App14EncodingByte.HasValue)
             return (decoder.App14EncodingByte.Value, decoder.NumberOfComponents) switch
             {
-                (2, 4) => new YCCKStream(output, bufferLength),
-                (1, 3) => new YCrCbStream(output, bufferLength),
+                (2, 4) => new StraightCopyStream(YCCKConversion.ConvertArray(output, bufferLength), bufferLength),
+                (1, 3) => new StraightCopyStream(ConvertYCrCb.Convert(output, bufferLength), bufferLength),
                 _ => new StraightCopyStream(output, bufferLength)
             };
 
@@ -76,8 +76,8 @@ public readonly partial struct JpegStreamFactory
         
         return decoder.NumberOfComponents switch
         {
-            3 => new YCrCbStream(output, bufferLength),
-            4 => new YCCKStream(output, bufferLength),
+            3 => new StraightCopyStream(ConvertYCrCb.Convert(output, bufferLength), bufferLength),
+            4 => new StraightCopyStream(YCCKConversion.ConvertArray(output, bufferLength), bufferLength),
             _ => new StraightCopyStream(output, bufferLength)
         };
     }

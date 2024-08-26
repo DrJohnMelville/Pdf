@@ -1,42 +1,40 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-internal class PdfBitmapWrapper : IPdfBitmap
+internal class PdfBitmapWrapper(
+    BitmapRenderParameters attr,
+    bool shouldRenderInterpolated,
+    IByteWriter byteWriter)
+    : IPdfBitmap
 {
-    public int Width { get; }
-    public int Height { get; }
-    public bool DeclaredWithInterpolation { get; }
-    private readonly IByteWriter byteWriter;
-    private readonly PipeReader source;
-
-    public PdfBitmapWrapper(
-        PipeReader source, int width, int height, bool shouldRenderInterpolated, IByteWriter byteWriter)
-    {
-        this.source = source;
-        Width = width;
-        Height = height;
-        DeclaredWithInterpolation = shouldRenderInterpolated;
-        this.byteWriter = byteWriter;
-    }
+    public int Width => attr.Width;
+    public int Height => attr.Height;
+    public bool DeclaredWithInterpolation => shouldRenderInterpolated;
 
     public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
-        var x = new BitmapWriter(buffer, source, Width, Height, byteWriter);
+        var x = new BitmapWriter(buffer, Width, Height, byteWriter);
         return InnerRenderAsync(x);
     }
 
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
+        var source = PipeReader.Create(await attr.Stream.StreamContentAsync().CA());
+//        var source = MultiplexSourceFactory.SingleReaderForStream(await attr.Stream.StreamContentAsync().CA());
         int row = 0;
         int column = 0;
-        while (c.LoadLPixels(await c.ReadAsync().CA(), ref row, ref column))
+        while (true)
         {
-            /* do nothing*/
+            var seq = await source.ReadAsync().CA();
+            if (!c.LoadLPixels(seq, ref row, ref column, out var readTo)) return;
+            source.AdvanceTo(readTo, seq.Buffer.End);
         }
     }
 }
@@ -44,21 +42,19 @@ internal class PdfBitmapWrapper : IPdfBitmap
 internal unsafe readonly partial struct BitmapWriter
 {
     [FromConstructor]private readonly byte* buffer;
-    [FromConstructor]private readonly PipeReader reader;
     [FromConstructor]private readonly int width;
     [FromConstructor]private readonly int height;
     [FromConstructor]private readonly IByteWriter writer;
 
-    public ValueTask<ReadResult> ReadAsync() => reader.ReadAsync();
 
-    public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
+    public bool LoadLPixels(ReadResult readResult, ref int row, ref int col, out SequencePosition sp)
     {
+        sp = default;
         if (readResult.IsCompleted && !EnoughBytesToRead(readResult.Buffer.Length))
             return false;
         var seq = new SequenceReader<byte>(readResult.Buffer);
         LoadBytes(ref row, ref col, ref seq);
-
-        reader.AdvanceTo(seq.Position, readResult.Buffer.End);
+        sp = seq.Position;
         return row < height;
     }
 

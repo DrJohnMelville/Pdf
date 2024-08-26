@@ -49,6 +49,7 @@ public abstract class ObjectPoolBase<T> where T : class
         lock(mutex)
         {
             RecordCheckIn(item);
+            (item as IClearable)?.Clear();
             if (nextSlot >= bufferLength)
             {
                 if (item is not IClearable) // some clearable classes use Dispose to return to the pool
@@ -56,7 +57,6 @@ public abstract class ObjectPoolBase<T> where T : class
                 return;
             }
 
-            (item as IClearable)?.Clear();
             buffer[nextSlot++] = item;
         }
     }
