@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
@@ -42,7 +43,7 @@ public class MultiBufferStreamTest
     [Fact]
     public void ReadSingleBuffer()
     {
-        var sut = CreateStream("ABCDE");
+        using var sut = CreateStream("ABCDE");
         var ret = new byte[5];
         using var reader = sut.ReadFrom(0);
         Assert.Equal(5, reader.Read(ret, 0, 5));
@@ -69,8 +70,8 @@ public class MultiBufferStreamTest
     [InlineData(5)]
     public void WriteByte(long position)
     {
-        var sut = CreateEmptyStream(10);
-        var writer = sut.WritingStream();
+        using var sut = CreateEmptyStream(10);
+        using var writer = sut.WritingStream();
         writer.Seek(position, SeekOrigin.Begin);
         writer.WriteByte((byte)'Z');
         using var reader = sut.ReadFrom(position);
@@ -79,13 +80,13 @@ public class MultiBufferStreamTest
     [Fact]
     public void SimpleStreamLength()
     {
-        var sut = CreateStream("ABCDE");
+        using var sut = CreateStream("ABCDE");
         Assert.Equal(5, sut.Length);
     }
     [Fact]
     public void ReadInTwoParts()
     {
-        var sut = CreateStream("ABCDE");
+        using var sut = CreateStream("ABCDE");
         Span<byte> ret = stackalloc byte[3];
         using var reader = sut.ReadFrom(0);
         Assert.Equal(3, reader.Read(ret));
@@ -100,7 +101,7 @@ public class MultiBufferStreamTest
     [InlineData(-2, SeekOrigin.End)]
     public void SeekTest(int location, SeekOrigin seekOrigin)
     {
-        var sut = CreateStream("ABCDE");
+        using var sut = CreateStream("ABCDE");
         using var reader = sut.ReadFrom(0);
         reader.Seek(2, SeekOrigin.Begin);
         reader.Seek(location, seekOrigin);
@@ -122,7 +123,7 @@ public class MultiBufferStreamTest
     public void ValidAndInvalidSeekTest(int location, bool valid)
     {
         using var sut = MultiplexSourceFactory.Create("ABCDE");
-        var reader = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
         if (valid)
         {
             reader.Position = location;
@@ -167,7 +168,7 @@ public class MultiBufferStreamTest
     [Fact]
     public void WriteAndReadSingleBuffer()
     {
-        var sut = CreateEmptyStream(10);
+        using var sut = CreateEmptyStream(10);
         using var writer = sut.WritingStream();
         Assert.Equal(0, sut.Length);
         writer.Write("ABCDE".AsExtendedAsciiBytes(), 0, 5);
@@ -180,7 +181,7 @@ public class MultiBufferStreamTest
     [Fact]
     public async Task WriteAndReadSingleBufferAsync()
     {
-        var sut = CreateEmptyStream(10);
+        using var sut = CreateEmptyStream(10);
         await using var writer = sut.WritingStream();
         Assert.Equal(0, sut.Length);
         await writer.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5);
