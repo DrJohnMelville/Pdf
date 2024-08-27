@@ -222,9 +222,12 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         IRealizedFont typeFace, PdfDictionary? fontDeclaration) =>
         pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> pageRenderContext.Target.WrapRealizedFontAsync(r, fontDeclaration));
 
+    //Notice that IRealizedFont does not implement IDisposable, but most of the real implementations do.  This is intentional.
+    //Most users of fonts should not dispose of them, so IRealizedFont is not disposable.  When the cache gets disposed, it
+    // will try to cast each item to IDisposable and dispose of the ones that implement that interface.
     private ValueTask<IRealizedFont> CheckCacheForFontAsync(PdfDictionary fontDic) =>
         pageRenderContext.Renderer.Cache.GetAsync(fontDic, async r=> 
-            BlockFontDispose.AsNonDisposableTypeface(await FontReader().DictionaryToRealizedFontAsync(r).CA()));
+            (await FontReader().DictionaryToRealizedFontAsync(r).CA()));
      
     private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
 
