@@ -11,7 +11,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
+internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph, IDisposable
 {
     [FromConstructor]private readonly IMultiplexSource[] characters;
     [FromConstructor]private readonly byte firstCharacter;
@@ -26,11 +26,12 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
     
-    private ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph,
+    private async ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)
     {
-        return target.RenderType3CharacterAsync(
-            characters[glyph].ReadFrom(0), fontMatrix, rawFont);
+        await using var readFrom = characters[glyph].ReadFrom(0);
+        return await target.RenderType3CharacterAsync(
+            readFrom, fontMatrix, rawFont).CA();
     }
     public double? CharacterWidth(uint character) => default;
 
@@ -60,5 +61,13 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         { }
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => new Type3Writer(parent, target);
+    }
+
+    public void Dispose()
+    {
+        foreach (var ms in characters)
+        {
+            (ms as IDisposable)?.Dispose();
+        }
     }
 }

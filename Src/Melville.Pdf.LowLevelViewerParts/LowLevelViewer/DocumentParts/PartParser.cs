@@ -24,13 +24,17 @@ public class PartParser: IPartParser
         this.passwordSource = passwordSource;
     }
 
-    public async Task<ParsedLowLevelDocument> ParseAsync(IFile source, IWaitingService waiting) => 
-        await ParseAsync(await source.OpenRead(), waiting);
+    public async Task<ParsedLowLevelDocument> ParseAsync(IFile source, IWaitingService waiting)
+    {
+        var openRead = await source.OpenRead();
+        return await ParseAsync(openRead, waiting);
+    }
 
     public async Task<ParsedLowLevelDocument> ParseAsync(Stream source, IWaitingService waiting)
     {
         PdfLowLevelDocument lowlevel = await new PdfLowLevelReader(passwordSource).ReadFromAsync(source);
-        return await GenerateUIListAsync(waiting, lowlevel);
+        var ret = await GenerateUIListAsync(waiting, lowlevel);
+        return ret;
     }
 
     private async Task<ParsedLowLevelDocument> GenerateUIListAsync(IWaitingService waiting, PdfLowLevelDocument lowlevel)
@@ -39,7 +43,7 @@ public class PartParser: IPartParser
         var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElementsAsync();
         AddPrefixAndSuffix(items, lowlevel);
         return new ParsedLowLevelDocument(items, 
-            await CreatePageLookupAsync(lowlevel));
+            await CreatePageLookupAsync(lowlevel), lowlevel);
     }
 
     private static async Task<IPageLookup> CreatePageLookupAsync(PdfLowLevelDocument lowlevel)

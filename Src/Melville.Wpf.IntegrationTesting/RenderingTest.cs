@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
@@ -19,7 +20,7 @@ using Melville.TestHelpers.StringDatabase;
 using Xunit;
 namespace Melville.Wpf.IntegrationTesting;
 
-public class RenderingTest: IClassFixture<StringTestDatabase>
+public class RenderingTest:IClassFixture<StringTestDatabase>
 {
     private readonly StringTestDatabase hashes;
     public RenderingTest(StringTestDatabase hashes)
@@ -62,7 +63,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     {
         try
         {
-            var doc = await RenderTestHelpers.ReadDocumentAsync(generator);
+            using var doc = await generator.ReadDocumentAsync();
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
             var hash = target.Computer.GetHash().ToString();
@@ -74,28 +75,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
                 {e.Message}
                 {e.StackTrace}
                 """;
-            UdpConsole.WriteLine(message);
             return message;
-        }
-    }
-
-    public static class UdpConsole
-    {
-        private static UdpClient? client = null;
-        private static UdpClient Client
-        {
-            get
-            {
-                client ??= new UdpClient();
-                return client;
-            }
-        }
-
-        public static string WriteLine(string str)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-            Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
-            return str;
         }
     }
 }

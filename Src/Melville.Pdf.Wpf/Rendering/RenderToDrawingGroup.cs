@@ -36,10 +36,13 @@ public readonly struct RenderToDrawingGroup
     /// Render a PDF page to a PNG image.
     /// </summary>
     /// <param name="stream">Writeable stream to receive the PNG bits.</param>
-    public async ValueTask RenderToPngStreamAsync(Stream stream) =>
-        await ((IMultiplexSource)WriteToBufferStream(
-                DrawingGroupToBitmap(await RenderAsync()))).ReadFrom(0)
-            .CopyToAsync(stream);
+    public async ValueTask RenderToPngStreamAsync(Stream stream)
+    {
+        using var source = WriteToBufferStream(
+            DrawingGroupToBitmap(await RenderAsync()));
+        await using var sourceStream = source.ReadFrom(0);
+        await sourceStream.CopyToAsync(stream);
+    }
 
     private static RenderTargetBitmap DrawingGroupToBitmap(DrawingGroup doc)
     {

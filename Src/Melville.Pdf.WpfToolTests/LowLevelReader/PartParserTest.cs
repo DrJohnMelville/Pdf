@@ -29,7 +29,7 @@ public class PartParserTest
     [InlineData(2,0)]
     public async Task ParseHeaderAsync(byte major, byte minor)
     {
-        var model =  await sut.ParseAsync(
+        using var model =  await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync(),waitingService.Object);
         Assert.Equal($"PDF-{major}.{minor}", model.Root[0].Title);
     }
@@ -37,7 +37,7 @@ public class PartParserTest
     [Fact]
     public async Task ParseFinalDictionaryAsync()
     {
-        var model = await sut.ParseAsync(
+        using var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf().AsFileAsync(),
             waitingService.Object);
         var trailerNode = model.Root.Last();
@@ -50,7 +50,7 @@ public class PartParserTest
     [Fact]
     public async Task ReportWaitingTimeAsync()
     {
-        var model = await sut.ParseAsync(
+        using var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf().AsFileAsync(),
             waitingService.Object);
         waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);
@@ -95,7 +95,8 @@ public class PartParserTest
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
-        return (await CreateParsedFileAsync(builder)).Root;
+        using var parsedLowLevelDocument = await CreateParsedFileAsync(builder);
+        return parsedLowLevelDocument.Root;
     }
 
     private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
@@ -117,7 +118,7 @@ public class PartParserTest
         builder.Pages.CreatePage();
         builder.Pages.CreatePage();
         builder.CreateDocument();
-        var doc = await CreateParsedFileAsync(builder.LowLevelCreator);
+        using var doc = await CreateParsedFileAsync(builder.LowLevelCreator);
         Assert.Equal(new CrossReference(3,0), await doc.Pages.PageForNumberAsync(0));
         Assert.Equal(new CrossReference(4,0), await doc.Pages.PageForNumberAsync(1));
         Assert.Equal(new CrossReference(5,0), await doc.Pages.PageForNumberAsync(2));

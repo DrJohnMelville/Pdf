@@ -40,7 +40,7 @@ public partial class LowLevelViewModel
         {
             return new ParsedLowLevelDocument(
                 new[] { new DocumentPart($"Exception: {e.Message}") },
-                NoPageLookup.Instance);
+                NoPageLookup.Instance, null);
         }
     }
 

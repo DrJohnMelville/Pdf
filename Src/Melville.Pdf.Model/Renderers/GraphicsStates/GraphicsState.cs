@@ -373,7 +373,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// </summary>
     /// <param name="realizedFont">The font to use.</param>
     public void SetTypeface(IRealizedFont realizedFont) => 
-        Typeface = TryRegisterDispose(realizedFont);
+        Typeface = realizedFont;
 
     /// <summary>
     /// Set the size of the printed page, in Pdf units

@@ -121,8 +121,14 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private Task<ParsedMaximums> LoadMaxProfileAsync() =>
         FindTable(SFntTableName.MaximumProfile) is { } table
-            ? new MaxpParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask()
+            ? ParseMaxProfile(table)
             : Task.FromResult(new ParsedMaximums(0));
+
+    private async Task<ParsedMaximums> ParseMaxProfile(TableRecord table)
+    {
+        using var pipe = source.ReadPipeFrom(table.Offset);
+        return await new MaxpParser(pipe).ParseAsync().CA();
+    }
 
     /// <inheritdoc />
     public override async ValueTask<IGlyphWidthSource> GlyphWidthSourceAsync() =>
@@ -142,7 +148,8 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var horizontalHeader = await HorizontalHeaderTableAsync().CA();
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
-        return await new HorizontalMetricsParser(source.ReadPipeFrom(table.Offset),
+        using var pipe = source.ReadPipeFrom(table.Offset);
+        return await new HorizontalMetricsParser(pipe,
             horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs, head.UnitsPerEm).ParseAsync().CA();
     }
 
@@ -158,10 +165,16 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
         return FindTable(SFntTableName.GlyphLocations) is { } table
-            ? await new LocationTableParser(
-                    source.ReadPipeFrom(table.Offset), maximums.NumGlyphs, head.IndexToLocFormat)
-                .ParseAsync().CA()
+            ? await ReadLocationTable(table, maximums, head).CA()
             : null;
+    }
+
+    private async ValueTask<IGlyphLocationSource> ReadLocationTable(TableRecord table, ParsedMaximums maximums, ParsedHead head)
+    {
+        using var pipe = source.ReadPipeFrom(table.Offset);
+        return await new LocationTableParser(
+                pipe, maximums.NumGlyphs, head.IndexToLocFormat)
+            .ParseAsync().CA();
     }
 
     /// <inheritdoc />

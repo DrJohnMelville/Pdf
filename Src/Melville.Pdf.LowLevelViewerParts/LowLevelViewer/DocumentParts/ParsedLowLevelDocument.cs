@@ -1,21 +1,20 @@
 ﻿using System.Diagnostics;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
-public class ParsedLowLevelDocument
+public class ParsedLowLevelDocument(DocumentPart[] root, IPageLookup pages, PdfLowLevelDocument? lowlevel): IDisposable
 {
-    public DocumentPart[] Root { get; }
-    public IPageLookup Pages { get; }
-
-    public ParsedLowLevelDocument(DocumentPart[] root, IPageLookup pages)
+    public DocumentPart[] Root { get; } = root;
+    public IPageLookup Pages { get; } = pages;
+    public void Dispose()
     {
-        Root = root;
-        Pages = pages;
+        (lowlevel as IDisposable)?.Dispose();
     }
 }
 

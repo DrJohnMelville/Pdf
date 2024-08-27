@@ -30,8 +30,9 @@ public class Cff2ParserTest
     [Fact]
     public async Task ParseCff2StreamAsync()
     {
+        using var multiplexSource = MultiplexSourceFactory.Create(Cff2Data.BitsFromHex());
         var table = await new Cff2GlyphSourceParser(
-            MultiplexSourceFactory.Create(Cff2Data.BitsFromHex())).ParseAsync();
+            multiplexSource).ParseAsync();
 
         table.GlyphCount.Should().Be(2);
     }

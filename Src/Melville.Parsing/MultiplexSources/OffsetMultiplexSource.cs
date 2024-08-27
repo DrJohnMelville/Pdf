@@ -37,7 +37,6 @@ internal class OffsetMultiplexSouceWithTicket(IMultiplexSource inner, long offse
 {
     public override void Dispose()
     {
-        base.Dispose();
         ticket.TryRelease();
     }
 }
