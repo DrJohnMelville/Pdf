@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_10_TextExtraction;
 
-public class TextExtractionIntegrationTest: RentalPolicyTestBase
+public class TextExtractionIntegrationTest
 {
     [Fact]
     public async Task SimpleRenderingAsync()

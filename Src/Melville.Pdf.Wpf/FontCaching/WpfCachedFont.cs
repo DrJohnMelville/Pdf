@@ -11,17 +11,12 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.FontCaching;
 
-internal partial class WpfCachedFont : IRealizedFont
+internal partial class WpfCachedFont : IRealizedFont, IDisposable
 {
-    [DelegateTo()]
-    private readonly IRealizedFont inner;
+    [DelegateTo()] [FromConstructor] private readonly IRealizedFont inner;
     private readonly Dictionary<uint, CachedGlyph> cache = new();
 
-
-    public WpfCachedFont(IRealizedFont inner)
-    {
-        this.inner = inner;
-    }
+    public void Dispose() => (inner as IDisposable)?.Dispose();
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new CachedOperation(this,target);
