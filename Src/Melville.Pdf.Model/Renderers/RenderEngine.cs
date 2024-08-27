@@ -223,7 +223,8 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> pageRenderContext.Target.WrapRealizedFontAsync(r, fontDeclaration));
 
     private ValueTask<IRealizedFont> CheckCacheForFontAsync(PdfDictionary fontDic) =>
-        pageRenderContext.Renderer.Cache.GetAsync(fontDic, async r=> BlockFontDispose.AsNonDisposableTypeface(await FontReader().DictionaryToRealizedFontAsync(r).CA()));
+        pageRenderContext.Renderer.Cache.GetAsync(fontDic, async r=> 
+            BlockFontDispose.AsNonDisposableTypeface(await FontReader().DictionaryToRealizedFontAsync(r).CA()));
      
     private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
 

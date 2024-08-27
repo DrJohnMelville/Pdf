@@ -21,7 +21,7 @@ namespace Melville.Fonts.SfntParsers;
 /// </summary>
 public partial class SFnt : ListOf1GenericFont, IDisposable
 {
-    private IMultiplexSource source;
+    private readonly IMultiplexSource source;
 
     private readonly TableRecord[] tables;
     private readonly Lazy<Task<IGlyphSource>> glyphSource;
@@ -240,7 +240,13 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private Task<PostscriptData> LoadPostscriptDataAsync() =>
         FindTable(SFntTableName.PostscriptData) is not { } table
             ? Task.FromResult(new PostscriptData())
-            : new PostscriptTableParser(source.ReadPipeFrom(table.Offset)).ParseAsync().AsTask();
+            : LoadPostscriptDataTable(table);
+
+    private async Task<PostscriptData> LoadPostscriptDataTable(TableRecord table)
+    {
+        using var readPipeFrom = source.ReadPipeFrom(table.Offset);
+        return await new PostscriptTableParser(readPipeFrom).ParseAsync().CA();
+    }
 
     /// <inheritdoc />
     public override async ValueTask<string[]> GlyphNamesAsync() =>

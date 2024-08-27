@@ -45,7 +45,8 @@ internal readonly struct ReferenceStreamWriter
     private async ValueTask<PdfStream> CreateReferenceStreamAsync()
     {
         using var data = WritableBuffer.Create();
-        await GenerateXrefStreamAsync(data.WritingStream()).CA();
+        await using var writingStream = data.WritingStream();
+        await GenerateXrefStreamAsync(writingStream).CA();
 
         await using var finalData = data.ReadFrom(0);
         var ret = new DictionaryBuilder()

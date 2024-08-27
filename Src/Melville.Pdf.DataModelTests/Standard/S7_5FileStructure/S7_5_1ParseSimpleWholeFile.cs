@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -65,8 +66,9 @@ public class S7_5_1ParseSimpleWholeFile
         Assert.Contains("Stream data", serialized);
         var doc2 = await serialized.ParseDocumentAsync();
         var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.Root);
+        await using var contentStream = await stream.StreamContentAsync(StreamFormat.DiskRepresentation);
         var value = await new StreamReader(
-            await stream.StreamContentAsync(StreamFormat.DiskRepresentation)).ReadToEndAsync();
+            contentStream).ReadToEndAsync();
         Assert.Equal("Stream data", value);
             
     }

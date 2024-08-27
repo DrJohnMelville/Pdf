@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
@@ -54,11 +54,12 @@ public class AcroFormReaderTest
         var frm = await SingleTextBoxFormAsync();
         ((IPdfTextBox)frm.Fields[0]).StringValue = "FooBar";
 
-        var stream = WritableBuffer.Create();
+        using var stream = WritableBuffer.Create();
         await using var writer = stream.WritingStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(writer);
 
-        var f2 = await FormReaderFacade.ReadFormAsync((stream).ReadFrom(0));
+        await using var source = (stream).ReadFrom(0);
+        var f2 = await FormReaderFacade.ReadFormAsync(source);
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
     [Fact]
@@ -67,11 +68,12 @@ public class AcroFormReaderTest
         var frm = await SingleTextBoxFormAsync();
         ((IPdfTextBox)frm.Fields[0]).StringValue = "Foo\x2013Bar";
 
-        var stream = WritableBuffer.Create();
+        using var stream = WritableBuffer.Create();
         await using var writer = stream.WritingStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(writer);
 
-        var f2 = await FormReaderFacade.ReadFormAsync(((IMultiplexSource)stream).ReadFrom(0));
+        await using var source = stream.ReadFrom(0);
+        var f2 = await FormReaderFacade.ReadFormAsync(source);
         f2.Fields[0].Value.DecodedString().Should().Be("Foo\x2013Bar");
     }
 

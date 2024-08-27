@@ -195,7 +195,7 @@ public class MultiBufferStreamTest
     [Fact]
     public void WriteIntoMultipleBuffers()
     {
-        var sut = CreateEmptyStream(3);
+        using var sut = CreateEmptyStream(3);
         using var writer = sut.WritingStream();
         for (int i = 0; i < 3; i++)
         {
