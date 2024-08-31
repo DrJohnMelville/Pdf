@@ -20,6 +20,7 @@ internal class JpxToPdfAdapter: ICodecDefinition
         // memory buffer does not deadlock.
         var buffer = new byte[input.Length];
         await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
+        await input.DisposeAsync().CA();
         return LoadImage(buffer);
     }
 

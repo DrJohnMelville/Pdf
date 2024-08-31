@@ -6,7 +6,7 @@ using Melville.Pdf.SkiaSharp;
 
 foreach (var generator in GeneratorFactory.AllGenerators)
 {
-    if (!generator.Prefix.StartsWith("-ShadingOperator")) continue;
+    if (!generator.Prefix.StartsWith("-Jpeg2000Image")) continue;
     Console.WriteLine(generator.Prefix);
     {
         using var ctx = RentalPolicyChecker.RentalScope(Console.WriteLine);
