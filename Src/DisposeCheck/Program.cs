@@ -6,7 +6,7 @@ using Melville.Pdf.SkiaSharp;
 
 foreach (var generator in GeneratorFactory.AllGenerators)
 {
-    if (!generator.Prefix.StartsWith("-CmykJpegImage")) continue;
+    if (!generator.Prefix.StartsWith("-JBigSampleBitStream1")) continue;
     Console.WriteLine(generator.Prefix);
     {
         using var ctx = RentalPolicyChecker.RentalScope(Console.WriteLine);
