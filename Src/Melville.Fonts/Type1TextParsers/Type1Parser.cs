@@ -31,6 +31,7 @@ public readonly struct Type1Parser(IMultiplexSource source)
         finally
         {
             eexecDecryptingSource.Dispose();
+            source.Dispose();
         }
     }
 

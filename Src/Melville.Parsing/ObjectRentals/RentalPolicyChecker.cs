@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.IO.Pipes;
 using System.Net.Sockets;
+using System.Security.AccessControl;
 using System.Text;
 using Melville.INPC;
 using Microsoft.CodeAnalysis.FlowAnalysis;
@@ -11,6 +13,11 @@ namespace Melville.Parsing.ObjectRentals;
 public static class RentalLog
 {
     private static UdpClient? client = null;
+    private static Action<string> output = i =>
+    {
+        var bytes = Encoding.UTF8.GetBytes(i);
+        Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+    };
     private static UdpClient Client
     {
         get
@@ -22,8 +29,7 @@ public static class RentalLog
 
     public static string WriteLine(string str)
     {
-        var bytes = Encoding.UTF8.GetBytes(str);
-        Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+        output(str);
         return str;
     }
 
@@ -56,6 +62,13 @@ public static class RentalLog
         var method = i.GetMethod();
         if (method is null) return "No Method";
         return $"{method.DeclaringType}.{method.Name}";
+    }
+
+    public static void SetTarget(Action<string>? newOutput)
+    {
+        if (newOutput is null) return;
+        output = newOutput;
+
     }
 }
 
@@ -101,11 +114,12 @@ internal readonly struct RentalRecord
 }
 
 [StaticSingleton]
-internal partial class RentalPolicyChecker
+public partial class RentalPolicyChecker
 {
     private readonly List<RentalRecord> rentals = new();
 
-    public static IDisposable RentalScope() => new RentalScopeImplementation(Instance);
+    public static IDisposable RentalScope(Action<string>? target) => 
+        new RentalScopeImplementation(Instance, target);
 
     public void CheckOut(object item)
     {
@@ -139,8 +153,10 @@ internal partial class RentalPolicyChecker
     {
         private readonly RentalPolicyChecker parent;
 
-        public RentalScopeImplementation(RentalPolicyChecker parent)
+        public RentalScopeImplementation(RentalPolicyChecker parent, 
+            Action<string>? output)
         {
+            RentalLog.SetTarget(output);
             this.parent = parent;
             if (parent.rentals.Any())
                 RentalLog.WriteLine("Rental Manager had rentals at the time scope was initialized");
@@ -161,7 +177,7 @@ internal partial class RentalPolicyChecker
 [Obsolete("Should be used for test only")]
 public class RentalPolicyTestBase : IDisposable
 {
-    private IDisposable ctx = RentalPolicyChecker.RentalScope();
+    private IDisposable ctx = RentalPolicyChecker.RentalScope(null);
     public virtual void Dispose() => ctx.Dispose();
 }
 #else 

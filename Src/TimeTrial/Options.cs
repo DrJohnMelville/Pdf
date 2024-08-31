@@ -20,9 +20,17 @@ public class Options
     [Option('b', "builtin", HelpText = "Name of a builtin text", Required = false)]
     public IEnumerable<string> BuiltInNames { get; set; } = Array.Empty<string>();
 
-    public IAsyncEnumerable<SourceItem> Items()
+
+    public async IAsyncEnumerable<SourceItem> Items()
     {
-        return GetBuiltinItems().Concat(GetFiles()).SelectMany(ExpandPages);
+        await foreach (var file in GetBuiltinItems().Concat(GetFiles()))
+        {
+            await foreach (var test in ExpandPages(file))
+            {
+                yield return test;
+            } 
+            file.Renderer.Dispose();
+        }
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously

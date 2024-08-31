@@ -50,12 +50,17 @@ public abstract class ObjectPoolBase<T> where T : class
         {
             RecordCheckIn(item);
             (item as IClearable)?.Clear();
-#warning unneuter this
-            if (true || nextSlot >= bufferLength)
+            if (nextSlot >= bufferLength)
             {
                 if (item is not IClearable) // some clearable classes use Dispose to return to the pool
                     (item as IDisposable)?.Dispose();
                 return;
+            }
+
+            for (int i = 0; i < nextSlot; i++)
+            {
+                if (object.ReferenceEquals(item, buffer[i]))
+                    throw new InvalidOperationException("Return an item already in pool");
             }
 
             buffer[nextSlot++] = item;

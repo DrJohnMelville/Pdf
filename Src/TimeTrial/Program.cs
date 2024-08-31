@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks.Sources;
 using CommandLine;
 using CommandLine.Text;
 using Melville.INPC;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.SkiaSharp;
 
@@ -26,7 +28,7 @@ internal class Program
         stopWatch.Start();
         await foreach (var item in arg.Items())
         {
-            var line = await item.RunTestAsync();
+           var line = await item.RunTestAsync();
             Console.WriteLine(line);
         }
         stopWatch.Stop();
