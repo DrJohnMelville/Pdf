@@ -10,7 +10,8 @@ using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphWidthSource
+internal partial class CffGenericFont : 
+    ListOf1GenericFont, ICMapSource, IGlyphWidthSource, IDisposable
 {
     [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] private readonly ushort unitsPerEm;
@@ -122,4 +123,6 @@ internal partial class CffGenericFont : ListOf1GenericFont, ICMapSource, IGlyphW
 
     public (int platform, int encoding) GetPlatformEncoding(int index) => (4, 0);
     public float GlyphWidth(ushort glyph) => 0f;
+
+    public void Dispose() => source.Dispose();
 }

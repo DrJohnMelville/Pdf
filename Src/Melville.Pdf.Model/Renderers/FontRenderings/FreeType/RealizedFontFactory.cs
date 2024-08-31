@@ -30,7 +30,8 @@ internal readonly partial struct RealizedFontFactory
 
     private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index)
     {
-        var font = await RootFontParser.ParseAsync(MultiplexSourceFactory.Create(source)).CA();
+        var fontSource = MultiplexSourceFactory.Create(source);
+        var font = await RootFontParser.ParseAsync(fontSource).CA();
         return font[index];
     }
 
