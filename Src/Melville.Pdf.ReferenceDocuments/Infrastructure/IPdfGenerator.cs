@@ -1,4 +1,7 @@
-﻿using Melville.Parsing.MultiplexSources;
+﻿using System.Diagnostics;
+using Melville.Hacks.Reflection;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
@@ -23,6 +26,44 @@ public static class RenderTestHelpers
         await using var writer = src.WritingStream();
         await generator.WritePdfAsync(writer);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFromAsync(src);
+            .ReadFromAsync((src));
     }
+}
+
+internal class DebugIntermediary(IMultiplexSource inner) : IMultiplexSource
+{
+    private List<ReaderFor> readers = new List<ReaderFor>();
+
+    private T Record<T>(T item)
+    {
+        readers.Add(new ReaderFor(item!));
+        return item;
+    }
+
+    public Stream ReadFrom(long position)
+    {
+        return Record(inner.ReadFrom(position));
+    }
+
+    public IByteSource ReadPipeFrom(long position, long startingPosition = 0)
+    {
+        return Record(inner.ReadPipeFrom(position, startingPosition));
+    }
+
+    public long Length => inner.Length;
+
+    public IMultiplexSource OffsetFrom(uint offset)
+    {
+        return Record(inner.OffsetFrom(offset));
+    }
+
+    public void Dispose()
+    {
+        inner.Dispose();
+    }
+}
+
+public record ReaderFor(string StackTrace, object reader)
+{
+    public ReaderFor(object reader): this(new StackTrace().ToString(), reader){}
 }

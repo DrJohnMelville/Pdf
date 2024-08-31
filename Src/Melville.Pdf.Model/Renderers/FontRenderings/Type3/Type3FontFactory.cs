@@ -17,7 +17,7 @@ internal readonly partial struct Type3FontFactory
     {
         var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
         var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).CA();
-        var characters = new IMultiplexSource[1 + lastChar - firstChar];
+        var characters = new PdfStream[1 + lastChar - firstChar];
         var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).CA();
         var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).CA();
         var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).CA();
@@ -30,10 +30,7 @@ internal readonly partial struct Type3FontFactory
                     currentChar = nextChar;
                     break;
                 case {IsName:true}:
-                    var source = 
-                        await (await charProcs.GetAsync<PdfStream>(item).CA())
-                            .StreamContentAsync().CA();
-                    characters[currentChar - firstChar] = MultiplexSourceFactory.Create(source);
+                    characters[currentChar - firstChar] = await charProcs.GetAsync<PdfStream>(item).CA();
                     currentChar++;
                     break;
             }

@@ -3,17 +3,15 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph, IDisposable
+internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
 {
-    [FromConstructor]private readonly IMultiplexSource[] characters;
+    [FromConstructor]private readonly PdfStream[] characters;
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
     [FromConstructor]private readonly PdfDictionary rawFont;
@@ -29,7 +27,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph, 
     private async ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)
     {
-        await using var readFrom = characters[glyph].ReadFrom(0);
+        await using var readFrom = await characters[glyph].StreamContentAsync().CA();
         return await target.RenderType3CharacterAsync(
             readFrom, fontMatrix, rawFont).CA();
     }
@@ -61,13 +59,5 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph, 
         { }
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => new Type3Writer(parent, target);
-    }
-
-    public void Dispose()
-    {
-        foreach (var ms in characters)
-        {
-            (ms as IDisposable)?.Dispose();
-        }
     }
 }

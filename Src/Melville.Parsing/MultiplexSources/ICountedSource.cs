@@ -13,6 +13,8 @@ internal readonly struct CountedSourceTicket(ICountedSource? source, int nonce)
 {
     public bool TryRelease(ref CountedSourceTicket ticket) => source?.TryRelease(ref ticket) ?? false;
     public bool HasNonce(int candidate) => nonce == candidate;
+
+    public bool IsEmpty => source is null;
 }
 
 internal static class CountedSourceTicketOperations
