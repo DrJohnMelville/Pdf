@@ -3,6 +3,9 @@ using System.IO.Pipelines;
 using Melville.INPC;
 using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.Decoder;
+using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
@@ -23,30 +26,20 @@ public readonly partial struct JpegStreamFactory
     /// </summary>
     /// <param name="s">A readable stream containing a JPEG image file</param>
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
-    public ValueTask<Stream> FromStreamAsync(Stream s) => FromPipeAsync(PipeReader.Create(s));
-
-    /// <summary>
-    /// Create a Jpeg stream from a pipereader.
-    /// </summary>
-    /// <param name="pipe">The pipe reader.</param>
-    /// <returns>A stream representing the image</returns>
-    public async ValueTask<Stream> FromPipeAsync(PipeReader pipe)
+    public async ValueTask<Stream> FromStreamAsync(Stream s)
     {
+        using var pipe = MultiplexSourceFactory.SingleReaderForStream(s);
+
         var seq = await pipe.ReadAsync();
         while (!seq.IsCompleted)
         {
-            pipe.AdvanceTo(seq.Buffer.Start, seq.Buffer.End);
+            pipe.MarkSequenceAsExamined();
             seq = await pipe.ReadAsync();
         }
         return FromReadOnlySequence(seq.Buffer);
     }
 
-    /// <summary>
-    /// Create a JpegStream from a sequence of bytes
-    /// </summary>
-    /// <param name="input">The JPEG data as a sequence.</param>
-    /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
-    public Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
+    private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
     {
         var decoder = new JpegDecoder();
         decoder.SetInput(input);
@@ -58,27 +51,38 @@ public readonly partial struct JpegStreamFactory
         decoder.SetOutputWriter(outputWriter);
         decoder.Decode();
 
-        return SelectDecoding(decoder, output, bufferLength);
-    }
+        DoDecode(decoder, output, bufferLength);
+        return new StraightCopyStream(output, bufferLength);
 
-    private Stream SelectDecoding(JpegDecoder decoder, byte[] output, int bufferLength)
+    }
+    private void DoDecode(JpegDecoder decoder, byte[] output, int bufferLength)
     {
         if (decoder.App14EncodingByte.HasValue)
-            return (decoder.App14EncodingByte.Value, decoder.NumberOfComponents) switch
+        {
+            switch (decoder.App14EncodingByte.Value, decoder.NumberOfComponents) 
             {
-                (2, 4) => new StraightCopyStream(YCCKConversion.ConvertArray(output, bufferLength), bufferLength),
-                (1, 3) => new StraightCopyStream(ConvertYCrCb.Convert(output, bufferLength), bufferLength),
-                _ => new StraightCopyStream(output, bufferLength)
+                case (2, 4) :
+                    YCCKConversion.ConvertArray(output, bufferLength);
+                    break;
+                case (1, 3) : 
+                    ConvertYCrCb.Convert(output, bufferLength);
+                    break;
             };
+            return;
+        }
 
         if (ColorTransformExplicitlyProhibited() ||
-            ColorTransformImplicitlyProhibited(decoder)) return new StraightCopyStream(output, bufferLength);
-        
-        return decoder.NumberOfComponents switch
+            ColorTransformImplicitlyProhibited(decoder)) 
+            return ;
+
+        switch (decoder.NumberOfComponents)
         {
-            3 => new StraightCopyStream(ConvertYCrCb.Convert(output, bufferLength), bufferLength),
-            4 => new StraightCopyStream(YCCKConversion.ConvertArray(output, bufferLength), bufferLength),
-            _ => new StraightCopyStream(output, bufferLength)
+            case 3:
+                ConvertYCrCb.Convert(output, bufferLength);
+                break;
+            case 4:
+                YCCKConversion.ConvertArray(output, bufferLength);
+                break;
         };
     }
 
