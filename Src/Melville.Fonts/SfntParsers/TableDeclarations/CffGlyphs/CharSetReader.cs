@@ -32,7 +32,7 @@ internal readonly struct MemoryTarget(Memory<ushort> target) : ICharSetTarget
     public long Count => target.Length;
     public ValueTask SetGlyphNameAsync(int index, ushort sid)
     {
-        target.Span[index] = sid;
+        if ((uint)index < target.Length) target.Span[index] = sid;
         return default;
     }
 }

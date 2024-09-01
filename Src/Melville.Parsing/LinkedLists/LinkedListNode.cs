@@ -36,7 +36,7 @@ namespace Melville.Parsing.LinkedLists
 
         public void Clear()
         {
-            if (buffer is not null)
+            if (buffer.Length > 0)
                 ArrayPool<byte>.Shared.Return(buffer);
             Memory = ReadOnlyMemory<byte>.Empty;
             Next = null;

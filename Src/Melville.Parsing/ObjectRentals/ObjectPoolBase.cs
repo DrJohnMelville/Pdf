@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Melville.Parsing.ObjectRentals;
@@ -48,6 +49,11 @@ public abstract class ObjectPoolBase<T> where T : class
     {
         lock(mutex)
         {
+            for (int i = 0; i < nextSlot; i++)
+            {
+                if (object.ReferenceEquals(item, buffer[i])) return;
+            }
+
             RecordCheckIn(item);
             (item as IClearable)?.Clear();
             if (nextSlot >= bufferLength)
@@ -57,16 +63,10 @@ public abstract class ObjectPoolBase<T> where T : class
                 return;
             }
 
-            for (int i = 0; i < nextSlot; i++)
-            {
-                if (object.ReferenceEquals(item, buffer[i]))
-                    throw new InvalidOperationException("Return an item already in pool");
-            }
-
             buffer[nextSlot++] = item;
         }
     }
-
+    
     private T ClearAndReturnSlot()
     {
         nextSlot--;

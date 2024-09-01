@@ -27,20 +27,17 @@ public static class RentalLog
         }
     }
 
-    public static string WriteLine(string str)
-    {
-        output(str);
-        return str;
-    }
+    public static void WriteLine(string str) => output(str);
 
-    public static void Log(string message, StackTrace trace) =>
+    public static void Log(string message, StackTrace? trace) =>
         WriteLine($"""
             {message}
             {DumpTrace(trace)}
             """);
 
-    private static string DumpTrace(StackTrace trace)
+    private static string DumpTrace(StackTrace? trace)
     {
+        if (trace is null) return "Rental tracing is disabled.";
         var frames = trace.GetFrames().Select(PrintFrame).ToArray();
         var last = 0;
         for (int i = 0; i < frames.Length; i++)
@@ -74,7 +71,7 @@ public static class RentalLog
 
 internal readonly struct RentalRecord
 {
-    public StackTrace Trace { get; } = new StackTrace(4);
+    public StackTrace? Trace { get; } = null;// new StackTrace(4);
     private readonly WeakReference item;
     public string TypeName { get; }
 
