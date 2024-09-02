@@ -14,7 +14,7 @@ switch (1)
         Console.WriteLine("done");
         break;
     case 1:
-        BenchmarkRunner.Run<BitmapWriting>();
+        BenchmarkRunner.Run<PageRendering>();
         break;
     case 2:
         for (int i = 0; i < 1_000; i++)

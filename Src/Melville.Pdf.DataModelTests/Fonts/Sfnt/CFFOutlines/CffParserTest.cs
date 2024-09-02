@@ -13,6 +13,7 @@ namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
 
 public class CffParserTest:IDisposable
 {
+    private IDisposable ctx = RentalPolicyChecker.RentalScope(null);
     private const string CffData = """
         0100 0401 0001 0101 1341 4243 4445 462b
         5469 6d65 732d 526f 6d61 6e00 0101 011f 
@@ -28,8 +29,12 @@ public class CffParserTest:IDisposable
 
     private readonly IMultiplexSource source = MultiplexSourceFactory.Create(
         CffData.BitsFromHex());
-    
-    public void Dispose() => source.Dispose();
+
+    public void Dispose()
+    {
+        source.Dispose();
+        ctx.Dispose();
+    }
 
     [Fact]
     public async Task ParseCFFStreamAsync()

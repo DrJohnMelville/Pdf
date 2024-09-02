@@ -4,6 +4,7 @@ using System.Threading.Tasks.Sources;
 using CommandLine;
 using CommandLine.Text;
 using Melville.INPC;
+using Melville.Parsing.LinkedLists;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.SkiaSharp;

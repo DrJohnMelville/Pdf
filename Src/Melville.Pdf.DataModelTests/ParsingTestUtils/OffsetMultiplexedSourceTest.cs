@@ -27,9 +27,10 @@ public class OffsetMultiplexedSourceTest
     [InlineData(5, 2)]
     public void OffsetRead(int offset, int pos)
     {
-        using var sut2 = new OffsetMultiplexSource(sut, offset);
+        using var sut2 = sut.OffsetFrom((uint)offset);
         var sum = offset + pos;
-        using var readFrom = sut2.ReadFrom(pos);
+        using var readFrom = sut2.ReadFrom(pos); 
         VerifyRead(readFrom, [(byte)sum, (byte)(sum+1), (byte)(sum+2)]);
     } 
 }
+

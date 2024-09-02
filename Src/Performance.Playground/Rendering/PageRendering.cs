@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Toolchains;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
@@ -15,6 +17,7 @@ using Melville.Pdf.Wpf.Rendering;
 namespace Performance.Playground.Rendering;
 
 [MemoryDiagnoser()]
+
 public class PageRendering
 {
     IWritableMultiplexSource data = WritableBuffer.Create();

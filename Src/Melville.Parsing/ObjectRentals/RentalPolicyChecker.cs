@@ -10,6 +10,7 @@ namespace Melville.Parsing.ObjectRentals;
 
 #if DEBUG
 
+
 public static class RentalLog
 {
     private static UdpClient? client = null;
@@ -29,37 +30,12 @@ public static class RentalLog
 
     public static void WriteLine(string str) => output(str);
 
-    public static void Log(string message, StackTrace? trace) =>
+    public static void Log(string message, string trace) =>
         WriteLine($"""
             {message}
-            {DumpTrace(trace)}
+            {trace}
             """);
 
-    private static string DumpTrace(StackTrace? trace)
-    {
-        if (trace is null) return "Rental tracing is disabled.";
-        var frames = trace.GetFrames().Select(PrintFrame).ToArray();
-        var last = 0;
-        for (int i = 0; i < frames.Length; i++)
-        {
-            if (frames[i].Contains("Melville")) last = i;
-        }
-
-        var ret = new StringBuilder();
-        for (int i = 0; i <= last; i++)
-        {
-            ret.AppendLine(frames[i]);
-        }
-
-        return ret.ToString();
-    }
-
-    private static string PrintFrame(StackFrame i)
-    {
-        var method = i.GetMethod();
-        if (method is null) return "No Method";
-        return $"{method.DeclaringType}.{method.Name}";
-    }
 
     public static void SetTarget(Action<string>? newOutput)
     {
@@ -71,7 +47,11 @@ public static class RentalLog
 
 internal readonly struct RentalRecord
 {
-    public StackTrace? Trace { get; } = null;// new StackTrace(4);
+    #if false
+    public string Trace { get; } = "Stack tracing disabled"; //new StackTrace(4).Clip();
+    #else
+    public string Trace { get; } = new StackTrace(4).Clip();
+    #endif
     private readonly WeakReference item;
     public string TypeName { get; }
 
@@ -136,7 +116,7 @@ public partial class RentalPolicyChecker
         }
 
         if (index == -1)
-            RentalLog.WriteLine(
+            throw new InvalidOperationException(
                 $"An object was returned that was not rented. (or was returned twice.): {item}");
         if (index + 1 < rentals.Count)
         {
@@ -180,7 +160,7 @@ public class RentalPolicyTestBase : IDisposable
 #else 
 public static class RentalPolicyChecker
 {
-    public static IDisposable RentalScope() => new EmptyScope();
+    public static IDisposable RentalScope(Action<string>? s = null) => new EmptyScope();
     private class EmptyScope : IDisposable
     {
         public void Dispose()

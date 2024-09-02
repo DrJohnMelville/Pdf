@@ -50,7 +50,11 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
 
     public bool TryRelease(ref CountedSourceTicket ticket)
     {
-        if (!ticket.HasNonce(serialNumber)) return false;
+        if (!ticket.HasNonce(serialNumber))
+        {
+            Debug.Fail("Nonce does not match");
+            return false;
+        }
         ticket = default; // clear the ticket so it cannot be fired again
         ReleaseReference();
         return true;
@@ -70,8 +74,11 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         return ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
     }
 
-    public IMultiplexSource  OffsetFrom(uint offset) => 
-        new OffsetMultiplexSouceWithTicket(this, offset, CreateSourceTicket());
+    public IMultiplexSource  OffsetFrom(uint offset)
+    {
+        AddReference();
+        return new OffsetMultiplexSouceWithTicket(this, offset, CreateSourceTicket());
+    }
 
     public abstract long Length { get; }
 

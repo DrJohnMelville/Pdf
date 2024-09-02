@@ -25,7 +25,7 @@ public abstract class ObjectPoolBase<T> where T : class
     private VectorBuffer buffer = new();
     private int nextSlot;
 
-    #warning use new lock object in .net 9.0  search for \block\s*\( to find all the places
+   #warning use new lock object in .net 9.0  search for \block\s*\( to find all the places
     private readonly object mutex = new();
     
     /// <summary>
@@ -36,8 +36,21 @@ public abstract class ObjectPoolBase<T> where T : class
     {
         lock (mutex)
         {
-            return RecordCheckOut(nextSlot == 0 ? Create() : ClearAndReturnSlot());
+            var ret = RecordCheckOut(nextSlot == 0 ? Create() : ClearAndReturnSlot());
+            return ret;
         }
+    }
+
+    
+    private T ClearAndReturnSlot()
+    {
+        nextSlot--;
+        var ret = buffer[nextSlot];
+        if (ret is null)
+            throw new InvalidOperationException(
+                "Internal object pool error -- pool object should not be null");
+        buffer[nextSlot] = null;
+        return ret;
     }
 
     /// <summary>
@@ -66,20 +79,7 @@ public abstract class ObjectPoolBase<T> where T : class
             buffer[nextSlot++] = item;
         }
     }
-    
-    private T ClearAndReturnSlot()
-    {
-        nextSlot--;
-        var ret = buffer[nextSlot];
-        if (ret is null)
-            throw new InvalidOperationException(
-                "Internal object pool error -- pool object should not be null");
-        buffer[nextSlot] = null;
-        return ret;
-    }
-
-
-    [System.Runtime.CompilerServices.InlineArray(bufferLength)]
+    [InlineArray(bufferLength)]
     private struct VectorBuffer
     {
         private T? _element0;
@@ -130,4 +130,3 @@ public class ObjectPool<T> : ObjectPoolBase<T> where T : class, new()
     /// <inheritdoc />
     protected override T Create() => new T();
 }
-

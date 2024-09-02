@@ -1,9 +1,10 @@
 ﻿using System;
 using Melville.INPC;
+using Melville.Parsing.ObjectRentals;
 
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
-internal partial class OptionalContentDrawTarget : IDrawTarget, IDisposable
+internal partial class OptionalContentDrawTarget : IDrawTarget, IDisposable, IClearable
 {
     private OptionalContentCounter optionalContentCounter = null!;
     [DelegateTo] private IDrawTarget target = null!;
@@ -21,4 +22,8 @@ internal partial class OptionalContentDrawTarget : IDrawTarget, IDisposable
     }
 
     public void Dispose() => optionalContentCounter.ReturnDrawTarget(this);
+    public void Clear()
+    {
+        // needs to be defined to prevent recursion
+    }
 }

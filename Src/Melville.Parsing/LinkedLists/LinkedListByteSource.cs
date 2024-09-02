@@ -1,4 +1,6 @@
-﻿using System.IO.Pipelines;
+﻿using System.Diagnostics;
+using System.IO.Pipelines;
+using Melville.Hacks.Reflection;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
@@ -32,26 +34,39 @@ internal class LinkedListByteSource : IByteSource
         ObjectPool<LinkedListByteSource>.Shared.Return(this);
     }
 
+    [Conditional("DEBUG")]
+    private void AssertValidState()
+    {
+        Debug.Assert(data != LinkedList.Empty);
+        Debug.Assert((int)(data.GetField("pendingReaders")) > 0);
+        Debug.Assert(nextByte != LinkedListPosition.NullPosition);
+        Debug.Assert(unexaminedByte != LinkedListPosition.NullPosition);
+    }
+
     public bool TryRead(out ReadResult result)
     {
+        AssertValidState();
         result = CreateReadResult();
         return result.Buffer.Length > 0;
     }
 
     private ReadResult CreateReadResult()
     {
+        AssertValidState();
         return new ReadResult(data.ValidSequence(nextByte), false,
             data.DoneGrowing());
     }
 
     public async ValueTask<ReadResult> ReadAsync()
     {
+        AssertValidState();
         await data.PrepareForReadAsync(unexaminedByte).CA();
         return CreateReadResult();
     }
 
     public ReadResult Read()
     {
+        AssertValidState();
         data.PrepareForRead(unexaminedByte);
         return CreateReadResult();
     }
@@ -60,6 +75,7 @@ internal class LinkedListByteSource : IByteSource
 
     public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
     {
+        AssertValidState();
         unexaminedByte = examined;
         nextByte = consumed;
         data.HasReadTo(consumed);
@@ -67,11 +83,22 @@ internal class LinkedListByteSource : IByteSource
 
     public void MarkSequenceAsExamined()
     {
+        AssertValidState();
         unexaminedByte = data.FirstInvalidPosition();
     }
 
-    public long Position => nextByte.GlobalPosition+positionOffset;
+    public long Position
+    {
+        get
+        {
+            AssertValidState();
+            return nextByte.GlobalPosition + positionOffset;
+        }
+    }
 
-    public void RemapCurrentPosition(long newPosition) =>
+    public void RemapCurrentPosition(long newPosition)
+    {
+        AssertValidState();
         positionOffset = newPosition - nextByte.GlobalPosition;
+    }
 }

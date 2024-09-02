@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.MultiplexSources;
+﻿using Melville.INPC;
+
+namespace Melville.Parsing.MultiplexSources;
 
 internal interface ICountedSource
 {
@@ -9,8 +11,11 @@ internal interface ICountedSource
     bool TryRelease(ref CountedSourceTicket ticket);
 }
 
-internal readonly struct CountedSourceTicket(ICountedSource? source, int nonce)
+internal readonly partial struct CountedSourceTicket
 {
+    [FromConstructor]private readonly ICountedSource? source;
+    [FromConstructor]private readonly int nonce;
+
     public bool TryRelease(ref CountedSourceTicket ticket) => source?.TryRelease(ref ticket) ?? false;
     public bool HasNonce(int candidate) => nonce == candidate;
 

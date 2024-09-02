@@ -23,6 +23,10 @@ namespace Melville.Pdf.Wpf.Rendering
             {
                 await FillBitmapAsync(bitmap, ret);
             }
+            catch (InvalidOperationException)
+            {
+                // if we cannot decode just print what we have
+            }
             finally
             {
                 ret.AddDirtyRect(new Int32Rect(0,0,bitmap.Width, bitmap.Height));

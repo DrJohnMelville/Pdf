@@ -35,5 +35,5 @@ public interface IMultiplexSource : IDisposable
     /// <param name="offset">Number of bytes into the current source where the new
     /// source should begin</param>
     /// <returns>A, IMultiplexSource that shares data with this one, but with an offset</returns>
-    IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
+    IMultiplexSource OffsetFrom(uint offset);
 }
