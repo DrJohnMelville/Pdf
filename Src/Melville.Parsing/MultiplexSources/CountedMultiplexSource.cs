@@ -34,18 +34,13 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         return state == CountedSourceState.Open || pendingReaders > 0;
     }
 
-    public Stream ReadFrom(long position)
-    {
-        AddReference();
-        return ReadFromOverride(position, CreateSourceTicket());
-    }
+    public Stream ReadFrom(long position) => ReadFromOverride(position, CreateSourceTicket());
 
-    private CountedSourceTicket CreateSourceTicket() => new(this, serialNumber);
-
-    private void AddReference()
+    private CountedSourceTicket CreateSourceTicket()
     {
         Debug.Assert(state == CountedSourceState.Open);
         pendingReaders++;
+        return new CountedSourceTicket(this, serialNumber);
     }
 
     public bool TryRelease(ref CountedSourceTicket ticket)
@@ -68,16 +63,12 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         TryCleanUp();
     }
 
-    public IByteSource ReadPipeFrom(long position, long startingPosition = 0)
-    {
-        AddReference();
-        return ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
-    }
+    public IByteSource ReadPipeFrom(long position, long startingPosition = 0) => 
+        ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
 
     public IMultiplexSource  OffsetFrom(uint offset)
     {
-        AddReference();
-        return new OffsetMultiplexSouceWithTicket(this, offset, CreateSourceTicket());
+        return new OffsetMultiplexSource(this, offset);
     }
 
     public abstract long Length { get; }

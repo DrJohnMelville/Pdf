@@ -47,8 +47,8 @@ public static class RentalLog
 
 internal readonly struct RentalRecord
 {
-    #if false
-    public string Trace { get; } = "Stack tracing disabled"; //new StackTrace(4).Clip();
+    #if true
+    public string Trace { get; } = "Stack tracing disabled";
     #else
     public string Trace { get; } = new StackTrace(4).Clip();
     #endif

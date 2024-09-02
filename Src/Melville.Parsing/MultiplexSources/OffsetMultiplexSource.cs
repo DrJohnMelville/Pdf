@@ -7,7 +7,7 @@ namespace Melville.Parsing.MultiplexSources;
 /// This is an IMultiplexSource that represents a position inside of another IMultiplexSource,
 /// but with an offset applied.
 /// </summary>
-public abstract partial class OffsetMultiplexSource : IMultiplexSource
+public partial class OffsetMultiplexSource : IMultiplexSource
 {
     /// <summary>
     /// The inner IMultiplexSource that the data comes from
@@ -19,7 +19,7 @@ public abstract partial class OffsetMultiplexSource : IMultiplexSource
     [FromConstructor]private readonly long offset1;
 
     /// <inheritdoc />
-    public virtual void Dispose() => inner1.Dispose();
+    public void Dispose() { }
 
     /// <inheritdoc />
     public Stream ReadFrom(long position) => inner1.ReadFrom(position + offset1);
@@ -35,14 +35,5 @@ public abstract partial class OffsetMultiplexSource : IMultiplexSource
     public IMultiplexSource OffsetFrom(uint newOffset)
     {
         return inner1.OffsetFrom((uint)offset1+newOffset);
-    }
-}
-
-internal class OffsetMultiplexSouceWithTicket(IMultiplexSource inner, long offset, CountedSourceTicket ticket) :
-    OffsetMultiplexSource(inner, offset)
-{
-    public override void Dispose()
-    {
-        ticket.TryRelease();
     }
 }
