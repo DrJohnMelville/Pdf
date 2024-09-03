@@ -13,7 +13,7 @@ internal class FileMultiplexer(FileStream stream) : CountedMultiplexSource, IInd
     }
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) => 
-        IndexedReaderStreamFactory.Shared.Rent().ReadFrom(this, position, ticket);
+        new IndexedReaderStream().ReadFrom(this, position, ticket);
 
     public override long Length => stream.Length;
 

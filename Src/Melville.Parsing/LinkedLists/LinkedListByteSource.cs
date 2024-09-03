@@ -17,28 +17,26 @@ internal class LinkedListByteSource : IByteSource
     private LinkedListPosition unexaminedByte;
     private long positionOffset;
 
-    public static LinkedListByteSource Create(LinkedList data, CountedSourceTicket ticket)
+    public LinkedListByteSource(LinkedList data, CountedSourceTicket ticket)
     {
-        var ret = ObjectPool<LinkedListByteSource>.Shared.Rent();
-        ret.data = data;
-        ret.ticket = ticket;
-        ret.unexaminedByte = ret.nextByte = data.StartPosition;
-        return ret;
+        this.data = data;
+        this.ticket = ticket;
+        unexaminedByte = nextByte = data.StartPosition;
     }
+
 
     public void Dispose()
     {
         if (data == LinkedList.Empty) return;
         ticket.TryRelease();
         data = LinkedList.Empty;
-        ObjectPool<LinkedListByteSource>.Shared.Return(this);
     }
 
     [Conditional("DEBUG")]
     private void AssertValidState()
     {
         Debug.Assert(data != LinkedList.Empty);
-        Debug.Assert((int)(data.GetField("pendingReaders")) > 0);
+        Debug.Assert((int)(data.GetField("pendingReaders")!) > 0);
         Debug.Assert(nextByte != LinkedListPosition.NullPosition);
         Debug.Assert(unexaminedByte != LinkedListPosition.NullPosition);
     }

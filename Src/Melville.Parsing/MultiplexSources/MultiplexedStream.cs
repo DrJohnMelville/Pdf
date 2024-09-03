@@ -64,5 +64,5 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
     }
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) =>
-        IndexedReaderStreamFactory.Shared.Rent().ReadFrom(this, position, ticket);
+        new IndexedReaderStream().ReadFrom(this, position, ticket);
 }

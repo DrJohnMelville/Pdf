@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
@@ -7,17 +8,17 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
-#warning -- consider making this an IMultiplexFactorySource so that I can optimize the unit tests 
-internal class MultiBufferStream : ReadWriteStreamBase
+internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource
 {
     private LinkedList data = LinkedList.Empty;
     private LinkedListPosition currentPosition;
     private CountedSourceTicket ticket;
     private bool writable;
 
+    #warning -- use constructor here.
     internal static MultiBufferStream Create(LinkedList data, bool writable, CountedSourceTicket ticket)
     {
-        var ret = ObjectPool<MultiBufferStream>.Shared.Rent();
+        var ret = new MultiBufferStream();
         Debug.Assert(!ret.IsValid());
         ret.data = data;
         ret.ticket = ticket;
@@ -35,7 +36,6 @@ internal class MultiBufferStream : ReadWriteStreamBase
         data = LinkedList.Empty;
         currentPosition = LinkedListPosition.NullPosition;
         base.Dispose(disposing);
-        ObjectPool<MultiBufferStream>.Shared.Return(this);
     }
 
     public override int Read(Span<byte> buffer)
@@ -93,4 +93,15 @@ internal class MultiBufferStream : ReadWriteStreamBase
     public override bool CanSeek => true;
 
     public override bool CanWrite => writable;
+
+    #region Implement IMultiplexSource so that unit tests go faster, but not a real part of the class
+
+    Stream IMultiplexSource.ReadFrom(long position) => data.ReadFrom(position);
+
+    IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition) =>
+        data.ReadPipeFrom(position, startingPosition);
+
+    IMultiplexSource IMultiplexSource.OffsetFrom(uint offset) => data.OffsetFrom(offset);
+
+    #endregion
 }

@@ -163,9 +163,10 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync()
     {
-        await using var stream = await page.GetContentBytesAsync().CA();
+        using var reader = MultiplexSourceFactory.SingleReaderForStream(
+            await page.GetContentBytesAsync().CA());
         await new ContentStreamParser(this).ParseAsync(
-            MultiplexSourceFactory.SingleReaderForStream(stream, false)).CA();
+            reader).CA();
     }
 
     #endregion

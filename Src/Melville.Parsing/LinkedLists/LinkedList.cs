@@ -163,7 +163,7 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     protected override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
     {
-        var ret = LinkedListByteSource.Create(this, ticket);
+        var ret = new LinkedListByteSource(this, ticket);
         if (position > 0)
         {
             var initial = PositionAt(position);

@@ -32,27 +32,20 @@ internal interface IIndexedReader
     long Length { get; }
 }
 
-internal partial class IndexedReaderStreamFactory : ObjectPoolBase<IndexedReaderStream>
-{
-    public static readonly IndexedReaderStreamFactory Shared = new();
-    protected override IndexedReaderStream Create() => new(this);
-}
 
-internal class IndexedReaderStream(IndexedReaderStreamFactory home) : 
+internal class IndexedReaderStream() : 
     DefaultBaseStream(true, false, true)
 {
     private IIndexedReader? source = null;
     private CountedSourceTicket sourceTicket;
-    private string? trace;
 
+#warning use constructor
     public IndexedReaderStream ReadFrom(IIndexedReader source, long position, CountedSourceTicket ticket)
     {
         ArgumentNullException.ThrowIfNull(source);
         this.source = source;
         Position = position;
         sourceTicket = ticket;
-        trace = "Enable stack tracing in IndexedStreamReader.cs";
-//        trace = new StackTrace();
         return this;
     }
 
@@ -68,7 +61,7 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
     private void VerifyInitialized()
     {
         if (source is null) 
-            throw new InvalidOperationException($"IndexedReaderStream has no source.\r\n created at {trace}");
+            throw new InvalidOperationException($"IndexedReaderStream has no source.");
     }
 
     public override async ValueTask<int> ReadAsync(
@@ -100,6 +93,5 @@ internal class IndexedReaderStream(IndexedReaderStreamFactory home) :
         source = null;
         sourceTicket.TryRelease();
         base.Dispose(disposing);
-        home.Return(this);
     }
 }
