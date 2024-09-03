@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -40,8 +42,8 @@ public static class CrossReferenceStreamParser
     public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).CreateAsync().CA();
-        await using var stream = await crossRefPdfStream.StreamContentAsync().CA();
-        await parser.ParseAsync(PipeReader.Create(stream)).CA();
+        using var pipeReader = MultiplexSourceFactory.SingleReaderForStream(await crossRefPdfStream.StreamContentAsync().CA());
+        await parser.ParseAsync(pipeReader).CA();
 
     }
 }

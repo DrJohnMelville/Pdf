@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -65,7 +66,7 @@ internal readonly struct XrefStreamParser
     }
 
 #warning update this to use IByteSource.
-    public async ValueTask ParseAsync(PipeReader source)
+    public async ValueTask ParseAsync(IByteSource source)
     {
         for (int i = 0; i < index.Count; i+=2)
         {
@@ -75,7 +76,7 @@ internal readonly struct XrefStreamParser
         }
     }
 
-    private async ValueTask ParseSectionAsync(PipeReader source, int baseNum, int length)
+    private async ValueTask ParseSectionAsync(IByteSource source, int baseNum, int length)
     {
         for (int i = 0; i < length; i++)
         {
