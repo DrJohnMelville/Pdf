@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
@@ -10,7 +9,6 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors;
 
-#warning -- come back to here when stream and reader are rentable.
 public class ImageExtractionTest
 {
     private static async Task<IList<IExtractedBitmap>> ImagesFromAsync(CreatePdfParser docGenerator)

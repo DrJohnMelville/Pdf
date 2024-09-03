@@ -156,7 +156,7 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {
-        var ret = MultiBufferStream.Create(this, false, ticket);
+        var ret = new MultiBufferStream(this, false, ticket);
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }

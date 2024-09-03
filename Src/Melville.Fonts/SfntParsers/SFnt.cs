@@ -165,11 +165,11 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
         return FindTable(SFntTableName.GlyphLocations) is { } table
-            ? await ReadLocationTableasync(table, maximums, head).CA()
+            ? await ReadLocationTableAsync(table, maximums, head).CA()
             : null;
     }
 
-    private async ValueTask<IGlyphLocationSource> ReadLocationTableasync(
+    private async ValueTask<IGlyphLocationSource> ReadLocationTableAsync(
         TableRecord table, ParsedMaximums maximums, ParsedHead head)
     {
         using var pipe = source.ReadPipeFrom(table.Offset);

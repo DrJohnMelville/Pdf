@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Melville.Parsing.ObjectRentals;
 
-public static class StackTraceClipper
+internal static class StackTraceClipper
 {
     public static string Clip(this StackTrace trace)
     {

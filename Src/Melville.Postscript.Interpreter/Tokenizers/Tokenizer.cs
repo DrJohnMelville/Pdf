@@ -22,6 +22,7 @@ public partial class Tokenizer : ITokenSource
     /// <inheritdoc />
     [FromConstructor] public IByteSource CodeSource { get; }
 
+    /// <inheritdoc />
     public void Dispose() => CodeSource.Dispose();
 
     /// <summary>

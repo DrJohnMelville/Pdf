@@ -98,11 +98,11 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
     {
         var subFont = await font.Type0SubFontAsync().CA();
         return  (await subFont.CidToGidMapStreamAsync().CA() is {} mapStream)?
-            await ParseCmapStream(mapStream).CA():
+            await ParseCmapStreamAsync(mapStream).CA():
              IdentityCharacterToGlyph.Instance;
     }
 
-    private static async ValueTask<IMapCharacterToGlyph> ParseCmapStream(PdfStream mapStream)
+    private static async ValueTask<IMapCharacterToGlyph> ParseCmapStreamAsync(PdfStream mapStream)
     {
         await using var stream = await mapStream.StreamContentAsync().CA();
         return await new CMapStreamParser(

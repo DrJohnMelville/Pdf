@@ -10,21 +10,17 @@ namespace Melville.Parsing.Streams;
 
 internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource
 {
-    private LinkedList data = LinkedList.Empty;
+    private LinkedList data;
     private LinkedListPosition currentPosition;
     private CountedSourceTicket ticket;
-    private bool writable;
+    private readonly bool writable;
 
-    #warning -- use constructor here.
-    internal static MultiBufferStream Create(LinkedList data, bool writable, CountedSourceTicket ticket)
+    internal MultiBufferStream(LinkedList data, bool writable, CountedSourceTicket ticket)
     {
-        var ret = new MultiBufferStream();
-        Debug.Assert(!ret.IsValid());
-        ret.data = data;
-        ret.ticket = ticket;
-        ret.writable = writable;
-        ret.currentPosition = data.StartPosition;
-        return ret;
+        this.data = data;
+        this.ticket = ticket;
+        this.writable = writable;
+        currentPosition = data.StartPosition;
     }
 
     private bool IsValid() => data != LinkedList.Empty;
