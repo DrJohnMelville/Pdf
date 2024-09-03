@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 internal partial class ParsingFileOwner
 {
-#warning -- these streams can be rented? perf optimization
+#warning See if I can wrap this functionality into IMultiplexSource, and maybe save some objects.
     public partial class RentedStream: DefaultBaseStream
     {
         private readonly Stream baseStream;

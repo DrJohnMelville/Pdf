@@ -9,28 +9,12 @@ namespace Melville.Parsing.LinkedLists;
 
 internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>, IWritableMultiplexSource
 {
-#warning -- transition to rental at an appropriate time
-#if true
     public static MultiBufferStreamList WritableList(int blockSize)
     {
         var ret = new MultiBufferStreamList();
         ret.With(blockSize);
         return ret;
     }
-#else
-    public static MultiBufferStreamList WritableList(int blockSize)
-    {
-        var ret = ObjectPool<MultiBufferStreamList>.Shared.Rent();
-        ret.With(blockSize);
-        return ret;
-    }
-
-    protected override void CleanUp()
-    {
-        base.CleanUp();
-        ObjectPool<MultiBufferStreamList>.Shared.Return(this);
-    }
-#endif
     public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
         new MultiBufferStreamList().With(source);
 

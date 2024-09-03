@@ -14,7 +14,6 @@ namespace Melville.Parsing.LinkedLists
             return ret;
         }
 
-#warning need to dispose of the source and have an option to leave it open.
         [FromConstructor] private Stream source;
         [FromConstructor] private bool leaveOpen;
         private LinkedListPosition nextByteToRead = default;

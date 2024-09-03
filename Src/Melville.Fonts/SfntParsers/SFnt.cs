@@ -121,10 +121,10 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private Task<ParsedMaximums> LoadMaxProfileAsync() =>
         FindTable(SFntTableName.MaximumProfile) is { } table
-            ? ParseMaxProfile(table)
+            ? ParseMaxProfileAsync(table)
             : Task.FromResult(new ParsedMaximums(0));
 
-    private async Task<ParsedMaximums> ParseMaxProfile(TableRecord table)
+    private async Task<ParsedMaximums> ParseMaxProfileAsync(TableRecord table)
     {
         using var pipe = source.ReadPipeFrom(table.Offset);
         return await new MaxpParser(pipe).ParseAsync().CA();
@@ -165,11 +165,12 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
         return FindTable(SFntTableName.GlyphLocations) is { } table
-            ? await ReadLocationTable(table, maximums, head).CA()
+            ? await ReadLocationTableasync(table, maximums, head).CA()
             : null;
     }
 
-    private async ValueTask<IGlyphLocationSource> ReadLocationTable(TableRecord table, ParsedMaximums maximums, ParsedHead head)
+    private async ValueTask<IGlyphLocationSource> ReadLocationTableasync(
+        TableRecord table, ParsedMaximums maximums, ParsedHead head)
     {
         using var pipe = source.ReadPipeFrom(table.Offset);
         return await new LocationTableParser(
@@ -253,9 +254,9 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private Task<PostscriptData> LoadPostscriptDataAsync() =>
         FindTable(SFntTableName.PostscriptData) is not { } table
             ? Task.FromResult(new PostscriptData())
-            : LoadPostscriptDataTable(table);
+            : LoadPostscriptDataTableAsync(table);
 
-    private async Task<PostscriptData> LoadPostscriptDataTable(TableRecord table)
+    private async Task<PostscriptData> LoadPostscriptDataTableAsync(TableRecord table)
     {
         using var readPipeFrom = source.ReadPipeFrom(table.Offset);
         return await new PostscriptTableParser(readPipeFrom).ParseAsync().CA();

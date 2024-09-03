@@ -158,8 +158,16 @@ public class RentalPolicyTestBase : IDisposable
     public virtual void Dispose() => ctx.Dispose();
 }
 #else 
+/// <summary>
+/// This checks to make sure the ObjectPool is being used correctly.
+/// </summary>
 public static class RentalPolicyChecker
 {
+    /// <summary>
+    /// Returns a scope within which all rentals and returns should occurr
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
     public static IDisposable RentalScope(Action<string>? s = null) => new EmptyScope();
     private class EmptyScope : IDisposable
     {

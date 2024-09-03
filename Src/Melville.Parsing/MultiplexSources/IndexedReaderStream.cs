@@ -33,20 +33,18 @@ internal interface IIndexedReader
 }
 
 
-internal class IndexedReaderStream() : 
-    DefaultBaseStream(true, false, true)
+internal class IndexedReaderStream : 
+    DefaultBaseStream
 {
     private IIndexedReader? source = null;
     private CountedSourceTicket sourceTicket;
 
-#warning use constructor
-    public IndexedReaderStream ReadFrom(IIndexedReader source, long position, CountedSourceTicket ticket)
+    public IndexedReaderStream(IIndexedReader source, long position, CountedSourceTicket ticket):
+        base (true, false, true)
     {
-        ArgumentNullException.ThrowIfNull(source);
         this.source = source;
         Position = position;
         sourceTicket = ticket;
-        return this;
     }
 
     public override int Read(Span<byte> buffer)
