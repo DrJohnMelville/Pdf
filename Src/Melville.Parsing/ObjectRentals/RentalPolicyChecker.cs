@@ -11,7 +11,7 @@ namespace Melville.Parsing.ObjectRentals;
 #if DEBUG
 
 
-public static class RentalLog
+internal static class RentalLog
 {
     private static UdpClient? client = null;
     private static Action<string> output = i =>
@@ -90,6 +90,9 @@ internal readonly struct RentalRecord
     }
 }
 
+/// <summary>
+/// This is a debug-only class for checking that rental rules are observed.
+/// </summary>
 [StaticSingleton]
 public partial class RentalPolicyChecker
 {
@@ -98,13 +101,13 @@ public partial class RentalPolicyChecker
     public static IDisposable RentalScope(Action<string>? target) => 
         new RentalScopeImplementation(Instance, target);
 
-    public void CheckOut(object item)
+    internal void CheckOut(object item)
     {
         foreach (var rental in rentals.ToArray()) rental.CheckObjectAtRental(item);
         rentals.Add(new RentalRecord(item));
     }
 
-    public void CheckIn(object item)
+    internal void CheckIn(object item)
     {
         var index = -1;
         for (int i = 0; i < rentals.Count; i++)
@@ -139,6 +142,7 @@ public partial class RentalPolicyChecker
                 RentalLog.WriteLine("Rental Manager had rentals at the time scope was initialized");
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             if (parent.rentals.Count == 0) return;
@@ -152,7 +156,7 @@ public partial class RentalPolicyChecker
 }
 
 [Obsolete("Should be used for test only")]
-public class RentalPolicyTestBase : IDisposable
+internal class RentalPolicyTestBase : IDisposable
 {
     private IDisposable ctx = RentalPolicyChecker.RentalScope(null);
     public virtual void Dispose() => ctx.Dispose();

@@ -2,7 +2,6 @@
 using Melville.AsyncAnalyzer;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.AsyncDetectorTest;
@@ -12,7 +11,7 @@ public class AsyncAnalyzerTest
     private static Task RunTest(string code, params DiagnosticResult[] diagnostics)
     {
         var tester =
-            new CSharpAnalyzerTest<AsyncAnalyzerClass, XUnitVerifier>()
+            new CSharpAnalyzerTest<AsyncAnalyzerClass, DefaultVerifier>()
             {
                 TestState = { 
                     Sources = {WrapAsyncTestCase.Wrap(code)},

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ArchitectureAnalyzer.Analyzer;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.Analyzers;
@@ -24,7 +23,7 @@ public partial class AllowedDependencyAnalyzerTest
         var (source, diagnostics) =
             ParseSource(sourceText, errorMsg??
                                     "\"NS.ReliedUpon\" may not reference \"NS.Relying\" because \"NS.Relying* => NS.ReliedUpon*\"");
-        var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, XUnitVerifier>()
+        var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, DefaultVerifier>()
         {
             TestState =
             {
@@ -78,7 +77,7 @@ public partial class AllowedDependencyAnalyzerTest
     [Fact] public Task CannotDeclareProhibitedField() => RunSimpleTest("", "[|Relying|] item;");
     [Fact] public Task CannotDeclareProhibitedArray() => RunSimpleTest("", "[|Relying|][] item;");
     [Fact] public Task CannotDeclareProhibitedSpecialization() => 
-        Assert.ThrowsAsync<MissingMethodException>(
+        Assert.ThrowsAsync<InvalidOperationException>(
             ()=> RunSimpleTest("", " Common.[|I<Relying>|] item;", "public interface I<T> {}", 2));
     [Fact] public Task CanDeclareAllowedSpecialization() => 
         RunSimpleTest("", " Common.I<int> item;", "public interface I<T> {}");

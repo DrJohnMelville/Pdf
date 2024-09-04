@@ -2,7 +2,6 @@
 using ArchitectureAnalyzer.Analyzer;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.Analyzers;
@@ -11,7 +10,7 @@ public class DependencyRuleParsingInAnalyzerTest
 {
     private static Task RunSimpleTest(string archRules, DiagnosticResult? diagnostic = null)
     {
-        var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, XUnitVerifier>()
+        var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, DefaultVerifier>()
         {
             TestState =
             {

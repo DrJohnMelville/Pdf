@@ -3,7 +3,6 @@ using Melville.AsyncAnalyzer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.AsyncDetectorTest
@@ -37,7 +36,7 @@ namespace Melville.ArchitectureAnalyzer.Test.AsyncDetectorTest
             string offendingSymbol)
         {
             var fixTest =
-                new CSharpCodeFixTest<AsyncAnalyzerClass, AsyncCodeFixProvider, XUnitVerifier>()
+                new CSharpCodeFixTest<AsyncAnalyzerClass, AsyncCodeFixProvider, DefaultVerifier>()
                 {
                     TestState =
                     {
