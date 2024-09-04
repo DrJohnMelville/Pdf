@@ -34,7 +34,8 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         return state == CountedSourceState.Open || pendingReaders > 0;
     }
 
-    public Stream ReadFrom(long position) => ReadFromOverride(position, CreateSourceTicket());
+    public Stream ReadFrom(long position) => 
+        ReadFromOverride(position, CreateSourceTicket());
 
     private CountedSourceTicket CreateSourceTicket()
     {

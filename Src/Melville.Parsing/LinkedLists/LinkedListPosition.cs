@@ -32,7 +32,7 @@ internal readonly partial struct LinkedListPosition
         while (current != null && current != target.Node)
         {
             var next = (LinkedListNode?)current.Next;
-            ObjectPool<LinkedListNode>.Shared.Return(current);
+            current.Dispose();
             current = next;
         }
     }
@@ -69,7 +69,7 @@ internal readonly partial struct LinkedListPosition
 
     private LinkedListNode CreateNewNode(int desiredLength)
     {
-        var newNode = LinkedListNode.Rent(desiredLength);
+        var newNode = LinkedListNode.BufferNode(desiredLength);
         Node.Append(newNode);
         return newNode;
     }

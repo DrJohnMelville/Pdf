@@ -42,14 +42,14 @@ internal abstract class LinkedList: CountedMultiplexSource
     public LinkedList With(ReadOnlyMemory<byte> source)
     {
         ResetState();
-        LinkedListNode firstNode = LinkedListNode.Rent(source);
+        LinkedListNode firstNode = LinkedListNode.ReadOnlyNode(source);
         blockSize = 0;
         StartPosition = new LinkedListPosition(firstNode, 0);
         endPosition = new LinkedListPosition(firstNode, source.Length);
         return this;
     }
 
-    private LinkedListNode CreateNewBlock() => LinkedListNode.Rent(blockSize);
+    private LinkedListNode CreateNewBlock() => LinkedListNode.BufferNode(blockSize);
 
     public ReadOnlySequence<byte> AsSequence() => SequenceAfter(StartPosition);
 

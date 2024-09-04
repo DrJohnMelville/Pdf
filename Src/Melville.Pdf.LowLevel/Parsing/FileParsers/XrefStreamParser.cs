@@ -65,7 +65,6 @@ internal readonly struct XrefStreamParser
             throw new PdfParseException("Index of an xrefstream must have even number of elements");
     }
 
-#warning update this to use IByteSource.
     public async ValueTask ParseAsync(IByteSource source)
     {
         for (int i = 0; i < index.Count; i+=2)
