@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
-public class OffsetMultiplexedSourceTest
+public class OffsetMultiplexedSourceTest: IDisposable
 {
     private readonly IMultiplexSource sut  = MultiplexSourceFactory.Create(
         [0,1,2,3,4,5,6,7,8,9,10]);
@@ -31,6 +31,8 @@ public class OffsetMultiplexedSourceTest
         var sum = offset + pos;
         using var readFrom = sut2.ReadFrom(pos); 
         VerifyRead(readFrom, [(byte)sum, (byte)(sum+1), (byte)(sum+2)]);
-    } 
+    }
+
+    public void Dispose() => sut.Dispose();
 }
 

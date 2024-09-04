@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
-public readonly struct MultiBufferWriter
+public readonly struct MultiBufferWriter: IDisposable
 {
     private readonly IWritableMultiplexSource buffer = WritableBuffer.Create();
 
@@ -26,17 +26,8 @@ public readonly struct MultiBufferWriter
         return buffer.Length;
     }
 
-    public Stream CreateReader()
-    {
-        try
-        {
-            return buffer.ReadFrom(0);
-        }
-        finally
-        {
-            buffer.Dispose();
-        }
-    }
+    public Stream CreateReader() => buffer.ReadFrom(0);
+    public void Dispose() => buffer.Dispose();
 }
 
 public class S7_5_7ObjectStreamExtends
@@ -44,7 +35,7 @@ public class S7_5_7ObjectStreamExtends
     [Fact]
     public async Task NonextndedStreamTestAsync()
     {
-        var mbs = CreateFile("""
+        using var mbs = CreateFile("""
         1 0 obj
         <</Type /ObjStm
         /Length 21
@@ -66,7 +57,7 @@ public class S7_5_7ObjectStreamExtends
     [Fact]
     public async Task ExtendedStreamTestAsync()
     {
-        var mbs = CreateFile("""
+        using var mbs = CreateFile("""
         1 0 obj
         <</Type /ObjStm
         /Length 21
@@ -97,7 +88,7 @@ public class S7_5_7ObjectStreamExtends
     [Fact]
     public async Task OverridePriorTestAsync()
     {
-        var mbs = CreateFile("""
+        using var mbs = CreateFile("""
         1 0 obj
         <</Type /ObjStm
         /Length 21
