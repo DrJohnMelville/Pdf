@@ -22,7 +22,7 @@ internal readonly struct StringTarget(CffStringIndex strings, long numGlyphs) : 
 
     public long Count => numGlyphs;
 
-    public async ValueTask SetGlyphNameAsync(int index, ushort sid) => 
+    public async ValueTask SetGlyphNameAsync(int index, ushort sid) =>
         Result[index] = await strings.GetNameAsync(sid).CA();
 }
 
@@ -30,6 +30,7 @@ internal readonly struct MemoryTarget(Memory<ushort> target) : ICharSetTarget
 {
     public Memory<ushort> Target => target;
     public long Count => target.Length;
+
     public ValueTask SetGlyphNameAsync(int index, ushort sid)
     {
         if ((uint)index < target.Length) target.Span[index] = sid;
@@ -38,7 +39,8 @@ internal readonly struct MemoryTarget(Memory<ushort> target) : ICharSetTarget
 }
 
 internal readonly struct CharSetReader<T>(
-    IByteSource charsetPipe, T target) where T : ICharSetTarget
+    IByteSource charsetPipe,
+    T target) where T : ICharSetTarget
 {
     public async ValueTask<T> ReadCharSetAsync()
     {
@@ -57,6 +59,7 @@ internal readonly struct CharSetReader<T>(
             default:
                 throw new InvalidDataException("Invalid charset type");
         }
+
         return target;
     }
 
@@ -64,7 +67,7 @@ internal readonly struct CharSetReader<T>(
     {
         for (int i = 1; i < target.Count; i++)
         {
-            await target.SetGlyphNameAsync(i, 
+            await target.SetGlyphNameAsync(i,
                 (ushort)await charsetPipe.ReadBigEndianUintAsync(2).CA()).CA();
         }
     }

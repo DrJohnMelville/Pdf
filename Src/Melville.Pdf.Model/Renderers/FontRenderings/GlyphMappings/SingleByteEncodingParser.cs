@@ -67,7 +67,8 @@ internal readonly partial struct SingleByteEncodingParser
             {
                 case {IsName:true} name:
                     var glyph = nameMapper.GetGlyphFor(name);
-                    if (glyph > 0) output[currentChar++] = glyph;
+                    if (glyph > 0) output[currentChar] = glyph;
+                    currentChar++;
                     break;
                 case var x when x.TryGet(out long num):
                     currentChar = (byte)num;

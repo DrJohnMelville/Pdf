@@ -19,6 +19,7 @@ internal class LinkedListByteSource : IByteSource
 
     public LinkedListByteSource(LinkedList data, CountedSourceTicket ticket)
     {
+        Debug.Assert(data != LinkedList.Empty);
         this.data = data;
         this.ticket = ticket;
         unexaminedByte = nextByte = data.StartPosition;
@@ -40,6 +41,8 @@ internal class LinkedListByteSource : IByteSource
         Debug.Assert(nextByte != LinkedListPosition.NullPosition);
         Debug.Assert(unexaminedByte != LinkedListPosition.NullPosition);
     }
+
+    public bool HoldsEmptyList => data == LinkedList.Empty;
 
     public bool TryRead(out ReadResult result)
     {

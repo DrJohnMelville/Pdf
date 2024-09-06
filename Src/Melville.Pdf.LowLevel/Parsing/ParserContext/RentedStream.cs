@@ -29,6 +29,13 @@ internal partial class ParsingFileOwner
             return baseStream.Read(buffer);
         }
 
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, System.Threading.CancellationToken cancellationToken = new System.Threading.CancellationToken())
+        {
+            var avail = nextPosition - baseStream.Position;
+            if (avail < buffer.Length) buffer = buffer[..(int)avail];
+            return await baseStream.ReadAsync(buffer, cancellationToken).CA();
+        }
+
         public override long Seek(long offset, SeekOrigin origin) =>
             origin switch
             {

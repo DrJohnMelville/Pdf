@@ -19,7 +19,7 @@ internal static class NumberArrayReader
     private static void ReadFrom(IByteSource reader, ReadResult buffers, Span<byte> offsets)
     {
         var seqReader = new SequenceReader<byte>(buffers.Buffer);
-        seqReader.TryCopyTo(offsets);
+        if (!seqReader.TryCopyTo(offsets)) return;
         seqReader.Advance(offsets.Length);
         reader.AdvanceTo(seqReader.Position);
     }
