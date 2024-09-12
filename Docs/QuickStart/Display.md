@@ -20,6 +20,7 @@ following types:
 - A string, which is interpreted as the path of the PDF file on the file system.
 - A byte[ ] array.
 - A Stream, which must be readable and seekable with a known length.
+- An IMultiplexSource which is a Melville.Pdf abstraction for a sequence of bytes that can have multiple overlapping readers.
 - A PdfLowLevelDocument which presents the PDF file as a graph of Pdf objects.
 - A PdfDocument, which is a thin ["Costume Type"](../Architecture/Costumes.md) around PdfLowLevelDocument
   that presents the PDF file as a sequence of pages.

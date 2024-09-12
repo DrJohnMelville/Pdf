@@ -79,6 +79,10 @@ less information per object than postscript, and handles indirect references.
 **Welville.Postscript.OperationGenerator** is a code generator assembly that facilitates creating operator libraries
 for the postscript parser.
 
+**Melville.Fonts** is a limited implementation of TrueType, OpenType, Compact Font Format, Type 1 Font parsers.  These parsers are just enough to render PDF on moderate to high resolution
+devices.  These parsers ignore hinting, and ignore a lot of the advanced typographic features of the fonts.  This paerser will extract CMAPS, extract glyph names, render glyphs, and extract
+glyph widths.  This is enough to render PDF.  This replaces a native SharpFont dependency with exzclusively managed code.
+
 ## The Testing Libraries
 
 **Performance.Playground** is a Benchmark.Net Project.  I use this project intermittently when I do 

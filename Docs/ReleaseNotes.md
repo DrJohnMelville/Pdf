@@ -1,5 +1,13 @@
 ﻿# Releases
 
+## 9/5/2024 0.5.0
+This is a major feature release.
+- The native SharpFont dependency is replaced with the new Melville.Fonts font parser.
+- Rendering fonts fast enough drove a lot of performance work in the low-level file abstractions.
+- IMultiplexSource has different specializations for files, static arrays (which happens a lot in test)
+or expandable arrays.  It cann also serialize access to a stream.  Specifically, all these byte sources
+are now reliably disposed, which lets them return their buffers the to array pool correctly.
+
 ## 5/15/2024 0.4.8
 This is still a service release working toward the WinId for the Web integration.
 - Fixed a bug parsing a JBIG file that has no global segment.

@@ -98,6 +98,11 @@ public partial class RentalPolicyChecker
 {
     private readonly List<RentalRecord> rentals = new();
 
+    /// <summary>
+    /// This is a scope used to make a single unit test enforce the pooling rules.
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public static IDisposable RentalScope(Action<string>? target) => 
         new RentalScopeImplementation(Instance, target);
 

@@ -216,7 +216,7 @@ public partial class Impl: DependencyObject
 ````
 
 ## MacroItem / MacroCode
-This generator is inspired by the C macro system.  (I know, much maligned, but I really liked it.)  The macro generator is useful when defining types that are essentially strongly types property bags.  The system is also used in places to declare common operations over multiple number types, but this may go away as I adopt C# 11.  A "Property Bag" example includes the GraphicsState class, which defines 26 properties all of which have default values, but must be copied individually for the clone operation.  The following code:
+This generator is inspired by the C macro system.  (I know, much maligned, but I really liked it.)  The macro generator is useful when defining types that are essentially strongly typed property bags.  The system is also used in places to declare common operations over multiple number types, but this may go away as I adopt C# 11.  A "Property Bag" example includes the GraphicsState class, which defines 26 properties all of which have default values, but must be copied individually for the clone operation.  The following code:
 
 ````c#
 public abstract partial  class GraphicsState: IGraphicsState, IDisposable

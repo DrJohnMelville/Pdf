@@ -50,18 +50,14 @@ For more examples and explanations please got to [QuickStart](Docs/QuickStart/Di
 # Who else contributed?
 I made an effort to contain the dependencies as much as I can.  The goal is to be free, and that means I 
 need to control the number of people who can make an ownership claim to the source code.  So far, I have taken,
-3 dependencies, as discussed below.
-- [Freetype](http://freetype.org/license.html) via [SharpFont](https://github.com/Robmaister/SharpFont) is
-used for font file parsing.  This is the only native code dependency in the project, and much as I know
-it will make portability a headache, this was a necessity.  PDF allows a lot of different font formats and
-writing parsers for them all would have added another year to the project.  I forked SharpFont into the repository
-so I could fix some bugs arround finding the native DLLs.  Freetype is licensed under GPL and a BSD-style FreeType License.  SharpFont is licensed under the MIT license.
+2 dependencies, as discussed below.
 - [JpegLibrary](https://github.com/yigolden/JpegLibrary) is the source of my JPEG parsing code.  I forked
 this library into my own codebase in Melville.JpegLibrary.  I have added some bugfixes and other features
 to this code to make it parse some of the unusual JPEG images this project had introduced me to.  JpegLibrary is licensed under the MIT License.
 - My JPEG2000 parser is another unofficial fork of [csj2k](https://github.com/cureos/csj2k).  I made
 some superficial modifications to make it library play nicer with the stream based filter paradigm which
 is fairly fundamental to PDF.  CSJ2k is licensed under th BSD license.
+- Previously Melville.Pdf had a native dependency on SharpFont.  This dependency is gone and Melville.Pdf renders fonts using c# managed code.
 
 I made significant efforts to keep Melville.Pdf agnostic with regard to rendering or display technologies.
 To help me toward this end I developed the initial library with two initial targets, WPF and SkiaSharp.
@@ -97,14 +93,13 @@ I have tried to keep the
 code quality high, but you will have to judge that.  I hope to continue this
 project.  Here are things I am likely to take this up next.
 
-- Performance work.
 - Document outline and page thumbnails
 - More work on the Wpf viewer control to support at least zoom and rotation.
 
 Recently released work is detailed on the [Release history](Docs/ReleaseNotes.md) page.
 
 I am extremely fortunate to have good employment as a physician at the
-[Medical University of South Carolina](https://medicine.musc.edu/departments/pediatrics/divisions/child-abuse-pediatrics/faculty)
+[University of South Carolina](https://www.sccamrs.org)
 meaning that programming can be just a hobby for me.  I will probably work on the things above as time allows.
 My commit history ought to convince you that I really like programming.  I take my amateur status
 seriously, though.  It means I take the time to write the code correctly.  I am not committing to any specific

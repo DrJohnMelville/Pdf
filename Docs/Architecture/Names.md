@@ -3,7 +3,7 @@
 Names are important in PDF.  In the PDF file format names are preceded by a forward slash (/) and this convention carries over to the documentation.  Names are used as indexes to dictionaries, and names are used extensively throughout the pdf standard essentially as enums.  For example the /SubType field of a font dictionary can take values /Type0, /Type1, /Type3, /MMType1, /TrueType, /OpenType, /CIDFontType0, or /CIDFontType2.
 
 During the pre 1.0 beta period PDfObjects were C# objects, and names were implemented using a [flyweight](https://en.wikipedia.org/wiki/Flyweight_pattern) pattern.  In version 0.4
-the PdfObject became the structs PdfDirectObject and PdfIndirectObject.  Short Names (under 16-23 characters) are now stored locally int the memento field of the PdfObject structs.
+the PdfObject became the structs PdfDirectObject and PdfIndirectObject.  Short Names (under 16-23 characters) are now stored locally in the memento field of the PdfObject structs.
 This means there is no good way to switch over PdfNames -- so we use pattern matching instead.
 
 ## Pdf Groups
