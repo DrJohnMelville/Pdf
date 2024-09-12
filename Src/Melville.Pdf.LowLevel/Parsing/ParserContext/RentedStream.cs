@@ -25,6 +25,7 @@ internal partial class ParsingFileOwner
         public override int Read(Span<byte> buffer)
         {
             var avail = nextPosition - baseStream.Position;
+            if (avail <= 0) return 0;
             if (avail < buffer.Length) buffer = buffer[..(int)avail];
             return baseStream.Read(buffer);
         }
@@ -32,6 +33,7 @@ internal partial class ParsingFileOwner
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, System.Threading.CancellationToken cancellationToken = new System.Threading.CancellationToken())
         {
             var avail = nextPosition - baseStream.Position;
+            if (avail <= 0) return 0;
             if (avail < buffer.Length) buffer = buffer[..(int)avail];
             return await baseStream.ReadAsync(buffer, cancellationToken).CA();
         }
