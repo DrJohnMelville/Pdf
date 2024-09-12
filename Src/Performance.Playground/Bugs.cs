@@ -13,7 +13,7 @@ public class Bugs
     {
         var bytes =
             File.ReadAllBytes(
-                @"C:\Users\jom252\OneDrive - Medical University of South Carolina\Documents\Scratch\Pdf\BUGS\1483757-2022-10.pdf");
+                @"C:\Users\jom252\OneDrive - Medical University of South Carolina\Documents\Scratch\Pdf\BUGS\1420575-2021-12.pdf");
         var doc = await new PdfReader().ReadFromAsync(bytes);
         var text = await doc.PageTextAsync(1); // if you comment this out everything works
         var ret = doc.ImagesFromAsync();

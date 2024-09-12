@@ -572,3 +572,5 @@ RenderingTest.cs_wpf-UniKS_UCS2_V|1498939922
 RenderingTest.cs_wpf-UniKS_UTF16_V|1801852527
 RenderingTest.cs_wpf-CmykViaNamedReference|3256171887
 RenderingTest.cs_Skia-CmykViaNamedReference|2470567388
+RenderingTest.cs_wpf-TilePatternWithBareColorspace|4090074509
+RenderingTest.cs_Skia-TilePatternWithBareColorspace|696091501

@@ -36,7 +36,8 @@ internal readonly struct ColorSpaceFactory
         var code = colorSpaceName;
         return code.Equals(KnownNames.DeviceGray) ||
                code.Equals(KnownNames.DeviceRGB) ||
-               code.Equals(KnownNames.DeviceCMYK)
+               code.Equals(KnownNames.DeviceCMYK) ||
+               code.Equals(KnownNames.Pattern)
             ? SpacesWithoutParametersAsync(code)
             : LookupInResourceDictionaryAsync(colorSpaceName);
     }
@@ -99,6 +100,7 @@ internal readonly struct ColorSpaceFactory
         nameHashCode switch
     {
         // for monitors ignore CalRGB see standard section 8.6.5.7
+        var x when x.Equals(KnownNames.Pattern) => new(DeviceRgb.Instance),
         var x when x.Equals(KnownNames.CalRGB) => new(DeviceRgb.Instance),
         var x when x.Equals(KnownNames.CalCMYK) => 
             CreateCmykColorSpaceAsync(), // standard section 8.6.5.1

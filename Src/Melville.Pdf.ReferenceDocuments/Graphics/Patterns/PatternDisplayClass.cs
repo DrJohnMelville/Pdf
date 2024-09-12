@@ -12,9 +12,12 @@ public abstract class PatternDisplayClass : Card3x5
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.Pattern, PdfDirectObject.CreateName("P1"), CreatePattern);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("Cs12"), new PdfArray(
-            KnownNames.Pattern, KnownNames.DeviceRGB));
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("Cs12"), PatternColorSpaceDeclaration());
     }
+
+    protected virtual PdfIndirectObject PatternColorSpaceDeclaration() =>
+        new PdfArray(
+            KnownNames.Pattern, KnownNames.DeviceRGB);
 
     protected abstract PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry arg);
 

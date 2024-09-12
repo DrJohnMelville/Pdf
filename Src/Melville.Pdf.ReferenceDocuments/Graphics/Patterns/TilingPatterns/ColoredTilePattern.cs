@@ -3,6 +3,11 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.TilingPatterns;
 
+public class TilePatternWithBareColorspace(): ColoredTilePattern("Uses pattern as a name rather than array")
+{
+    protected override PdfIndirectObject PatternColorSpaceDeclaration() => KnownNames.Pattern;
+}
+
 public class ColoredTilePattern: PatternDisplayClass
 {
 
