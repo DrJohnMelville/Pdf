@@ -221,7 +221,13 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     private ValueTask<IRealizedFont> GetRenderWrappedFontAsync(
         IRealizedFont typeFace, PdfDictionary? fontDeclaration) =>
-        pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> pageRenderContext.Target.WrapRealizedFontAsync(r, fontDeclaration));
+        pageRenderContext.Renderer.Cache.GetAsync(CreateWrappedFontKey(typeFace), 
+            r=> pageRenderContext.Target.WrapRealizedFontAsync(r.TypeFace, fontDeclaration));
+
+    private record WrappedFontKey(Type RenderTargetType, IRealizedFont TypeFace);
+
+    private WrappedFontKey CreateWrappedFontKey(IRealizedFont typeFace) =>
+        new(pageRenderContext.Target.GetType(), typeFace);
 
     //Notice that IRealizedFont does not implement IDisposable, but most of the real implementations do.  This is intentional.
     //Most users of fonts should not dispose of them, so IRealizedFont is not disposable.  When the cache gets disposed, it

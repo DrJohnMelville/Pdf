@@ -2,16 +2,18 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
+using Performance.Playground;
 using Performance.Playground.Rendering;
  
 #pragma warning disable CS0162
 
-switch (1)
+switch (0)
 {
     case 0:
         Console.WriteLine("Begin");
-        new BitmapWriting().Generic();
+        await new Bugs().ReadAllImages();
         Console.WriteLine("done");
+        Console.ReadLine();
         break;
     case 1:
         BenchmarkRunner.Run<PageRendering>();
