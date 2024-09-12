@@ -103,7 +103,7 @@ internal partial class CffGenericFont :
     public async ValueTask<ICmapImplementation> GetByIndexAsync(int index)
     {
         var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
-        var target = new MemoryTarget(data[..(int)charStringIndex.Length]);
+        var target = new MemoryTarget(data.AsMemory(0,(int)charStringIndex.Length));
         await MapCharSetAsync(target).CA();
 
         using var sidDecoder = new GlyphFromSid(data);
