@@ -1,5 +1,13 @@
 ﻿# Releases
 
+## 9/13/2024 0.5.1
+This is a minor bugfix release.
+- Fixed a bug in the JBIG2 decoder that caused a crash when the JBIG2 segment length was unknown.
+- Fixed a bug with RentedStream not honoring the declared end of stream.
+- Fixed a bug when /Pattern is used as a colorspace.
+- Fixed a bug where rendering a documentrenderer on different renderers could cause cached fonts to be of a type
+the second renderer was not expecting.
+
 ## 9/5/2024 0.5.0
 This is a major feature release.
 - The native SharpFont dependency is replaced with the new Melville.Fonts font parser.
