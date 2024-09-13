@@ -30,8 +30,8 @@ internal readonly struct SegmentReader
     
     public async ValueTask SkipOverAsync()
     {
-        var span = await ReadSpanAsync().CA();
-        source.AdvanceTo(span.End);
+        var (span, shouldAdvance) = await ReadSpanAsync().CA();
+        if (shouldAdvance) source.AdvanceTo(span.End);
     }
     public ValueTask<Segment> ReadFromAsync() =>
         Header.SegmentType switch
@@ -43,17 +43,22 @@ internal readonly struct SegmentReader
 
     private  async ValueTask<Segment> ReadDataFromAsync()
     {
-        var sequence = await ReadSpanAsync().CA();
+        var (sequence, shouldAdvance) = await ReadSpanAsync().CA();
         var ret = ReadFrom(sequence);
-        source.AdvanceTo(sequence.End);
+        if (shouldAdvance) source.AdvanceTo(sequence.End);
         return ret;
     }
 
-    private async ValueTask<ReadOnlySequence<byte>> ReadSpanAsync()
+    private ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSpanAsync() => 
+        Header.DataLength == 0xFFFFFFFF ? 
+            new ReadUnknownSegmentLength(source).ReadSegmentAsync() : 
+            ReadKnownLengthSegmentAsync();
+
+    private async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadKnownLengthSegmentAsync()
     {
         var readResult = await source.ReadAtLeastAsync((int)Header.DataLength).CA();
         var sequence = readResult.Buffer.Slice(0, Header.DataLength);
-        return sequence;
+        return (sequence, true);
     }
 
     private Segment ReadFrom(in ReadOnlySequence<byte> data)
