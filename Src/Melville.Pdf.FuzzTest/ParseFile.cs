@@ -32,11 +32,11 @@ public static class ParseFile
         await DoAsync(stream, fileName, logger); 
     }
 
-    private static async ValueTask DoAsync(
+   private static async ValueTask DoAsync(
         FileStream source, string path, ExceptionLogger exceptionLogger)
     {
         string fileName = Max60(Path.GetFileNameWithoutExtension(path));
-        ReportProgress(fileName, 0, 0);
+        ReportProgress(fileName, -1,-2);
         try
         {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
