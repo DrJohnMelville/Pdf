@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Numerics;
 using System.Windows.Media;
 using Melville.INPC;
@@ -14,13 +15,13 @@ namespace Melville.Pdf.Wpf.FontCaching;
 internal partial class WpfCachedFont : IRealizedFont, IDisposable
 {
     [DelegateTo()] [FromConstructor] private readonly IRealizedFont inner;
-    private readonly Dictionary<uint, CachedGlyph> cache = new();
+    private readonly ConcurrentDictionary<uint, CachedGlyph> cache = new();
 
     public void Dispose() => (inner as IDisposable)?.Dispose();
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new CachedOperation(this,target);
-
+    
     private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyphAsync(uint character, uint glyph, Transform transform,
         IFontWriteOperation operation)
     {
@@ -29,7 +30,7 @@ internal partial class WpfCachedFont : IRealizedFont, IDisposable
         var glyphTarget = new FontCachingTarget();
         var slow = await glyphTarget.RenderGlyphAsync(
             operation.CreatePeerWriteOperation(glyphTarget), character, glyph);
-        cache.Add(glyph, slow);
+        cache.TryAdd(glyph, slow);
         return (slow,slow.Original(transform));
     }
 
