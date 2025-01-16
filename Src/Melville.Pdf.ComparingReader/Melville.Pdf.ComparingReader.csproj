@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.7.2" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.7.5" />
     </ItemGroup>
 
     <ItemGroup>
