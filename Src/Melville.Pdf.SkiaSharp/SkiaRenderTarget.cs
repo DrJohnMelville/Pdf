@@ -30,21 +30,20 @@ internal partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsS
     public override async ValueTask RenderBitmapAsync(IPdfBitmap bitmap)
     {
         using var skBitmap = await bitmap.ToSkBitmapAsync().CA();
-        SetBitmapScaleQuality(bitmap);
         var oldMatrix = Target.TotalMatrix;
         Target.SetMatrix(oldMatrix.PreConcat(new SKMatrix(1, 0, 0, 0, -1, 1, 0,0,1)));
-        Target.DrawBitmap(skBitmap,
-            new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1), fillPaint);
+        Target.DrawImage(SKImage.FromBitmap(skBitmap),
+            new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1),
+            Quality(bitmap), fillPaint);
         Target.SetMatrix(oldMatrix);
     }
 
+    private SKSamplingOptions Quality(IPdfBitmap bitmap) =>
+        bitmap.ShouldInterpolate(State.StronglyTypedCurrentState().TransformMatrix)
+            ? new SKSamplingOptions(SKFilterMode.Linear)
+            : new SKSamplingOptions(SKFilterMode.Nearest);
+
     private readonly SKPaint fillPaint = new();
-    private void SetBitmapScaleQuality(IPdfBitmap bitmap)
-    {
-        fillPaint.FilterQuality = bitmap.ShouldInterpolate(State.StronglyTypedCurrentState().TransformMatrix)
-            ? SKFilterQuality.High
-            : SKFilterQuality.None;
-    }
     public override void Dispose()
 
     {
