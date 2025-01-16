@@ -42,3 +42,4 @@ public readonly partial struct TableRecord
         public int CompareTo(TableRecord other) => tag.CompareTo(other.Tag);
     }
 }
+

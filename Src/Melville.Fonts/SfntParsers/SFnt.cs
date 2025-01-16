@@ -150,8 +150,16 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var head = await HeadTableAsync().CA();
         using var pipe = source.ReadPipeFrom(table.Offset);
         return await new HorizontalMetricsParser(pipe,
-            horizontalHeader.NumberOfHMetrics, maximums.NumGlyphs, head.UnitsPerEm).ParseAsync().CA();
+            HMetricsCountBugFix(horizontalHeader, maximums), maximums.NumGlyphs, head.UnitsPerEm)
+            .ParseAsync().CA();
     }
+
+    // Some buggy fonts report they have more horizontal metrics than they have glyphs  Since the 
+    // reader will never ask for a metric for a glyph that does not exist, prune this back to the
+    // number of glyphs
+    private static ushort HMetricsCountBugFix(
+        ParsedHorizontalHeader horizontalHeader, ParsedMaximums maxes) =>
+        Math.Min(horizontalHeader.NumberOfHMetrics, maxes.NumGlyphs);
 
     /// <summary>
     /// Parse the GlyphLocations table from the font
@@ -164,9 +172,14 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     {
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
-        return FindTable(SFntTableName.GlyphLocations) is { } table
+        var ret = FindTable(SFntTableName.GlyphLocations) is { } table
             ? await ReadLocationTableAsync(table, maximums, head).CA()
             : null;
+        if (ret is null)
+        {
+            ;
+        }
+        return ret;
     }
 
     private async ValueTask<IGlyphLocationSource> ReadLocationTableAsync(
@@ -244,7 +257,8 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private TableRecord? FindTable(uint tag)
     {
-        var index = tables.AsSpan().BinarySearch(new TableRecord.Searcher(tag));
+        var comparable = new TableRecord.Searcher(tag);
+        var index = tables.AsSpan().BinarySearchWithFallback(comparable);
         return index < 0 ? null : tables[index];
     }
 
