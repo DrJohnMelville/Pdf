@@ -44,6 +44,8 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
+using System.Threading;
+
 namespace Melville.CSJ2K.j2k.entropy.decoder
 {
 	
@@ -166,7 +168,8 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 				pos = offset;
 			}
 		}
-		
+
+        private Lock mutex = new();
 		/// <summary> Adds the specified data to the end of the byte array stream. This
 		/// method modifies the byte array buffer. It can also discard the already
 		/// read input.
@@ -185,7 +188,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		//UPGRADE_NOTE: Synchronized keyword was removed from method 'addByteArray'. Lock expression was added. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1027'"
 		public virtual void  addByteArray(byte[] data, int off, int len)
 		{
-			lock (this)
+			lock (mutex)
 			{
 				// Check integrity
 				if (len < 0 || off < 0 || len + off > buf.Length)

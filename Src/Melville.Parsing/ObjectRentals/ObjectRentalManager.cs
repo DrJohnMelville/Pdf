@@ -15,13 +15,15 @@ public class ObjectRentalMan1ager<T> where T:class, new()
     /// <param name="rentalCapacity">Maximum number of objects to buffer</param>
     public ObjectRentalMan1ager(int rentalCapacity) => items = new T[rentalCapacity];
  
+    private readonly Lock mutex = new();
+
     /// <summary>
     /// Obtain a rented object.
     /// </summary>
     /// <returns>The desired object.</returns>
     public T Rent()
     {
-        lock (items)
+        lock (mutex)
         {
             return itemsAvailable > 0 ? items[--itemsAvailable] : new T();
         }
@@ -34,7 +36,7 @@ public class ObjectRentalMan1ager<T> where T:class, new()
     /// <param name="item">The object to be returned.</param>
     public void Return(T item)
     {
-        lock (items)
+        lock (mutex)
         {
             if (itemsAvailable < items.Length) items[itemsAvailable++] = item;
         }

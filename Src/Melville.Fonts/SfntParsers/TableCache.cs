@@ -5,12 +5,13 @@ namespace Melville.Fonts.SfntParsers;
 internal readonly struct TableCache
 {
     private readonly Dictionary<uint, object> items = new();
+    private readonly Lock mutex = new();
 
     public TableCache(){}
 
     public T GetTable<T>(uint tag, Func<T> loader) where T : class
     {
-        lock (items)
+        lock (mutex)
         {
             ref var bucket =
                 ref CollectionsMarshal.GetValueRefOrAddDefault(items, tag, out var exists);

@@ -25,8 +25,7 @@ public abstract class ObjectPoolBase<T> where T : class
     private VectorBuffer buffer = new();
     private int nextSlot;
 
-   #warning use new lock object in .net 9.0  search for \block\s*\( to find all the places
-    private readonly object mutex = new();
+    private readonly Lock mutex = new();
     
     /// <summary>
     /// Get a rented object from the pool.
@@ -94,7 +93,7 @@ public abstract class ObjectPoolBase<T> where T : class
 
     private T RecordCheckOut(T item)
     {
-        lock (RentalPolicyChecker.Instance)
+        lock (RentalPolicyChecker.Instance.Lock)
         {
             RentalPolicyChecker.Instance.CheckOut(item);
             return item;
@@ -104,7 +103,7 @@ public abstract class ObjectPoolBase<T> where T : class
 
     private void RecordCheckIn(T item)
     {
-        lock (RentalPolicyChecker.Instance)
+        lock (RentalPolicyChecker.Instance.Lock)
         {
             RentalPolicyChecker.Instance.CheckIn(item);
         }
