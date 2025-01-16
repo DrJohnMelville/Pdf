@@ -132,12 +132,14 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     public LinkedListPosition PositionAt(long position)
     {
-        EnsureHasLocation(position);
+            EnsureHasLocation(position);
         var node = StartPosition.Node!;
-        while (node.NextNodeIndex() <= position)
+#warning < instead of <= on the next line fixes the bug
+        while (node.NextNodeIndex() < position)
         {
             node =node.Next as LinkedListNode ??
-                  throw new InvalidOperationException("Should never be null");
+                  throw new InvalidOperationException(
+                      "Linked list node should not be null.  Position to seek should exist");
         }
         return new (node, (int)(position - node.RunningIndex));
     }
