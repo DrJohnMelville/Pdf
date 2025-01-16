@@ -11,7 +11,7 @@ switch (0)
 {
     case 0:
         Console.WriteLine("Begin");
-        await new Bugs().ReadAllImages();
+        await new Bugs().ReadAllImagesAsync();
         Console.WriteLine("done");
         Console.ReadLine();
         break;
