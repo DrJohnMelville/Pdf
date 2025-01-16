@@ -41,7 +41,7 @@ public class MultiBufferStreamTest
         reader.Length.Should().Be(256);
         reader.Seek(0, SeekOrigin.Begin);
         var buffer = new byte[256];
-        reader.Read(buffer);
+        reader.ReadExactly(buffer);
         buffer.Should().StartWith(new byte[] { 1, 2, 3 });
         // the contents of jumped over sections are undefined.
     }

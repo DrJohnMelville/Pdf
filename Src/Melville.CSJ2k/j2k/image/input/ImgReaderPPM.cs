@@ -326,7 +326,7 @@ namespace Melville.CSJ2K.j2k.image.input
 						// Reposition in input offset takes care of
 						// header offset
 						in_Renamed.Seek(offset + i * 3 * w + 3 * blk.ulx, System.IO.SeekOrigin.Begin);
-						in_Renamed.Read(buf, 0, 3 * blk.w);
+						in_Renamed.ReadExactly(buf, 0, 3 * blk.w);
 						
 						for (k = (i - blk.uly) * blk.w + blk.w - 1, j = 3 * blk.w - 1; j >= 0; k--)
 						{

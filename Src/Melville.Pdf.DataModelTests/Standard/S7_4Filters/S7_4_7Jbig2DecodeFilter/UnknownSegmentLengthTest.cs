@@ -20,7 +20,7 @@ public class UnknownSegmentLengthTest
     [InlineData("01020304 05060708 09101112 13141516 12 AABCDE FFFFAC 05060708 0102", 2)]
     
     [InlineData("01020304 15161718 09101112 13141516 12 AABCDE FFFFAC 05060708 0102", 2)]
-    public async Task TrivialMMRSegment(string source, int extraBytes)
+    public async Task TrivialMmrSegmentAsync(string source, int extraBytes)
     {
         var data = source.BitsFromHex();
         var reader = PipeReader.Create(new ReadOnlySequence<byte>(data));
