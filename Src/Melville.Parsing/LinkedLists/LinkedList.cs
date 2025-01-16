@@ -134,7 +134,6 @@ internal abstract class LinkedList: CountedMultiplexSource
     {
             EnsureHasLocation(position);
         var node = StartPosition.Node!;
-#warning < instead of <= on the next line fixes the bug
         while (node.NextNodeIndex() < position)
         {
             node =node.Next as LinkedListNode ??
