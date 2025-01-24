@@ -389,7 +389,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + i * w + blk.ulx, System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w);
+								in_Renamed.ReadExactly(buf, 0, blk.w);
 								for (k = (i - blk.uly) * blk.w + blk.w - 1, j = blk.w - 1; j >= 0; k--)
 									barr[k] = (((buf[j--] & 0xFF) << paddingLength) >> paddingLength);
 							}
@@ -401,7 +401,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + i * w + blk.ulx, System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w);
+								in_Renamed.ReadExactly(buf, 0, blk.w);
 								for (k = (i - blk.uly) * blk.w + blk.w - 1, j = blk.w - 1; j >= 0; k--)
 									barr[k] = (SupportClass.URShift(((buf[j--] & 0xFF) << paddingLength), paddingLength)) - levShift;
 							}
@@ -418,7 +418,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + 2 * (i * w + blk.ulx), System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w << 1);
+								in_Renamed.ReadExactly(buf, 0, blk.w << 1);
 								switch (byteOrder)
 								{
 									
@@ -449,7 +449,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + 2 * (i * w + blk.ulx), System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w << 1);
+								in_Renamed.ReadExactly(buf, 0, blk.w << 1);
 								switch (byteOrder)
 								{
 									
@@ -485,7 +485,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + 4 * (i * w + blk.ulx), System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w << 2);
+								in_Renamed.ReadExactly(buf, 0, blk.w << 2);
 								switch (byteOrder)
 								{
 									
@@ -515,7 +515,7 @@ namespace Melville.CSJ2K.j2k.image.input
 							{
 								// Reposition in input
 								in_Renamed.Seek(offset + 4 * (i * w + blk.ulx), System.IO.SeekOrigin.Begin);
-								in_Renamed.Read(buf, 0, blk.w << 2);
+								in_Renamed.ReadExactly(buf, 0, blk.w << 2);
 								switch (byteOrder)
 								{
 									

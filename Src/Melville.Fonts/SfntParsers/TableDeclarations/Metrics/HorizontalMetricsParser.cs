@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableParserParts;
@@ -17,6 +18,7 @@ internal class HorizontalMetricsParser(
 {
     public async Task<ParsedHorizontalMetrics> ParseAsync()
     {
+        Debug.Assert(numberOfHMetrics <= numGlyphs);
         var bytes = (numberOfHMetrics * 4) + ((numGlyphs - numberOfHMetrics) * 2);
         var data = new short[bytes / 2];
         await FieldParser.ReadAsync(source, data).CA();

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	  <Title>Melville.Pdf.LowLevel</Title>
 	  <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Melville.INPC" Version="0.7.2" />
+	  <PackageReference Include="Melville.INPC" Version="0.7.6" />
 	  <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 

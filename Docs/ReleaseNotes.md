@@ -1,5 +1,16 @@
 ﻿# Releases
 
+## 1/16/2025 0.6.0
+This fixes some bugs
+- Fixed an end condition in a linked list class deep in the font parser.
+- Parses true type font files that (contrary to spec) do not sort their tables properly.
+- Parses true type font files that try (contrary to spec) to declare more horizontal metrics than there are glyphs.
+- Fixed a concurrany bug in the WPF glyph caching mechanism.
+- Upgrade to .NET 9.0 and fix all the warnings in the new version.
+- Cap fluentassertions at version 7.0.0 (the last free version)
+- Update dependencies, including some dependencies with vulnerabilities.
+
+
 ## 9/13/2024 0.5.1
 This is a minor bugfix release.
 - Fixed a bug in the JBIG2 decoder that caused a crash when the JBIG2 segment length was unknown.

@@ -1637,7 +1637,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (bin.usebais)
 			{
-				bin.bais.Read(ephArray, 0, Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH);
+				bin.bais.ReadExactly(ephArray, 0, Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH);
 			}
 			else
 			{

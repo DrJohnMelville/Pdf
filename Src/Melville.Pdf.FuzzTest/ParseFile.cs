@@ -42,7 +42,7 @@ public static class ParseFile
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
             int completed = 0;
-            object mutex = new();
+            Lock mutex = new();
             var cts = new CancellationTokenSource();
             await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), cts.Token, async (i,_) =>
             {

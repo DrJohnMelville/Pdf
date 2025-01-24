@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Title>Melville.Pdf.LowLevel</Title>
         <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
@@ -11,9 +11,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Hacks" Version="0.7.2" />
-      <PackageReference Include="Melville.Linq" Version="0.7.2" />
-      <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+      <PackageReference Include="Melville.Hacks" Version="0.7.6" />
+      <PackageReference Include="Melville.Linq" Version="0.7.6" />
+      <PackageReference Include="System.IO.Pipelines" Version="9.0.1" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
 

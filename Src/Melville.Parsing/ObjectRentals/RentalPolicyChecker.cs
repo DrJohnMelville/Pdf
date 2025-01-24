@@ -96,6 +96,10 @@ internal readonly struct RentalRecord
 [StaticSingleton]
 public partial class RentalPolicyChecker
 {
+    /// <summary>
+    /// A lock to synchronize use of this checker
+    /// </summary>
+    public Lock Lock { get; } = new();
     private readonly List<RentalRecord> rentals = new();
 
     /// <summary>

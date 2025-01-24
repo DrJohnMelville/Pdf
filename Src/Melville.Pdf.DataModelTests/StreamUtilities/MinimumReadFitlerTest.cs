@@ -34,7 +34,7 @@ public sealed class MinimumReadFitlerTest
     public async Task BigEnoughReadSucceedsAsync()
     {
         var buf = new byte[11];
-        await sut.ReadAsync(buf, 0, 11);
+        await sut.ReadExactlyAsync(buf, 0, 11);
         for (int i = 0; i < 10; i++)
         {
             Assert.Equal(11, buf[i]);
@@ -47,7 +47,7 @@ public sealed class MinimumReadFitlerTest
         var buf = new byte[1];
         for (var i = 0; i < 10; i++)
         {
-            await sut.ReadAsync(buf, 0, 1);
+            await sut.ReadExactlyAsync(buf, 0, 1);
             Assert.True(buf[0] > 9);
         }
     }

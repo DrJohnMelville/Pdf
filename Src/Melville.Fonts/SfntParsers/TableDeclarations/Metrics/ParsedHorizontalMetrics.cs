@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
@@ -28,6 +29,11 @@ public partial class ParsedHorizontalMetrics: IGlyphWidthSource
     /// </summary>
     public Span<HorizontalMetric> HMetrics =>
         MemoryMarshal.Cast<short, HorizontalMetric>(data.AsSpan())[..numberOfHMetrics];
+
+    partial void OnConstructed()
+    {
+        Debug.Assert(data.Length >= (2*numberOfHMetrics));
+    }
 
     /// <summary>
     /// The array of LeftSideBearings for glyphs with an implicit AdvanceWidth

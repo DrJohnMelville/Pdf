@@ -10,7 +10,7 @@ namespace Performance.Playground;
 
 public class Bugs
 {
-    public async Task ReadAllImages()
+    public async Task ReadAllImagesAsync()
     {
         var doc = await new PdfReader().ReadFromFileAsync(@"C:\Users\jom252\OneDrive - Medical University of South Carolina\Documents\Scratch\Pdf\BUGS\num 41.pdf");
         await RenderWithSkia.ToPngStreamAsync(doc, 1, new MemoryStream());

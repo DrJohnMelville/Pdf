@@ -281,7 +281,7 @@ namespace Melville.CSJ2K.j2k.image.input
 				{
 					// Reposition in input
 					in_Renamed.Seek(offset + i * w + blk.ulx, System.IO.SeekOrigin.Begin);
-					in_Renamed.Read(buf, 0, blk.w);
+					in_Renamed.ReadExactly(buf, 0, blk.w);
 					for (k = (i - blk.uly) * blk.w + blk.w - 1, j = blk.w - 1; j >= 0; j--, k--)
 					{
 						barr[k] = (((int) buf[j]) & 0xFF) - DC_OFFSET;
