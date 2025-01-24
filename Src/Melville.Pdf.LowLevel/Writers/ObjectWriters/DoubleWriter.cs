@@ -32,6 +32,16 @@ internal ref struct DoubleSpanWriter
 
     public int Write(double item)
     {
+        if (item < 0)
+        {
+            span[0] = (byte)'-';
+            return 1+ new DoubleSpanWriter(span[1..]).Write(-item);
+        }
+        return WritePositiveNumber(item);
+    }
+
+    private int WritePositiveNumber(double item)
+    {
         var truncated = Math.Truncate(item);
         length = IntegerWriter.Write(span, (long)truncated);
         frac = Math.Abs(item - truncated);
@@ -40,7 +50,7 @@ internal ref struct DoubleSpanWriter
         FixupAfterPrinting();
         return length;
     }
-        
+
     private bool ShouldWriteMoreFractionalDigits() =>
         LengthLessThanDoublePrecision() && length < span.Length && frac > double.Epsilon;
 

@@ -13,6 +13,7 @@ public class DoubleWriterTest
     [InlineData(2.4,"2.4", 17)]
     [InlineData(2.45,"2.45", 17)]
     [InlineData(-2.4,"-2.4", 17)]
+    [InlineData(-0.5,"-0.5", 17)]
     [InlineData(Math.PI, "3.141592653589793", 17)]
     [InlineData(Math.PI*100, "314.1592653589793", 17)]
     [InlineData(2.9999999, "3", 5)]
