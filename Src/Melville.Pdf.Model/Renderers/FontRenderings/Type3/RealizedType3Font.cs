@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -15,6 +17,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
     [FromConstructor]private readonly PdfDictionary rawFont;
+    [FromConstructor] private IReadOnlyList<double>? declaredWidths;
 
     public IReadCharacter ReadCharacter => SingleByteCharacters.Instance;
     public IMapCharacterToGlyph MapCharacterToGlyph => this;
@@ -31,7 +34,22 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         return await target.RenderType3CharacterAsync(
             readFrom, fontMatrix, rawFont).CA();
     }
-    public double? CharacterWidth(uint character) => default;
+   
+    public double? CharacterWidth(uint character)
+    {
+        uint index = character - firstCharacter;
+        return HasDeclaredWidth(index)
+            ? ConvertDeclaredWidth(declaredWidths[(int)index])
+            : default;
+    }
+
+
+    [MemberNotNullWhen(true, nameof(declaredWidths))]
+    private bool HasDeclaredWidth(uint index) => 
+        declaredWidths is not null && index < declaredWidths.Count;
+
+    private float ConvertDeclaredWidth(double width) =>
+        Vector2.Transform(new Vector2((float)width, 0f), fontMatrix).X;
 
     public int GlyphCount => characters.Length;
     public string FamilyName => "Type 3 Font";

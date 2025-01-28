@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -36,7 +37,15 @@ internal readonly partial struct Type3FontFactory
             }
         }
 
-        return new RealizedType3Font(characters, (byte)firstChar, await ReadTransformMatrixAsync().CA(), font);
+        return new RealizedType3Font(characters, (byte)firstChar, 
+            await ReadTransformMatrixAsync().CA(), font,
+            await ReadWidthsAsync().CA());
+    }
+
+    private async ValueTask<IReadOnlyList<double>?> ReadWidthsAsync()
+    {
+        var widths = await font.GetOrDefaultAsync(KnownNames.Widths, PdfArray.Empty).CA();
+        return widths.Count is 0 ? null : await widths.CastAsync<double>().CA();
     }
 
     private async Task<Matrix3x2> ReadTransformMatrixAsync()
