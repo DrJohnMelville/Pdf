@@ -24,4 +24,13 @@ public interface IExtractedTextTarget
     /// <param name="character">The character to write.</param>
     /// <param name="textMatrix">The text matrix at the time of the write operation</param>
     void WriteCharacter(char character, in Matrix3x2 textMatrix);
+
+    /// <summary>
+    /// This notifies the writer of an x offset inside og a Td operation.  The writer does not
+    /// need to update the current point, but is just notified that the jump has happened.
+    /// (The text extractor uses this to add spaces to strings)
+    /// </summary>
+    /// <param name="value">The delta value out of the source pdf stream, positive is to the left</param>
+    void DeltaInsideWrite(double value);
+
 }

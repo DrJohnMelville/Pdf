@@ -40,7 +40,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
         uint index = character - firstCharacter;
         return HasDeclaredWidth(index)
             ? ConvertDeclaredWidth(declaredWidths[(int)index])
-            : default;
+            : null;
     }
 
 

@@ -29,7 +29,8 @@ internal sealed class PdfStringWriter : ISpacedStringBuilder
     private GraphicsState GraphicsState => target.RenderTarget.GraphicsState.CurrentState();
 
     public ValueTask SpacedStringComponentAsync(double value)
-    { 
+    {
+        writer.DeltaInsideWrite(value);
         var delta = GraphicsState.FontSize * value/ 1000.0;
         UpdateTextPosition(-delta);
         return ValueTask.CompletedTask;

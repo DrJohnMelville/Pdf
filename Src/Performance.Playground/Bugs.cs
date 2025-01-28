@@ -12,7 +12,9 @@ public class Bugs
 {
     public async Task ReadAllImagesAsync()
     {
-        var doc = await new PdfReader().ReadFromFileAsync(@"C:\Users\jom252\OneDrive - Medical University of South Carolina\Documents\Scratch\Pdf\BUGS\num 41.pdf");
-        await RenderWithSkia.ToPngStreamAsync(doc, 1, new MemoryStream());
+        var doc = await new PdfReader().ReadFromFileAsync(@"C:\Users\jom252\OneDrive - Medical University of South Carolina\Documents\Scratch\PrintTarget\zpe00811000407.pdf");
+
+        var text = await doc.PageTextAsync(1);
+        Console.WriteLine(text);
     }
 }

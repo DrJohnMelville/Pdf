@@ -3,6 +3,7 @@ using Melville.INPC;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.TextExtractor;
 
@@ -27,18 +28,20 @@ internal partial class ExtractingFont : IRealizedFont
         public ValueTask AddGlyphToCurrentStringAsync(
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
-            output.WriteCharacter(
-                (char)character, textMatrix);
+            output.WriteCharacter((char)character, textMatrix);
             return default;
+        }
+
+        public void DeltaInsideWrite(double value)
+        {
+            output.DeltaInsideWrite(value);
         }
 
         public ValueTask<double> NativeWidthOfLastGlyphAsync(uint glyph) => new(10);
 
         public void RenderCurrentString(
-            bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix)
-        {
+            bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix) =>
             output.EndWrite(finalTextMatrix);
-        }
 
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>

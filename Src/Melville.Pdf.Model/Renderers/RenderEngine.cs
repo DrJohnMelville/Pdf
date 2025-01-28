@@ -182,7 +182,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     public void MovePositionBy(double x, double y) =>
         GraphicsState.SetBothTextMatrices(
             Matrix3x2.CreateTranslation((float)x,(float)y) 
-            * GraphicsState.TextLineMatrix);
+             * GraphicsState.TextLineMatrix);
 
     public void MovePositionByWithLeading(double x, double y)
     {

@@ -4,9 +4,17 @@ using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.TextExtractor;
 
+internal class ConcatenateAndCollapseHyphenTarget : ConcatenatingTextTarget
+{
+    protected override TextExtractionLine? HyphenContinuation()
+    {
+        return lines.Count > 0 ? lines[^1].AsHyphenContinue() : null;
+    }
+}
+
 internal class ConcatenatingTextTarget: IExtractedTextTarget
 {
-    private List<TextExtractionLine> lines = new();
+    protected List<TextExtractionLine> lines = new();
     private TextExtractionLine? lineBuilder;
 
     public void BeginWrite(IRealizedFont font)
@@ -21,16 +29,33 @@ internal class ConcatenatingTextTarget: IExtractedTextTarget
 
     public void WriteCharacter(char character, in Matrix3x2 textMatrix)
     {
-        lineBuilder ??= FindPartialLine(ComputeLocation(textMatrix));
+        var nextLocation = ComputeLocation(textMatrix);
+        if (lineBuilder is null)
+        {
+            lineBuilder = FindPartialLine(nextLocation);
+        }
         lineBuilder.AppendCharacter(character);
     }
 
-    private TextExtractionLine FindPartialLine(Vector2 startPoint) => 
-        lines.FirstOrDefault(i=>i.IsPrefixTo(startPoint)) ?? NewExtractionLine();
-
-    private TextExtractionLine NewExtractionLine()
+    public void DeltaInsideWrite(double value)
     {
-        var ret = new TextExtractionLine();
+        if (value < -150 && lineBuilder is not null)
+            lineBuilder.AppendCharacter(' ');
+    }
+
+    private TextExtractionLine FindPartialLine(Vector2 startPoint) => 
+        HyphenContinuation() ??
+        lines.FirstOrDefault(i=>i.IsPrefixTo(startPoint)) ?? 
+        NewExtractionLine(startPoint);
+
+    protected virtual TextExtractionLine? HyphenContinuation() => null;
+
+    private TextExtractionLine NewExtractionLine(Vector2 startPoint)
+    {
+        var ret = new TextExtractionLine()
+        {
+            StartPoint = startPoint
+        };
         lines.Add(ret);
         return ret;
     }
@@ -45,6 +70,7 @@ internal class ConcatenatingTextTarget: IExtractedTextTarget
 internal class TextExtractionLine
 {
     private readonly StringBuilder text = new StringBuilder();
+    public Vector2 StartPoint { get; set; }
     public Vector2 EndPoint { get; set; }
 
     public void AppendCharacter(char character) => text.Append(character);
@@ -53,6 +79,20 @@ internal class TextExtractionLine
 
     public string RenderedText() => text.ToString();
 
-    public bool IsPrefixTo(in Vector2 nextPoint) =>
-        (EndPoint - nextPoint).LengthSquared() < 1.0;
+    public bool IsPrefixTo(in Vector2 nextPoint)
+    {
+        var delta = EndPoint - nextPoint;
+        return (Math.Abs(delta.X) < 5f && Math.Abs(delta.Y) < 1f);
+    }
+
+    public TextExtractionLine? AsHyphenContinue()
+    {
+        if (text[^1] == '-')
+        {
+            text.Remove(text.Length - 1, 1);
+            return this;
+        }
+
+        return null;
+    }
 }

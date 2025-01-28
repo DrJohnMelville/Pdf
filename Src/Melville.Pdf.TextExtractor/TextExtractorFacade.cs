@@ -14,9 +14,23 @@ public static class TextExtractorFacade
     /// <param name="oneBasedPageNumber">One based page number of the desired page.</param>
     /// <returns></returns>
     public static async ValueTask<string> PageTextAsync(
-        this DocumentRenderer renderer, int oneBasedPageNumber)
+        this DocumentRenderer renderer, int oneBasedPageNumber) =>
+        await RenderText(renderer, oneBasedPageNumber, new ConcatenateAndCollapseHyphenTarget());
+
+    /// <summary>
+    /// Gets the text that shows up on a given page of a given Pdf file.
+    /// This overload leaves terminal hyphens intact.
+    /// </summary>
+    /// <param name="renderer">DocumentRenderer for the file to be read</param>
+    /// <param name="oneBasedPageNumber">One based page number of the desired page.</param>
+    /// <returns></returns>
+    public static async ValueTask<string> PageTextWithTerminalHyphensAsync(
+        this DocumentRenderer renderer, int oneBasedPageNumber) =>
+        await RenderText(renderer, oneBasedPageNumber, new ConcatenatingTextTarget());
+
+    private static async Task<string> RenderText(
+        DocumentRenderer renderer, int oneBasedPageNumber, ConcatenatingTextTarget target)
     {
-        var target = new ConcatenatingTextTarget();
         await renderer.RenderPageToAsync(oneBasedPageNumber,
             (_,__)=>new ExtractTextRender(target));
         return target.AllText();

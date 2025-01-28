@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
@@ -18,6 +19,14 @@ public interface IFontWriteOperation
     /// <param name="textMatrix">The current text matrix</param>
     /// <returns>The width of the rendered glyph</returns>
     ValueTask AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix);
+
+    /// <summary>
+    /// This notifies the writer of an x offset inside og a Td operation.  The writer does not
+    /// need to update the current point, but is just notified that the jump has happened.
+    /// (The text extractor uses this to add spaces to strings)
+    /// </summary>
+    /// <param name="value">The delta value out of the source pdf stream, positive is to the left</param>
+    void DeltaInsideWrite(double value) { }
 
     /// <summary>
     /// Get the native width of the last rendered glyph in text units.
@@ -45,4 +54,5 @@ public interface IFontWriteOperation
     /// <param name="target">The target that the new font write operation should write to.</param>
     /// <returns>A writeroperation for the same font with a new target.</returns>
     IFontWriteOperation CreatePeerWriteOperation(IFontTarget target);
+
 }
