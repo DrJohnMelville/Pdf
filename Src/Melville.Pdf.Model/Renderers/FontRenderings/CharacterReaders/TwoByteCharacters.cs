@@ -3,12 +3,14 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
+/// <summary>
+/// This is an IReadCharacter that reads two byte big endian characters, consistent with
+/// Unicode-16BE
+/// </summary>
 [StaticSingleton]
-internal sealed partial class TwoByteCharacters : IReadCharacter
+public sealed partial class TwoByteCharacters : IReadCharacter
 {
-    public (uint character, int bytesConsumed) GetNextChar(in ReadOnlySpan<byte> input) => 
-        ((uint)(input[0] << 8)|input[1], 2);
-
+    /// <inheritdoc />
     public Memory<uint> GetCharacters(
         in ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer, out int bytesConsumed)
     {

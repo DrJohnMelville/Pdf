@@ -29,11 +29,7 @@ internal class ConcatenatingTextTarget: IExtractedTextTarget
 
     public void WriteCharacter(char character, in Matrix3x2 textMatrix)
     {
-        var nextLocation = ComputeLocation(textMatrix);
-        if (lineBuilder is null)
-        {
-            lineBuilder = FindPartialLine(nextLocation);
-        }
+        lineBuilder ??= FindPartialLine(ComputeLocation(textMatrix));
         lineBuilder.AppendCharacter(character);
     }
 

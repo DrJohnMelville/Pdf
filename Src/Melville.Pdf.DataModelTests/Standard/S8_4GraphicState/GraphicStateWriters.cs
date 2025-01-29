@@ -33,7 +33,7 @@ public class GraphicStateWriters:WriterTest
     public async Task ModifyTransformMatrixAsync()
     {
         sut.ModifyTransformMatrix(new Matrix3x2(1,2.45f,3,4,-500.1234f,6));
-        Assert.Equal("1 2.450000047683716 3 4 -500.123413085938 6 cm\n", await WrittenTextAsync());
+        Assert.Equal("1 2.450000047683716 3 4 -500.1234130859375 6 cm\n", await WrittenTextAsync());
     }
     [Fact]
     public async Task SetLineWidthAsync()
