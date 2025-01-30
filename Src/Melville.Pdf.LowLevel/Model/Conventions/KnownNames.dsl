@@ -126,6 +126,8 @@ Encryptor:AESV2
 Encryptor:AESV3
 Encryptor:V2
 
+Melville:RenderOff
+Melville:RenderOn
 
 Pdf:AC
 Pdf:AcroForm

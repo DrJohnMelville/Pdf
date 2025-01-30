@@ -156,16 +156,16 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         if (!pageRenderContext.ItemsBeingRendered.TryPush(xObject.LowLevel)) return;
         var otherEngine = new RenderEngine(xObject, pageRenderContext);
-        await otherEngine.RunContentStreamAsync().CA();
+        await otherEngine.RunContentStreamAsync(i=>i).CA();
         CopyLastGlyphMetrics(otherEngine);
         pageRenderContext.ItemsBeingRendered.PopItem();
     }
 
-    public async ValueTask RunContentStreamAsync()
+    public async ValueTask RunContentStreamAsync(Func<IContentStreamOperations, IContentStreamOperations> wrapOutput)
     {
         using var reader = MultiplexSourceFactory.SingleReaderForStream(
             await page.GetContentBytesAsync().CA());
-        await new ContentStreamParser(this).ParseAsync(
+        await new ContentStreamParser(wrapOutput(this)).ParseAsync(
             reader).CA();
     }
 

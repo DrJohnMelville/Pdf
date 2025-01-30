@@ -27,7 +27,7 @@ public class TwoColumnList: Panel
             height += row[1].DesiredSize.Height;
         }
 
-        return new Size(availableSize.Width, height);
+        return new Size(availableSize.Width, height+50);
     }
 
     private List<UIElement[]> GetRows() => InternalChildren.OfType<UIElement>().Chunk(2).ToList();
@@ -57,6 +57,6 @@ public class TwoColumnList: Panel
             height += Math.Max(leftHeight, rightHeight);
         }
 
-        return new(finalSize.Width, height);
+        return new(finalSize.Width, height+50);
     }
 }

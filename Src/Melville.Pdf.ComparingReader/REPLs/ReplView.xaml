@@ -9,15 +9,18 @@
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid easyGrids:GridOperations.ColsAndRows="*,* /auto, *">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,* /auto, *"
+          PreviewKeyDown="{eventBindings:EventBinding KeyDown}">
         <WrapPanel>
             <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrintAsync}"/>
             <Button Content="Save Page To File" Click="{eventBindings:EventBinding SavePageAsync}"/>
+            <CheckBox IsChecked="{Binding ImmediateRedraw, Mode=TwoWay}">Immediate Redraw</CheckBox>
         </WrapPanel>
         <streams:TextBoxWithFind Grid.Row="1" Text = "{Binding ContentStreamText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
-                      Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <local:TwoColumnList >
+                      Grid.Column="1" Grid.RowSpan="2" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <local:TwoColumnList>
                 <TextBlock FontWeight="Bold">Graphics State</TextBlock><TextBlock />
                 <TextBlock>q</TextBlock>
                 <TextBlock>Save Graphics State</TextBlock>
@@ -139,6 +142,12 @@
                 <TextBlock>Move to next line and show with spacing.</TextBlock>
                 <TextBlock>[strings and numbers] TJ</TextBlock>
                 <TextBlock>Show Spaced Text</TextBlock>
+                <TextBlock FontWeight="Bold">Melville.Pdf Debugging Extensions</TextBlock>
+                <TextBlock />
+                <TextBlock>/RenderOff MP</TextBlock>
+                  <TextBlock>Stop sending render commands to the output</TextBlock>
+                <TextBlock>/RenderOn MP</TextBlock>
+                <TextBlock>Resume sending render commands to the output</TextBlock>
             </local:TwoColumnList>
 
         </ScrollViewer>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Melville.INPC;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
@@ -36,9 +37,26 @@ public partial class ReplViewModel
         this.page = page;
     }
 
+    [AutoNotify] public partial bool ImmediateRedraw { get; set; }
+
     private async void OnContentStreamTextChanged(string newValue)
     {
-        if (buffer.Length == 0) return; // heppens in testing
+        if (ImmediateRedraw) await RerenderPdf(newValue);
+    }
+
+    public Task KeyDown(KeyEventArgs args)
+    {
+        if (args.Key == Key.F5)
+        {
+            args.Handled = true;
+            return RerenderPdf(ContentStreamText);
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task RerenderPdf(string newValue)
+    {
+        if (buffer.Length == 0) return;
 
         using var target = WritableBuffer.Create();
         await using var writer = target.WritingStream();

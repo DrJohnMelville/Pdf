@@ -29,6 +29,8 @@ Group ExtractTexts
     Melville.Pdf.ComparingReader.Viewers.ExtractedTexts.*
 Group FormReader
     Melville.Pdf.ComparingReader.Viewers.FormViewer.*
+Group ContentStreamFilters
+    Melville.Pdf.ComparingReader.Viewers.ContentStreamOperationsFilters.*
        
 MainWindow => Renderers
 MainWindow => REPL
@@ -49,6 +51,7 @@ SavePages => Melville.Pdf.LowLevel.*
 
 Melville.Pdf.ComparingReader.Viewers.* => Renderers
 Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.LowLevel.Parsing.ParserContext.*
+Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.LowLevel.Model.*
 Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.Model.*
 MainWindow => Melville.Pdf.LowLevel.Parsing.ParserContext.*
 
@@ -66,6 +69,8 @@ Melville.Pdf.ComparingReader.Viewers.WindowsViewer.* => Windows.*
 
 #External Dependency for the Wpf Viewer
 Melville.Pdf.ComparingReader.* ^=> Melville.Pdf.Wpf.*
+Melville.Pdf.ComparingReader.* ^=> ContentStreamFilters
+
 
 #External Dependency for the SkiaSharp Viewer
 Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.SkiaSharp.* 

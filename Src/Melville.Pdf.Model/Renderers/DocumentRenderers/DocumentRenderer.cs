@@ -18,7 +18,7 @@ namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 /// <summary>
 /// This class represents the state of the renderer, which may be refused between pages. 
 /// </summary>
-public abstract class DocumentRenderer: IDisposable
+public abstract class DocumentRenderer : IDisposable
 {
     /// <summary>
     /// Total pages available to render
@@ -40,7 +40,7 @@ public abstract class DocumentRenderer: IDisposable
     /// </summary>
     public IOptionalContentState OptionalContentState { get; }
 
-    internal DocumentRenderer(int totalPages, 
+    internal DocumentRenderer(int totalPages,
         IDefaultFontMapper fontMapper, IDocumentPartCache cache, IOptionalContentState optionalContentState)
     {
         this.FontMapper = fontMapper;
@@ -55,44 +55,60 @@ public abstract class DocumentRenderer: IDisposable
     /// <param name="request">The tile brush to render.</param>
     /// <param name="priorState">The graphics state at the time of the tile brush request.</param>
     /// <returns>The DocumentReader that can render the TilePatternRequest.</returns>
-    public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) => 
+    public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) =>
         new PatternRenderer(FontMapper, Cache, request, priorState, OptionalContentState);
+
+    private Func<IContentStreamOperations, IContentStreamOperations> wrapOutputWith = DoNotWrapOutput;
+
+    private static IContentStreamOperations DoNotWrapOutput(IContentStreamOperations i) => i;
+
+    /// <summary>
+    /// Adds an output wrapper to the rendering chain.  Output wrappers can inspect and modify
+    /// </summary>
+    /// <param name="wrapOutput">A function that can wrap, or replace the output of the renderer</param>
+    /// <returns></returns>
+    public DocumentRenderer WithOutputWrapper(
+        Func<IContentStreamOperations, IContentStreamOperations> wrapOutput)
+    {
+        var capture = wrapOutputWith;
+        wrapOutputWith = i => wrapOutput(capture(i));
+        return this;
+    }
 
     /// <summary>
     /// Render a given page to a target.
     /// </summary>
     /// <param name="oneBasedPageNumber">The page to render</param>
     /// <param name="target">A factory method that creates a render target given a visible rectangle and matrix.</param>
-    /// <returns></returns>
     public async ValueTask RenderPageToAsync(int oneBasedPageNumber, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
         var pageStruct = await GetPageContentAsync(oneBasedPageNumber).CA();
         var cropRect = await GetCropDimensionsAsync(pageStruct).CA();
-        var rotation = CreateRotateMatrix( cropRect, await pageStruct.GetDefaultRotationAsync().CA());
-        
-        using var renderTarget = target(cropRect.Transform(rotation),rotation);
-        await CreateRenderEngine(pageStruct, renderTarget).RunContentStreamAsync().CA();
+        var rotation = CreateRotateMatrix(cropRect, await pageStruct.GetDefaultRotationAsync().CA());
+
+        using var renderTarget = target(cropRect.Transform(rotation), rotation);
+        await CreateRenderEngine(pageStruct, renderTarget).RunContentStreamAsync(wrapOutputWith).CA();
     }
 
     private Matrix3x2 CreateRotateMatrix(PdfRect cropRect, long rotateBy)
     {
         var centerX = cropRect.Left + cropRect.Right / 2;
         var centerY = cropRect.Top + cropRect.Bottom / 2;
-        return Matrix3x2.CreateRotation((float) (rotateBy * Math.PI / -180), 
+        return Matrix3x2.CreateRotation((float)(rotateBy * Math.PI / -180),
             new Vector2((float)centerX, (float)centerY));
     }
 
-    private async ValueTask<PdfRect> GetCropDimensionsAsync(IHasPageAttributes pageStruct) => 
-        await pageStruct.GetBoxAsync(BoxName.CropBox).CA() ?? new PdfRect(0,0,1,1);
+    private async ValueTask<PdfRect> GetCropDimensionsAsync(IHasPageAttributes pageStruct) =>
+        await pageStruct.GetBoxAsync(BoxName.CropBox).CA() ?? new PdfRect(0, 0, 1, 1);
 
     private RenderEngine CreateRenderEngine(HasRenderableContentStream page, IRenderTarget target) =>
-        new(page, new (target, this, OptionalContentEngine()));
+        new(page, new(target, this, OptionalContentEngine()));
 
     private IOptionalContentCounter OptionalContentEngine()
     {
-        return OptionalContentState.AllVisible() ? 
-            NullOptionalContentCounter.Instance:
-            new OptionalContentCounter(OptionalContentState);
+        return OptionalContentState.AllVisible()
+            ? NullOptionalContentCounter.Instance
+            : new OptionalContentCounter(OptionalContentState);
     }
 
 
@@ -120,16 +136,16 @@ public abstract class DocumentRenderer: IDisposable
     /// <param name="pageSize">The rectangle representing the printed page in PDF units</param>
     /// <param name="requestedSize">The requested size in pixels</param>
     /// <returns></returns>
-    public virtual (int width, int height) ScalePageToRequestedSize(in PdfRect pageSize, Vector2 requestedSize)=>
+    public virtual (int width, int height) ScalePageToRequestedSize(in PdfRect pageSize, Vector2 requestedSize) =>
         (requestedSize) switch
         {
-            { X: < 0, Y:< 0 } => ((int)pageSize.Width, (int)pageSize.Height),
-            {X: < 0} => new(Scale(pageSize.Width, requestedSize.Y, pageSize.Height), (int)requestedSize.Y),
-            {Y: < 0} => new((int)requestedSize.X, Scale(pageSize.Height, requestedSize.X, pageSize.Width)),
+            { X: < 0, Y: < 0 } => ((int)pageSize.Width, (int)pageSize.Height),
+            { X: < 0 } => new(Scale(pageSize.Width, requestedSize.Y, pageSize.Height), (int)requestedSize.Y),
+            { Y: < 0 } => new((int)requestedSize.X, Scale(pageSize.Height, requestedSize.X, pageSize.Width)),
             _ => ((int)requestedSize.X, (int)requestedSize.Y)
         };
-    
-    private static int Scale(double freeDimension, float setValue, double setDimension) => 
+
+    private static int Scale(double freeDimension, float setValue, double setDimension) =>
         (int)(freeDimension * (setValue / setDimension));
 
     /// <summary>
@@ -141,7 +157,7 @@ public abstract class DocumentRenderer: IDisposable
 
     /// <inheritdoc />
     public virtual void Dispose() => Cache.Dispose();
-    
+
     /// <summary>
     /// Uncolored tile pattern renderers are required to ignore all color setting operators.  This
     /// virtual method gives the Document renderer a mechanism to opt out of color functionality.

@@ -92,7 +92,7 @@ public class GraphicStateDictionary
         await new RenderEngine(page, new(target.Object, 
                 DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
                 NullOptionalContentCounter.Instance))
-            .RunContentStreamAsync();
+            .RunContentStreamAsync(i=>i);
         return gs;
     }
 

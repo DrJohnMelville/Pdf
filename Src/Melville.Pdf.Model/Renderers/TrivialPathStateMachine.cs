@@ -6,7 +6,7 @@ namespace Melville.Pdf.Model.Renderers;
 
 internal enum TrivialPathDetectorState
 {
-    Start, InitialMoveTo, MustDraw, ShouldNotDraw
+    Start, InitialMoveTo, MustDraw
 }
 
 // Pdf standard 2.0 section 8.5.3.2 gives very detailed rules for the stroking trivial paths
@@ -60,7 +60,7 @@ internal abstract partial class TrivialPathStateMachine
     private TrivialPathDetectorState ShouldDrawTrivialDot() =>
         graphicsState.CurrentState().LineCap == LineCap.Round
             ? TrivialPathDetectorState.MustDraw
-            : TrivialPathDetectorState.ShouldNotDraw;
+            : TrivialPathDetectorState.InitialMoveTo;
 
     protected bool ShouldPaintPath() => state is TrivialPathDetectorState.MustDraw;
 }
