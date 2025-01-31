@@ -60,15 +60,13 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
         new(pattternItem)
         {
             Stretch = Stretch.None,
-            Viewbox = PatternSourceBox(request.BoundingBox),
+            Viewbox = PatternDestinationBox(request.RepeatSize),
             Viewport = PatternDestinationBox(request.RepeatSize),
             TileMode = TileMode.Tile,
         };
 
     private static Rect PatternDestinationBox(Vector2 repeatSize) => 
-        new Rect(0, 0, repeatSize.X,repeatSize.Y);
-
-    private static Rect PatternSourceBox(PdfRect bbox) => bbox.AsWpfRect();
+       new Rect(0, 0, repeatSize.X,repeatSize.Y);
 
     private RenderToDrawingGroup PatternRenderer(
         DocumentRenderer parentRenderer, in TileBrushRequest request)

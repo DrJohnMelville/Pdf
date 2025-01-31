@@ -28,7 +28,7 @@ public partial class PdfTilePattern: HasRenderableContentStream
     /// <summary>
     /// The vertical size of the pattern cell
     /// </summary>
-    public ValueTask<double> YStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.XStep, 0.0);
+    public ValueTask<double> YStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.YStep, 0.0);
 
     /// <summary>
     /// Bounding box for the pattern cell.

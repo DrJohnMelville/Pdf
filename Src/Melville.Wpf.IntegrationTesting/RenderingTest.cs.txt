@@ -209,12 +209,12 @@ RenderingTest.cs_Skia-Type0WithEmbeddedTT|67714632
 RenderingTest.cs_wpf-Type0WithCidToGid|622048865
 RenderingTest.cs_Skia-Type0WithCidToGid|3233887912
 RenderingTest.cs_wpf-DingBatsWithANameDifferences|1584040780
-RenderingTest.cs_wpf-ColoredTileWithSpacing|2066483334
+RenderingTest.cs_wpf-ColoredTileWithSpacing|3554716867
 RenderingTest.cs_wpf-ColoredTileRotated|3369191070
 RenderingTest.cs_wpf-ColoredTileMissingMatrix|2040196014
 RenderingTest.cs_wpf-ColoredTilePattern|3764987863
 RenderingTest.cs_Skia-DingBatsWithANameDifferences|4074466773
-RenderingTest.cs_Skia-ColoredTileWithSpacing|3870401482
+RenderingTest.cs_Skia-ColoredTileWithSpacing|637012536
 RenderingTest.cs_Skia-ColoredTileRotated|3073150620
 RenderingTest.cs_Skia-ColoredTileMissingMatrix|514792611
 RenderingTest.cs_Skia-ColoredTilePattern|1928878277

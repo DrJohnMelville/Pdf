@@ -12,18 +12,15 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
-internal class PatternRenderer: DocumentRenderer
+internal class PatternRenderer(
+    IDefaultFontMapper fontMapper,
+    IDocumentPartCache cache,
+    in TileBrushRequest request,
+    GraphicsState priorState,
+    IOptionalContentState ocs)
+    : DocumentRenderer(1, fontMapper, cache, ocs)
 {
-    private readonly TileBrushRequest request;
-    private readonly GraphicsState priorState;
-
-    public PatternRenderer(IDefaultFontMapper fontMapper, IDocumentPartCache cache, in TileBrushRequest request,
-        GraphicsState priorState, IOptionalContentState ocs) : 
-        base(1, fontMapper, cache, ocs)
-    {
-        this.request = request;
-        this.priorState = priorState;
-    }
+    private readonly TileBrushRequest request = request;
 
     protected override ValueTask<HasRenderableContentStream> GetPageContentAsync(int oneBasedPageNumber) => 
         new(request.TilePattern);

@@ -5,7 +5,6 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.TilingPatterns;
 
 public class ColoredTileWithSpacing : ColoredTilePattern
 {
-#warning this test is broken because te pattern offset is wrong
     public ColoredTileWithSpacing() : base("Tile pattern with spacing")
     {
     }
