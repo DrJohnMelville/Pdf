@@ -9,6 +9,7 @@ internal partial class ContentStreamOperationFilter(
     IContentStreamOperations inner): IContentStreamOperations
 {
     [DelegateTo]private IContentStreamOperations target = inner;
+    private IContentStreamOperations renderingTarget = inner;
     
     /// <inheritdoc />
     public void MarkedContentPoint(PdfDirectObject tag)
@@ -20,7 +21,7 @@ internal partial class ContentStreamOperationFilter(
         target.MarkedContentPoint(tag);
         if (tag.Equals(KnownNames.RenderOn))
         {
-            target = inner;
+            target = renderingTarget;
         }
     }
 

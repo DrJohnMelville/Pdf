@@ -15,7 +15,7 @@ public static class TextExtractorFacade
     /// <returns></returns>
     public static async ValueTask<string> PageTextAsync(
         this DocumentRenderer renderer, int oneBasedPageNumber) =>
-        await RenderText(renderer, oneBasedPageNumber, new ConcatenateAndCollapseHyphenTarget());
+        await RenderTextAsync(renderer, oneBasedPageNumber, new ConcatenateAndCollapseHyphenTarget());
 
     /// <summary>
     /// Gets the text that shows up on a given page of a given Pdf file.
@@ -26,9 +26,9 @@ public static class TextExtractorFacade
     /// <returns></returns>
     public static async ValueTask<string> PageTextWithTerminalHyphensAsync(
         this DocumentRenderer renderer, int oneBasedPageNumber) =>
-        await RenderText(renderer, oneBasedPageNumber, new ConcatenatingTextTarget());
+        await RenderTextAsync(renderer, oneBasedPageNumber, new ConcatenatingTextTarget());
 
-    private static async Task<string> RenderText(
+    private static async Task<string> RenderTextAsync(
         DocumentRenderer renderer, int oneBasedPageNumber, ConcatenatingTextTarget target)
     {
         await renderer.RenderPageToAsync(oneBasedPageNumber,

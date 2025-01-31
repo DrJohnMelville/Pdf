@@ -1,13 +1,27 @@
 ﻿# Releases
 
+## 1/31/2025 0.6.1
+Wow, I had a bunch of bugs fixed in a few short weeks.
+- Type 3 fonts with a widths array honor the widths in the array.
+- The text extraction algorithm is better about adding spaces inside of text runs.
+- The DoubleSpanWriter properly writes values between -1 and 0
+- Unicode charmaps consistently interpret their output as 2 byte big endidan unicode as specified.
+- Replace some vulnerable dependencies with later versions.
+- Fixed a bug where some tile pattern with nonuniform tile spacing render incorrectly.
+- There is a debug only feature in the comparing reader.
+  - /RenderOff MP in a content stream stops rendering the stream.
+  - /RenderOn MP in a content stream resumes rendering the stream.
+  - This makes it easy to comment out parts or the remainder of a content stream when debugging.
+  - I also changed some of the tools in the REPL UI to make it easier to edit large streams.
+
 ## 1/16/2025 0.6.0
 This fixes some bugs
 - Fixed an end condition in a linked list class deep in the font parser.
 - Parses true type font files that (contrary to spec) do not sort their tables properly.
 - Parses true type font files that try (contrary to spec) to declare more horizontal metrics than there are glyphs.
-- Fixed a concurrany bug in the WPF glyph caching mechanism.
+- Fixed a concurrency bug in the WPF glyph caching mechanism.
 - Upgrade to .NET 9.0 and fix all the warnings in the new version.
-- Cap fluentassertions at version 7.0.0 (the last free version)
+- Cap FluentAssertions at version 7.0.0 (the last free version)
 - Update dependencies, including some dependencies with vulnerabilities.
 
 
@@ -15,8 +29,8 @@ This fixes some bugs
 This is a minor bugfix release.
 - Fixed a bug in the JBIG2 decoder that caused a crash when the JBIG2 segment length was unknown.
 - Fixed a bug with RentedStream not honoring the declared end of stream.
-- Fixed a bug when /Pattern is used as a colorspace.
-- Fixed a bug where rendering a documentrenderer on different renderers could cause cached fonts to be of a type
+- Fixed a bug when /Pattern is used as a color space.
+- Fixed a bug where rendering a DocumentRenderer on different renderers could cause cached fonts to be of a type
 the second renderer was not expecting.
 
 ## 9/5/2024 0.5.0
@@ -24,19 +38,19 @@ This is a major feature release.
 - The native SharpFont dependency is replaced with the new Melville.Fonts font parser.
 - Rendering fonts fast enough drove a lot of performance work in the low-level file abstractions.
 - IMultiplexSource has different specializations for files, static arrays (which happens a lot in test)
-or expandable arrays.  It cann also serialize access to a stream.  Specifically, all these byte sources
+or expandable arrays.  It can also serialize access to a stream.  Specifically, all these byte sources
 are now reliably disposed, which lets them return their buffers the to array pool correctly.
 
 ## 5/15/2024 0.4.8
 This is still a service release working toward the WinId for the Web integration.
 - Fixed a bug parsing a JBIG file that has no global segment.
 - Fixed a hang bug in the jpeg2000 reader
-- fixed a parsing bug when a page has multiple content streams and there is no witespace between them.
-- Fixed parsing of pdf files that have an invalud CMAP
-- There are now special cases for parsing file streams, memory streams, and multibuffer streams that do 
-not use locks o acheive thread safety.  All three of these structures can be read from multiple locations
+- fixed a parsing bug when a page has multiple content streams and there is no whitespace between them.
+- Fixed parsing of pdf files that have an invalid CMAP
+- There are now special cases for parsing file streams, memory streams, and MultiBuffer streams that do 
+not use locks o achieve thread safety.  All three of these structures can be read from multiple locations
 simultaneously on different threads.  There is no API change, the parser just notices these special streams and
-reads them in a way that it does not need to lock other readers to acheive thread safety.
+reads them in a way that it does not need to lock other readers to achieve thread safety.
 
 ## 4/20/2024 0.4.7
 Not a lot done here recently.  I have been working over the past 6 months to get a release of WinId for the Web 

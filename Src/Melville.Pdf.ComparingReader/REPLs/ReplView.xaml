@@ -10,7 +10,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid easyGrids:GridOperations.ColsAndRows="*,* /auto, *"
-          PreviewKeyDown="{eventBindings:EventBinding KeyDown}">
+          PreviewKeyDown="{eventBindings:EventBinding KeyDownAsync}">
         <WrapPanel>
             <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrintAsync}"/>
             <Button Content="Save Page To File" Click="{eventBindings:EventBinding SavePageAsync}"/>

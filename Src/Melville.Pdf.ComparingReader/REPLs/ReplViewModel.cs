@@ -41,20 +41,20 @@ public partial class ReplViewModel
 
     private async void OnContentStreamTextChanged(string newValue)
     {
-        if (ImmediateRedraw) await RerenderPdf(newValue);
+        if (ImmediateRedraw) await RerenderPdfAsync(newValue);
     }
 
-    public Task KeyDown(KeyEventArgs args)
+    public Task KeyDownAsync(KeyEventArgs args)
     {
         if (args.Key == Key.F5)
         {
             args.Handled = true;
-            return RerenderPdf(ContentStreamText);
+            return RerenderPdfAsync(ContentStreamText);
         }
         return Task.CompletedTask;
     }
 
-    private async Task RerenderPdf(string newValue)
+    private async Task RerenderPdfAsync(string newValue)
     {
         if (buffer.Length == 0) return;
 
