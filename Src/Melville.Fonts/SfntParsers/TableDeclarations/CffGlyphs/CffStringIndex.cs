@@ -12,6 +12,8 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
 
     private async ValueTask<string> LoadCustomStringAsync(int localIndex)
     {
+        if (localIndex > customStrings.Length)
+            return ".notdef";
         using var data = await customStrings.ItemDataAsync(localIndex).CA();
         return Encoding.UTF8.GetString(
             data.Sequence);
