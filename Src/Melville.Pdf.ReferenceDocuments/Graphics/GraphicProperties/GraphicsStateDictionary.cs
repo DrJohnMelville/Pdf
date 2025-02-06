@@ -48,7 +48,7 @@ public class AlphaValueDictionary:Card3x5
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        csw.MoveTo(0,0);
+        csw.MoveTo(0,0);    
         csw.LineTo(300, 300);
         csw.StrokePath();
         await csw.LoadGraphicStateDictionaryAsync(dictionaryName);

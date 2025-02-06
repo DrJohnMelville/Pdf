@@ -2,6 +2,7 @@
 using Melville.Fonts.SfntParsers;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevelViewerParts.FontViewers;
 using Melville.Pdf.LowLevelViewerParts.FontViewers.SfntViews;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -42,6 +43,13 @@ public partial class FontPartViewModel: DocumentPart
 
             GenericFont = new GenericFontViewModel(generic, "Generic Font");
             SpecificFont = generic.CreateSpecificViewModel();
+        }
+        catch (PdfParseException e)
+        {
+            SpecificFont = $"""
+                Font Parsing error ({e.Message})
+                This may be because CID fonts are not real fonts, and cannot be parsed.
+                """;
         }
         catch (Exception)
         {
