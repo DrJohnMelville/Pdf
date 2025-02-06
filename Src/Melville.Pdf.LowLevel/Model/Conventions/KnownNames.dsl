@@ -107,6 +107,8 @@ GraphicStateParameter:TR2
 GraphicStateParameter:HT
 GraphicStateParameter:FL
 GraphicStateParameter:SM
+GraphicStateParameter:CA
+GraphicStateParameter:ca
 
 FontTypes:Type0
 FontTypes:Type1

@@ -25,6 +25,20 @@ public class GraphicStateDictionary
 {
 
     [Fact]
+    public async Task SetStrokingAlphaWithDictionaryAsync()
+    {
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.CA, 0.5);
+        var gs = await ComputeFinalGraphicsStackAsync(page);
+        Assert.Equal(0.5, gs.StronglyTypedCurrentState().StrokingAlpha);
+    }
+    [Fact]
+    public async Task SetNonstrokingAlphaWithDictionaryAsync()
+    {
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.ca, 0.5);
+        var gs = await ComputeFinalGraphicsStackAsync(page);
+        Assert.Equal(0.5, gs.StronglyTypedCurrentState().NonstrokingAlpha);
+    }
+    [Fact]
     public async Task SetLineWidthWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LW, 10);

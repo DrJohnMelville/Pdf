@@ -87,4 +87,9 @@ public readonly struct DeviceColor
     /// <returns>A 4 byte ARGB packed value.</returns>
     public uint AsArgbUint32() => (uint)
         ((Alpha << 24) | (RedByte << 16) | (GreenByte << 8) | BlueByte);
+
+    public DeviceColor WithAlpha(double newAlpha) =>
+        newAlpha < 1.0?
+        new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * newAlpha)):
+        this;
 }

@@ -18,6 +18,8 @@ internal static class PdfTrailerParser
         ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
     {
 
+        if (xrefPosition >= source.StreamLength)
+            throw new PdfParseException("Xref location is invalid");
         using var context = source.SubsetReader(xrefPosition);
         var trailerDictionary = await ReadSingleRefTrailerBlockAsync(context).CA();
 
