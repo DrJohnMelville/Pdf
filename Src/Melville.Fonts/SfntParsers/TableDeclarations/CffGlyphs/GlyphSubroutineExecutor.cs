@@ -17,7 +17,10 @@ internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
     public async ValueTask CallAsync(
         int subroutine, ICffInstructionExecutor executor)
     {
-        using var data = await subroutines.ItemDataAsync(subroutine+Bias()).CA();
+        var index = subroutine+Bias();
+        if ((uint)index >= subroutines.Length)
+            return; // silently ignore calls to nonexistant subroutines
+        using var data = await subroutines.ItemDataAsync(index).CA();
         await executor.ExecuteInstructionSequenceAsync(data.Sequence).CA();
     }
 
