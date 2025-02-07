@@ -40,8 +40,8 @@ public partial class FontPartViewModel: DocumentPart
             Font = await new FontReader(WindowsDefaultFonts.Instance).DictionaryToRealizedFontAsync(fontDic);
             var generic = Font.ExtractGenericFont();
             if (generic == null) return;
-
-            GenericFont = new GenericFontViewModel(generic, "Generic Font");
+            
+            GenericFont = new GenericFontViewModel(generic, Font, Font.FamilyName);
             SpecificFont = generic.CreateSpecificViewModel();
         }
         catch (PdfParseException e)

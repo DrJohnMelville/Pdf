@@ -19,6 +19,36 @@
             <TabItem Header="Glyph Names">
                 <viewFrames:ViewFrame Content="{Binding GlyphNames}"></viewFrames:ViewFrame>
             </TabItem>
+            <TabItem Header="Map String" Visibility="{Binding ShowStringMapping}">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock>Characters</TextBlock>
+                    <TextBox Grid.Row="1" Text="{Binding TextString, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" 
+                              IsChecked="{Binding WideCharacters, Mode=TwoWay}">Wide Characters</CheckBox>
+                    <TextBlock Grid.Row="2">Hex</TextBlock>
+                    <TextBox Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding TextHexString, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    <TextBlock Grid.Row="4">Characters</TextBlock>
+                    <TextBox IsReadOnly="True" Grid.Row="5" Grid.ColumnSpan="2"
+                             Text="{Binding Characters, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="6">Glyphs</TextBlock>
+                    <TextBox IsReadOnly="True" Grid.Row="7" Grid.ColumnSpan="2"
+                             Text="{Binding Glyphs, Mode=OneWay}"/>
+                </Grid>
+            </TabItem>
         </TabControl>
 
     </DockPanel>

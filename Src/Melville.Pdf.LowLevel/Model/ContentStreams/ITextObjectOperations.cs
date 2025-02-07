@@ -61,7 +61,7 @@ public interface ITextObjectOperations
 /// call SpacedStringComponentAsync methods as many times as needed until finally calling
 /// DisposeAsync.  It is an error to call ISpacedStringBuilder methods after calling
 /// DisposeAsync, to fail to call DisposeAsync, or to call any other rendering method
-/// between the calls to GetSpacedStringBuilder and DisposeAsync.  Behavior is undefines
+/// between the calls to GetSpacedStringBuilder and DisposeAsync.  Behavior is undefined
 /// in all of these error cases
 /// </summary>
 public interface ISpacedStringBuilder: IAsyncDisposable

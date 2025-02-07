@@ -17,6 +17,6 @@ public class SfntViewModel : SingleFontViewModel
         if (inner.Count is 0) return;
 
         Tables = [.. Tables,
-            .. inner.Select(i => new GenericFontViewModel(i, "Inner Generic Font"))];
+            .. inner.Select(i => new GenericFontViewModel(i, null, "Inner Generic Font"))];
     }
 }

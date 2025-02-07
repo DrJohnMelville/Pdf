@@ -7,5 +7,5 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 public partial class SingleFontViewModel(IGenericFont font)
 {
     [AutoNotify] private IReadOnlyList<object> tables =
-        [new GenericFontViewModel(font, "Generic Font View")];
+        [new GenericFontViewModel(font, null, "Generic Font View")];
 }
