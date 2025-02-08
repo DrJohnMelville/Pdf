@@ -22,6 +22,7 @@ internal readonly partial struct ReadUnicodeCharactersFactory
             await ParseCmapAsync(cmap, baseFont).CA():baseFont.ReadCharacter;
     }
 
-    private ValueTask<IReadCharacter> ParseCmapAsync(PdfDirectObject cmap, IRealizedFont realizedFont) => 
-        new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance).ParseCMapAsync(cmap);
+    private async ValueTask<IReadCharacter> ParseCmapAsync(PdfDirectObject cmap, IRealizedFont realizedFont) => 
+        (await new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
+            .ParseCMapAsync(cmap)) ?? SingleByteCharacters.Instance;
 }

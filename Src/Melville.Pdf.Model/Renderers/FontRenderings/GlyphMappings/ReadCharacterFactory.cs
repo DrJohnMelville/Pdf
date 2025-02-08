@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Buffers;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualBasic;
 using SingleByteCharacters = Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters;
 using TwoByteCharacters = Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters;
 
@@ -24,13 +29,32 @@ internal readonly partial struct ReadCharacterFactory
             ParseType0FontEncodingAsync(): 
             new(SingleByteCharacters.Instance);
 
-    private ValueTask<IReadCharacter> ParseType0FontEncodingAsync()
+    private async ValueTask<IReadCharacter> ParseType0FontEncodingAsync()
     {
-        if (encoding.IsIdentityCdiEncoding()) return new(TwoByteCharacters.Instance);
-        return new CMapFactory(nameMapper,HasNoBaseFont.Instance, BuiltinCmapLibrary.Instance)
-            .ParseCMapAsync(encoding.LowLevel);
+#warning This is  not clean code -- clean it up once it works.
+        var outerFontCmap = encoding.IsIdentityCdiEncoding()?
+            TwoByteCharacters.Instance:
+            (await ReadCmap(encoding.LowLevel, HasNoBaseFont.Instance).CA())??SingleByteCharacters.Instance;
+        //Ordering of Identity means no mapping
+        var inner = await font.Type0SubFontAsync().CA();
+        var sysInfo = await inner.CidSystemInfoAsync().CA();
+        if (sysInfo is null) return outerFontCmap;
+        var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
+        var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
+        if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
+            return outerFontCmap;
+        
+        var innerName = PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
+        var innercmap = await ReadCmap(innerName, outerFontCmap).CA();
+
+        return  innercmap??outerFontCmap;
     }
+
+    private ValueTask<IReadCharacter?> ReadCmap(PdfDirectObject encoding, IReadCharacter baseMapper) =>
+        new CMapFactory(nameMapper,baseMapper, BuiltinCmapLibrary.Instance)
+            .ParseCMapAsync(encoding);
 }
+
 
 [StaticSingleton]
 internal partial class HasNoBaseFont: IReadCharacter

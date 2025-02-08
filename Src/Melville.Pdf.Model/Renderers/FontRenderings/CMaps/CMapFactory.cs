@@ -48,8 +48,8 @@ public partial class CMapFactory
     /// Parwse a PdfDirectObject from the encoding member of a font dictionary to a CMAP that can read the font.
     /// </summary>
     /// <param name="encoding">A name of a standard CMAP or a stream containing a CMAP</param>
-    /// <returns>The parsed  CMAP</returns>
-    public async ValueTask<IReadCharacter> ParseCMapAsync(PdfDirectObject encoding)
+    /// <returns>The parsed  CMAP or null if the CMAP cannot be parsed</returns>
+    public async ValueTask<IReadCharacter?> ParseCMapAsync(PdfDirectObject encoding)
     {
         try
         {
@@ -58,7 +58,7 @@ public partial class CMapFactory
         }
         catch (Exception )
         {
-            return SingleByteCharacters.Instance;
+            return null;
         }
     }
 

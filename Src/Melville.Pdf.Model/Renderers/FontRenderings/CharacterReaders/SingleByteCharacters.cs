@@ -3,9 +3,13 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
+/// <summary>
+/// This class os a character reader that assumes all characters are a single byte with no mapping.
+/// </summary>
 [StaticSingleton()]
-internal sealed partial class SingleByteCharacters : IReadCharacter
+public sealed partial class SingleByteCharacters : IReadCharacter
 {
+    /// <inheritdoc />
     public Memory<uint> GetCharacters(
         in ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer, out int bytesConsumed)
     {

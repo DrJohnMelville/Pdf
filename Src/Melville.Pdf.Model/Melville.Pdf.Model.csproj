@@ -47,6 +47,11 @@
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-V" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-H" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-CNS1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-GB1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Japan1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Korea1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-KR-UCS2" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-H" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-V" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-H" />
@@ -111,6 +116,11 @@
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-V" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-H" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-CNS1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-GB1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Japan1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Korea1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-KR-UCS2" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-H" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-V" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-H" />
