@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.Model.Renderers.Colors;
+﻿using System;
+
+namespace Melville.Pdf.Model.Renderers.Colors;
 
 /// <summary>
 /// Melville.PDF's primary objective is to render to the screen.  Screen colors are represented
@@ -88,8 +90,9 @@ public readonly struct DeviceColor
     public uint AsArgbUint32() => (uint)
         ((Alpha << 24) | (RedByte << 16) | (GreenByte << 8) | BlueByte);
 
+#warning I do not know why I need a square root on the alpha.  This is a hack for right now only.
     public DeviceColor WithAlpha(double newAlpha) =>
         newAlpha < 1.0?
-        new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * newAlpha)):
+        new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * Math.Sqrt(newAlpha))):
         this;
 }

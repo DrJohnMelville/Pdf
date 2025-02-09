@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Fonts;
+using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -10,6 +12,26 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+
+internal class CompositeMapper(IReadOnlyList<IMapCharacterToGlyph> mappers) : IMapCharacterToGlyph
+{
+    /// <inheritdoc />
+    public uint GetGlyph(uint character)
+    {
+        foreach (var mapper in mappers)
+        {
+            if (mapper.GetGlyph(character) is var val and > 0) return val;
+        }
+
+        return 0;
+    }
+}
+
+internal class CMapWrapper(ICmapImplementation inner) : IMapCharacterToGlyph
+{
+    /// <inheritdoc />
+    public uint GetGlyph(uint character) => inner.Map(character);
+}
 
 internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, PdfFont font, PdfEncoding encoding)
 {
@@ -27,7 +49,8 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
     // this is a variance from the spec.  If a symbolic true type font lacks a valid CMAP for mapping
     // we fall back and attempt to map the font as a roman font.
     private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMappingAsync() => 
-        await TryMapAsSymbolicFontAsync(await font.FontFlagsAsync().CA()).CA() ?? await SingleByteNamedMappingAsync().CA();
+        await TryMapAsSymbolicFontAsync(await font.FontFlagsAsync().CA()).CA() 
+        ?? await SingleByteNamedMappingAsync().CA();
 
     private ValueTask<IMapCharacterToGlyph?> TryMapAsSymbolicFontAsync(FontFlags fontFlags) => 
         fontFlags.HasFlag(FontFlags.Symbolic) ? 
@@ -42,20 +65,15 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
             await source.GetByPlatformEncodingAsync(3, 0).CA();
 
         if (charmap is null) return null;
-        var ret = new uint[256];
-        foreach (var (_, character, glyph) in charmap.AllMappings())
-        {
-            ret[character & 0xFF] = glyph;
-        }
-
-        return new CharacterToGlyphArray(ret);
-    }
+        return new CMapWrapper(charmap);
+      }
 
     private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMappingAsync()
     {
         var array = new uint[256];
         var nameToGlyphMapper = await new NameToGlyphMappingFactory(iFont).CreateAsync().CA();
-        await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappingsAsync().CA())
+        await new SingleByteEncodingParser(nameToGlyphMapper, array, 
+                await BuiltInFontCharMappingsAsync().CA())
             .WriteEncodingToArrayAsync(encoding.LowLevel).CA();
         await WriteBackupMappingsAsync(array).CA();
         return new CharacterToGlyphArray(array);
@@ -100,9 +118,36 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
         if (await subFont.CidToGidMapStreamAsync().CA() is { } mapStream)
             return await ParseCmapStreamAsync(mapStream).CA();
         
+        var sysInfo = await subFont.CidSystemInfoAsync().CA();
+        if (sysInfo is not null)
+        {
+            var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
+            if (!ordering.Equals(KnownNames.Identity))
+            {
+                var cmaps = await iFont.GetCmapSourceAsync().CA();
+                var list = new List<IMapCharacterToGlyph>();
+                TryAdd(await cmaps.GetByPlatformEncodingAsync(3, 10).CA(), list);
+                TryAdd(await cmaps.GetByPlatformEncodingAsync(3,1).CA(), list);
+                TryAdd(await cmaps.GetByPlatformEncodingAsync(0, 4).CA(), list);
+                TryAdd(await cmaps.GetByPlatformEncodingAsync(0, 3).CA(), list);
+                for (int i = 0; i < cmaps.Count; i++)
+                {
+                    TryAdd(await cmaps.GetByIndexAsync(i).CA(), list);
+                }
+                return new CompositeMapper(list);
+            }
+        }
 
 
         return IdentityCharacterToGlyph.Instance;
+    }
+
+    private static void TryAdd(ICmapImplementation? cmap, List<IMapCharacterToGlyph> list)
+    {
+        if (cmap is not null)
+        {
+            list.Add(new CMapWrapper(cmap));
+        }
     }
 
     private static async ValueTask<IMapCharacterToGlyph> ParseCmapStreamAsync(PdfStream mapStream)

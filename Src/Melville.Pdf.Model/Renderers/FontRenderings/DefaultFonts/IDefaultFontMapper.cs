@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 
@@ -27,10 +30,24 @@ public readonly partial struct DefaultFontReference
 public interface IDefaultFontMapper
 {
     /// <summary>
+    /// Create a DefaultFontReference for a given font dictionary.
+    /// </summary>
+    /// <param name="dict"></param>
+    /// <returns></returns>
+    async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfDictionary dict)
+    {
+        var font = new PdfFont(dict);
+        return await FontFromNameAsync(
+            await font.OsFontNameAsync().CA(),
+            await font.FontFlagsAsync().CA()).CA();
+    }
+
+    /// <summary>
     /// Get a Default Font reference for a given PDF Font name.
     /// </summary>
     /// <param name="font">The PDFName of the font</param>
     /// <param name="flags">The fontflags from the font structure</param>
     /// <returns>A DefaultFontReference from which the font can be built.</returns>
+    [Obsolete("Use the FontReferenceForAsync")]
     ValueTask<DefaultFontReference> FontFromNameAsync(PdfDirectObject font, FontFlags flags);
 }

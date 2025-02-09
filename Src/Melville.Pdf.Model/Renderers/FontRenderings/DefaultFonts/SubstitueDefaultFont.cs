@@ -1,6 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
@@ -37,7 +38,7 @@ public static class SubstituteDefaultFont
     /// <param name="flags">Fontflags for the type to immitate</param>
     /// <returns>A PdfName corresponding to a built in font.</returns>
     public static PdfDirectObject MapBuiltInFont(this FontFlags flags) => 
-        names[FamilyOffset(flags) + BoldOffset(flags) + ItalicOffset(flags)];
+      names[FamilyOffset(flags) + BoldOffset(flags) + ItalicOffset(flags)];
 
     private static int FamilyOffset(FontFlags flags)
     {

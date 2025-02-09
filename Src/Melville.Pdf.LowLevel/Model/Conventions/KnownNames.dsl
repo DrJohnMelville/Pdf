@@ -54,6 +54,12 @@ BuiltInFont:TimesBoldItalic!Times-BoldItalic
 BuiltInFont:HelveticaBoldItalic!Helvetica-BoldItalic
 BuiltInFont:CourierBoldItalic!Courier-BoldItalic
 
+FontOrdering:CNS1
+FontOrdering:GB1
+FontOrdering:Japan1
+FontOrdering:Korea1
+FontOrdering:KR
+
 FontEncoding:StandardEncoding
 FontEncoding:MacRomanEncoding
 FontEncoding:WinAnsiEncoding
