@@ -574,4 +574,5 @@ RenderingTest.cs_wpf-CmykViaNamedReference|3256171887
 RenderingTest.cs_Skia-CmykViaNamedReference|2470567388
 RenderingTest.cs_wpf-TilePatternWithBareColorspace|3764987863
 RenderingTest.cs_Skia-TilePatternWithBareColorspace|1928878277
-RenderingTest.cs_wpf-AlphaValueDictionary|4231280469
+RenderingTest.cs_wpf-AlphaValueDictionary|4205626138
+RenderingTest.cs_Skia-AlphaValueDictionary|1823431633

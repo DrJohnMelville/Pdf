@@ -29,9 +29,9 @@ public class ParsedCMaps: IAsyncLifetime
             .WithItem(KnownNames.Type, KnownNames.CMap)
             .AsStream(text));
         IRetrieveCmapStream library = Mock.Of<IRetrieveCmapStream>();
-        return await new CMapFactory(
+        return (await new CMapFactory(
                 GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance, library)
-            .ParseCMapAsync(encoding.LowLevel);
+            .ParseCMapAsync(encoding.LowLevel))!;
     }
 
     private const string BrokenFromPdfFile = """

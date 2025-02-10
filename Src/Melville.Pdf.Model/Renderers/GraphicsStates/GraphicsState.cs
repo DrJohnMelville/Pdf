@@ -190,6 +190,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// </summary>
     public DeviceColor NonstrokeColor => RawNonstrokeColor.WithAlpha(NonstrokingAlpha);
 
+    /// <inheritdoc />
     public void SaveGraphicsState() => throw new NotSupportedException("Needs to be intercepted");
 
     /// <inheritdoc />

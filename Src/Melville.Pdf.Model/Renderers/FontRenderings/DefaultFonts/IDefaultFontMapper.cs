@@ -37,9 +37,11 @@ public interface IDefaultFontMapper
     async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfDictionary dict)
     {
         var font = new PdfFont(dict);
+#pragma warning disable CS0618 // Type or member is obsolete
         return await FontFromNameAsync(
             await font.OsFontNameAsync().CA(),
             await font.FontFlagsAsync().CA()).CA();
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     /// <summary>
