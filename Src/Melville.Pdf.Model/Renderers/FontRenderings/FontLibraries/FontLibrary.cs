@@ -14,7 +14,7 @@ internal class FontLibrary
 
     public FontReference? FontFromName(in ReadOnlySpan<byte> fontName, bool bold, bool italic)
     {
-        var strName = fontName.ExtendedAsciiString();
+//        var strName = fontName.ExtendedAsciiString();
         return FindFontFamily(fontName)?.SelectFace(bold, italic);
     }
 

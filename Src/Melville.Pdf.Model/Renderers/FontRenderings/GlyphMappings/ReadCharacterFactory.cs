@@ -31,23 +31,31 @@ internal readonly partial struct ReadCharacterFactory
 
     private async ValueTask<IReadCharacter> ParseType0FontEncodingAsync()
     {
-#warning This is  not clean code -- clean it up once it works.
-        var outerFontCmap = encoding.IsIdentityCdiEncoding()?
+       var outerFontCmap = encoding.IsIdentityCdiEncoding()?
             TwoByteCharacters.Instance:
             (await ReadCmap(encoding.LowLevel, HasNoBaseFont.Instance).CA())??SingleByteCharacters.Instance;
-        //Ordering of Identity means no mapping
+       
         var inner = await font.Type0SubFontAsync().CA();
         var sysInfo = await inner.CidSystemInfoAsync().CA();
         if (sysInfo is null) return outerFontCmap;
+
+        return (await InnerFontOrderingCMap().CA() is { } innerCmapName ?
+            await ReadCmap(innerCmapName, outerFontCmap).CA() : null)??
+            outerFontCmap;
+    }
+
+    private async ValueTask<PdfDirectObject?> InnerFontOrderingCMap()
+    {
+        var inner = await font.Type0SubFontAsync().CA();
+        var sysInfo = await inner.CidSystemInfoAsync().CA();
+        if (sysInfo is null) return null;
+
         var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
         var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
         if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
-            return outerFontCmap;
-        
-        var innerName = PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
-        var innercmap = await ReadCmap(innerName, outerFontCmap).CA();
+            return null;
 
-        return  innercmap??outerFontCmap;
+        return PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
     }
 
     private ValueTask<IReadCharacter?> ReadCmap(PdfDirectObject encoding, IReadCharacter baseMapper) =>
