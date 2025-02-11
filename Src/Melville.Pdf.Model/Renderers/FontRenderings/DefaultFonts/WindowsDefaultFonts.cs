@@ -63,8 +63,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
         (_, AsianLanguages.SimplifiedChinese) => "Microsoft YaHei"u8,
         (true, AsianLanguages.TraditionalChinese) => "SimSun"u8,
         (false, AsianLanguages.TraditionalChinese) => "Microsoft JhengHei"u8,
-        (true, AsianLanguages.Japanese) => "MS PMincho"u8,
-        (false, AsianLanguages.Japanese) => "Meiryo"u8,
+        (_, AsianLanguages.Japanese) => "MS Gothic"u8,
         (true, AsianLanguages.Korean) => "Batang"u8,
         (false, AsianLanguages.Korean) => "Malgun Gothic"u8,
         _ => SegoeUISymbol

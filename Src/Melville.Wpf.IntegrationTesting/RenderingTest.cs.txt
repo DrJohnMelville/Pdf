@@ -576,3 +576,11 @@ RenderingTest.cs_wpf-TilePatternWithBareColorspace|3764987863
 RenderingTest.cs_Skia-TilePatternWithBareColorspace|1928878277
 RenderingTest.cs_wpf-AlphaValueDictionary|4205626138
 RenderingTest.cs_Skia-AlphaValueDictionary|1823431633
+RenderingTest.cs_wpf-SimplifiedChinese|3058294010
+RenderingTest.cs_wpf-TraditionalChinese|1638403488
+RenderingTest.cs_wpf-Japan1|3258144947
+RenderingTest.cs_wpf-Korea1|601193438
+RenderingTest.cs_Skia-SimplifiedChinese|1072797566
+RenderingTest.cs_Skia-TraditionalChinese|1402036434
+RenderingTest.cs_Skia-Japan1|1377194269
+RenderingTest.cs_Skia-Korea1|2466719345
