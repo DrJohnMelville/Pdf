@@ -20,6 +20,7 @@
 	        <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	        <OutputItemType>Analyzer</OutputItemType>
         </ProjectReference>
+        <ProjectReference Include="..\Melville.Pdf.FontLibrary.Cjk\Melville.Pdf.FontLibrary.Cjk.csproj" />
         <ProjectReference Include="..\Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj" />
         <ProjectReference Include="..\Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj" />
         <ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />

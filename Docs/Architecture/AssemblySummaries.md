@@ -9,6 +9,11 @@ dependencies.
 resources to allow rendering of the 14 default PDF fonts without using the system font library.  Using this
 library trades reliability for executable size, and so it is packaged as a separate assembly.
 
+**Melville.Pdf.FontLibrary.CJK** implements a single class, SelfContainedCjkFonts, and contains multple font
+resources to allow rendering of the PDFs in Chinese, Japanese, and Korean scripts without using the system font library.  This assembly depends on
+Melville.Pdf.FontLibrary, to which if defers the rendering on non-CJK fonts.  This extension, alone, is
+about 88 mb, so it is packaged as a separate assembly.  
+
 **Melville.Pdf.SkiaSharp** supports rendering PDF content to a [SkiaSharp](https://github.com/mono/SkiaSharp) SkSurface
 object.  [Skia](https://skia.org/) itself
 targets [multiple output formats](https://en.wikipedia.org/wiki/Skia_Graphics_Engine) including raster image
@@ -81,7 +86,7 @@ for the postscript parser.
 
 **Melville.Fonts** is a limited implementation of TrueType, OpenType, Compact Font Format, Type 1 Font parsers.  These parsers are just enough to render PDF on moderate to high resolution
 devices.  These parsers ignore hinting, and ignore a lot of the advanced typographic features of the fonts.  This paerser will extract CMAPS, extract glyph names, render glyphs, and extract
-glyph widths.  This is enough to render PDF.  This replaces a native SharpFont dependency with exzclusively managed code.
+glyph widths.  This is enough to render PDF.  This replaces a previous native SharpFont dependency with exclusively managed code.
 
 ## The Testing Libraries
 
@@ -122,7 +127,7 @@ Reference Documents, or you can load documents from the file system.
 
 To the right a number of renderers render the selected page of the document.  Current
 renders include the windows SDK pdf renderer, the Melville.PDF.WPF renderer using the default windows fonts,
-the Melville.Pdf.SkiaSharp renderer using the Melville.Pdf.Fontlibrary fonts, a low level view of the page,
+the Melville.Pdf.SkiaSharp renderer using the Melville.Pdf.Fontlibrary.Cjk fonts, a low level view of the page,
 all the images from the page, all the text from the page,
 and a page that will invoke the system registered PDF viewer.  
 
@@ -134,7 +139,7 @@ change invokes multiple renderers over and over again.
 
 **Melville.Pdf.LowLevelReader** views PDFs as a a set of objects.  Contrary to what its name would imply, the
 lowlevel reader actually depends on complete WPF renderer to provide previews of pages and other high level
-Pdf object.  The low level reader is a tab in the comparing reader, and a rarely use it on its own.
+Pdf object.  The low level reader is a tab in the comparing reader, and I rarely use it on its own.
 
 **Melville.Pdf.LowLevelViewerParts** is a library class for the shared code between
 Melville.Pdf.ComparingReader and Melville.Pdf.LowLevelReader.  

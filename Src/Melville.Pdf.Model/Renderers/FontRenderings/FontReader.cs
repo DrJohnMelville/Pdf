@@ -64,7 +64,7 @@ public readonly struct FontReader
 
     private async ValueTask<IRealizedFont> SystemFontByNameAsync(PdfFont font, RealizedFontFactory factory) =>
         await ( await defaultMapper
-            .FontReferenceForAsync(font.LowLevel).CA()).ToFontAsync(factory).CA();
+            .FontReferenceForAsync(font).CA()).ToFontAsync(factory).CA();
 }
 
 internal static class MapDefaultFontReferenceToFont

@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
+
 /// <summary>
 /// This is a class tries to construct named font by checking the windows font directory.
 /// </summary>
@@ -28,14 +29,11 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static ReadOnlySpan<byte> SegoeUISymbol => "Segoe UI Symbol"u8;
 
     /// <inheritdoc />
-    public async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfDictionary dict)
-    {
-        var font = new PdfFont(dict);
-        return await FontFromNameAsync(
+    public async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfFont font) =>
+        await FontFromNameAsync(
             await font.OsFontNameAsync().CA(),
-            await font.FontFlagsAsync().CA(), new PdfFont(dict)
-            ).CA();
-    }
+            await font.FontFlagsAsync().CA(), font
+        ).CA();
 
     /// <inheritdoc />
     public ValueTask<DefaultFontReference> FontFromNameAsync(
@@ -47,36 +45,32 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     {
         var fl = await SystemFontLibraryAsync().CA();
         if (FontFromName(font, flags, fl) is { } f1) return f1;
-        var sysinfo = await fontStruct.CidSystemInfoAsync().CA();
-        if (sysinfo is not null)
-        {
-            var ordering = await sysinfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
 
-            return SystemFont(AsianFontName(ordering, flags.HasFlag(FontFlags.Serif)), false, false, fl);
+        if (await fontStruct.FontAsianLanguageAsync().CA() is { } asianLang)
+        {
+            return SystemFont(AsianFontName(asianLang, flags.HasFlag(FontFlags.Serif)),
+                false,  false, fl);
         }
+
         return FontFromName(font, flags, fl)??
                FontFromName(GenericFontName(flags, fontStruct), flags, fl)??
                throw new InvalidDataException("Cannot find Built in font.");
     }
 
-    private ReadOnlySpan<byte> AsianFontName(PdfDirectObject ordering, bool serif) => serif switch
+    private ReadOnlySpan<byte> AsianFontName(AsianLanguages ordering, bool serif) =>
+        (serif, ordering) switch
     {
-        _ when ordering.Equals(KnownNames.GB1) => "Microsoft YaHei"u8,
-        true when ordering.Equals(KnownNames.CNS1) => "SimSun"u8,
-        false when ordering.Equals(KnownNames.CNS1) => "Microsoft JhengHei"u8,
-        true when ordering.Equals(KnownNames.Japan1) => "MS PMincho"u8,
-        false when ordering.Equals(KnownNames.Japan1) => "Meiryo"u8,
-        true when ordering.Equals(KnownNames.Korea1) => "Batang"u8,
-        false when ordering.Equals(KnownNames.Korea1) => "Malgun Gothic"u8,
-        true when ordering.Equals(KnownNames.KR) => "Batang"u8,
-        false when ordering.Equals(KnownNames.KR) => "Malgun Gothic"u8,
+        (_, AsianLanguages.SimplifiedChinese) => "Microsoft YaHei"u8,
+        (true, AsianLanguages.TraditionalChinese) => "SimSun"u8,
+        (false, AsianLanguages.TraditionalChinese) => "Microsoft JhengHei"u8,
+        (true, AsianLanguages.Japanese) => "MS PMincho"u8,
+        (false, AsianLanguages.Japanese) => "Meiryo"u8,
+        (true, AsianLanguages.Korean) => "Batang"u8,
+        (false, AsianLanguages.Korean) => "Malgun Gothic"u8,
         _ => SegoeUISymbol
     };
 
-    private ReadOnlySpan<byte> GenericFontName(FontFlags flags, PdfFont font)
-    {
-        return EnglishFontNames(flags);
-    }
+    private ReadOnlySpan<byte> GenericFontName(FontFlags flags, PdfFont font) => EnglishFontNames(flags);
 
     private static ReadOnlySpan<byte> EnglishFontNames(FontFlags flags) =>
         flags switch
@@ -117,19 +111,14 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
         };
 
     private  DefaultFontReference SystemFont(
-        ReadOnlySpan<byte> name, bool bold, bool italic, FontLibrary fl)
-    {
-        var fontReference = fl.FontFromName(name, bold, italic);
-        return fontReference?.AsDefaultFontReference()
-               ?? throw new IOException("Could not find required font file.");
-    }
+        ReadOnlySpan<byte> name, bool bold, bool italic, FontLibrary fl) =>
+        fl.FontFromName(name, bold, italic)?.AsDefaultFontReference()
+        ?? throw new IOException("Could not find required font file.");
+
     private  DefaultFontReference? TrySystemFont(
-        PdfDirectObject pdfName, bool bold, bool italic, FontLibrary fl)
-    {
-        Span<byte> name = pdfName.Get<StringSpanSource>().GetSpan();
-        var fontReference = fl.FontFromName(name, bold, italic);
-        return fontReference?.AsDefaultFontReference();
-    }
+        PdfDirectObject pdfName, bool bold, bool italic, FontLibrary fl) =>
+        fl.FontFromName(pdfName.Get<StringSpanSource>().GetSpan(), bold, italic)?
+            .AsDefaultFontReference();
 
 
     private static Lazy<Task<FontLibrary>> systemFontLibrary =
@@ -144,10 +133,8 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     public static void SetFontDirectory(string fontFolder) =>
         systemFontLibrary = CreateFontSource(fontFolder);
 
-    private static Lazy<Task<FontLibrary>> CreateFontSource(string fontFolder)
-    {
-        return new(() => new FontLibraryBuilder()
+    private static Lazy<Task<FontLibrary>> CreateFontSource(string fontFolder) =>
+        new(() => new FontLibraryBuilder()
             .BuildFromAsync(fontFolder)
             .AsTask());
-    }
 }

@@ -96,6 +96,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Fonts.TableGenerat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisposeCheck", "DisposeCheck\DisposeCheck.csproj", "{DD776D24-43B6-4028-B972-72D2CFCA8EEE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.FontLibrary.Cjk", "Melville.Pdf.FontLibrary.Cjk\Melville.Pdf.FontLibrary.Cjk.csproj", "{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -550,6 +552,18 @@ Global
 		{DD776D24-43B6-4028-B972-72D2CFCA8EEE}.Release|arm64.Build.0 = Release|Any CPU
 		{DD776D24-43B6-4028-B972-72D2CFCA8EEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{DD776D24-43B6-4028-B972-72D2CFCA8EEE}.Release|x86.Build.0 = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|arm64.Build.0 = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Debug|x86.Build.0 = Debug|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|arm64.ActiveCfg = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|arm64.Build.0 = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -595,6 +609,7 @@ Global
 		{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
 		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 		{DD776D24-43B6-4028-B972-72D2CFCA8EEE} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
+		{2E67804A-BDEC-4878-9DCD-1EF4508BCF01} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92BF3689-00AF-4389-ADC7-0F79911E5618}

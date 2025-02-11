@@ -32,11 +32,10 @@ public interface IDefaultFontMapper
     /// <summary>
     /// Create a DefaultFontReference for a given font dictionary.
     /// </summary>
-    /// <param name="dict"></param>
+    /// <param name="font">The font to look up</param>
     /// <returns></returns>
-    async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfDictionary dict)
+    async ValueTask<DefaultFontReference> FontReferenceForAsync(PdfFont font)
     {
-        var font = new PdfFont(dict);
 #pragma warning disable CS0618 // Type or member is obsolete
         return await FontFromNameAsync(
             await font.OsFontNameAsync().CA(),

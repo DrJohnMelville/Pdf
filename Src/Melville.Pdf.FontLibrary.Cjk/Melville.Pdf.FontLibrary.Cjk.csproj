@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageDescription>
+			This library contains default font definitions that allow Melville.Pdf to be configured to
+			render PDF files without referencing the system font folder.  This assembly suports
+			Chinese (traditional and simplifed,) Japanease, and Korean Text.  This
+			package depends on Melville.Pdf.FontLibrary for latin fonts.
+		</PackageDescription>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="NotoSansCJK-VF.otf.ttc" />
+	  <None Remove="NotoSerifCJK-VF.otf.ttc" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="NotoSansCJK-VF.otf.ttc" />
+	  <EmbeddedResource Include="NotoSerifCJK-VF.otf.ttc" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj" />
+	</ItemGroup>
+
+</Project>

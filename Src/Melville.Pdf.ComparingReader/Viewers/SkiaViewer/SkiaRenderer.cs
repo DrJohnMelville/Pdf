@@ -7,6 +7,7 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Viewers.ContentStreamOperationsFilters;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.FontLibrary;
+using Melville.Pdf.FontLibrary.Cjk;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.SkiaSharp;
@@ -24,5 +25,5 @@ public class SkiaRenderer: MelvillePdfRenderer
         return BitmapFrame.Create(buffer.ReadFrom(0), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
     }
 
-    protected override IDefaultFontMapper FontSource() => SelfContainedDefaultFonts.Instance;
+    protected override IDefaultFontMapper FontSource() => SelfContainedCjkFonts.Instance;
 }
