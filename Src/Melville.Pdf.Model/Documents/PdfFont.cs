@@ -150,4 +150,6 @@ public record struct PdfFont(PdfDictionary LowLevel)
             _ when order.Equals(KnownNames.KR) => AsianLanguages.Korean,
             _ => null
         };
+
+    public ValueTask<PdfDirectObject> ToUnicode() => LowLevel.GetOrNullAsync(KnownNames.ToUnicode);
 }

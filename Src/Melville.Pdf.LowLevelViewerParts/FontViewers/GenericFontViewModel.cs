@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media;
 using Melville.Fonts;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.ReferenceDocuments.Utility;
@@ -34,11 +36,10 @@ public partial class GenericFontViewModel
 
     private async ValueTask<IReadOnlyList<string>> LoadGlyphsAsync() =>
         (await Font.GlyphNamesAsync())
-        .Select((item, i) => $"0x{i:X} => {item}")
+        .Select((item,i)=> $"0x{i:X} => {item} (0x{MapNameToUnicode(item):X4})")
         .ToArray();
-
-    public Visibility ShowStringMapping => 
-        realizedFont is null? Visibility.Collapsed : Visibility.Visible;
+    
+    private static uint MapNameToUnicode(string item) => GlyphNameToUnicodeMap.AdobeGlyphList.GetGlyphFor(PdfDirectObject.CreateName(item));
 
     private string textString = "";
     private string textHexString = "";

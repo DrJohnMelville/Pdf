@@ -8,6 +8,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
@@ -33,15 +34,29 @@ internal readonly partial struct ReadCharacterFactory
         if (sysInfo is null) return outerFontCMap;
 
         return (await InnerFontOrderingCMapAsync().CA() is { } innerCmapName ?
-            await ConstructCompositeAsync(innerCmapName, outerFontCMap).ConfigureAwait(false) : null)??
-            outerFontCMap;
+            await ConstructCompositeAsync(innerCmapName, outerFontCMap).CA() : null)??
+            await FailedCmapReadAsync(outerFontCMap).CA();
+    }
+
+    private async Task<IReadCharacter> FailedCmapReadAsync(IReadCharacter outerFontCMap)
+    {
+        if (await font.ToUnicode() is not { IsNull: false } unicode) return outerFontCMap;
+        return await 
+            ReadUnicodeCmapAsync(unicode).CA() ?? outerFontCMap;
+    }
+
+    private static ValueTask<IReadCharacter?> ReadUnicodeCmapAsync(PdfDirectObject unicode)
+    {
+        return new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
+            .ParseCMapAsync(unicode);
     }
 
     private async Task<IReadCharacter?> ConstructCompositeAsync(
         PdfDirectObject innerCMapName, IReadCharacter outerFontCMap) =>
         await ReadCMapAsync(innerCMapName, TwoByteCharacters.Instance).CA() 
                is {} inner? 
-            new CompositeCmap(outerFontCMap, inner): outerFontCMap;
+            new CompositeCmap(outerFontCMap, inner): 
+            await FailedCmapReadAsync(outerFontCMap).CA();
 
     private async ValueTask<PdfDirectObject?> InnerFontOrderingCMapAsync()
     {
