@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj" />
       <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" />
     </ItemGroup>
 
