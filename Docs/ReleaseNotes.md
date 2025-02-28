@@ -1,5 +1,12 @@
 ﻿# Releases
 
+## 02/28/2025
+- A simple alpha value allows some transparency -- it is still not right
+- Added some tooling arround font mapping so I could write the features below.
+- Fixed mapping of CJK type 0 fonts with non identity inner cmaps.
+- Added an assembly for users who need a CJK default font packaged in the box.
+- Removed the architecture analyzer and replaced it with NArchTests
+
 ## 1/31/2025 0.6.1
 Wow, I had a bunch of bugs fixed in a few short weeks.
 - Type 3 fonts with a widths array honor the widths in the array.
