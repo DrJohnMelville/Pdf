@@ -1,6 +1,9 @@
 ﻿# Releases
 
-## 02/28/2025
+## 3/3/2025 0.6.3
+- Fix a regression invlolving the rendering of Type 0 fonts with identity character maos.
+
+## 02/28/2025 0.6.2
 - A simple alpha value allows some transparency -- it is still not right
 - Added some tooling arround font mapping so I could write the features below.
 - Fixed mapping of CJK type 0 fonts with non identity inner cmaps.

@@ -130,7 +130,6 @@ public record struct PdfFont(PdfDictionary LowLevel)
     /// <summary>
     /// The asian language that a font is defined upon
     /// </summary>
-    /// <param name="dict">The dictionary that defines the font</param>
     /// <returns>An enumeration for  the asian language</returns>
     public async ValueTask<AsianLanguages?> FontAsianLanguageAsync()
     {
@@ -151,5 +150,8 @@ public record struct PdfFont(PdfDictionary LowLevel)
             _ => null
         };
 
-    public ValueTask<PdfDirectObject> ToUnicode() => LowLevel.GetOrNullAsync(KnownNames.ToUnicode);
+    /// <summary>
+    /// Gets the ToUnicode mapping entry
+    /// </summary>
+    public ValueTask<PdfDirectObject> ToUnicodeAsync() => LowLevel.GetOrNullAsync(KnownNames.ToUnicode);
 }

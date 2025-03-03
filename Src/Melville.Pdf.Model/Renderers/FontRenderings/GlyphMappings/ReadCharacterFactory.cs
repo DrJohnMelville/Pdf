@@ -33,14 +33,28 @@ internal readonly partial struct ReadCharacterFactory
         var sysInfo = await inner.CidSystemInfoAsync().CA();
         if (sysInfo is null) return outerFontCMap;
 
-        return (await InnerFontOrderingCMapAsync().CA() is { } innerCmapName ?
-            await ConstructCompositeAsync(innerCmapName, outerFontCMap).CA() : null)??
-            await FailedCmapReadAsync(outerFontCMap).CA();
+        return await ConstructInnerCmapAsync(outerFontCMap).ConfigureAwait(false);
+    }
+
+    private async Task<IReadCharacter> ConstructInnerCmapAsync(IReadCharacter outerFontCMap)
+    {
+        var inner = await font.Type0SubFontAsync().CA();
+        var sysInfo = await inner.CidSystemInfoAsync().CA();
+        if (sysInfo is null) return await FailedCmapReadAsync(outerFontCMap).CA();
+
+        var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
+        var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
+        if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
+            return outerFontCMap;
+
+        var name = PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
+        return await ConstructCompositeAsync(name, outerFontCMap).CA() ??
+               await FailedCmapReadAsync(outerFontCMap).CA();
     }
 
     private async Task<IReadCharacter> FailedCmapReadAsync(IReadCharacter outerFontCMap)
     {
-        if (await font.ToUnicode() is not { IsNull: false } unicode) return outerFontCMap;
+        if (await font.ToUnicodeAsync() is not { IsNull: false } unicode) return outerFontCMap;
         return await 
             ReadUnicodeCmapAsync(unicode).CA() ?? outerFontCMap;
     }
@@ -57,20 +71,6 @@ internal readonly partial struct ReadCharacterFactory
                is {} inner? 
             new CompositeCmap(outerFontCMap, inner): 
             await FailedCmapReadAsync(outerFontCMap).CA();
-
-    private async ValueTask<PdfDirectObject?> InnerFontOrderingCMapAsync()
-    {
-        var inner = await font.Type0SubFontAsync().CA();
-        var sysInfo = await inner.CidSystemInfoAsync().CA();
-        if (sysInfo is null) return null;
-
-        var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
-        var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
-        if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
-            return null;
-
-        return PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
-    }
 
     private ValueTask<IReadCharacter?> ReadCMapAsync(
         PdfDirectObject cMapName, IReadCharacter baseMapper) =>
