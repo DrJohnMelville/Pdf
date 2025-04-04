@@ -22,8 +22,8 @@ public static class BitmaoInterpolationRuleComputer
         var origin =  CurrentSpaceToFinalSpace(0, 0, transform);
         var lowerRight = CurrentSpaceToFinalSpace(1, 0, transform);
         var upperLeft = CurrentSpaceToFinalSpace(0, 1, transform);
-        return (upperLeft - origin).Length() < bitmap.Height &&
-               (lowerRight - origin).Length() < bitmap.Width;
+        return (upperLeft - origin).Length() <= bitmap.Height ||
+               (lowerRight - origin).Length() <= bitmap.Width;
     }
 
     private static Vector2 CurrentSpaceToFinalSpace(float x, float y, in Matrix3x2 transform) => 

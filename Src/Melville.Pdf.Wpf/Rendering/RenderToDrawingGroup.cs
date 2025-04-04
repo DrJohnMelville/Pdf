@@ -104,7 +104,7 @@ public readonly struct RenderToDrawingGroup
             PageDisplay.SetPageSize(sizeTarget, new PageSize(rect.Width, rect.Height));
             return innerRenderer;
         });
-   }
+    }
 
     /// <summary>
     /// Render the current document and page to a DrawingVisual
