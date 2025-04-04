@@ -27,69 +27,6 @@ public interface IGraphicsState : IStateChangingOperations
 
 
 /// <summary>
-/// This is a base class for thie renderer specific graphics state.  The generic type
-/// is the native brush types in the target renderer.
-/// </summary>
-/// <typeparam name="T">Type that the render target uses to represent a brush.</typeparam>
-[MacroItem("T", "StrokeBrush", "Brush used to draw outlines on figures and glyphs")]
-[MacroItem("T", "NonstrokeBrush", "Brush used to fill figures and glyphs")]
-[MacroCode("""
-        /// <summary>
-        /// ~2~
-        /// </summary>
-        public ~0~ ~1~ {get; private set;} = default!;
-        """)]
-[MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;",
-    Prefix = """
-       /// <inheritdoc />
-       public override void CopyFrom(GraphicsState other)
-       {
-           base.CopyFrom(other);
-       """, Postfix = "}")]
-public abstract partial class GraphicsState<T> : GraphicsState
-{
-    /// <summary>
-    /// Create a graphics state.
-    /// </summary>
-    protected GraphicsState()
-    {
-        StrokeColorChanged();
-        NonstrokeColorChanged();
-    }
-
-    /// <inheritdoc />
-    protected sealed override void StrokeColorChanged() =>
-        StrokeBrush = TryRegisterDispose(CreateSolidBrush(StrokeColor));
-
-    /// <inheritdoc />
-    protected sealed override void NonstrokeColorChanged() => NonstrokeBrush =
-        TryRegisterDispose(CreateSolidBrush(NonstrokeColor));
-
-    /// <summary>
-    /// Create a solid color brush from a device color.
-    /// </summary>
-    /// <param name="color">The color for the brush</param>
-    protected abstract T CreateSolidBrush(DeviceColor color);
-
-    /// <inheritdoc />
-    public override async ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) => 
-        StrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
-
-    /// <inheritdoc />
-    public override async ValueTask SetNonstrokePatternAsync(PdfDictionary pattern,
-        DocumentRenderer parentRenderer) =>
-        NonstrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
-
-    /// <summary>
-    /// Create a pattern brush specific to the target renderer.
-    /// </summary>
-    /// <param name="pattern">The pattern to put in the brush.</param>
-    /// <param name="parentRenderer">DocumentRenderer with resources to render the pattern.</param>
-    /// <returns>Valuetask governing completion of the task.</returns>
-    protected abstract ValueTask<T> CreatePatternBrushAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
-}
-
-/// <summary>
 /// This represents the current state of the Pdf Graphics Context
 /// </summary>
 public abstract partial class GraphicsState: IGraphicsState, IDisposable
@@ -147,48 +84,31 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
         /// <summary>
         /// Duplicate a GraphicsState by shallow copying all of its values.
         /// </summary>
-        public virtual void CopyFrom(GraphicsState other)
+        private void InnerCopyFrom(GraphicsState other)
         {
         """, Postfix = "}")]
 
 
-    private double strokingAlpha = 1.0;
-    /// <summary>
-    /// Alpha value for stroking operations
-    /// </summary>
-    public double StrokingAlpha
-    {
-        get => strokingAlpha;
-        private set
-        {
-            strokingAlpha = value;
-            StrokeColorChanged();
-        }
-    }
+#warning copyFrom needs to clone the native brushes.
+    [FromConstructor]public INativeBrush StrokeBrush { get; }
+    [FromConstructor]public INativeBrush NonstrokeBrush { get; }
 
-    private double nonstrokingAlpha = 1.0;
-    /// <summary>
-    /// Alpha value for stroking operations
-    /// </summary>
-    public double NonstrokingAlpha
+    public void CopyFrom(GraphicsState other)
     {
-        get => nonstrokingAlpha;
-        private set
-        {
-            nonstrokingAlpha = value;
-            NonstrokeColorChanged();
-        }
+        InnerCopyFrom(other);
+        StrokeBrush.Clone(other.StrokeBrush);
+        NonstrokeBrush.Clone(other.NonstrokeBrush);
     }
 
 
     /// <summary>
     /// Color for lines and other strokes
     /// </summary>
-    public DeviceColor StrokeColor => RawStrokeColor.WithAlpha(StrokingAlpha);
+    public DeviceColor StrokeColor => RawStrokeColor;
     /// <summary>
     /// Fill color
     /// </summary>
-    public DeviceColor NonstrokeColor => RawNonstrokeColor.WithAlpha(NonstrokingAlpha);
+    public DeviceColor NonstrokeColor => RawNonstrokeColor;
 
     /// <inheritdoc />
     public void SaveGraphicsState() => throw new NotSupportedException("Needs to be intercepted");
@@ -288,10 +208,10 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
                 SetRenderIntent(new RenderIntentName(await entry.Value.LoadValueAsync().CA()));
                 break;
             case var x when x.Equals(KnownNames.CA):
-                StrokingAlpha = await EntryValueAsync<double>(entry).CA();
+                StrokeBrush.SetAlpha(await EntryValueAsync<double>(entry).CA());
                 break;
             case var x when x.Equals(KnownNames.ca):
-                NonstrokingAlpha = await EntryValueAsync<double>(entry).CA();
+                NonstrokeBrush.SetAlpha(await EntryValueAsync<double>(entry).CA());
                 break;
         }
     }
@@ -359,15 +279,6 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     #region Color
 
     /// <summary>
-    /// Called when the stroke color changes, and allows the child to update the native brush.
-    /// </summary>
-    protected abstract void StrokeColorChanged();
-    /// <summary>
-    /// Called when the nonstroke color changes, and allows the child to update the native brush.
-    /// </summary>
-    protected abstract void NonstrokeColorChanged();
-
-    /// <summary>
     /// Set the rendering intent
     /// </summary>
     /// <param name="intent">The new rendering intent.</param>
@@ -407,7 +318,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     private void SetStrokeColor(DeviceColor color)
     {
         RawStrokeColor = color;
-        StrokeColorChanged();
+        StrokeBrush.SetSolidColor(color);
     }
     /// <summary>
     /// Set the stroking color.
@@ -420,7 +331,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     private void SetNonstrokeColor(DeviceColor color)
     {
         RawNonstrokeColor = color;
-        NonstrokeColorChanged();
+        NonstrokeBrush.SetSolidColor(color);
     }
     #endregion
 
@@ -457,22 +368,6 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     protected T TryRegisterDispose<T>(T item) => pendingDispose.TryRegister(item);
 
     #endregion
-
-    /// <summary>
-    /// Set a pattern brush to the current stroke brush
-    /// </summary>
-    /// <param name="pattern">The pattern dictionary for the new brush.</param>
-    /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
-    /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
-
-    /// <summary>
-    /// Set a pattern brush to the current nonstroking brush
-    /// </summary>
-    /// <param name="pattern">The pattern dictionary for the new brush.</param>
-    /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
-    /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
 
     /// <summary>
     /// Designate the current transform matrix as the initial matrix for the page.

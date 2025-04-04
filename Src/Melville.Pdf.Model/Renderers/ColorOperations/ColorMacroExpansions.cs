@@ -43,8 +43,7 @@ internal partial class ColorMacroExpansions : IColorOperations
     private async ValueTask SetStrokingPatternAsync(PdfDirectObject? patternName)
     {
         if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
-            await target.CurrentState()
-                .SetStrokePatternAsync(patternDict, renderer).CA();
+            await target.CurrentState().StrokeBrush.SetPatternAsync(patternDict, renderer, target.CurrentState()).CA();
     }
 
     public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectObject? patternName, in ReadOnlySpan<double> colors)
@@ -56,8 +55,7 @@ internal partial class ColorMacroExpansions : IColorOperations
     private async ValueTask SetNonstrokingPatternAsync(PdfDirectObject? patternName)
     {
         if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
-            await target.CurrentState()
-                .SetNonstrokePatternAsync(patternDict, renderer).CA();
+            await target.CurrentState().NonstrokeBrush.SetPatternAsync(patternDict, renderer, target.CurrentState()).CA();
     }
 
     private async ValueTask<PdfDictionary?> GetPatternDictAsync(PdfDirectObject? patternName) =>

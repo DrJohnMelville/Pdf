@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -9,23 +11,34 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 /// It does not keep copies of the current brush.
 /// 
 /// </summary>
-public class UncoloredGraphicsState : GraphicsState
+public class UncoloredGraphicsState() : GraphicsState(
+    UncoloredNativeBrush.Instance, UncoloredNativeBrush.Instance)
+{
+}
+
+[StaticSingleton]
+public partial class UncoloredNativeBrush: INativeBrush
 {
     /// <inheritdoc />
-    protected override void StrokeColorChanged()
+    public void SetSolidColor(DeviceColor color)
     {
     }
 
     /// <inheritdoc />
-    protected override void NonstrokeColorChanged()
+    public void SetAlpha(double alpha)
     {
     }
 
     /// <inheritdoc />
-    public override ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
-        ValueTask.CompletedTask;
+    public ValueTask SetPatternAsync(
+        PdfDictionary pattern, DocumentRenderer parentRenderer,
+        GraphicsState prior) => ValueTask.CompletedTask;
 
     /// <inheritdoc />
-    public override ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
-        ValueTask.CompletedTask;
+    public void Clone(INativeBrush target)
+    {
+    }
+
+    /// <inheritdoc />
+    public T TryGetNativeBrush<T>() => default;
 }

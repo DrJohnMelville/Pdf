@@ -9,16 +9,15 @@ internal static class SkiaStateInterpreter
 {
     internal static SKPaint Brush(this SkiaGraphicsState state)
     {
-        var ret = state.NonstrokeBrush.CreateBrush(state);
+        var ret = state.NonstrokeBrush.TryGetNativeBrush<ISkiaBrushCreator>().CreateBrush(state);
         ret.Style = SKPaintStyle.Fill;
         return ret;
     }
 
     internal static SKPaint Pen(this SkiaGraphicsState state)
     {
-        var paint = state.StrokeBrush.CreateBrush(state);
+        var paint = state.StrokeBrush.TryGetNativeBrush<ISkiaBrushCreator>().CreateBrush(state);
         paint.Style = SKPaintStyle.Stroke;
-        paint.Color = state.StrokeColor.AsSkColor();
         paint.StrokeWidth = (float)state.EffectiveLineWidth();
         paint.StrokeCap = StrokeCap(state.LineCap);
         paint.StrokeJoin = CreateStrokeJoin(state.LineJoinStyle);

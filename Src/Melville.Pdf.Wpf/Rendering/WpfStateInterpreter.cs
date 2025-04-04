@@ -10,7 +10,8 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 internal static class WpfStateInterpreter
 {
-    public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush(state);
+    public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush
+        .TryGetNativeBrush<Func<WpfGraphicsState, Brush>>()(state);
     
     public static Pen Pen(this WpfGraphicsState state)
     {
@@ -23,7 +24,7 @@ internal static class WpfStateInterpreter
             DashStyle = ComputeDashStyle(state),
             LineJoin = ComputeLineJoin(state.LineJoinStyle),
             MiterLimit = state.MiterLimit,
-            Brush = state.StrokeBrush(state)
+            Brush = state.StrokeBrush.TryGetNativeBrush<Func<WpfGraphicsState, Brush>>()(state)
         };
         return pen;
     }

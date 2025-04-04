@@ -5,7 +5,6 @@ using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -14,46 +13,54 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-
-internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
+internal class WpfNativeBrush: INativeBrush
 {
-    public int WpfStackframesPushed { get; set; }
-    protected override Func<WpfGraphicsState,Brush> CreateSolidBrush(DeviceColor color)
+    private DeviceColor color = new(0,0,0,255);
+    private double alpha = 1;
+    private Func<WpfGraphicsState, Brush>? creator = null;
+    private bool isSolidColor = true;
+
+    public WpfNativeBrush()
     {
-        var brush = new SolidColorBrush(color.AsWpfColor());
-        return  _=>brush;
+        ;
     }
 
-    protected override async ValueTask<Func<WpfGraphicsState, Brush>> CreatePatternBrushAsync(
-        PdfDictionary pattern,
-        DocumentRenderer parentRenderer) =>
+    /// <inheritdoc />
+    public void SetSolidColor(DeviceColor color)
+    {
+        this.color = color;
+        isSolidColor = true;
+        creator = null;
+    }
+
+    /// <inheritdoc />
+    public void SetAlpha(double alpha)
+    {
+        this.alpha = alpha;
+        if (isSolidColor) creator = null;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask SetPatternAsync(
+        PdfDictionary pattern, DocumentRenderer parentRenderer,
+        GraphicsState prior)
+    {
+        creator = 
         await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
-            1 => await CreateTilePatternAsync(pattern, parentRenderer),
-            2 => await CreateShaderBrushAsync(pattern),
-            _ => _=>Brushes.Transparent,
+            1 => await CreateTilePatternAsync(pattern, parentRenderer, prior),
+            2 => await CreateShaderBrushAsync(pattern, prior),
+            _ => _ => Brushes.Transparent,
         };
-
-    private Brush AdjustPattern(TileBrush tileBrush, in Matrix3x2 patternMatrix, 
-        WpfGraphicsState topStateWhenBrushIsUsed)
-    {
-        tileBrush.ViewboxUnits = BrushMappingMode.Absolute;
-        tileBrush.ViewportUnits = BrushMappingMode.Absolute;
-        
-        // The graphics state stack might change in the interval when the brush is created and used
-        // By the time this method run this class may not be the top of the graphics state stack.  I pass
-        // in a reference to the top state at the time of the usage
-        var correctionForLocalMatrixChanges = topStateWhenBrushIsUsed.RevertToPixelsMatrix();
-        tileBrush.Transform = (patternMatrix * correctionForLocalMatrixChanges).WpfTransform();
-        return tileBrush;
+        isSolidColor = false;
     }
-
     private async Task<Func<WpfGraphicsState, Brush>> CreateTilePatternAsync(
-        PdfDictionary pattern, DocumentRenderer parentRenderer)
+        PdfDictionary pattern, DocumentRenderer parentRenderer, 
+        GraphicsState prior)
     {
         var request = await TileBrushRequest.ParseAsync(pattern);
-        var pattternItem = await PatternRenderer(parentRenderer, request).RenderAsync();
-        return gs=> AdjustPattern( CreatePatternBrush(pattternItem, request), request.PatternTransform, gs);
+        var pattternItem = await PatternRenderer(parentRenderer, request, prior).RenderAsync();
+        return gs => AdjustPattern(CreatePatternBrush(pattternItem, request), request.PatternTransform, gs);
     }
 
     private static DrawingBrush CreatePatternBrush(DrawingGroup pattternItem, TileBrushRequest request) =>
@@ -65,18 +72,20 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
             TileMode = TileMode.Tile,
         };
 
-    private static Rect PatternDestinationBox(Vector2 repeatSize) => 
-       new Rect(0, 0, repeatSize.X,repeatSize.Y);
+    private static Rect PatternDestinationBox(Vector2 repeatSize) =>
+       new Rect(0, 0, repeatSize.X, repeatSize.Y);
 
     private RenderToDrawingGroup PatternRenderer(
-        DocumentRenderer parentRenderer, in TileBrushRequest request)
+        DocumentRenderer parentRenderer, in TileBrushRequest request,
+        GraphicsState prior) =>
+        new(parentRenderer.PatternRenderer(request, prior), 0);
+
+    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(
+        PdfDictionary pattern, GraphicsState prior)
     {
-        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
-    }
-    
-    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(PdfDictionary pattern)
-    {
-        var bmp = RenderShaderToBitmap(await ShaderParser.ParseShaderAsync(pattern));
+        var bmp = RenderShaderToBitmap(
+            await ShaderParser.ParseShaderAsync(pattern),
+            prior);
         var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
 
         return topState => AdjustPattern(new ImageBrush(bmp)
@@ -87,9 +96,27 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
         }, Matrix3x2.Identity, topState);
     }
 
-    private WriteableBitmap RenderShaderToBitmap(IShaderWriter writer)
+
+    private Brush AdjustPattern(TileBrush tileBrush, in Matrix3x2 patternMatrix,
+        WpfGraphicsState topStateWhenBrushIsUsed)
     {
-        var bmp = new WriteableBitmap((int)PageWidth, (int)PageHeight, 96, 96, PixelFormats.Pbgra32,
+        tileBrush.ViewboxUnits = BrushMappingMode.Absolute;
+        tileBrush.ViewportUnits = BrushMappingMode.Absolute;
+
+        // The graphics state stack might change in the interval when the brush is created and used
+        // By the time this method run this class may not be the top of the graphics state stack.  I pass
+        // in a reference to the top state at the time of the usage
+        var correctionForLocalMatrixChanges = topStateWhenBrushIsUsed.RevertToPixelsMatrix();
+        tileBrush.Transform = (patternMatrix * correctionForLocalMatrixChanges).WpfTransform();
+        return tileBrush;
+    }
+
+
+    private WriteableBitmap RenderShaderToBitmap(
+        IShaderWriter writer, GraphicsState prior)
+    {
+        var bmp = new WriteableBitmap(
+            (int)prior.PageWidth, (int)prior.PageHeight, 96, 96, PixelFormats.Pbgra32,
             null);
         WriteShadedBitmap(writer, bmp);
         WaitForBitmapInitialization(bmp);
@@ -111,4 +138,34 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     {
         bmp.Freeze(); // this Freeze is necessary to ensure the bitmap is loaded before we use it in the WPF viewer.
     }
+
+    /// <inheritdoc />
+    public void Clone(INativeBrush target)
+    {
+        if (target is not WpfNativeBrush ret) return;
+        ret.color = color;
+        ret.alpha = alpha;
+        ret.isSolidColor = isSolidColor;
+        ret.creator = creator;
+    }
+
+    /// <inheritdoc />
+    public T TryGetNativeBrush<T>()
+    {
+        if ( creator != null)
+        {
+            ;
+        }
+        return (T)(object)(creator ??= MakeSolidBrush());
+    }
+
+    private Func<WpfGraphicsState, Brush> MakeSolidBrush() => 
+        _ => new SolidColorBrush(color.WithAlpha(alpha).AsWpfColor());
+}
+
+internal class WpfGraphicsState() : GraphicsState(
+    new WpfNativeBrush(), new WpfNativeBrush())
+{
+    public int WpfStackframesPushed { get; set; }
+ 
 }

@@ -14,30 +14,12 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
-public class TestGraphicsState : GraphicsState<DeviceColor>
+public class TestGraphicsState() :UncoloredGraphicsState
 {
-    protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
-    protected override ValueTask<DeviceColor> CreatePatternBrushAsync(PdfDictionary pattern,
-        DocumentRenderer parentRenderer) => 
-        throw new System.NotSupportedException();
 }
 public class GraphicStateDictionary
 {
 
-    [Fact]
-    public async Task SetStrokingAlphaWithDictionaryAsync()
-    {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.CA, 0.5);
-        var gs = await ComputeFinalGraphicsStackAsync(page);
-        Assert.Equal(0.5, gs.StronglyTypedCurrentState().StrokingAlpha);
-    }
-    [Fact]
-    public async Task SetNonstrokingAlphaWithDictionaryAsync()
-    {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.ca, 0.5);
-        var gs = await ComputeFinalGraphicsStackAsync(page);
-        Assert.Equal(0.5, gs.StronglyTypedCurrentState().NonstrokingAlpha);
-    }
     [Fact]
     public async Task SetLineWidthWithDictionaryAsync()
     {
