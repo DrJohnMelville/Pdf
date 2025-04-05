@@ -35,7 +35,7 @@ public partial class UncoloredNativeBrush: INativeBrush
         GraphicsState prior) => ValueTask.CompletedTask;
 
     /// <inheritdoc />
-    public void Clone(INativeBrush target)
+    public void WriteColorTo(INativeBrush target)
     {
     }
 

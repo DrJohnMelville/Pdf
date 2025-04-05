@@ -96,8 +96,8 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     public void CopyFrom(GraphicsState other)
     {
         InnerCopyFrom(other);
-        StrokeBrush.Clone(other.StrokeBrush);
-        NonstrokeBrush.Clone(other.NonstrokeBrush);
+        other.StrokeBrush.WriteColorTo(StrokeBrush);
+        other.NonstrokeBrush.WriteColorTo(NonstrokeBrush);
     }
 
 

@@ -72,7 +72,7 @@ internal class SkiaNativeBrush: INativeBrush
     }
 
     /// <inheritdoc />
-    public void Clone(INativeBrush target)
+    public void WriteColorTo(INativeBrush target)
     {
         if (target is not SkiaNativeBrush ret) return;
         ret.color = color;

@@ -140,7 +140,7 @@ internal class WpfNativeBrush: INativeBrush
     }
 
     /// <inheritdoc />
-    public void Clone(INativeBrush target)
+    public void WriteColorTo(INativeBrush target)
     {
         if (target is not WpfNativeBrush ret) return;
         ret.color = color;

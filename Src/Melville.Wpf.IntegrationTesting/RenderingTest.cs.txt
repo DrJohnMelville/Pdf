@@ -250,7 +250,7 @@ RenderingTest.cs_Skia-JBigSampleBitStream3|2137668630
 RenderingTest.cs_Skia-JBig042_1|481576147
 RenderingTest.cs_Skia-JBig042_2|4194801023
 RenderingTest.cs_Skia-JBig042_3|4194801023
-RenderingTest.cs_Skia-JBigamb_1|1930480778
+RenderingTest.cs_Skia-JBigamb_1|91900681
 RenderingTest.cs_Skia-JBigamb_2|1930480778
 RenderingTest.cs_wpf-JBig042_12|2717977635
 RenderingTest.cs_wpf-JBig042_21|2715951161

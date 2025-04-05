@@ -40,7 +40,7 @@ public interface INativeBrush
     /// <summary>
     /// Clone this brush into an equivilent brush. (Used when pushing context.)
     /// </summary>
-    void Clone(INativeBrush target);
+    void WriteColorTo(INativeBrush target);
 
     /// <summary>
     /// Try to create a native brush of typw T corresponding to this brush.
