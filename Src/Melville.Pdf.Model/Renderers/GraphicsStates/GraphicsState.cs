@@ -29,70 +29,78 @@ public interface IGraphicsState : IStateChangingOperations
 /// <summary>
 /// This represents the current state of the Pdf Graphics Context
 /// </summary>
-public abstract partial class GraphicsState: IGraphicsState, IDisposable
-{
-    /// <inheritdoc />
-    [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity",
-        "Transforms local coordinates to device coordinates")]
-    [MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity",
-        "Transforms the visible box to device coordinates")]
-    [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity",
-        "Transform 0,0 to the location of the next character to be drawn")]
-    [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity",
-        "Transform for the beginning of the current text line.")]
-    [MacroItem("double", "LineWidth", "1.0", "Width of stroked lines, in local coordinates.")]
-    [MacroItem("double", "MiterLimit", "10.0", "Controls how long to point of a miter line joint can be.")]
-    [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter",
-        "Controls how the joint between two line segmets is drawn")]
-    [MacroItem("LineCap", "LineCap", "LineCap.Butt", "Controls how the ends of of paths are drawn")]
-    [MacroItem("double", "DashPhase", "0.0", "The initial phase of a dashed line.")]
-    [MacroItem("double", "FlatnessTolerance", "1.0",
-        "Not currently used, but could control the flatness precision in bezier curve rendering")]
-    [MacroItem("IReadOnlyList<double>", "DashArray", "Array.Empty<double>()", "dash or dot pattern for dotted lines")]
-    [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric",
-        "The desired rendering intent for various color transformations")]
-    [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance", "Color space for stroking brushes.")]
-    [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance", "Color space for nonstroking brushes.")]
-    [MacroItem("DeviceColor", "RawStrokeColor", "DeviceColor.Black", "Color for stroking brushes.")]
-    [MacroItem("DeviceColor", "RawNonstrokeColor", "DeviceColor.Black", "Color for nonstroking brushes")]
+[MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity",
+    "Transforms local coordinates to device coordinates")]
+[MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity",
+    "Transforms the visible box to device coordinates")]
+[MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity",
+    "Transform 0,0 to the location of the next character to be drawn")]
+[MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity",
+    "Transform for the beginning of the current text line.")]
+[MacroItem("double", "LineWidth", "1.0", "Width of stroked lines, in local coordinates.")]
+[MacroItem("double", "MiterLimit", "10.0", "Controls how long to point of a miter line joint can be.")]
+[MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter",
+    "Controls how the joint between two line segmets is drawn")]
+[MacroItem("LineCap", "LineCap", "LineCap.Butt", "Controls how the ends of of paths are drawn")]
+[MacroItem("double", "DashPhase", "0.0", "The initial phase of a dashed line.")]
+[MacroItem("double", "FlatnessTolerance", "1.0",
+    "Not currently used, but could control the flatness precision in bezier curve rendering")]
+[MacroItem("IReadOnlyList<double>", "DashArray", "Array.Empty<double>()", "dash or dot pattern for dotted lines")]
+[MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric",
+    "The desired rendering intent for various color transformations")]
+[MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance", "Color space for stroking brushes.")]
+[MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance", "Color space for nonstroking brushes.")]
+[MacroItem("DeviceColor", "RawStrokeColor", "DeviceColor.Black", "Color for stroking brushes.")]
+[MacroItem("DeviceColor", "RawNonstrokeColor", "DeviceColor.Black", "Color for nonstroking brushes")]
 
-    // Text Properties
-    [MacroItem("double", "CharacterSpacing", "0.0", "Space to add between characters")]
-    [MacroItem("double", "WordSpacing", "0.0", "Additional space to add to a ' ' (space or 0x20) character")]
-    [MacroItem("double", "TextLeading", "0.0", "The space between two lines of text in local coordinate units.")]
-    [MacroItem("double", "TextRise", "0.0", "The vertical offset of the next character above the text baseline.")]
-    [MacroItem("double", "HorizontalTextScale", "1.0",
-        "Factor by which text should be stretched or compressed horizontally.")]
-    [MacroItem("TextRendering", "TextRender", "TextRendering.Fill",
-        "Describes whether text should be stroked, filled, and or added to the current clipping region.")]
-    [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance", "The font to write characters with.")]
-    [MacroItem("double", "FontSize", "0.0", "The font size to write characters.")]
+// Text Properties
+[MacroItem("double", "CharacterSpacing", "0.0", "Space to add between characters")]
+[MacroItem("double", "WordSpacing", "0.0", "Additional space to add to a ' ' (space or 0x20) character")]
+[MacroItem("double", "TextLeading", "0.0", "The space between two lines of text in local coordinate units.")]
+[MacroItem("double", "TextRise", "0.0", "The vertical offset of the next character above the text baseline.")]
+[MacroItem("double", "HorizontalTextScale", "1.0",
+    "Factor by which text should be stretched or compressed horizontally.")]
+[MacroItem("TextRendering", "TextRender", "TextRendering.Fill",
+    "Describes whether text should be stroked, filled, and or added to the current clipping region.")]
+[MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance", "The font to write characters with.")]
+[MacroItem("double", "FontSize", "0.0", "The font size to write characters.")]
 
-    //PageSizes
-    [MacroItem("double", "PageWidth", "1", "Width of the page in device pixels")]
-    [MacroItem("double", "PageHeight", "1", "Height of the page in device pixels")]
+//PageSizes
+[MacroItem("double", "PageWidth", "1", "Width of the page in device pixels")]
+[MacroItem("double", "PageHeight", "1", "Height of the page in device pixels")]
 
-    // code
-    [MacroCode("""
+// code
+[MacroCode("""
         /// <summary>
         /// ~3~
         /// </summary>
         public ~0~ ~1~ {get; private set;} = ~2~;
 
         """)]
-    [MacroCode("    ~1~ = other.~1~;", Prefix = """
+[MacroCode("    ~1~ = other.~1~;", Prefix = """
         /// <summary>
         /// Duplicate a GraphicsState by shallow copying all of its values.
         /// </summary>
         private void InnerCopyFrom(GraphicsState other)
         {
         """, Postfix = "}")]
+public abstract partial class GraphicsState: IGraphicsState, IDisposable
+{
+    /// <summary>
+    /// This is the native brush structure for the stroking color
+    /// </summary>
+    [FromConstructor]
+    public INativeBrush StrokeBrush { get; }
 
-
-#warning copyFrom needs to clone the native brushes.
-    [FromConstructor]public INativeBrush StrokeBrush { get; }
+    /// <summary>
+    /// This is the native brush structure for the nonstroking color
+    /// </summary>
     [FromConstructor]public INativeBrush NonstrokeBrush { get; }
 
+    /// <summary>
+    /// Copy the state out of another GraphicState object.
+    /// </summary>
+    /// <param name="other"></param>
     public void CopyFrom(GraphicsState other)
     {
         InnerCopyFrom(other);

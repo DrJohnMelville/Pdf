@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -17,7 +18,7 @@ public class UncoloredGraphicsState() : GraphicsState(
 }
 
 [StaticSingleton]
-public partial class UncoloredNativeBrush: INativeBrush
+internal partial class UncoloredNativeBrush: INativeBrush
 {
     /// <inheritdoc />
     public void SetSolidColor(DeviceColor color)
@@ -40,5 +41,6 @@ public partial class UncoloredNativeBrush: INativeBrush
     }
 
     /// <inheritdoc />
-    public T TryGetNativeBrush<T>() => default;
+    public T TryGetNativeBrush<T>() => 
+       throw new NotSupportedException("You cannot ask the uncolored brush for a color");
 }
