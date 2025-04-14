@@ -52,6 +52,8 @@ public readonly struct Type1Parser(IMultiplexSource source)
         obj.Put("eexec", PostscriptValueFactory.Create(
             (IExternalFunction)eexecDecryptingSource));
 
+        obj.Put("FontDirectory", PostscriptValueFactory.CreateDictionary());
+        
         obj.Put("StandardEncoding", PostscriptValueFactory.CreateArray([
             MakeName("notdef"u8),
             MakeName("notdef"u8),
