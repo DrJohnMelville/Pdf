@@ -58,7 +58,7 @@ public partial class ReplViewModel
     {
         if (buffer.Length == 0) return;
 
-        using var target = WritableBuffer.Create();
+        var target = WritableBuffer.Create();
         await using var writer = target.WritingStream();
         await writer.WriteAsync(buffer);
         var doc = await new PdfLowLevelReader().ReadFromAsync(buffer);

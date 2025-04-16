@@ -15,12 +15,32 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         state = CountedSourceState.Open;
     }
 
+    // this helps me debug mismatched disposes.  If the assert in CreateSourceTicket throws, I can
+    // enable this code to record the stack traces where I am getting destroyed.  This is a major
+    // memory and perf hog because it does a stack trace on every dispose, thus I have the conditional
+    // compilation to make sure I do not pay the price when I am not specifically debugging this feature.
+
+#if FALSE
+    private List<string> disposeStackTrace = [];
+    private void RecordDisposalTrace()
+    {
+        disposeStackTrace.Add(new StackTrace().ToString());
+    }
+    #warning Included debug code will cause performance problems
+#else
+    private void RecordDisposalTrace()
+    {
+    }
+#endif
+
     public void Dispose()
     {
         if (state == CountedSourceState.Closed) return;
+        RecordDisposalTrace();
         state = CountedSourceState.WaitingForPendingReaders;
         TryCleanUp();
     }
+
 
     private void TryCleanUp()
     {
