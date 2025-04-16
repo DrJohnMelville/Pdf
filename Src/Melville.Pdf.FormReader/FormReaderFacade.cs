@@ -45,7 +45,8 @@ public static class FormReaderFacade
     public static async ValueTask<IPdfForm> ReadFormAsync(PdfLowLevelDocument doc)
     {
         var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root).CA();
-        var acroForm = await root.GetAsync<PdfDictionary>(KnownNames.AcroForm).CA();
+        var acroForm = await root.GetOrDefaultAsync<PdfDictionary?>(KnownNames.AcroForm, null).CA();
+        if (acroForm is null) return new EmptyPdfForm(doc);
 
         var builder = new AcroFieldFactory();
         await builder.ParseAcroFieldsAsync(
