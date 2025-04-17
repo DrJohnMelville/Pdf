@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -22,6 +23,7 @@ internal partial class PdfObjectRegistry:
 
     public PdfIndirectObject Add(in PdfDirectObject item, int objectNumber, int generation)
     {
+        Debug.Assert(objectNumber != 0);
         if (!TryWriteToObjectStream(item, objectNumber, generation))
         {
             Objects[(objectNumber, generation)] = item;
@@ -37,8 +39,10 @@ internal partial class PdfObjectRegistry:
 
     public void Reassign(in PdfIndirectObject item, in PdfDirectObject newValue)
     {
-        var ints = item.Memento.Int32s;
-        Objects[(ints[0],ints[1])] = newValue;
+        
+        var reference = item.GetObjectReference();
+        Debug.Assert(reference.ObjectNumber != 0);
+        Objects[reference] = newValue;
     }
 
     public void AddToTrailerDictionary(in PdfDirectObject key, in PdfIndirectObject item) => 

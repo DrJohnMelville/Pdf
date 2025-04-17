@@ -22,6 +22,8 @@
         <Slider Grid.Column="1" Minimum="5" Maximum="500" Value="{Binding GlyphSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <local:MultiGlyphPainter Grid.Row="1" Grid.ColumnSpan="2"
                                  SizeChanged="{eventBindings:EventBinding SizeChanged}"
+                                 MouseMove="{eventBindings:EventBinding MouseMove}"
+                                 ToolTip="{Binding ToolTip}"
                                  Glyphs="{Binding Glyphs}"></local:MultiGlyphPainter>
     </Grid>
 </UserControl>

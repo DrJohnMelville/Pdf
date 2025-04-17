@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Melville.Fonts;
 using Melville.INPC;
@@ -17,6 +18,7 @@ public partial class MultiGlyphViewModel
     [AutoNotify] public int Columns => (int)(ControlWidth / GlyphSize);
     [AutoNotify] public int PageSize => Math.Max(1,Rows * Columns);
     [AutoNotify] private Geometry? glyphs;
+    [AutoNotify] public partial string ToolTip { get; set; }
     public PageSelectorViewModel PageSelector { get; } = new PageSelectorViewModel();
 
     partial void OnConstructed()
@@ -50,6 +52,17 @@ public partial class MultiGlyphViewModel
     {
         ControlWidth = args.NewSize.Width;
         ControlHeight = args.NewSize.Height;
+    }
+
+    public void MouseMove(MouseEventArgs args, MultiGlyphPainter painter)
+    {
+        var location = args.GetPosition(painter);
+        var x = (int)(location.X / GlyphSize);
+        var y = (int)(location.Y / GlyphSize);
+
+        int first = (PageSelector.Page - 1) * Rows * Columns;
+        var index = first + x + (y * Columns);
+        ToolTip = $"Glyph {index} (0x{index:X4})";
     }
 
     private void RecomputeGlyphs() => 
