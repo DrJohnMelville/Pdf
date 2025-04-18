@@ -39,7 +39,7 @@ public partial class ByteStringViewModel
     {
         try
         {
-            if (bytes[0] != '<') return null;
+            if (bytes is not [(byte)'<',..]) return null;
             return new []{new XmlRepresentationNode(XElement.Load(new MemoryStream(bytes)))};
         }
         catch (Exception)
