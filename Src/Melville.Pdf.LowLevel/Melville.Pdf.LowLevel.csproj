@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CoreJ2K" Version="1.0.6.37" />
       <PackageReference Include="Melville.Hacks" Version="0.7.6" />
       <PackageReference Include="Melville.Linq" Version="0.7.6" />
       <PackageReference Include="System.IO.Pipelines" Version="9.0.1" />
@@ -24,7 +25,6 @@
       </ProjectReference>
       <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
-      <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2k.csproj" />
       <ProjectReference Include="..\Melville.JBig2\Melville.JBig2.csproj" />
       <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
@@ -37,4 +37,5 @@
       <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
     </ItemGroup>
+		
 </Project>

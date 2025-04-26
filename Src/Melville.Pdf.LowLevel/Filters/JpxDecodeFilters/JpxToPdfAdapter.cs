@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
-using Melville.CSJ2K;
+using CoreJ2K;
+using CoreJ2K.j2k;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-internal class JpxToPdfAdapter: ICodecDefinition
+internal class JpxToPdfAdapter : ICodecDefinition
 {
     public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters)
     {
@@ -26,10 +28,19 @@ internal class JpxToPdfAdapter: ICodecDefinition
 
     private Stream LoadImage(byte[] buffer)
     {
-        var independentImage = J2kReader.FromStream(new MemoryStream(buffer));
-        return independentImage.NumberOfComponents == 1 ?
-            new JPeg200GrayStream(independentImage) :
-            new JPeg200RgbStream(independentImage);
+        try
+        {
+            var independentImage = J2kImage.FromStream(new MemoryStream(buffer));
+
+            return independentImage.NumberOfComponents == 1
+                ? new JPeg200GrayStream(independentImage)
+                : new JPeg200RgbStream(independentImage);
+
+        }
+        catch (Exception)
+        {
+            return Stream.Null;
+        }
 
     }
 }

@@ -20,9 +20,11 @@
 
     <ItemGroup>
       <None Remove="Graphics\Images\JPEG.jpg" />
+      <None Remove="Graphics\Images\Jpeg2000Color.jp2" />
       <EmbeddedResource Include="Graphics\Images\JPEG.jpg" />
       <None Remove="Graphics\Images\png.png" />
       <None Remove="Text\Zev.ttf" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg2000Color.jp2" />
       <EmbeddedResource Include="Text\Zev.ttf" />
       <None Remove="Text\GFSEustace.otf" />
       <EmbeddedResource Include="Text\GFSEustace.otf" />
