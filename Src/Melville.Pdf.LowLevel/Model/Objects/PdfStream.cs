@@ -39,6 +39,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     /// Retrieves a C# stream that will read the stream contents in the desired format.
     /// </summary>
     /// <param name="desiredFormat">The filters that should be applied to the read stream.</param>
+    /// <param name="context">This is an optional context object that is provided to the filters.</param>
     /// <returns></returns>
     public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
         object? context = null) =>

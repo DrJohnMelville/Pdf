@@ -18,7 +18,7 @@ public partial class MultiGlyphViewModel
     [AutoNotify] public int Columns => (int)(ControlWidth / GlyphSize);
     [AutoNotify] public int PageSize => Math.Max(1,Rows * Columns);
     [AutoNotify] private Geometry? glyphs;
-    [AutoNotify] public partial string ToolTip { get; set; }
+    [AutoNotify] public partial string ToolTip { get; set; } //# = "";
     public PageSelectorViewModel PageSelector { get; } = new PageSelectorViewModel();
 
     partial void OnConstructed()

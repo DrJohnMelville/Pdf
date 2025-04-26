@@ -23,15 +23,15 @@ internal readonly partial struct ImageRenderingWrapper
     public async ValueTask<IPdfBitmap> AsPdfBitmapAsync() =>
         await WrapWithSoftMaskAsync(
         await WrapWithHardMaskAsync(
-        new PdfBitmapWrapper(attr, shouldInterpolate, Wrap(), colorSpace)).CA()).CA();
+        new PdfBitmapWrapper(attr, shouldInterpolate, Wrap, colorSpace)).CA()).CA();
 
-    private IByteWriter Wrap()
+    private IByteWriter Wrap(IColorSpace finalColorspace)
     {
         if (isImageMask) return new StencilWriter(decode, attr.FillColor);
 
-        if (CanUseFastWriter()) return FastBitmapWriterRGB8.Instance;
+        if (CanUseFastWriter(finalColorspace)) return FastBitmapWriterRGB8.Instance;
 
-        return CreateByteWriter(CreateComponentWriter());
+        return CreateByteWriter(CreateComponentWriter(finalColorspace));
     }
 
     private IByteWriter CreateByteWriter(ComponentWriter writer) =>
@@ -40,15 +40,15 @@ internal readonly partial struct ImageRenderingWrapper
             new NBitByteWriter(writer, bitsPerComponent);
 
 
-    private bool CanUseFastWriter() =>
-        colorSpace == DeviceRgb.Instance &&
+    private bool CanUseFastWriter(IColorSpace finalColorspace) =>
+        finalColorspace == DeviceRgb.Instance &&
         bitsPerComponent == 8 &&
         DecodeArrayParser.IsDefaultDecode(decode);
 
-    private ComponentWriter CreateComponentWriter() =>
+    private ComponentWriter CreateComponentWriter(IColorSpace finalColorspace) =>
         new(new ClosedInterval(0, (1 << bitsPerComponent) - 1),
             DecodeArrayParser.SpecifiedOrDefaultDecodeIntervals(
-                colorSpace, decode, bitsPerComponent), colorSpace);
+                colorSpace, decode, bitsPerComponent), finalColorspace);
 
     private async ValueTask<IPdfBitmap> WrapWithHardMaskAsync(
         IPdfBitmap writer) => mask switch

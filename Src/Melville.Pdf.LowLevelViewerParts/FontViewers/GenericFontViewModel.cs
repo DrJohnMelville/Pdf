@@ -16,7 +16,7 @@ public partial class GenericFontViewModel
     [FromConstructor] public IGenericFont Font { get; }
     [FromConstructor] private IRealizedFont? realizedFont;
     [FromConstructor] public string Title { get; }
-    public string? ToolTip => null;
+  
     [AutoNotify] private string fontName = "";
     [AutoNotify] private object? glyphViewModel = null;
     [AutoNotify] private object? cmapViewModel = null;

@@ -94,9 +94,9 @@ RenderingTest.cs_wpf-SimpleImage|4103024376
 RenderingTest.cs_Skia-SimpleImage|914734546
 RenderingTest.cs_wpf-GrayImage|3215070214
 RenderingTest.cs_Skia-GrayImage|1184098314
-RenderingTest.cs_wpf-HiDefImage|4167844122
+RenderingTest.cs_wpf-HiDefImage|2169209583
 RenderingTest.cs_wpf-IndexedImage|1621446601
-RenderingTest.cs_Skia-HiDefImage|2681794305
+RenderingTest.cs_Skia-HiDefImage|3724323487
 RenderingTest.cs_Skia-IndexedImage|508549681
 RenderingTest.cs_wpf-IndexedImage4Bit|1621446601
 RenderingTest.cs_wpf-IndexedImage2Bit|965182391
@@ -106,8 +106,8 @@ RenderingTest.cs_Skia-IndexedImage2Bit|3286028472
 RenderingTest.cs_Skia-IndexedImage1Bit|890491180
 RenderingTest.cs_wpf-SmallSimpleImage|4059642605
 RenderingTest.cs_Skia-SmallSimpleImage|1040503154
-RenderingTest.cs_wpf-DecodeArray|2392388077
-RenderingTest.cs_Skia-DecodeArray|480034531
+RenderingTest.cs_wpf-DecodeArray|1469193750
+RenderingTest.cs_Skia-DecodeArray|3187659533
 RenderingTest.cs_wpf-InvertedStencilMask|1672877623
 RenderingTest.cs_wpf-StencilMask|3500327992
 RenderingTest.cs_Skia-InvertedStencilMask|3736333545
@@ -584,3 +584,5 @@ RenderingTest.cs_Skia-SimplifiedChinese|1072797566
 RenderingTest.cs_Skia-TraditionalChinese|1402036434
 RenderingTest.cs_Skia-Japan1|1377194269
 RenderingTest.cs_Skia-Korea1|2466719345
+RenderingTest.cs_wpf-Jpeg2000ColorImage|1449483858
+RenderingTest.cs_Skia-Jpeg2000ColorImage|152254151
