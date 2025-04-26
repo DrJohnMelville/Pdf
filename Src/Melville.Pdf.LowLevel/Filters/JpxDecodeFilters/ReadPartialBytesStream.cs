@@ -6,39 +6,43 @@ namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
 internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
 {
-    private readonly PortableImage image;
-    private readonly int bytesPerQuad;
-    private readonly int skipPerQuad;
-    private readonly byte[] data;
     private int position;
+    private ReadOnlyMemory<byte> source;
 
     public ReadPartialBytesStream(PortableImage image, int bytesPerQuad) : base(true, false, false)
     {
-        this.image = image;
-        this.bytesPerQuad = bytesPerQuad;
-        skipPerQuad = 4 - bytesPerQuad;
+        Width = image.Width;
+        Height = image.Height;
+        ImageComponents = image.NumberOfComponents;
         RawImageCreator.Register();
-        data = image.As<RawImage>().Bytes;
+        var data = image.As<RawImage>().Bytes;
+        source = CompressArray(data, bytesPerQuad);
     }
 
-    public int Width => image.Width;
-    public int Height => image.Height;
-    public int ImageComponents => bytesPerQuad;
+    private static ReadOnlyMemory<byte> CompressArray(byte[] bytes, int bytesPerQuad)
+    {
+        if (bytesPerQuad > 3) return new ReadOnlyMemory<byte>(bytes);
+        if (bytes.Length % 4 != 0) throw new ArgumentException("Invalid length for JPX image");
+        int target = bytesPerQuad;
+        for (int source = 4; source < bytes.Length; source+=4)
+        {
+            bytes.AsSpan(source, bytesPerQuad).CopyTo(bytes.AsSpan(target));
+            target += bytesPerQuad;
+        }
+
+        return new ReadOnlyMemory<byte>(bytes, 0, target);
+    }
+
+    public int Width { get; }
+    public int Height { get; }
+    public int ImageComponents { get; }
     public int BitsPerComponent => 8;
 
     public override int Read(Span<byte> buffer)
     {
-        int target = 0;
-        while (position < data.Length && target < buffer.Length)
-        {
-            int sourcelen = bytesPerQuad - (position % 4);
-            var targetFinalLen = Math.Min(buffer.Length - target, sourcelen);
-            data.AsSpan(position, targetFinalLen).CopyTo(buffer[target..]);
-            target += targetFinalLen;
-            position += targetFinalLen;
-            if (sourcelen == targetFinalLen) position += (skipPerQuad);
-        }
-
-        return target;
+        var retLen = Math.Min(source.Length - position, buffer.Length);
+        source.Span.Slice(position, retLen).CopyTo(buffer);
+        position += retLen;
+        return retLen;
     }
 }
