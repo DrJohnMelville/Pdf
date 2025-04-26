@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoreJ2K.Color;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

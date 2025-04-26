@@ -11,10 +11,10 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
 internal class JbigToPdfAdapter: ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters) => 
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) => 
         throw new NotSupportedException();
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters)
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context)
     {
         var reader = new JbigExplicitPageReader();
         reader.RequestPage(1);

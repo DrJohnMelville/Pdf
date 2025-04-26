@@ -261,7 +261,8 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     }
 
     private static ValueTask<Stream> DiskRepresentationAsync(PdfStream inlineImage) => 
-        inlineImage.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance);
+        inlineImage.StreamEncryptedContentAsync(
+            StreamFormat.DiskRepresentation, NullSecurityHandler.Instance, null);
 
     private static ReadOnlySpan<byte> InlineImageTerminator => "EI"u8;
     #endregion

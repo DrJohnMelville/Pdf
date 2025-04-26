@@ -6,6 +6,6 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 internal interface IApplySingleFilter
 {
-    ValueTask<Stream> EncodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter);
-    ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter);
+    ValueTask<Stream> EncodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter, object? context);
+    ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter, object? context);
 }

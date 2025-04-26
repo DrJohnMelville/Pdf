@@ -34,6 +34,7 @@ internal partial class FilterProcessor: FilterProcessorBase
     [FromConstructor] private readonly IReadOnlyList<PdfIndirectObject> filters;
     [FromConstructor] private readonly IReadOnlyList<PdfIndirectObject> parameters;
     [FromConstructor] private readonly IApplySingleFilter singleFilter;
+    [FromConstructor] private readonly object? context;
 
     protected override async ValueTask<Stream> EncodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
@@ -45,7 +46,7 @@ internal partial class FilterProcessor: FilterProcessorBase
         {
             ret = await singleFilter.EncodeAsync(ret, 
                 await filters[i].LoadValueAsync().CA(), 
-                await TryGetParameter(i).LoadValueAsync().CA()).CA();
+                await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
         }
 
         return ret;
@@ -61,7 +62,7 @@ internal partial class FilterProcessor: FilterProcessorBase
         {
             ret = await singleFilter.DecodeAsync(ret, 
                 await filters[i].LoadValueAsync().CA(), 
-                await TryGetParameter(i).LoadValueAsync().CA()).CA();
+                await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
         }
 
         return ret;

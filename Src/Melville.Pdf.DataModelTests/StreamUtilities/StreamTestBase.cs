@@ -133,7 +133,8 @@ public abstract partial class StreamTestBase
 
     private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str) =>
         new DictionaryBuilder(str.RawItems).AsStream(
-            await str.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance),
+            await str.StreamEncryptedContentAsync(
+                StreamFormat.DiskRepresentation, NullSecurityHandler.Instance, null),
             StreamFormat.DiskRepresentation);
 
 

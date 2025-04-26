@@ -51,7 +51,7 @@ public class LowLevelDocumentWriter
     public async Task WriteAsync()
     {
             
-        var objectOffsets = await WriteHeaderAndObjectsAsync().CA();
+         var objectOffsets = await WriteHeaderAndObjectsAsync().CA();
         await WriteReferencesAndTrailerAsync(objectOffsets, target.BytesWritten).CA();
     }
 

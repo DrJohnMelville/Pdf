@@ -23,11 +23,13 @@ internal class CryptSingleFilter: IApplySingleFilter
             
     }
 
-    public async ValueTask<Stream> EncodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter)
+    public async ValueTask<Stream> EncodeAsync(
+        Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+        object? context)
     {
         return (filter.Equals(KnownNames.Crypt)) ? 
             (await ComputeCipherAsync(parameter).CA()).Encrypt().CryptStream(source) : 
-            await innerFilter.EncodeAsync(source, filter, parameter).CA();
+            await innerFilter.EncodeAsync(source, filter, parameter, context).CA();
     }
 
     private async ValueTask<ICipher> ComputeCipherAsync(PdfDirectObject parameter)
@@ -37,11 +39,12 @@ internal class CryptSingleFilter: IApplySingleFilter
         return ret;
     }
 
-    public async ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter)
+    public async ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+        object? context)
     {
         return (filter.Equals(KnownNames.Crypt)) ? 
             streamDataSource.WrapStreamWithDecryptor(source, await EncryptionAlgAsync(parameter).CA()) : 
-            await innerFilter.DecodeAsync(source, filter, parameter).CA();
+            await innerFilter.DecodeAsync(source, filter, parameter, context).CA();
     }
 
     public async ValueTask<PdfDirectObject> EncryptionAlgAsync(PdfDirectObject parameter) =>

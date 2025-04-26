@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -39,25 +40,29 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     /// </summary>
     /// <param name="desiredFormat">The filters that should be applied to the read stream.</param>
     /// <returns></returns>
-    public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText) =>
-        StreamContentAsync(desiredFormat, null);
+    public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
+        object? context = null) =>
+        StreamEncryptedContentAsync(desiredFormat, null, context);
 
-    internal async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat, IObjectCryptContext? encryptor)
+    internal async ValueTask<Stream> StreamEncryptedContentAsync(
+        StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
     {
+        Debug.Assert(context is not IObjectCryptContext);
         var processor =
-            await CreateFilterProcessorAsync(encryptor ?? ErrorObjectEncryptor.Instance).CA();
+            await CreateFilterProcessorAsync(encryptor ?? ErrorObjectEncryptor.Instance, context).CA();
         
         return await processor.StreamInDesiredEncodingAsync(await SourceStreamAsync().CA(),
             source.SourceFormat, desiredFormat).CA();
     }
 
-    private async Task<FilterProcessorBase> CreateFilterProcessorAsync(IObjectCryptContext innerEncryptor) =>
+    private async Task<FilterProcessorBase> CreateFilterProcessorAsync(
+        IObjectCryptContext innerEncryptor, object? context) =>
         await DefaultEncryptionSelector.TryAddDefaultEncryptionAsync(
             this, source, innerEncryptor,
             new FilterProcessor(
                 await FilterListAsync().CA(),
                 await FilterParamListAsync().CA(),
-                CreateDecoder(innerEncryptor))).CA();
+                CreateDecoder(innerEncryptor), context)).CA();
 
     private  IApplySingleFilter CreateDecoder(IObjectCryptContext innerEncryptor) =>
         new CryptSingleFilter(source, innerEncryptor,

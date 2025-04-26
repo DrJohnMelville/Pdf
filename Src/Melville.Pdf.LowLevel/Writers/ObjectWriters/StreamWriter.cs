@@ -20,7 +20,8 @@ internal static class StreamWriter
         PdfObjectWriter innerWriter, PdfStream item,
         IObjectCryptContext encryptor)
     {
-        var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
+        var rawStream = await item.StreamEncryptedContentAsync(
+            StreamFormat.DiskRepresentation, encryptor, null).CA();
         await using var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
         DictionaryWriter.Write(innerWriter, 

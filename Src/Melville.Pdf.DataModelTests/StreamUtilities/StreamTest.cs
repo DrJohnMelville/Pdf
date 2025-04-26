@@ -14,7 +14,7 @@ public static class StreamTest
         string encoded, string decoded, PdfDirectObject decoder, PdfDirectObject parameters) =>
         await VerifyStreamContentAsync(decoded,
             await StaticCodecFactory.CodecFor(decoder)
-                .DecodeOnReadStreamAsync(StringAsAsciiStream(encoded), parameters));
+                .DecodeOnReadStreamAsync(StringAsAsciiStream(encoded), parameters, null));
 
     public static async Task VerifyStreamContentAsync(string src, Stream streamToRead)
     {

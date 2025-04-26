@@ -5,14 +5,17 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal class PdfBitmapWrapper(
     BitmapRenderParameters attr,
     bool shouldRenderInterpolated,
-    IByteWriter byteWriter)
-    : IPdfBitmap
+    IByteWriter byteWriter,
+    IColorSpace colorSpace
+    ) : IPdfBitmap
 {
     public int Width => attr.Width;
     public int Height => attr.Height;
@@ -27,7 +30,7 @@ internal class PdfBitmapWrapper(
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
         using var source = MultiplexSourceFactory.SingleReaderForStream(
-            await attr.Stream.StreamContentAsync().CA());
+            await attr.Stream.StreamContentAsync(context:colorSpace).CA());
         int row = 0;
         int column = 0;
         while (true)

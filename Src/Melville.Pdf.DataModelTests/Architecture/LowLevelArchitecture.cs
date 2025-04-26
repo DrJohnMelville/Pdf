@@ -11,7 +11,7 @@ public class LowLevelArchitecture
     [Theory]
     [InlineData("Melville.Pdf.LowLevel.Filters.JpegFilter", "Melville.JpegLibrary")]
     [InlineData("Melville.Pdf.LowLevel.Filters.Jbig2Filter", "Melville.JBig2")]
-    [InlineData("Melville.Pdf.LowLevel.Filters.JpxDecodeFilters", "Melville.CSJ2K")]
+    [InlineData("Melville.Pdf.LowLevel.Filters.JpxDecodeFilters", "CoreJ2K")]
     [InlineData("Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters", "Melville.CCITT")]
     public void CabinExternalDependencies(string localNamespace, string foreignNamespace)
     {
