@@ -18,29 +18,26 @@ internal class JpxToPdfAdapter : ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters)
     {
-        // 4/27/2024 the J2kReader has a race bug that occasionally deadlocks reads.  The
-        // memory buffer does not deadlock.
+        //4/27/2024 the J2kReader has a race bug that occasionally deadlocks reads.  The
+        //memory buffer does not deadlock.
         var buffer = new byte[input.Length];
         await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
         await input.DisposeAsync().CA();
-        return LoadImage(buffer);
+        return LoadImage(new MemoryStream(buffer));
     }
 
-    private Stream LoadImage(byte[] buffer)
+    private Stream LoadImage(Stream buffer)
     {
         try
         {
-            var independentImage = J2kImage.FromStream(new MemoryStream(buffer));
+            var independentImage = J2kImage.FromStream(buffer);
 
-            return independentImage.NumberOfComponents == 1
-                ? new JPeg200GrayStream(independentImage)
-                : new JPeg200RgbStream(independentImage);
-
+            return new ReadPartialBytesStream(independentImage,
+                independentImage.NumberOfComponents);
         }
         catch (Exception)
         {
             return Stream.Null;
         }
-
     }
 }
