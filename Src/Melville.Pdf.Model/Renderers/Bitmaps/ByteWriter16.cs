@@ -2,13 +2,8 @@
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-internal class ByteWriter16 : ByteWriter
+internal class ByteWriter16(ComponentWriter writer) : ByteWriter(ushort.MaxValue, writer)
 {
-    public ByteWriter16(ComponentWriter writer) :
-        base(ushort.MaxValue, writer)
-    {
-    }
-
     public override unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         while (output < nextPos && input.TryPeek(out var high) && input.TryPeek(1, out var low))

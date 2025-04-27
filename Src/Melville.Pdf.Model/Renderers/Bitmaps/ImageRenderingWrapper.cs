@@ -35,10 +35,12 @@ internal readonly partial struct ImageRenderingWrapper
     }
 
     private IByteWriter CreateByteWriter(ComponentWriter writer) =>
-        bitsPerComponent == 16 ?
-            new ByteWriter16(writer) :
-            new NBitByteWriter(writer, bitsPerComponent);
-
+        bitsPerComponent switch
+        {
+            16 => new ByteWriter16(writer),
+            8 => new ByteWriter8(writer),
+            _ => new NBitByteWriter(writer, bitsPerComponent)
+        };
 
     private bool CanUseFastWriter(IColorSpace finalColorspace) =>
         finalColorspace == DeviceRgb.Instance &&

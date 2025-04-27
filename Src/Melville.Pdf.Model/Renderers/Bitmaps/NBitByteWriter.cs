@@ -2,16 +2,9 @@
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-internal class NBitByteWriter : ByteWriter
+internal class NBitByteWriter(ComponentWriter writer, int bits) : 
+    ByteWriter(MaxValueForBits(bits), writer)
 {
-    private int bits;
-
-    public NBitByteWriter(ComponentWriter writer, int bits) : 
-        base(MaxValueForBits(bits), writer)
-    {
-        this.bits = bits;
-    }
-
     private static byte MaxValueForBits(int bits) => (byte)((1 << bits) - 1);
 
     public override unsafe void WriteBytes(
