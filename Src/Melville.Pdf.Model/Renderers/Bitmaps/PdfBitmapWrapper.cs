@@ -35,9 +35,9 @@ internal class PdfBitmapWrapper(
             await attr.Stream.StreamContentAsync(context:this).CA());
         var row = 0;
         var column = 0;
+        var writer = byteWriter(finalColorSpace);
         while (true)
         {
-            var writer = byteWriter(finalColorSpace);
             var seq = await source.ReadAsync().CA();
             if (!c.LoadLPixels(seq, ref row, ref column, writer, out var readTo)) return;
             source.AdvanceTo(readTo, seq.Buffer.End);
