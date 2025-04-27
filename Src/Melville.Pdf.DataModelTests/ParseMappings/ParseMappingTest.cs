@@ -23,6 +23,18 @@ public class ParseMappingTest
             ]);
     }
     [Fact]
+    public void UnRegister()
+    {
+        var stream = new MemoryStream();
+        var monitor = stream.MonitorParsing();
+        stream.LogParsePosition("This is a Label");
+        monitor.UnRegister();
+        stream.LogParsePosition("Label 0");
+        monitor.Entries.Should().BeEquivalentTo([
+            new ParseMapEntry("This is a Label", 0, 0),
+            ]);
+    }
+    [Fact]
     public void ExplicitOffset()
     {
         var stream = new MemoryStream();
