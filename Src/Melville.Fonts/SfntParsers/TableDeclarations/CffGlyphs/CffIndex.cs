@@ -5,6 +5,7 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -59,6 +60,7 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
     private async ValueTask<CffIndex> InnerParseAsync(int sizeWidth)
     {
         var count = (uint)await pipe.ReadBigEndianUintAsync(sizeWidth).CA();
+        pipe.LogParsePosition($"Index Length: {count} (0x{count:X})");
         if (count == 0) return new CffIndex(root, 0, 0);
         var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
         var rootSource = root.OffsetFrom((uint)pipe.Position);
@@ -68,6 +70,7 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
         {
             var current = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
             Debug.Assert(current >= dataLength);
+            pipe.LogParsePosition($"Offset {i}: {current} (0x{current:X})");
             dataLength = current;
         }
         #else

@@ -1,55 +1,80 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using Melville.INPC;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Parsing.ParserMapping;
 
-public interface IParsMap
-{
-    public void StopCollecting();
-}
-
-public partial class ParseMapEntry
+public abstract partial class ParseMapEntryBase
 {
     [FromConstructor] public string Title { get; }
-    [FromConstructor] public int StartPos { get; }
-    [FromConstructor] public int NextPos { get; }
+    public abstract int StartPos { get; }
+    public abstract int NextPos { get; }
 }
 
-public class ParseMap: IParsMap
+public partial class ParseMapEntry: ParseMapEntryBase
+{
+    [FromConstructor] public override int StartPos { get; }
+    [FromConstructor] public override int NextPos { get; }
+}
+
+public partial class ParseMapTitle : ParseMapEntryBase
+{
+    [FromConstructor] public ParseMapTitle? Parent { get; }
+    private readonly List<ParseMapEntryBase> items = new();
+    public IReadOnlyList<ParseMapEntryBase> Items => items;
+    public override int StartPos => items.FirstOrDefault()?.StartPos ?? 0;
+    public override int NextPos => items.LastOrDefault()?.NextPos ?? 0;
+    public void Add(ParseMapEntryBase item) => items.Add(item);
+}
+
+public class ParseMap
 {
     private readonly HashSet<object> aliases = new();
-    private readonly List<ParseMapEntry> entries = new();
-    public IList<ParseMapEntry> Entries => entries;
+    public ParseMapTitle Root { get; } = new ParseMapTitle("Pasing Map Root", null);
+    private ParseMapTitle currentNode;
 
-    public void StopCollecting()
+    public ParseMap()
     {
+        currentNode = Root;
     }
 
-    public void AddAlias(object source) => aliases.Add(source);
+    [Conditional("DEBUG")]
+    public void AddAlias(object? source)
+    {
+        if (source == null) return;
+        aliases.Add(source);
+    }
 
     public bool MonitoringKey(object key) => aliases.Contains(key);
 
+    private int priorEndPoint = 0;
     public void AddEntry(string label, int position)
     {
-        entries.Add(new(label, StartPoint(), position));
+        currentNode.Add(new ParseMapEntry(label, priorEndPoint, position));
+        priorEndPoint = position;
     }
-
-    private int StartPoint() =>
-        entries.Count == 0 ? 0 : entries[^1].NextPos;
 
     [Conditional("DEBUG")]
-    public void UnRegister()
+    public void UnRegister() => ParseMapRegistry.Remove(this);
+
+    public static ParseMap CreateNew() => ParseMapRegistry.NewMap(null);
+
+    public void Indent(string title)
     {
-        
-        ParseMapRegistry.Remove(this);
+        var newNode = new ParseMapTitle(title, currentNode);
+        currentNode.Add(newNode);
+        currentNode = newNode;
     }
+
+    public void Outdent() => currentNode = currentNode.Parent ?? currentNode;
 }
 
 internal static class ParseMapRegistry
 {
     private static readonly Lock mutex = new();
     private static List<ParseMap> maps = new();
-    public static ParseMap NewMap(object source)
+    public static ParseMap NewMap(object? source)
     {
         var ret = new ParseMap();
         ret.AddAlias(source);
@@ -68,19 +93,47 @@ internal static class ParseMapRegistry
         }
     }
 
-    private static ParseMap? FindMap(object key)
-    {
-        lock (mutex)
-        {
-            return maps.FirstOrDefault(i => i.MonitoringKey(key));
-        }
-    }
+    private static ParseMap? FindMap(object key) => maps.FirstOrDefault(i => i.MonitoringKey(key));
 
     public static void Remove(ParseMap parseMap)
     {
         lock (mutex)
         {
             maps.Remove(parseMap);
+        }
+    }
+
+    public static void AddAlias(object key, object alias)
+    {
+        lock (mutex)
+        {
+            FindMap(key)?.AddAlias(alias);
+        }
+    }
+
+    public static void Indent(object alias, string title)
+    {
+        lock (mutex)
+        {
+            FindMap(alias)?.Indent(title);
+        }
+    }
+
+    public static void Outdent(object alias)
+    {
+        lock (mutex)
+        {
+            FindMap(alias)?.Outdent();
+        }
+    }
+
+    public static void PeerIndent(object alias, string title)
+    {
+        lock (mutex)
+        {
+            if (FindMap(alias) is not {} map) return;
+            map.Outdent();
+            map.Indent(title);
         }
     }
 }

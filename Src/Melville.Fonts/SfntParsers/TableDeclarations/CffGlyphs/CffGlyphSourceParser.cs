@@ -5,6 +5,7 @@ using System.Text;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -14,13 +15,20 @@ internal readonly struct CffGlyphSourceParser(
 {
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseGenericFontAsync()
     {
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ReadLoggedPipeFrom(0);
+        pipe.LogParsePosition("Parse CFF Font File");
+        pipe.IndentParseMap("Header");
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
         await pipe.SkipForwardToAsync(headerSize).CA();
+        pipe.LogParsePosition($"Skipped Space after the Header");
+        pipe.PeerIndentParseMap("Name Index");
         var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        pipe.PeerIndentParseMap("Top Index");
         var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var stringIndexOffset = pipe.Position;
+        pipe.PeerIndentParseMap("String Index");
         var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        pipe.PeerIndentParseMap("Global Subr Index");
         var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var globalSubroutineExecutor = new GlyphSubroutineExecutor(globalSubrIndex);
 
@@ -115,9 +123,13 @@ internal readonly struct CffGlyphSourceParser(
     {
         var reader = new SequenceReader<byte>(buffer);
         var majorVersion = reader.ReadBigEndianUint8();
+        pipe.LogParsePosition("Major Version");
         var minorVersion = reader.ReadBigEndianUint8();
+        pipe.LogParsePosition("Minor Version");
         var headerSize = reader.ReadBigEndianUint8();
+        pipe.LogParsePosition("Header Size");
         var offSize = reader.ReadBigEndianUint8();
+        pipe.LogParsePosition("Offset Size");
 
         pipe.AdvanceTo(reader.Position);
         Debug.Assert(majorVersion == 1);

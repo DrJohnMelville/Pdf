@@ -1,9 +1,11 @@
 ﻿using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
@@ -15,9 +17,10 @@ internal readonly partial struct RealizedFontFactory
 {
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
-    public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream)
+    public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream, ParseMap? map)
     {
         var source = await pdfStream.StreamContentAsync().CA();
+        map?.AddAlias(source);
         return await FromCSharpStreamAsync(source).CA();
     }
     
@@ -31,6 +34,7 @@ internal readonly partial struct RealizedFontFactory
     private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index)
     {
         var fontSource = MultiplexSourceFactory.Create(source);
+        source.AddParseMapAlias(fontSource);
         var font = await RootFontParser.ParseAsync(fontSource).CA();
         return font[index];
     }

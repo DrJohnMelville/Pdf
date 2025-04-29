@@ -13,5 +13,8 @@
         <TabItem Header="Specific">
             <viewFrames:ViewFrame Content="{Binding SpecificFont}"/>
          </TabItem>
+        <TabItem Header="Parsing Mao">
+            <viewFrames:ViewFrame Content="{Binding Map}"/>
+        </TabItem>
     </TabControl>
 </UserControl>

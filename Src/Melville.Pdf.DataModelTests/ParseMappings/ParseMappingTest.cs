@@ -17,7 +17,7 @@ public class ParseMappingTest
         var monitor = stream.MonitorParsing();
         stream.LogParsePosition("This is a Label");
         stream.LogParsePosition("Label 0");
-        monitor.Entries.Should().BeEquivalentTo([
+        monitor.Root.Items.Should().BeEquivalentTo([
             new ParseMapEntry("This is a Label", 0, 0),
             new ParseMapEntry("Label 0", 0, 0),
             ]);
@@ -30,7 +30,7 @@ public class ParseMappingTest
         stream.LogParsePosition("This is a Label");
         monitor.UnRegister();
         stream.LogParsePosition("Label 0");
-        monitor.Entries.Should().BeEquivalentTo([
+        monitor.Root.Items.Should().BeEquivalentTo([
             new ParseMapEntry("This is a Label", 0, 0),
             ]);
     }
@@ -41,7 +41,7 @@ public class ParseMappingTest
         var monitor = stream.MonitorParsing();
         stream.LogParsePosition("This is a Label", 5);
         stream.LogParsePosition("Label 0", 10);
-        monitor.Entries.Should().BeEquivalentTo([
+        monitor.Root.Items.Should().BeEquivalentTo([
             new ParseMapEntry("This is a Label", 0, 5),
             new ParseMapEntry("Label 0", 5, 10),
             ]);
@@ -55,7 +55,7 @@ public class ParseMappingTest
         stream.LogParsePosition("This is a Label");
         stream.Write("12345"u8);
         stream.LogParsePosition("Label 0", 12);
-        monitor.Entries.Should().BeEquivalentTo([
+        monitor.Root.Items.Should().BeEquivalentTo([
             new ParseMapEntry("This is a Label", 0, 5),
             new ParseMapEntry("Label 0", 5, 22),
             ]);
@@ -71,7 +71,7 @@ public class ParseMappingTest
         var result = reader.Read();
         reader.AdvanceTo(result.Buffer.GetPosition(3));
         reader.LogParsePosition("Label 0");
-        monitor.Entries.Should().BeEquivalentTo([
+        monitor.Root.Items.Should().BeEquivalentTo([
             new ParseMapEntry("This is a Label", 0, 0),
             new ParseMapEntry("Label 0", 0, 3),
             ]);

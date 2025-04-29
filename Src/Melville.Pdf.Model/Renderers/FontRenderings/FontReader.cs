@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -16,14 +17,17 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 public readonly struct FontReader
 {
     private readonly IDefaultFontMapper defaultMapper;
+    private readonly ParseMap? parseMap;
 
     /// <summary>
     /// Create a FontReader
     /// </summary>
     /// <param name="defaultMapper">IDefaultFontMapper to map the builting fonts to real fonts</param>
-    public FontReader(IDefaultFontMapper defaultMapper)
+    /// <param name="parseMap">A aparsemap to monitor the font parsing process</param>
+    public FontReader(IDefaultFontMapper defaultMapper, ParseMap? parseMap = null)
     {
         this.defaultMapper = defaultMapper;
+        this.parseMap = parseMap;
     }
     
     /// <summary>
@@ -58,7 +62,7 @@ public readonly struct FontReader
         // from the FontStreamSource parameter.
         await (
                 await fontStreamSource.EmbeddedStreamAsync().CA() is { } fontAsStream ?
-                    factory.FromStreamAsync(fontAsStream) :
+                    factory.FromStreamAsync(fontAsStream, parseMap) :
                     SystemFontByNameAsync(fontStreamSource, factory)
               ).CA();
 

@@ -5,6 +5,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.Type1TextParsers;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts;
