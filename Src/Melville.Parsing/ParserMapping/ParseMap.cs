@@ -1,37 +1,16 @@
 ﻿using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
-using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 
 namespace Melville.Parsing.ParserMapping;
-
-public abstract partial class ParseMapEntryBase
-{
-    [FromConstructor] public string Title { get; }
-    public abstract int StartPos { get; }
-    public abstract int NextPos { get; }
-}
-
-public partial class ParseMapEntry: ParseMapEntryBase
-{
-    [FromConstructor] public override int StartPos { get; }
-    [FromConstructor] public override int NextPos { get; }
-}
-
-public partial class ParseMapTitle : ParseMapEntryBase
-{
-    [FromConstructor] public ParseMapTitle? Parent { get; }
-    private readonly List<ParseMapEntryBase> items = new();
-    public IReadOnlyList<ParseMapEntryBase> Items => items;
-    public override int StartPos => items.FirstOrDefault()?.StartPos ?? 0;
-    public override int NextPos => items.LastOrDefault()?.NextPos ?? 0;
-    public void Add(ParseMapEntryBase item) => items.Add(item);
-}
 
 public class ParseMap
 {
     private readonly HashSet<object> aliases = new();
     public ParseMapTitle Root { get; } = new ParseMapTitle("Pasing Map Root", null);
+    public byte[] Data { get; internal set; } = [];
+  
     private ParseMapTitle currentNode;
 
     public ParseMap()
@@ -68,73 +47,32 @@ public class ParseMap
     }
 
     public void Outdent() => currentNode = currentNode.Parent ?? currentNode;
+
+    [Conditional("DEBUG")]
+    public void SetData(byte[] newData) => Data = newData;
 }
 
-internal static class ParseMapRegistry
+public static class ParseMapSetDataOperations
 {
-    private static readonly Lock mutex = new();
-    private static List<ParseMap> maps = new();
-    public static ParseMap NewMap(object? source)
+    [Conditional("DEBUG")]
+    public static void SetData(this ParseMap? map, byte[] source)
     {
-        var ret = new ParseMap();
-        ret.AddAlias(source);
-        lock (mutex)
-        {
-            maps.Add(ret);
-        }
-        return ret;
+        if (map == null) return;
+        map.SetData(source);
     }
 
-    public static void LogToMap(object key, string label, int streamPosition)
+#if DEBUG
+    public static async ValueTask SetDataAsync(this ParseMap? map, Stream s)
     {
-        lock (mutex)
-        {
-            FindMap(key)?.AddEntry(label, streamPosition);
-        }
+        if (map == null) return;
+        var memory = new MemoryStream();
+        await s.CopyToAsync(memory).CA();
+        map.SetData(memory.ToArray());
+        await memory.DisposeAsync().CA();
+        await s.DisposeAsync().CA();
     }
-
-    private static ParseMap? FindMap(object key) => maps.FirstOrDefault(i => i.MonitoringKey(key));
-
-    public static void Remove(ParseMap parseMap)
-    {
-        lock (mutex)
-        {
-            maps.Remove(parseMap);
-        }
-    }
-
-    public static void AddAlias(object key, object alias)
-    {
-        lock (mutex)
-        {
-            FindMap(key)?.AddAlias(alias);
-        }
-    }
-
-    public static void Indent(object alias, string title)
-    {
-        lock (mutex)
-        {
-            FindMap(alias)?.Indent(title);
-        }
-    }
-
-    public static void Outdent(object alias)
-    {
-        lock (mutex)
-        {
-            FindMap(alias)?.Outdent();
-        }
-    }
-
-    public static void PeerIndent(object alias, string title)
-    {
-        lock (mutex)
-        {
-            if (FindMap(alias) is not {} map) return;
-            map.Outdent();
-            map.Indent(title);
-        }
-    }
+#else
+    public static ValueTask SetDataAsync(this ParseMap? map, Stream s) =>
+        return s.DisposeAsync();
+#endif
 }
-

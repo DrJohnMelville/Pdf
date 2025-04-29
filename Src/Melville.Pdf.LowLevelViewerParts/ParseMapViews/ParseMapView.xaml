@@ -12,7 +12,7 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock FontSize="30">Parsing Map</TextBlock>
+        <TextBlock FontSize="30" Text="{Binding Map.Data.Length}"/>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Width="5" VerticalAlignment="Stretch"/>
         <TreeView Grid.Column="1" ItemsSource="{Binding Map.Root.Items}" Margin="5 0 0 0">
             <TreeView.ItemTemplate>

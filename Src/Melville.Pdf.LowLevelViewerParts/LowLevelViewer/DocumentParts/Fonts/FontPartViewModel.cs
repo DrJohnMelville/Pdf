@@ -41,7 +41,8 @@ public partial class FontPartViewModel: DocumentPart
         try
         {
             var parseMap = ParseMap.CreateNew();
-            Font = await new FontReader(WindowsDefaultFonts.Instance, parseMap).DictionaryToRealizedFontAsync(fontDic);
+            Font = await new FontReader(WindowsDefaultFonts.Instance, parseMap)
+                .DictionaryToRealizedFontAsync(fontDic);
             parseMap.UnRegister();
             var generic = Font.ExtractGenericFont();
             if (generic == null) return;

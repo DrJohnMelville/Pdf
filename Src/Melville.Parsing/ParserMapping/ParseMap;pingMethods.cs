@@ -47,6 +47,7 @@ public static partial class ParseMappingMethods
     public static void AddParseMapAlias(this IMultiplexSource s, object alias) =>
         ParseMapRegistry.AddAlias(s, alias);
 
+
     public static IByteSource ReadLoggedPipeFrom(this IMultiplexSource src, int position)
     {
         var ret = src.ReadPipeFrom(position);

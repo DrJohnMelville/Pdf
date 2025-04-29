@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
@@ -19,6 +20,7 @@ internal readonly partial struct RealizedFontFactory
 
     public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream, ParseMap? map)
     {
+        await map.SetDataAsync(pdfStream).CA();
         var source = await pdfStream.StreamContentAsync().CA();
         map?.AddAlias(source);
         return await FromCSharpStreamAsync(source).CA();
