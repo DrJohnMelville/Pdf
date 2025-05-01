@@ -14,10 +14,14 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock FontSize="30" Text="{Binding Map.Data.Length}"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <local:HexDisplay Data="{Binding Map.Data}" Colors ="{Binding ColorAssignments}"/>
+        </ScrollViewer>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Width="5" VerticalAlignment="Stretch"/>
         <TreeView Grid.Column="1" ItemsSource="{Binding Map.Root.Items}" Margin="5 0 0 0"
-                  SelectedItemChanged="{eventBindings:EventBinding SelectNode}">
+                  SelectedItemChanged="{eventBindings:EventBinding SelectNode}"
+                  MouseRightButtonUp="{eventBindings:EventBinding RootColors}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate 
                      ItemsSource="{Binding Items}">
