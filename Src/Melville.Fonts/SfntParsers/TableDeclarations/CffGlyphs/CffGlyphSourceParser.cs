@@ -123,13 +123,13 @@ internal readonly struct CffGlyphSourceParser(
     {
         var reader = new SequenceReader<byte>(buffer);
         var majorVersion = reader.ReadBigEndianUint8();
-        pipe.LogParsePosition("Major Version");
+        pipe.LogParsePosition($"Major Version: {majorVersion}", (int)reader.Consumed);
         var minorVersion = reader.ReadBigEndianUint8();
-        pipe.LogParsePosition("Minor Version");
+        pipe.LogParsePosition($"Minor Version: {minorVersion}", (int)reader.Consumed);
         var headerSize = reader.ReadBigEndianUint8();
-        pipe.LogParsePosition("Header Size");
+        pipe.LogParsePosition($"Header Size: {headerSize}", (int)reader.Consumed);
         var offSize = reader.ReadBigEndianUint8();
-        pipe.LogParsePosition("Offset Size");
+        pipe.LogParsePosition($"Offset Size: {offSize}", (int)reader.Consumed);
 
         pipe.AdvanceTo(reader.Position);
         Debug.Assert(majorVersion == 1);

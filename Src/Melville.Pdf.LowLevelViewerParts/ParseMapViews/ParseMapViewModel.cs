@@ -25,6 +25,7 @@ public partial class ParseMapViewModel
                 break;
             case ParseMapEntry pme:
                 ColorAssignments?.AssignColors([(pme.StartPos, pme.NextPos)]);
+                RedrawColors();
                 break;
             default:
                 AssignColorsFor(Map.Root);
@@ -38,10 +39,15 @@ public partial class ParseMapViewModel
     {
         ColorAssignments.AssignColors(title.Items
             .Select(x => (x.StartPos, x.NextPos)));
+        RedrawColors();
+
+    }
+
+    private void RedrawColors()
+    {
         var save = ColorAssignments;
         ColorAssignments = null;
         ColorAssignments = save;
         ((IExternalNotifyPropertyChanged)this).OnPropertyChanged("");
-
     }
 }

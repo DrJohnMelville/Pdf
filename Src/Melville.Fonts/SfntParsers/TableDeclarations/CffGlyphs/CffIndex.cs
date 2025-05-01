@@ -63,21 +63,34 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
         pipe.LogParsePosition($"Index Length: {count} (0x{count:X})");
         if (count == 0) return new CffIndex(root, 0, 0);
         var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
+        pipe.LogParsePosition($"Offset Size {offsetSize}");
         var rootSource = root.OffsetFrom((uint)pipe.Position);
         #if DEBUG
         ulong dataLength = 0;
+        pipe.IndentParseMap("OffsetArray");
+        var offsets = new ulong[count + 1];
         for (int i = 0; i < count+1; i++)
         {
             var current = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
             Debug.Assert(current >= dataLength);
             pipe.LogParsePosition($"Offset {i}: {current} (0x{current:X})");
-            dataLength = current;
+            offsets[i] = dataLength = current;
+        }
+
+        var startLoc = pipe.Position;
+        pipe.OutdentParseMap();
+        for (int i = 0; i < count+1; i++)
+        {
+            await pipe.SkipForwardToAsync(startLoc + (long)offsets[i] - 1).CA();
+            if (i > 0)
+                pipe.LogParsePosition($"Entry #{i}");
+
         }
         #else
         await pipe.SkipOverAsync((int)count * offsetSize).CA();
         var dataLength = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+        await pipe.SkipOverAsync((int)(dataLength - 1)).CA();
         #endif
-        await pipe.SkipOverAsync((int)(dataLength-1)).CA();
         return new CffIndex(rootSource, count, offsetSize);
     }
 

@@ -15,11 +15,11 @@ public static partial class ParseMappingMethods
     private static ParseMap CreateFlyweight ()
     {
         var ret = new ParseMap();
-        ret.AddEntry("Parse mapping is only supported in debug builds");
+        ret.AddEntry("Parse mapping is only supported in debug builds", 0);
         return ret;
     }
-    public static ParseMap MonitorParsing(this Stream parseSource) => flyweight;
-    public static ParseMap MonitorParsing(this IByteSource parseSource) => flyweight;
+    public static ParseMap MonitorParsing(this Stream parseSource) => flyweightMap;
+    public static ParseMap MonitorParsing(this IByteSource parseSource) => flyweightMap;
     
 #endif
 

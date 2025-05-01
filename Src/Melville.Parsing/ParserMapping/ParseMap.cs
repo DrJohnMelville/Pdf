@@ -73,6 +73,6 @@ public static class ParseMapSetDataOperations
     }
 #else
     public static ValueTask SetDataAsync(this ParseMap? map, Stream s) =>
-        return s.DisposeAsync();
+         s.DisposeAsync();
 #endif
 }
