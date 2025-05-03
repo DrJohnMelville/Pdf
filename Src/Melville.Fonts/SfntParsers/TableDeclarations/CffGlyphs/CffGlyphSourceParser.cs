@@ -31,6 +31,7 @@ internal readonly struct CffGlyphSourceParser(
         pipe.PeerIndentParseMap("Global Subr Index");
         var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var globalSubroutineExecutor = new GlyphSubroutineExecutor(globalSubrIndex);
+        pipe.OutdentParseMap();
 
         if (topIndex.Length == 1) 
             return await CreateSingleFontAsync(
@@ -58,8 +59,10 @@ internal readonly struct CffGlyphSourceParser(
         GlyphSubroutineExecutor globalSubroutineExecutor, int index, string fontName)
     {
         using var firstFontTopDictData = await topIndex.ItemDataAsync(index).CA();
+        firstFontTopDictData.Bookmark.IndentParseMap($"Font # {index}");
+        firstFontTopDictData.Bookmark.JumpToParseMap(0);
         ParseTopDict(
-            firstFontTopDictData.Sequence, out var charStringOffset,
+            firstFontTopDictData, out var charStringOffset,
             out var privateOffset, out var privateSize, out var charSetOffset,
             out var encodingOffset);
         var font = new CffGenericFont(source, unitsPerEm,
@@ -67,6 +70,7 @@ internal readonly struct CffGlyphSourceParser(
             await ReadCharStringIndexAsync(charStringOffset).CA(),
             privateOffset, privateSize, globalSubroutineExecutor, charSetOffset,
             encodingOffset);
+        firstFontTopDictData.Bookmark.OutdentParseMap();
         return font;
     }
 
@@ -82,7 +86,7 @@ internal readonly struct CffGlyphSourceParser(
     private const int encodingInstruction = 16;
     private const int charStringsInstruction = 17;
     private const int privateInstruction = 18;
-    private static void ParseTopDict(ReadOnlySequence<byte> first, 
+    private static void ParseTopDict(DisposableSequence first, 
         out long charStringOffset, 
         out long privateOffset, 
         out long privateSize, 
@@ -91,7 +95,8 @@ internal readonly struct CffGlyphSourceParser(
     {
         charStringOffset = privateOffset = privateSize = charSetOffset = encodingOffset = 0;
         Span<DictValue> result = stackalloc DictValue[2];
-        var dictParser = new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(first), result);
+        var dictParser = new DictParser<CffDictionaryDefinition>(
+            new SequenceReader<byte>(first.Sequence), first.Bookmark, result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             switch (instr)

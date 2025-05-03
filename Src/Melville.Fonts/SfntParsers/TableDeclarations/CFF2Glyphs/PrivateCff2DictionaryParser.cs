@@ -49,7 +49,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         {
             if (offsets[i + count] == 0)
             {
-                procIndexes[i] = new CffIndex(source, 0, 0);
+                procIndexes[i] = new CffIndex(source, 0, 0, null);
                 continue;
             }
 
@@ -86,7 +86,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         var reader = new SequenceReader<byte>(trimmed);
         Span<DictValue> operands = stackalloc DictValue[1];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            reader, operands);
+            reader, null, operands);
         if (!dictReader.TryFindEntry(0x13)) return 0;
         return operands[0].IntValue;
     }
@@ -96,7 +96,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         var reader = new SequenceReader<byte>(source);
         Span<DictValue> operands = stackalloc DictValue[2];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            reader, operands);
+            reader, null, operands);
         if (!dictReader.TryFindEntry(0x12)) return (0, 0);
         return (operands[0].IntValue, operands[1].IntValue);
     }

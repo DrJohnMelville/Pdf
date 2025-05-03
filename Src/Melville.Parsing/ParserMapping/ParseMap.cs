@@ -2,10 +2,30 @@
 using System.Diagnostics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Parsing.ParserMapping;
 
-public class ParseMap
+public interface IParseMap
+{
+    public void AddAlias(object? source);
+    public bool MonitoringKey(object key);
+    public void AddEntry(string label, int position);
+    public void Indent(string title);
+    public void Outdent();
+    public void SetData(byte[] newData);
+    public void JumpTo(int position);
+
+    public void PeerIndent(string title)
+    {
+        Outdent();
+        Indent(title);
+    }
+}
+
+public record ParseMapBookmark(long Position);
+
+public class ParseMap: IParseMap
 {
     private readonly HashSet<object> aliases = new();
     public ParseMapTitle Root { get; } = new ParseMapTitle("Pasing Map Root", null);
@@ -13,12 +33,8 @@ public class ParseMap
   
     private ParseMapTitle currentNode;
 
-    public ParseMap()
-    {
-        currentNode = Root;
-    }
+    public ParseMap() => currentNode = Root;
 
-    [Conditional("DEBUG")]
     public void AddAlias(object? source)
     {
         if (source == null) return;
@@ -31,10 +47,11 @@ public class ParseMap
     public void AddEntry(string label, int position)
     {
         currentNode.Add(new ParseMapEntry(label, priorEndPoint, position));
-        priorEndPoint = position;
+        JumpTo(position);
     }
 
-    [Conditional("DEBUG")]
+    public void JumpTo(int position) => priorEndPoint = position;
+
     public void UnRegister() => ParseMapRegistry.Remove(this);
 
     public static ParseMap CreateNew() => ParseMapRegistry.NewMap(null);
@@ -48,7 +65,6 @@ public class ParseMap
 
     public void Outdent() => currentNode = currentNode.Parent ?? currentNode;
 
-    [Conditional("DEBUG")]
     public void SetData(byte[] newData) => Data = newData;
 }
 

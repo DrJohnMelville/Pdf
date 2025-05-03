@@ -20,7 +20,7 @@ public class ReadStandardEncoding
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
         return new(multiplexSource,
             1000, "Fake Font", 0,
-            new CffIndex(null!, glyphCount, 1), 0, 0, null!, charSetOffset, offset);
+            new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
     }
 
     [Fact]

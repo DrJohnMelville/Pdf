@@ -36,7 +36,18 @@ public partial class FontPartViewModel: DocumentPart
         }
     }
 
+    private readonly SemaphoreSlim loadFontSemaphore = new (1, 1);
     private async void LoadFont()
+    {
+        await loadFontSemaphore.WaitAsync();
+        if (SpecificFont is null)
+        {
+            await InnerLoadFont();
+        }
+        loadFontSemaphore.Release();
+    }
+
+    private async Task InnerLoadFont()
     {
         try
         {
@@ -54,12 +65,12 @@ public partial class FontPartViewModel: DocumentPart
         catch (PdfParseException e)
         {
             SpecificFont = $"""
-                Font Parsing error ({e.Message})
-                This may be because CID fonts are not real fonts, and cannot be parsed.
-                """;
+                            Font Parsing error ({e.Message})
+                            This may be because CID fonts are not real fonts, and cannot be parsed.
+                            """;
         }
         catch (Exception)
         {
         }
-   }
+    }
 }

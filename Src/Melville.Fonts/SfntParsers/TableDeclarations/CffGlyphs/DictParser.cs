@@ -1,14 +1,13 @@
 ﻿using System.Buffers;
-using System.ComponentModel;
-using System.Diagnostics;
-using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
+using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 {
     [FromConstructor] private SequenceReader<byte> source;
+    [FromConstructor] private readonly ParseMapBookmark? bookmark;
     [FromConstructor] private readonly Span<DictValue> operands;
     public int OperandPosition { get; private set; } = 0;
     public ReadOnlySequence<byte> UnreadSequence => source.UnreadSequence;
@@ -33,8 +32,9 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
             switch (T.ClassifyEntry(value))
             {
                 // handle prefix operator
-                case DictParserOperations.TwoByteInstruction: return ReadTwoByteInstruction();
-                case DictParserOperations.OneByteInstruction: return value;
+                case DictParserOperations.TwoByteInstruction: 
+                    return LogInstruction(ReadTwoByteInstruction());
+                case DictParserOperations.OneByteInstruction: return LogInstruction(value);
                 case DictParserOperations.RawTwoByteInteger:
                     ReadRawTwoByteInteger();
                     break;
@@ -64,7 +64,14 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
         return 0xFF;
     }
 
-    private int ReadTwoByteInstruction() => source.TryRead(out var b1) ? (12<<8) | b1 :0xFF;
+    private int LogInstruction(int instruction)
+    {
+        bookmark.LogParsePosition($"{DictionaryOperatorNamer.Title(instruction)}", (int)source.Consumed);
+        return instruction;
+    }
+
+    private int ReadTwoByteInstruction() => 
+        source.TryRead(out var b1) ? (12<<8) | b1 :0xFF;
 
     private void ReadSingle()
     {
@@ -147,6 +154,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     private void PushOperand(DictValue value)
     {
         operands[OperandPosition] = value;
+        bookmark.LogParsePosition($"Operand {OperandPosition}: {value}", (int)source.Consumed);
         OperandPosition++;
         OperandPosition %= operands.Length;
     }

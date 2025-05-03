@@ -18,7 +18,7 @@ internal readonly struct TopDict
 
         var reader = new SequenceReader<byte>(source);
         var parser = new DictParser<CffDictionaryDefinition>(
-            reader, stackalloc DictValue[6]);
+            reader, null, stackalloc DictValue[6]);
 
         while (parser.ReadNextInstruction(0) is var instr and not 255)
         {

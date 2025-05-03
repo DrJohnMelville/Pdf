@@ -14,6 +14,7 @@ internal readonly partial struct DisposableSequence : IDisposable
 {
     [FromConstructor] private readonly IByteSource holder;
     [FromConstructor] public ReadOnlySequence<byte> Sequence { get; }
+    [FromConstructor] public ParseMapBookmark? Bookmark { get; }
 
     public void Dispose() => holder.Dispose();
 }
@@ -23,6 +24,7 @@ internal readonly partial struct CffIndex
     [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] public uint Length { get; }
     [FromConstructor] private readonly byte offsetSize;
+    [FromConstructor] private readonly ParseMapBookmark? bookmark;
 
     /// <summary>
     /// Get an item from the index
@@ -45,8 +47,10 @@ internal readonly partial struct CffIndex
         
         pipe = pipe.AdvanceOrReplacePipe(source, (long)startOfData);
 
+        
         var result = await pipe.ReadAtLeastAsync(length).CA();
-        return new(pipe, result.Buffer.Slice(0, length));
+        return new(pipe, result.Buffer.Slice(0, length),
+            bookmark.CreateParseMapBookmark((int)startOfData));
     }
 
     private uint FirstItemOffset() => (Length + 1) * offsetSize;
@@ -61,11 +65,14 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
     {
         var count = (uint)await pipe.ReadBigEndianUintAsync(sizeWidth).CA();
         pipe.LogParsePosition($"Index Length: {count} (0x{count:X})");
-        if (count == 0) return new CffIndex(root, 0, 0);
+        if (count == 0) return new CffIndex(root, 0, 0, null);
         var offsetSize = (byte) await pipe.ReadBigEndianUintAsync(1).CA();
         pipe.LogParsePosition($"Offset Size {offsetSize}");
         var rootSource = root.OffsetFrom((uint)pipe.Position);
+        pipe.AddParseMapAlias(rootSource);
+        ParseMapBookmark? bookmark = null;
         #if DEBUG
+        bookmark = pipe.CreateParseMapBookmark();
         ulong dataLength = 0;
         pipe.IndentParseMap("OffsetArray");
         var offsets = new ulong[count + 1];
@@ -91,7 +98,7 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, IByteSource pipe)
         var dataLength = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         await pipe.SkipOverAsync((int)(dataLength - 1)).CA();
         #endif
-        return new CffIndex(rootSource, count, offsetSize);
+        return new CffIndex(rootSource, count, offsetSize, bookmark);
     }
 
 }

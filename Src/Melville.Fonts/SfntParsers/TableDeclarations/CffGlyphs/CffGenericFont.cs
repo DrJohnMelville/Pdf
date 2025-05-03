@@ -40,7 +40,7 @@ internal partial class CffGenericFont :
         var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
             privateDictBytes.Buffer.Slice(0, privateSize));
 
-        if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0);
+        if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0, null);
 
         var pipe2Position = privateSubrsOffset + privateOffset;
         using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
@@ -53,7 +53,8 @@ internal partial class CffGenericFont :
     private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
     {
         Span<DictValue> result = stackalloc DictValue[1];
-        return new DictParser<CffDictionaryDefinition>(new SequenceReader<byte>(slice), result)
+        return new DictParser<CffDictionaryDefinition>(
+                new SequenceReader<byte>(slice), null, result)
             .TryFindEntry(subrsInstruction)
             ? result[0].IntValue
             : 0;
@@ -76,7 +77,7 @@ internal partial class CffGenericFont :
         // invalid file otherwise, so this is not going to misread any valid font
         // file.
         if (stringIndexOffset == 0)
-            return new CffStringIndex(new CffIndex(source, 0, 0));
+            return new CffStringIndex(new CffIndex(source, 0, 0, null));
 
         using var stringsPipe =
             source.ReadPipeFrom(stringIndexOffset, stringIndexOffset);

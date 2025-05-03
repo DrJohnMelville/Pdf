@@ -15,15 +15,22 @@
             return ret;
         }
 
-        public static void LogToMap(object key, string label, int streamPosition)
+
+        public static IParseMap? FindMap(object? key) => key switch
+        {
+            null => null,
+            IParseMap ret => ret,
+            _ => SearchForMap(key)
+        };
+
+        private static ParseMap? SearchForMap(object key)
         {
             lock (mutex)
             {
-                FindMap(key)?.AddEntry(label, streamPosition);
+                return maps.FirstOrDefault(i => i.MonitoringKey(key));
             }
         }
 
-        private static ParseMap? FindMap(object key) => maps.FirstOrDefault(i => i.MonitoringKey(key));
 
         public static void Remove(ParseMap parseMap)
         {
@@ -33,38 +40,5 @@
             }
         }
 
-        public static void AddAlias(object key, object alias)
-        {
-            lock (mutex)
-            {
-                FindMap(key)?.AddAlias(alias);
-            }
-        }
-
-        public static void Indent(object alias, string title)
-        {
-            lock (mutex)
-            {
-                FindMap(alias)?.Indent(title);
-            }
-        }
-
-        public static void Outdent(object alias)
-        {
-            lock (mutex)
-            {
-                FindMap(alias)?.Outdent();
-            }
-        }
-
-        public static void PeerIndent(object alias, string title)
-        {
-            lock (mutex)
-            {
-                if (FindMap(alias) is not {} map) return;
-                map.Outdent();
-                map.Indent(title);
-            }
-        }
     }
 }
