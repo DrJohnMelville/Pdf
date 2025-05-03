@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Net.Http.Headers;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
@@ -111,20 +112,33 @@ internal partial class CffGenericFont :
 
     public async ValueTask<ICmapImplementation> GetByIndexAsync(int index)
     {
+        return await ReadCmapAsync(null).CA();
+    }
+
+    private async Task<ICmapImplementation> ReadCmapAsync(ParseMapBookmark? parseMapAncestor)
+    {
         var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
         var target = new MemoryTarget(data.AsMemory(0,(int)charStringIndex.Length));
         await MapCharSetAsync(target).CA();
 
         using var sidDecoder = new GlyphFromSid(data);
 
-       return new SingleArrayCmap<byte>(1, 0,
+        return new SingleArrayCmap<byte>(1, 0,
             encodingOffset switch
             {
                 0 => new PredefinedEncodings(sidDecoder).Standard(),
                 1 => new PredefinedEncodings(sidDecoder).Expert(),
-                _ => await new CffEncodingReader(
-                    source.ReadPipeFrom(encodingOffset), sidDecoder).ParseAsync().CA()
+                _ => await ReadCustomEncoding(sidDecoder, parseMapAncestor)
             });
+    }
+
+    private ConfiguredValueTaskAwaitable<byte[]> ReadCustomEncoding(GlyphFromSid sidDecoder,
+        ParseMapBookmark? mapAncestor)
+    {
+        var readPipeFrom = source.ReadPipeFrom(encodingOffset, encodingOffset);
+        mapAncestor.AddParseMapAlias(readPipeFrom);
+        return new CffEncodingReader(
+            readPipeFrom, sidDecoder).ParseAsync().CA();
     }
 
     public ValueTask<ICmapImplementation?> GetByPlatformEncodingAsync(int platform, int encoding) =>

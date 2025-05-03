@@ -2,6 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -18,6 +19,7 @@ internal partial class CffGenericFont
     {
         await ParsePrivateDictAsync().CA();
         await ParseCharSetAsync().CA();
+        await ParseEncodingAsync().CA();
     }
 
     private async Task ParsePrivateDictAsync()
@@ -47,16 +49,16 @@ internal partial class CffGenericFont
         var bookMark = source.CreateParseMapBookmark((int)charSetOffset);
         return charSetOffset switch
         {
-            0 => BuiltinCharSetAsync("IsoAdobe", bookMark),
-            1 => BuiltinCharSetAsync("Expert", bookMark),
-            2 => BuiltinCharSetAsync("ExpertSubset", bookMark),
+            0 => LogBuiltin("Built-in CharSet IsoAdobe", bookMark),
+            1 => LogBuiltin("Built-in CharSet Expert", bookMark),
+            2 => LogBuiltin("Built-in CharSet ExpertSubset", bookMark),
             _ => CustomCharsetAsync(bookMark)
         };
     }
 
-    private ValueTask BuiltinCharSetAsync(string charset, ParseMapBookmark bookmark)
+    private ValueTask LogBuiltin(string charset, ParseMapBookmark bookmark)
     {
-        bookmark.LogParsePosition($"Built-in CharSet {charset}");
+        bookmark.LogParsePosition(charset);
         return ValueTask.CompletedTask;
     }
 
@@ -80,6 +82,27 @@ internal partial class CffGenericFont
             return ValueTask.CompletedTask;
         }
     }
+
+    private ValueTask ParseEncodingAsync()
+    {
+        var bookmark = source.CreateParseMapBookmark((int)encodingOffset);
+        bookmark.JumpToParseMap(0);
+        return encodingOffset switch
+        {
+            0 => LogBuiltin("Built-in Encoding Standard", bookmark),
+            1 => LogBuiltin("Built-in Encoding Expert", bookmark),
+            _ => CustomEncodingAsync(bookmark)
+        };
+    }
+
+    private async ValueTask CustomEncodingAsync(ParseMapBookmark? bookmark)
+    {
+        bookmark.IndentParseMap("Custom Encoding");
+        bookmark.JumpToParseMap(0);
+            ((await ReadCmapAsync(bookmark).CA()) as IDisposable )?.Dispose();
+        bookmark.OutdentParseMap();
+    }
+
 
 #else
         public ValueTask TryAddToParseMapAsync() => ValueTask.CompletedTask;
