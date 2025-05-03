@@ -7,6 +7,7 @@ using System.Windows;
 using Melville.Fonts;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 namespace Melville.FontViewer.Home;
@@ -30,10 +31,17 @@ public class HomeViewModel
             return;
         }
 
-        var fonts = await 
-            RootFontParser.ParseAsync(
-                MultiplexSourceFactory.Create(await file.OpenRead()));
-        window.NavigateTo(new MultiFontViewModel(fonts));
+        var map = ParseMap.CreateNew();
+        using (var src = await file.OpenRead())
+        {
+            await map.SetDataAsync(src);
+        }
+
+        var multiplexSource = MultiplexSourceFactory.Create(await file.OpenRead());
+        map.AddAlias(multiplexSource);
+        var fonts = await RootFontParser.ParseAsync(multiplexSource);   
+        map.UnRegister();
+        window.NavigateTo(new MultiFontViewModel(fonts, map));
     }
 
 }
