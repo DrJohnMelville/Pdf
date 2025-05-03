@@ -154,7 +154,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     private void PushOperand(DictValue value)
     {
         operands[OperandPosition] = value;
-        bookmark.LogParsePosition($"Operand {OperandPosition}: {value}", (int)source.Consumed);
+        bookmark.LogParsePosition($"{OperandPosition}: {value}", (int)source.Consumed);
         OperandPosition++;
         OperandPosition %= operands.Length;
     }

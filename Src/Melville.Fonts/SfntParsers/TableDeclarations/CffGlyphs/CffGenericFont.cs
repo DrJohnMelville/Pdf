@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.IO.Pipelines;
 using System.Net.Http.Headers;
 using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
@@ -7,6 +8,7 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -30,13 +32,12 @@ internal partial class CffGenericFont :
         new CffGlyphSource(charStringIndex,
             globalSubroutineExecutor,
             new GlyphSubroutineExecutor(
-                await GetPrivateSubrsAsync(privateOffset, privateSize).CA()),
+                await GetPrivateSubrsAsync().CA()),
             Matrix3x2.CreateScale(1f / unitsPerEm), []);
 
-    private async ValueTask<CffIndex> GetPrivateSubrsAsync(long privateOffset, long privateSize)
+    private async ValueTask<CffIndex> GetPrivateSubrsAsync()
     {
-        using var pipe = source.ReadPipeFrom(privateOffset, privateOffset);
-        var privateDictBytes = await pipe.ReadAtLeastAsync((int)privateSize).CA();
+        var privateDictBytes = await PrivateDictBytes().CA( );
         var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
             privateDictBytes.Buffer.Slice(0, privateSize));
 
@@ -45,6 +46,13 @@ internal partial class CffGenericFont :
         var pipe2Position = privateSubrsOffset + privateOffset;
         using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
         return await new CFFIndexParser(source, pipe2).ParseCff1Async().CA();
+    }
+
+    private async Task<ReadResult> PrivateDictBytes()
+    {
+        using var pipe = source.ReadPipeFrom(privateOffset, privateOffset);
+        var privateDictBytes = await pipe.ReadAtLeastAsync((int)privateSize).CA();
+        return privateDictBytes;
     }
 
     // Per Adobe Technical Note 5176 page 24

@@ -60,16 +60,20 @@ internal readonly struct CffGlyphSourceParser(
     {
         using var firstFontTopDictData = await topIndex.ItemDataAsync(index).CA();
         firstFontTopDictData.Bookmark.IndentParseMap($"Font # {index}");
+        firstFontTopDictData.Bookmark.IndentParseMap($"Top Dict");
         firstFontTopDictData.Bookmark.JumpToParseMap(0);
         ParseTopDict(
             firstFontTopDictData, out var charStringOffset,
             out var privateOffset, out var privateSize, out var charSetOffset,
             out var encodingOffset);
+        firstFontTopDictData.Bookmark.OutdentParseMap();
+        
         var font = new CffGenericFont(source, unitsPerEm,
             fontName,stringIndexOffset, 
             await ReadCharStringIndexAsync(charStringOffset).CA(),
             privateOffset, privateSize, globalSubroutineExecutor, charSetOffset,
             encodingOffset);
+        await font.TryAddToParseMapAsync().CA();
         firstFontTopDictData.Bookmark.OutdentParseMap();
         return font;
     }
@@ -77,7 +81,11 @@ internal readonly struct CffGlyphSourceParser(
     private async ValueTask<CffIndex> ReadCharStringIndexAsync(long charStringOffset)
     {
         using var pipe = source.ReadPipeFrom(charStringOffset, charStringOffset);
+        source.AddParseMapAlias(pipe);
+        pipe.IndentParseMap("Character Strings");
+        pipe.JumpToParseMap(0);
         var charStringsIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        pipe.OutdentParseMap();
         return charStringsIndex;
     }
  
