@@ -272,13 +272,15 @@ public class ReadStandardCharSets
     private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount)
     {
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
-        return new(multiplexSource,
-            1000, "Fake Font", 0, new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, offset, 0);
+        return new(multiplexSource, 1000, "Fake Font", new CffIndex(null!, glyphCount, 1, null), null!,
+            new TopDictData(multiplexSource, 0,0,0,offset, 0,0)
+                );
     }
 
     [Fact]
     public async Task ExpertCharsetAsync()
     {
+
         var sut = FontWithCharsetOffset(1, 166);
         var result = await sut.GlyphNamesAsync();
         result.Should().BeEquivalentTo(Extract("""

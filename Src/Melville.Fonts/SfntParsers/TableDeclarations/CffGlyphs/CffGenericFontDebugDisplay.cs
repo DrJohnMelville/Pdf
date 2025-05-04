@@ -24,8 +24,8 @@ internal partial class CffGenericFont
 
     private async Task ParsePrivateDictAsync()
     {
-        var bookmark = source.CreateParseMapBookmark((int)privateOffset);
-        if (privateOffset is 0)
+        var bookmark = source.CreateParseMapBookmark((int)topDictData.PrivateOffset);
+        if (topDictData.PrivateOffset is 0)
         {
             bookmark.LogParsePosition("No Private Dictionary");
             return;
@@ -33,9 +33,9 @@ internal partial class CffGenericFont
 
         bookmark.IndentParseMap("Private Dict");
         bookmark.JumpToParseMap(0);
-        var privateDictPipe = await PrivateDictBytes().CA();
+        var privateDictPipe = await topDictData.PrivateDictBytes().CA();
         var dictParser = new DictParser<CffDictionaryDefinition>(
-            new SequenceReader<byte>(privateDictPipe.Buffer.Slice(0, privateSize)),
+            new SequenceReader<byte>(privateDictPipe.Buffer.Slice(0, topDictData.PrivateSize)),
             bookmark, stackalloc DictValue[1]);
         while (dictParser.ReadNextInstruction(0) is not 0xFF)
         {
@@ -46,8 +46,8 @@ internal partial class CffGenericFont
 
     private ValueTask ParseCharSetAsync()
     {
-        var bookMark = source.CreateParseMapBookmark((int)charSetOffset);
-        return charSetOffset switch
+        var bookMark = source.CreateParseMapBookmark((int)topDictData.CharsetOffset);
+        return topDictData.CharsetOffset switch
         {
             0 => LogBuiltin("Built-in CharSet IsoAdobe", bookMark),
             1 => LogBuiltin("Built-in CharSet Expert", bookMark),
@@ -66,7 +66,7 @@ internal partial class CffGenericFont
     {
         bookMark.IndentParseMap("Custom Char Map");
         bookMark.JumpToParseMap(0);
-        using var charsetPipe = source.ReadPipeFrom(charSetOffset, charSetOffset);
+        using var charsetPipe = topDictData.CharsetPipe();
         source.AddParseMapAlias(charsetPipe);
         await new CharSetReader<FakeCharsetTarget>(charsetPipe, new FakeCharsetTarget(charsetPipe, 
             charStringIndex.Length)).ReadCharSetAsync().CA();
@@ -85,9 +85,9 @@ internal partial class CffGenericFont
 
     private ValueTask ParseEncodingAsync()
     {
-        var bookmark = source.CreateParseMapBookmark((int)encodingOffset);
+        var bookmark = source.CreateParseMapBookmark((int)topDictData.EncodingOffset);
         bookmark.JumpToParseMap(0);
-        return encodingOffset switch
+        return topDictData.EncodingOffset switch
         {
             0 => LogBuiltin("Built-in Encoding Standard", bookmark),
             1 => LogBuiltin("Built-in Encoding Expert", bookmark),

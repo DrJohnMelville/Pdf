@@ -16,58 +16,48 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal partial class CffGenericFont : 
     ListOf1GenericFont, ICMapSource, IGlyphWidthSource, IDisposable
 {
+#warning get rid of this
     [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] private readonly ushort unitsPerEm;
     [FromConstructor] public string Name { get; }
-    [FromConstructor] private readonly long stringIndexOffset;
     [FromConstructor] private readonly CffIndex charStringIndex;
-    [FromConstructor] private readonly long privateOffset;
-    [FromConstructor] private readonly long privateSize;
     [FromConstructor] private readonly GlyphSubroutineExecutor globalSubroutineExecutor;
-    [FromConstructor] private readonly long charSetOffset;
-    [FromConstructor] private readonly long encodingOffset;
+    [FromConstructor] private readonly TopDictData topDictData;
 
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
 
     public override async ValueTask<IGlyphSource> GetGlyphSourceAsync() =>
         new CffGlyphSource(charStringIndex,
             globalSubroutineExecutor,
-            new GlyphSubroutineExecutor(
-                await GetPrivateSubrsAsync().CA()),
+            new GlyphSubroutineExecutor(await GetPrivateSubrsAsync().CA()),
             Matrix3x2.CreateScale(1f / unitsPerEm), []);
 
-    private async ValueTask<CffIndex> GetPrivateSubrsAsync()
+    private ValueTask<CffIndex> GetPrivateSubrsAsync()
     {
-        var privateDictBytes = await PrivateDictBytes().CA( );
-        var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
-            privateDictBytes.Buffer.Slice(0, privateSize));
-
-        if (privateSubrsOffset == 0) return new CffIndex(source, 0, 0, null);
-
-        var pipe2Position = privateSubrsOffset + privateOffset;
-        using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
-        return await new CFFIndexParser(source, pipe2).ParseCff1Async().CA();
-    }
-
-    private async Task<ReadResult> PrivateDictBytes()
-    {
-        using var pipe = source.ReadPipeFrom(privateOffset, privateOffset);
-        var privateDictBytes = await pipe.ReadAtLeastAsync((int)privateSize).CA();
-        return privateDictBytes;
+        return topDictData.GetPrivateSubrsAsync();
+        // var privateDictBytes = await topDictData.PrivateDictBytes().CA( );
+        // var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
+        //     privateDictBytes.Buffer.Slice(0, topDictData.PrivateSize));
+        //
+        // if (privateSubrsOffset == 0) return topDictData.EmptyIndex();
+        //
+        // var pipe2Position = privateSubrsOffset + topDictData.PrivateOffset;
+        // using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
+        // return await new CFFIndexParser(source, pipe2).ParseCff1Async().CA();
     }
 
     // Per Adobe Technical Note 5176 page 24
-    private const int subrsInstruction = 19;
-
-    private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
-    {
-        Span<DictValue> result = stackalloc DictValue[1];
-        return new DictParser<CffDictionaryDefinition>(
-                new SequenceReader<byte>(slice), null, result)
-            .TryFindEntry(subrsInstruction)
-            ? result[0].IntValue
-            : 0;
-    }
+    // private const int subrsInstruction = 19;
+    //
+    // private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
+    // {
+    //     Span<DictValue> result = stackalloc DictValue[1];
+    //     return new DictParser<CffDictionaryDefinition>(
+    //             new SequenceReader<byte>(slice), null, result)
+    //         .TryFindEntry(subrsInstruction)
+    //         ? result[0].IntValue
+    //         : 0;
+    // }
 
     public override async ValueTask<string[]> GlyphNamesAsync()
     {
@@ -85,11 +75,10 @@ internal partial class CffGenericFont :
         // would try this, and it makes testing easier.  An offset of 0 would be an
         // invalid file otherwise, so this is not going to misread any valid font
         // file.
-        if (stringIndexOffset == 0)
+        if (topDictData.StringIndexOffset == 0)
             return new CffStringIndex(new CffIndex(source, 0, 0, null));
 
-        using var stringsPipe =
-            source.ReadPipeFrom(stringIndexOffset, stringIndexOffset);
+        using var stringsPipe = topDictData.StringIndexPipe();
         var strings = new CffStringIndex(await new CFFIndexParser(source, stringsPipe)
             .ParseCff1Async().CA());
         return strings;
@@ -97,10 +86,11 @@ internal partial class CffGenericFont :
 
     private async ValueTask<T> MapCharSetAsync<T>(T target) where T: ICharSetTarget
     {
-        if (charSetOffset < 3)
-            return await new StandardCharsetFactory<T>(target).FromByteAsync(charSetOffset).CA();
+        if (topDictData.CharsetOffset< 3)
+            return await new StandardCharsetFactory<T>(target)
+                .FromByteAsync(topDictData.CharsetOffset).CA();
         
-        using var charsetPipe = source.ReadPipeFrom(charSetOffset, charSetOffset);
+        using var charsetPipe = topDictData.CharsetPipe();
         return await new CharSetReader<T>(charsetPipe, target).ReadCharSetAsync().CA();
     }
 
@@ -124,7 +114,7 @@ internal partial class CffGenericFont :
         using var sidDecoder = new GlyphFromSid(data);
 
         return new SingleArrayCmap<byte>(1, 0,
-            encodingOffset switch
+            topDictData.EncodingOffset switch
             {
                 0 => new PredefinedEncodings(sidDecoder).Standard(),
                 1 => new PredefinedEncodings(sidDecoder).Expert(),
@@ -135,7 +125,7 @@ internal partial class CffGenericFont :
     private ConfiguredValueTaskAwaitable<byte[]> ReadCustomEncoding(GlyphFromSid sidDecoder,
         ParseMapBookmark? mapAncestor)
     {
-        var readPipeFrom = source.ReadPipeFrom(encodingOffset, encodingOffset);
+        var readPipeFrom = topDictData.EncodingPipe();
         mapAncestor.AddParseMapAlias(readPipeFrom);
         return new CffEncodingReader(
             readPipeFrom, sidDecoder).ParseAsync().CA();
@@ -147,5 +137,5 @@ internal partial class CffGenericFont :
     public (int platform, int encoding) GetPlatformEncoding(int index) => (4, 0);
     public float GlyphWidth(ushort glyph) => 0f;
 
-    public void Dispose() => source.Dispose();
+    public void Dispose() => topDictData.Dispose();
 }

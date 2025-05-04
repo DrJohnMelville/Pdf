@@ -18,9 +18,12 @@ public class ReadStandardEncoding
         long offset, uint glyphCount, long charSetOffset)
     {
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
-        return new(multiplexSource,
-            1000, "Fake Font", 0,
-            new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
+        // return new(multiplexSource,
+        //     1000, "Fake Font", 0,
+        //     new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
+        return new(multiplexSource, 1000, "Fake Font",
+            new CffIndex(null!, glyphCount, 1, null), null!,
+            new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0));
     }
 
     [Fact]
