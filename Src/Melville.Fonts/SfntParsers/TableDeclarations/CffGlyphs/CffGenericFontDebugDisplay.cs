@@ -33,14 +33,19 @@ internal partial class CffGenericFont
 
         bookmark.IndentParseMap("Private Dict");
         bookmark.JumpToParseMap(0);
-        var privateDictPipe = await topDictData.PrivateDictBytes().CA();
-        var dictParser = new DictParser<CffDictionaryDefinition>(
-            new SequenceReader<byte>(privateDictPipe.Buffer.Slice(0, topDictData.PrivateSize)),
-            bookmark, stackalloc DictValue[1]);
-        while (dictParser.ReadNextInstruction(0) is not 0xFF)
+
+        await topDictData.HandlePrivateDictBytes(pb =>
         {
-            // do nothing
-        }
+            var dictParser = new DictParser<CffDictionaryDefinition>(
+                new SequenceReader<byte>(pb),
+                bookmark, stackalloc DictValue[1]);
+            while (dictParser.ReadNextInstruction(0) is not 0xFF)
+            {
+                // do nothing
+            }
+
+            return 0;
+        }).CA();
         bookmark.OutdentParseMap();
     }
 

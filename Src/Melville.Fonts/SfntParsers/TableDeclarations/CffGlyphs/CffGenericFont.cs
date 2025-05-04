@@ -35,29 +35,8 @@ internal partial class CffGenericFont :
     private ValueTask<CffIndex> GetPrivateSubrsAsync()
     {
         return topDictData.GetPrivateSubrsAsync();
-        // var privateDictBytes = await topDictData.PrivateDictBytes().CA( );
-        // var privateSubrsOffset = FindPrivateSubrsOffsetFromPrivateDictionary(
-        //     privateDictBytes.Buffer.Slice(0, topDictData.PrivateSize));
-        //
-        // if (privateSubrsOffset == 0) return topDictData.EmptyIndex();
-        //
-        // var pipe2Position = privateSubrsOffset + topDictData.PrivateOffset;
-        // using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
-        // return await new CFFIndexParser(source, pipe2).ParseCff1Async().CA();
     }
 
-    // Per Adobe Technical Note 5176 page 24
-    // private const int subrsInstruction = 19;
-    //
-    // private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
-    // {
-    //     Span<DictValue> result = stackalloc DictValue[1];
-    //     return new DictParser<CffDictionaryDefinition>(
-    //             new SequenceReader<byte>(slice), null, result)
-    //         .TryFindEntry(subrsInstruction)
-    //         ? result[0].IntValue
-    //         : 0;
-    // }
 
     public override async ValueTask<string[]> GlyphNamesAsync()
     {

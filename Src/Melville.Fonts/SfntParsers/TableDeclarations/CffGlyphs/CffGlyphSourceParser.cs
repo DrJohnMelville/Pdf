@@ -65,11 +65,6 @@ internal readonly struct CffGlyphSourceParser(
         var topData = new TopDictData(source, stringIndexOffset, firstFontTopDictData);
         firstFontTopDictData.Bookmark.OutdentParseMap();
         
-        // var font = new CffGenericFont(source, unitsPerEm,
-        //     fontName,stringIndexOffset, 
-        //     await ReadCharStringIndexAsync(charStringOffset).CA(),
-        //     privateOffset, privateSize, globalSubroutineExecutor, charSetOffset,
-        //     encodingOffset);
         var font = new CffGenericFont(source, unitsPerEm, fontName,
             await topData.ReadCharStringIndexAsync().CA(),
             globalSubroutineExecutor, topData);
@@ -78,54 +73,6 @@ internal readonly struct CffGlyphSourceParser(
         return font;
     }
 
-    // private async ValueTask<CffIndex> ReadCharStringIndexAsync(long charStringOffset)
-    // {
-    //     using var pipe = source.ReadPipeFrom(charStringOffset, charStringOffset);
-    //     source.AddParseMapAlias(pipe);
-    //     pipe.IndentParseMap("Character Strings");
-    //     pipe.JumpToParseMap(0);
-    //     var charStringsIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-    //     pipe.OutdentParseMap();
-    //     return charStringsIndex;
-    // }
-    //
-    // //per Adobe Technical note 5716 page 15
-    // private const int charSetInstruction = 15;
-    // private const int encodingInstruction = 16;
-    // private const int charStringsInstruction = 17;
-    // private const int privateInstruction = 18;
-    // private static void ParseTopDict(DisposableSequence first, 
-    //     out long charStringOffset, 
-    //     out long privateOffset, 
-    //     out long privateSize, 
-    //     out long charSetOffset,
-    //     out long encodingOffset)
-    // {
-    //     charStringOffset = privateOffset = privateSize = charSetOffset = encodingOffset = 0;
-    //     Span<DictValue> result = stackalloc DictValue[2];
-    //     var dictParser = new DictParser<CffDictionaryDefinition>(
-    //         new SequenceReader<byte>(first.Sequence), first.Bookmark, result);
-    //     while (dictParser.ReadNextInstruction() is var instr and not 255)
-    //     {
-    //         switch (instr)
-    //         {
-    //             case encodingInstruction:
-    //                 encodingOffset= result[0].IntValue;
-    //                 break;
-    //             case charSetInstruction:
-    //                 charSetOffset = result[0].IntValue;
-    //                 break;
-    //             case charStringsInstruction:
-    //                 charStringOffset = result[0].IntValue;
-    //                 break;
-    //             case privateInstruction:
-    //                 privateSize = result[0].IntValue;
-    //                 privateOffset = result[1].IntValue;
-    //                 break;
-    //         }
-    //     }
-    // }
-    //
 
     private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(IByteSource pipe)
     {
