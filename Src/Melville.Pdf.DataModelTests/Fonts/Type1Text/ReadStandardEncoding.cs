@@ -21,7 +21,7 @@ public class ReadStandardEncoding
         // return new(multiplexSource,
         //     1000, "Fake Font", 0,
         //     new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
-        return new(multiplexSource, 1000, "Fake Font",
+        return new(1000, "Fake Font",
             new CffIndex(null!, glyphCount, 1, null), null!,
             new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0));
     }

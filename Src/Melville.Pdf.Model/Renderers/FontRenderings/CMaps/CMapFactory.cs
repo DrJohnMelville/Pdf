@@ -53,10 +53,10 @@ public partial class CMapFactory
     {
         try
         {
-            await ReadFromPdfValueAsync(encoding).CA();
+            if (!await ReadFromPdfValueAsync(encoding).CA()) return null;
             return new CMap(data);
         }
-        catch (Exception )
+        catch (Exception ) // cmap parsing is always dicy 
         {
             return null;
         }
@@ -79,11 +79,14 @@ public partial class CMapFactory
     }
 
 
-    internal async ValueTask ReadFromPdfValueAsync(PdfDirectObject encoding)
+    internal async ValueTask<bool> ReadFromPdfValueAsync(PdfDirectObject encoding)
     {
-        await ReadFromCSharpStreamAsync(
-            encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
-                await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA()).CA();
+        var cSharpString = encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
+            await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA();
+        if (cSharpString is null) return false;
+
+        await ReadFromCSharpStreamAsync(cSharpString).CA();
+        return true;
     }
 
     private async ValueTask<Stream> PdfToCSharpStreamAsync(PdfStream stream)

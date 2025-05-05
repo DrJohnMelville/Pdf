@@ -272,7 +272,7 @@ public class ReadStandardCharSets
     private static CffGenericFont FontWithCharsetOffset(long offset, uint glyphCount)
     {
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
-        return new(multiplexSource, 1000, "Fake Font", new CffIndex(null!, glyphCount, 1, null), null!,
+        return new(1000, "Fake Font", new CffIndex(null!, glyphCount, 1, null), null!,
             new TopDictData(multiplexSource, 0,0,0,offset, 0,0)
                 );
     }

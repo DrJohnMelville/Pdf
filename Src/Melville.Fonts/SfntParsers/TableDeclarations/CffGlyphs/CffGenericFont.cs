@@ -8,7 +8,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -16,11 +15,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal partial class CffGenericFont : 
     ListOf1GenericFont, ICMapSource, IGlyphWidthSource, IDisposable
 {
-#warning get rid of this
-    [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] private readonly ushort unitsPerEm;
     [FromConstructor] public string Name { get; }
-    [FromConstructor] private readonly CffIndex charStringIndex;
+    [FromConstructor] protected readonly CffIndex charStringIndex;
     [FromConstructor] private readonly GlyphSubroutineExecutor globalSubroutineExecutor;
     [FromConstructor] private readonly TopDictData topDictData;
 
@@ -55,15 +52,12 @@ internal partial class CffGenericFont :
         // invalid file otherwise, so this is not going to misread any valid font
         // file.
         if (topDictData.StringIndexOffset == 0)
-            return new CffStringIndex(new CffIndex(source, 0, 0, null));
+            return new CffStringIndex(topDictData.EmptyIndex());
 
-        using var stringsPipe = topDictData.StringIndexPipe();
-        var strings = new CffStringIndex(await new CFFIndexParser(source, stringsPipe)
-            .ParseCff1Async().CA());
-        return strings;
+        return new CffStringIndex(await topDictData.StringIndexAsync().CA());
     }
 
-    private async ValueTask<T> MapCharSetAsync<T>(T target) where T: ICharSetTarget
+    protected async ValueTask<T> MapCharSetAsync<T>(T target) where T: ICharSetTarget
     {
         if (topDictData.CharsetOffset< 3)
             return await new StandardCharsetFactory<T>(target)
@@ -84,7 +78,7 @@ internal partial class CffGenericFont :
         return await ReadCmapAsync(null).CA();
     }
 
-    private async Task<ICmapImplementation> ReadCmapAsync(ParseMapBookmark? parseMapAncestor)
+    protected virtual async Task<ICmapImplementation> ReadCmapAsync(ParseMapBookmark? parseMapAncestor)
     {
         var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
         var target = new MemoryTarget(data.AsMemory(0,(int)charStringIndex.Length));

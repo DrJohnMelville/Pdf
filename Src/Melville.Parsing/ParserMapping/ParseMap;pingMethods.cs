@@ -81,9 +81,9 @@ public static partial class ParseMappingMethods
 #endif
     }
 
-    public static IByteSource ReadLoggedPipeFrom(this IMultiplexSource src, int position)
+    public static IByteSource ReadLoggedPipeFrom(this IMultiplexSource src, int position, int internalPosition = 0)
     {
-        var ret = src.ReadPipeFrom(position);
+        var ret = src.ReadPipeFrom(position, internalPosition);
         src.AddParseMapAlias(ret);
         return ret;
     }

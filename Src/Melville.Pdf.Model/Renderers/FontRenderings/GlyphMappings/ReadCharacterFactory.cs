@@ -33,13 +33,12 @@ internal readonly partial struct ReadCharacterFactory
         var sysInfo = await inner.CidSystemInfoAsync().CA();
         if (sysInfo is null) return outerFontCMap;
 
-        return await ConstructInnerCmapAsync(outerFontCMap).ConfigureAwait(false);
+        return await ConstructInnerCmapAsync(outerFontCMap, sysInfo).CA();
     }
 
-    private async Task<IReadCharacter> ConstructInnerCmapAsync(IReadCharacter outerFontCMap)
+    private async Task<IReadCharacter> ConstructInnerCmapAsync(
+        IReadCharacter outerFontCMap, PdfDictionary sysInfo)
     {
-        var inner = await font.Type0SubFontAsync().CA();
-        var sysInfo = await inner.CidSystemInfoAsync().CA();
         if (sysInfo is null) return await FailedCmapReadAsync(outerFontCMap).CA();
 
         var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
@@ -54,6 +53,7 @@ internal readonly partial struct ReadCharacterFactory
 
     private async Task<IReadCharacter> FailedCmapReadAsync(IReadCharacter outerFontCMap)
     {
+        return outerFontCMap;
         if (await font.ToUnicodeAsync() is not { IsNull: false } unicode) return outerFontCMap;
         return await 
             ReadUnicodeCmapAsync(unicode).CA() ?? outerFontCMap;

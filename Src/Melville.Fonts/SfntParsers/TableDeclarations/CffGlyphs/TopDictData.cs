@@ -9,18 +9,22 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 internal class TopDictData: IDisposable
 {
-    public long CharStringOffset { get; }
-    public long PrivateOffset { get; }
-    public long PrivateSize { get; }
-    public long CharsetOffset { get; }
-    public long EncodingOffset { get; }
-    public long StringIndexOffset { get; }
+    public long CharStringOffset { get; private set; }
+    public long PrivateOffset { get; private set; }
+    public long PrivateSize { get; private set; }
+    public long CharsetOffset { get; private set; }
+    public long EncodingOffset { get; private set; }
+    public long StringIndexOffset { get; private set; }
+    public long FDArrayOffset { get; private set; }
+    public long FDSelectOffset { get; private set; }
 
     //per Adobe Technical note 5716 page 15
     private const int charSetInstruction = 15;
     private const int encodingInstruction = 16;
     private const int charStringsInstruction = 17;
     private const int privateInstruction = 18;
+    private const int fdArrayInstruction = 0xC24;
+    private const int fdSelectInstruction = 0xC25;
 
     private readonly IMultiplexSource source;
 
@@ -36,31 +40,63 @@ internal class TopDictData: IDisposable
         StringIndexOffset = stringIndexOffset;
     }
 
-    public TopDictData(IMultiplexSource source, long stringIndexOffset, DisposableSequence first)
+    public TopDictData(IMultiplexSource source, long stringIndexOffset, DisposableSequence sourceData, TopDictData? prior)
     {
+
         this.source = source;
         StringIndexOffset = stringIndexOffset;
+
+        TryDuplicateFromPrior(prior);
+
+        ParseValuesFromSequence(sourceData);
+    }
+
+    private void TryDuplicateFromPrior(TopDictData? prior)
+    {
+        if (prior is not null)
+        {
+            CharStringOffset = prior.CharStringOffset;
+            PrivateOffset = prior.PrivateOffset;
+            PrivateSize = prior.PrivateSize;
+            CharsetOffset = prior.CharsetOffset;
+            EncodingOffset = prior.EncodingOffset;
+        }
+    }
+
+    private void ParseValuesFromSequence(DisposableSequence sourceData)
+    {
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(
-            new SequenceReader<byte>(first.Sequence), first.Bookmark, result);
+            new SequenceReader<byte>(sourceData.Sequence), sourceData.Bookmark, result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
-            switch (instr)
-            {
-                case encodingInstruction:
-                    EncodingOffset = result[0].IntValue;
-                    break;
-                case charSetInstruction:
-                    CharsetOffset = result[0].IntValue;
-                    break;
-                case charStringsInstruction:
-                    CharStringOffset = result[0].IntValue;
-                    break;
-                case privateInstruction:
-                    PrivateSize = result[0].IntValue;
-                    PrivateOffset = result[1].IntValue;
-                    break;
-            }
+            CaptureDesiredValue(instr, result);
+        }
+    }
+
+    private void CaptureDesiredValue(int instr, Span<DictValue> result)
+    {
+        switch (instr)
+        {
+            case encodingInstruction:
+                EncodingOffset = result[0].IntValue;
+                break;
+            case charSetInstruction:
+                CharsetOffset = result[0].IntValue;
+                break;
+            case charStringsInstruction:
+                CharStringOffset = result[0].IntValue;
+                break;
+            case privateInstruction:
+                PrivateSize = result[0].IntValue;
+                PrivateOffset = result[1].IntValue;
+                break;
+            case fdArrayInstruction:
+                FDArrayOffset = result[0].IntValue;
+                break;
+            case fdSelectInstruction:
+                FDSelectOffset = result[0].IntValue;
+                break;
         }
     }
 
@@ -77,14 +113,6 @@ internal class TopDictData: IDisposable
         return charStringsIndex;
     }
 
-    [Obsolete()]
-    public async Task<ReadResult> PrivateDictBytes()
-    {
-        using var pipe = source.ReadPipeFrom(PrivateOffset, PrivateOffset);
-        var privateDictBytes = await pipe.ReadAtLeastAsync((int)PrivateSize).CA();
-        return privateDictBytes;
-    }
-
     public async ValueTask<T> HandlePrivateDictBytes<T>(Func<ReadOnlySequence<byte>,T> operation)
     {
         using var pipe = source.ReadPipeFrom(PrivateOffset, PrivateOffset);
@@ -92,14 +120,28 @@ internal class TopDictData: IDisposable
         return operation(privateDictBytes.Buffer.Slice(0, (int)PrivateSize));
     }
 
-    public IByteSource StringIndexPipe() => source.ReadPipeFrom(StringIndexOffset, StringIndexOffset);
+    public async Task<CffIndex> GetFdArrayAsync()
+    {
+        using var pipe = source.ReadLoggedPipeFrom((int)FDArrayOffset, (int)FDArrayOffset);
+        pipe.IndentParseMap("Index");
+        pipe.JumpToParseMap(0);
+        var index = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        pipe.OutdentParseMap();
+        return index;
+    }
+
+    public async ValueTask<CffIndex> StringIndexAsync()
+    {
+        using var stringsPipe = source.ReadPipeFrom(StringIndexOffset, StringIndexOffset);
+        return await  new CFFIndexParser(source, stringsPipe).ParseCff1Async().CA();
+    }
+
     public IByteSource CharsetPipe() => source.ReadPipeFrom(CharsetOffset, CharsetOffset);
 
     public IByteSource EncodingPipe() => source.ReadPipeFrom(EncodingOffset, EncodingOffset);
 
     public async ValueTask<CffIndex> GetPrivateSubrsAsync()
     {
-#warning need to dispose of this pipe
         var privateSubrsOffset =
             await HandlePrivateDictBytes(FindPrivateSubrsOffsetFromPrivateDictionary).CA();
 
@@ -125,5 +167,9 @@ internal class TopDictData: IDisposable
 
 
     public CffIndex EmptyIndex()=> new CffIndex(source, 0, 0, null);
+    public bool IsLoggingParseMap() => source.IsLoggingParseMap();
+    public ParseMapBookmark? BookmarkAt(long location) => source.CreateParseMapBookmark((int)location);
 
+    public IByteSource FdSelectPipe() =>
+        source.ReadLoggedPipeFrom((int)FDSelectOffset, (int)FDSelectOffset);
 }

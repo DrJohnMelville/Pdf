@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -74,7 +75,7 @@ internal static partial class CmapParserOperations
     }
 
     [PostscriptMethod("usecmap")]
-    private static ValueTask UseExternalCMapAsync(CMapFactory factory, PostscriptValue name) =>
-        factory.ReadFromPdfValueAsync(name.AsPdfName());
+    private static async ValueTask UseExternalCMapAsync(CMapFactory factory, PostscriptValue name) =>
+        await factory.ReadFromPdfValueAsync(name.AsPdfName()).CA();
 
 }

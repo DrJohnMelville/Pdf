@@ -11,7 +11,7 @@ internal partial class CffGenericFont
 #if DEBUG
     public ValueTask TryAddToParseMapAsync()
     {
-        if (!source.IsLoggingParseMap()) return ValueTask.CompletedTask;
+        if (!topDictData.IsLoggingParseMap()) return ValueTask.CompletedTask;
         return AddToParseMapAsync();
     }
 
@@ -24,7 +24,7 @@ internal partial class CffGenericFont
 
     private async Task ParsePrivateDictAsync()
     {
-        var bookmark = source.CreateParseMapBookmark((int)topDictData.PrivateOffset);
+        var bookmark = topDictData.BookmarkAt(topDictData.PrivateOffset);
         if (topDictData.PrivateOffset is 0)
         {
             bookmark.LogParsePosition("No Private Dictionary");
@@ -51,7 +51,7 @@ internal partial class CffGenericFont
 
     private ValueTask ParseCharSetAsync()
     {
-        var bookMark = source.CreateParseMapBookmark((int)topDictData.CharsetOffset);
+        var bookMark = topDictData.BookmarkAt(topDictData.CharsetOffset);
         return topDictData.CharsetOffset switch
         {
             0 => LogBuiltin("Built-in CharSet IsoAdobe", bookMark),
@@ -72,7 +72,7 @@ internal partial class CffGenericFont
         bookMark.IndentParseMap("Custom Char Map");
         bookMark.JumpToParseMap(0);
         using var charsetPipe = topDictData.CharsetPipe();
-        source.AddParseMapAlias(charsetPipe);
+        bookMark.AddParseMapAlias(charsetPipe);
         await new CharSetReader<FakeCharsetTarget>(charsetPipe, new FakeCharsetTarget(charsetPipe, 
             charStringIndex.Length)).ReadCharSetAsync().CA();
         bookMark.OutdentParseMap();
@@ -83,14 +83,14 @@ internal partial class CffGenericFont
         public long Count => length;
         public ValueTask SetGlyphNameAsync(int index, ushort SID)
         {
-            charsetPipe.LogParsePosition($"{SID} => {index}");
+            charsetPipe.LogParsePosition($"{SID} (0x{SID:X}) => {index} (0x{index:X})");
             return ValueTask.CompletedTask;
         }
     }
 
     private ValueTask ParseEncodingAsync()
     {
-        var bookmark = source.CreateParseMapBookmark((int)topDictData.EncodingOffset);
+        var bookmark = topDictData.BookmarkAt((int)topDictData.EncodingOffset);
         bookmark.JumpToParseMap(0);
         return topDictData.EncodingOffset switch
         {
