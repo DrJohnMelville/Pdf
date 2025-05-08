@@ -20,6 +20,8 @@ internal partial class CffGenericFont :
     [FromConstructor] protected readonly CffIndex charStringIndex;
     [FromConstructor] private readonly GlyphSubroutineExecutor globalSubroutineExecutor;
     [FromConstructor] private readonly TopDictData topDictData;
+    /// <inheritdoc />
+    [FromConstructor] public override CidToGlyphMappingStyle TypeGlyphMapping { get; }
 
     public override ValueTask<ICMapSource> GetCmapSourceAsync() => new(this);
 
@@ -111,7 +113,4 @@ internal partial class CffGenericFont :
     public float GlyphWidth(ushort glyph) => 0f;
 
     public void Dispose() => topDictData.Dispose();
-
-    /// <inheritdoc />
-    public override CidToGlyphMappingStyle TypeGlyphMapping => CidToGlyphMappingStyle.CFF;
 }

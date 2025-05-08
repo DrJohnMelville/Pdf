@@ -13,5 +13,5 @@ public interface IRetrieveCmapStream
     /// </summary>
     /// <param name="name">The name of the desired CMap</param>
     /// <returns>A stream containing the code for the CMao</returns>
-    Stream CMapStreamFor(PdfDirectObject name);
+    Stream? CMapStreamFor(PdfDirectObject name);
 }

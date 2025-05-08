@@ -83,14 +83,14 @@ internal readonly struct CffGlyphSourceParser(
         {
             font = new CffGenericFont(unitsPerEm, fontName,
                 await topData.ReadCharStringIndexAsync().CA(),
-                globalSubroutineExecutor, topData);
+                globalSubroutineExecutor, topData, CidToGlyphMappingStyle.Cff);
 
         }
         else
         {
             font = new CffGnericCidKeyedFont(unitsPerEm, fontName,
                 await topData.ReadCharStringIndexAsync().CA(),
-                globalSubroutineExecutor, topData);
+                globalSubroutineExecutor, topData, CidToGlyphMappingStyle.CffWithCid);
         }
 
         await font.TryAddToParseMapAsync().CA();

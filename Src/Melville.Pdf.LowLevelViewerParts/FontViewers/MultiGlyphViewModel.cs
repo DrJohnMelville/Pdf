@@ -88,6 +88,7 @@ public partial class MultiGlyphViewModel
                 defaultMatrix*
                 Matrix3x2.CreateTranslation(deltaX*(j+0.5f), deltaY * (i+0.5f)),
                 buffer);
+            
             first++;
         }
 

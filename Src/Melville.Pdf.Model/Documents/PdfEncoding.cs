@@ -16,5 +16,6 @@ public record struct PdfEncoding(PdfDirectObject LowLevel)
     /// <returns>True if it represents an identity encoding false otherwise</returns>
     public bool IsIdentityCdiEncoding() =>
         LowLevel.Equals(KnownNames.IdentityH) ||
-        LowLevel.Equals(KnownNames.IdentityV);
+        LowLevel.Equals(KnownNames.IdentityV) ||
+        LowLevel.Equals(KnownNames.Identity);
 }

@@ -10,6 +10,8 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
@@ -115,47 +117,48 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
     
     private async ValueTask<IMapCharacterToGlyph> Type0CharMappingAsync()
     {
+        // if the font defines an explicit glyph mapping use it.
         var subFont = await font.Type0SubFontAsync().CA();
         if (await subFont.CidToGidMapStreamAsync().CA() is { } mapStream)
             return await ParseCmapStreamAsync(mapStream).CA();
 
-        if (iFont.TypeGlyphMapping is CidToGlyphMappingStyle.CFF)
+        var cmaps = await iFont.GetCmapSourceAsync().CA();
+
+        return iFont.TypeGlyphMapping switch
         {
-            var cmaps = await iFont.GetCmapSourceAsync().CA();
-            return new CMapWrapper(await cmaps.GetByIndexAsync(0).CA());
-        }
+            // CFF fonts have only one CharMap -- so just use it
+            CidToGlyphMappingStyle.CffWithCid => new CMapWrapper(await cmaps.GetByIndexAsync(0).CA()),
+            // for true type fonts, convert the character encoding of the font to unicode
+            // and then map unicode to glyphs using a font cmap
+            CidToGlyphMappingStyle.TrueType 
+                when await MapFontToUnicodeAsyc(subFont).CA() is { } fontToUnicode &&
+                await UnicodeCmapAsync(cmaps).CA() is { } unicodeToGlyph =>
+                new TrueTypeUnicodeGlyphMapping(fontToUnicode, unicodeToGlyph),
+            _ => IdentityCharacterToGlyph.Instance
+        };
 
-#warning this is all wrong -- need to steal commented out code from ReadCharacterFactory.
-        var sysInfo = await subFont.CidSystemInfoAsync().CA();
-        if (sysInfo is not null)
-        {
-            var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
-            if (!ordering.Equals(KnownNames.Identity))
-            {
-                var cmaps = await iFont.GetCmapSourceAsync().CA();
-                var list = new List<IMapCharacterToGlyph>();
-                TryAdd(await cmaps.GetByPlatformEncodingAsync(3, 10).CA(), list);
-                TryAdd(await cmaps.GetByPlatformEncodingAsync(3,1).CA(), list);
-                TryAdd(await cmaps.GetByPlatformEncodingAsync(0, 4).CA(), list);
-                TryAdd(await cmaps.GetByPlatformEncodingAsync(0, 3).CA(), list);
-                for (int i = 0; i < cmaps.Count; i++)
-                {
-                    TryAdd(await cmaps.GetByIndexAsync(i).CA(), list);
-                }
-                return new CompositeMapper(list);
-            }
-        }
-
-
-        return IdentityCharacterToGlyph.Instance;
     }
 
-    private static void TryAdd(ICmapImplementation? cmap, List<IMapCharacterToGlyph> list)
+    private static async ValueTask<IReadCharacter?> MapFontToUnicodeAsyc(PdfFont subfont) =>
+        await subfont.CidSystemInfoAsync().CA() is { } sysinfo &&
+        await sysinfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA() is { } registry &&
+        !registry.Equals(KnownNames.Identity) &&
+        await sysinfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA() is { } ordering &&
+        !ordering.Equals(KnownNames.Identity)
+            ? await FontToUnicodeCmap(PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2")).CA()
+            : null;
+
+    private static ValueTask<IReadCharacter?> FontToUnicodeCmap(PdfDirectObject unicode) =>
+        new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
+            .ParseCMapAsync(unicode);
+
+    private static async ValueTask<ICmapImplementation?> UnicodeCmapAsync(ICMapSource source)
     {
-        if (cmap is not null)
-        {
-            list.Add(new CMapWrapper(cmap));
-        }
+        if (await source.GetByPlatformEncodingAsync(0, 4).CA() is { } cmap1) return cmap1;
+        if (await source.GetByPlatformEncodingAsync(0, 3).CA() is { } cmap2) return cmap2;
+        if (await source.GetByPlatformEncodingAsync(3, 10).CA() is { } cmap3) return cmap3;
+        if (await source.GetByPlatformEncodingAsync(3, 1).CA() is { } cmap4) return cmap4;
+        return null;
     }
 
     private static async ValueTask<IMapCharacterToGlyph> ParseCmapStreamAsync(PdfStream mapStream)

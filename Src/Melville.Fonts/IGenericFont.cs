@@ -58,6 +58,16 @@ public interface IGenericFont
 /// </summary>
 public enum CidToGlyphMappingStyle
 {
-     CFF = 0, // CFF font maping is stored in the single 
-     TrueType = 0,
+    /// <summary>
+    /// Cff which does not use the Top DICT CIDFont operators
+    /// </summary>
+     Cff = 0,
+    /// <summary>
+    /// CFF with CIDFont operators
+    /// </summary>
+    CffWithCid = 1, // CFF font maping is stored in the single 
+    /// <summary>
+    /// Open type files that use the TrueType font format
+    /// </summary>
+    TrueType = 2,
 }
