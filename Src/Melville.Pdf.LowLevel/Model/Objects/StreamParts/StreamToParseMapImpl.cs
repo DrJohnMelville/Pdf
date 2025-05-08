@@ -5,11 +5,21 @@ using Melville.Parsing.ParserMapping;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
+/// <summary>
+/// This extension method is used to set the data of a ParseMap from a PdfStream.
+/// </summary>
 public static class StreamToParseMapImpl
 {
+    /// <summary>
+    /// Sets the data of a ParseMap from a PdfStream. This is only used in debug mode
+    /// </summary>
+    /// <param name="map">The parsemap to det the data for </param>
+    /// <param name="s">The stream that is the source of the data the parsemap will parse</param>
     public static async ValueTask SetDataAsync(this ParseMap? map, PdfStream s)
     {
+#if DEBUG
         if (map == null) return;
         await map.SetDataAsync(await s.StreamContentAsync().CA()).CA();
+#endif
     }
 }

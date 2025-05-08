@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.MultiplexSources;
@@ -23,7 +24,7 @@ public class ReadStandardEncoding
         //     new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
         return new(1000, "Fake Font",
             new CffIndex(null!, glyphCount, 1, null), null!,
-            new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0));
+            new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0), CidToGlyphMappingStyle.Cff);
     }
 
     [Fact]

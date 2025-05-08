@@ -37,7 +37,7 @@ public partial class ParseMapViewModel
 
     private void AssignColorsFor(ParseMapTitle title)
     {
-        ColorAssignments.AssignColors(title.Items
+        ColorAssignments?.AssignColors(title.Items
             .Select(x => (x.StartPos, x.NextPos)));
         RedrawColors();
 

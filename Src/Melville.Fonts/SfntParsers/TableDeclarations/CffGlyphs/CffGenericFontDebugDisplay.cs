@@ -34,7 +34,7 @@ internal partial class CffGenericFont
         bookmark.IndentParseMap("Private Dict");
         bookmark.JumpToParseMap(0);
 
-        await topDictData.HandlePrivateDictBytes(pb =>
+        await topDictData.HandlePrivateDictBytesAsync(pb =>
         {
             var dictParser = new DictParser<CffDictionaryDefinition>(
                 new SequenceReader<byte>(pb),
@@ -54,14 +54,14 @@ internal partial class CffGenericFont
         var bookMark = topDictData.BookmarkAt(topDictData.CharsetOffset);
         return topDictData.CharsetOffset switch
         {
-            0 => LogBuiltin("Built-in CharSet IsoAdobe", bookMark),
-            1 => LogBuiltin("Built-in CharSet Expert", bookMark),
-            2 => LogBuiltin("Built-in CharSet ExpertSubset", bookMark),
+            0 => LogBuiltinAsync("Built-in CharSet IsoAdobe", bookMark),
+            1 => LogBuiltinAsync("Built-in CharSet Expert", bookMark),
+            2 => LogBuiltinAsync("Built-in CharSet ExpertSubset", bookMark),
             _ => CustomCharsetAsync(bookMark)
         };
     }
 
-    private ValueTask LogBuiltin(string charset, ParseMapBookmark bookmark)
+    private ValueTask LogBuiltinAsync(string charset, ParseMapBookmark? bookmark)
     {
         bookmark.LogParsePosition(charset);
         return ValueTask.CompletedTask;
@@ -94,8 +94,8 @@ internal partial class CffGenericFont
         bookmark.JumpToParseMap(0);
         return topDictData.EncodingOffset switch
         {
-            0 => LogBuiltin("Built-in Encoding Standard", bookmark),
-            1 => LogBuiltin("Built-in Encoding Expert", bookmark),
+            0 => LogBuiltinAsync("Built-in Encoding Standard", bookmark),
+            1 => LogBuiltinAsync("Built-in Encoding Expert", bookmark),
             _ => CustomEncodingAsync(bookmark)
         };
     }

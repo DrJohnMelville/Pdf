@@ -7,9 +7,9 @@ using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-public class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int glyphs)
+internal class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int glyphs)
 {
-    public async Task<IGenericFont> ParseFdSelect()
+    public async Task<IGenericFont> ParseFdSelectAsync()
     {
         source.IndentParseMap("FD Select");
         var type = await source.ReadBigEndianUintAsync(1).CA();

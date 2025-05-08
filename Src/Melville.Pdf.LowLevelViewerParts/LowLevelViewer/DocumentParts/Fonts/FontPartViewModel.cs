@@ -19,7 +19,7 @@ public partial class FontPartViewModel: DocumentPart
     [AutoNotify] private IRealizedFont? font;
     [AutoNotify] private GenericFontViewModel? genericFont;
     [AutoNotify] private object? specificFont;
-    [AutoNotify] public partial ParseMapViewModel Map { get; private set; }
+    [AutoNotify] public partial ParseMapViewModel? Map { get; private set; }
 
 
     public FontPartViewModel(string title, PdfDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
@@ -42,12 +42,12 @@ public partial class FontPartViewModel: DocumentPart
         await loadFontSemaphore.WaitAsync();
         if (SpecificFont is null)
         {
-            await InnerLoadFont();
+            await InnerLoadFontAsync();
         }
         loadFontSemaphore.Release();
     }
 
-    private async Task InnerLoadFont()
+    private async Task InnerLoadFontAsync()
     {
         try
         {

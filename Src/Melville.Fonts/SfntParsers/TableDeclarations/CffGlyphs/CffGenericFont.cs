@@ -1,13 +1,10 @@
 ﻿using System.Buffers;
-using System.IO.Pipelines;
-using System.Net.Http.Headers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;

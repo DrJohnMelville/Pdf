@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using FluentAssertions;
+using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
@@ -273,8 +274,7 @@ public class ReadStandardCharSets
     {
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
         return new(1000, "Fake Font", new CffIndex(null!, glyphCount, 1, null), null!,
-            new TopDictData(multiplexSource, 0,0,0,offset, 0,0)
-                );
+            new TopDictData(multiplexSource, 0,0,0,offset, 0,0), CidToGlyphMappingStyle.Cff);
     }
 
     [Fact]

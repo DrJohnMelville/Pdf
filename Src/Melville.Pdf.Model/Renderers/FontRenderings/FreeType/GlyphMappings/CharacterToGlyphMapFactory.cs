@@ -131,7 +131,7 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
             // for true type fonts, convert the character encoding of the font to unicode
             // and then map unicode to glyphs using a font cmap
             CidToGlyphMappingStyle.TrueType 
-                when await MapFontToUnicodeAsyc(subFont).CA() is { } fontToUnicode &&
+                when await MapFontToUnicodeAsync(subFont).CA() is { } fontToUnicode &&
                 await UnicodeCmapAsync(cmaps).CA() is { } unicodeToGlyph =>
                 new TrueTypeUnicodeGlyphMapping(fontToUnicode, unicodeToGlyph),
             _ => IdentityCharacterToGlyph.Instance
@@ -139,16 +139,16 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
 
     }
 
-    private static async ValueTask<IReadCharacter?> MapFontToUnicodeAsyc(PdfFont subfont) =>
+    private static async ValueTask<IReadCharacter?> MapFontToUnicodeAsync(PdfFont subfont) =>
         await subfont.CidSystemInfoAsync().CA() is { } sysinfo &&
         await sysinfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA() is { } registry &&
         !registry.Equals(KnownNames.Identity) &&
         await sysinfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA() is { } ordering &&
         !ordering.Equals(KnownNames.Identity)
-            ? await FontToUnicodeCmap(PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2")).CA()
+            ? await FontToUnicodeCmapAsync(PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2")).CA()
             : null;
 
-    private static ValueTask<IReadCharacter?> FontToUnicodeCmap(PdfDirectObject unicode) =>
+    private static ValueTask<IReadCharacter?> FontToUnicodeCmapAsync(PdfDirectObject unicode) =>
         new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
             .ParseCMapAsync(unicode);
 

@@ -1,6 +1,6 @@
 ﻿namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-public static class DictionaryOperatorNamer
+internal static class DictionaryOperatorNamer
 {
     public static string Title(int op) => $"{NameFor(op)} (0x{op:X})";
 #if DEBUG

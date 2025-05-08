@@ -101,7 +101,7 @@ internal readonly struct CffEncodingReader(IByteSource source, GlyphFromSid sidD
                reader.TryReadBigEndianUint16(out var sid))
         {
             source.LogParsePosition($"Supplemental Mapping {code} => {sid}", (int)reader.Consumed);
-#warning I think the SID Decoder may be a mistake here.  see not 4 on page 21 of the CFF spec
+// I think the SID Decoder may be a mistake here.  see not 4 on page 21 of the CFF spec
             result[code] = (byte)sidDecoder.Search(sid);
         }
     }

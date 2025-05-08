@@ -113,7 +113,7 @@ internal class TopDictData: IDisposable
         return charStringsIndex;
     }
 
-    public async ValueTask<T> HandlePrivateDictBytes<T>(Func<ReadOnlySequence<byte>,T> operation)
+    public async ValueTask<T> HandlePrivateDictBytesAsync<T>(Func<ReadOnlySequence<byte>,T> operation)
     {
         using var pipe = source.ReadPipeFrom(PrivateOffset, PrivateOffset);
         var privateDictBytes = await pipe.ReadAtLeastAsync((int)PrivateSize).CA();
@@ -143,7 +143,7 @@ internal class TopDictData: IDisposable
     public async ValueTask<CffIndex> GetPrivateSubrsAsync()
     {
         var privateSubrsOffset =
-            await HandlePrivateDictBytes(FindPrivateSubrsOffsetFromPrivateDictionary).CA();
+            await HandlePrivateDictBytesAsync(FindPrivateSubrsOffsetFromPrivateDictionary).CA();
 
         if (privateSubrsOffset == 0) return EmptyIndex();
 
