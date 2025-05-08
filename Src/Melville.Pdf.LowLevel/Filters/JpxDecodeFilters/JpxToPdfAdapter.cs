@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using CoreJ2K;
-using CoreJ2K.Util;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;

@@ -116,4 +116,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     // because windows does not include type 1 fonts I so not need this method
     /// <inheritdoc />
     public override ValueTask<MacStyles> GetFontStyleAsync() => new(MacStyles.None);
+
+    /// <inheritdoc />
+    public override CidToGlyphMappingStyle TypeGlyphMapping => CidToGlyphMappingStyle.TrueType;
 }

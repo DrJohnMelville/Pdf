@@ -24,7 +24,7 @@ public record struct PdfFont(PdfDictionary LowLevel)
     /// <summary>
     /// The encoding object for the font
     /// </summary>
-    public async ValueTask<PdfEncoding> EncodingAsync() => 
+    public readonly async ValueTask<PdfEncoding> EncodingAsync() => 
         new(await LowLevel.GetOrNullAsync(KnownNames.Encoding).CA());
 
     /// <summary>

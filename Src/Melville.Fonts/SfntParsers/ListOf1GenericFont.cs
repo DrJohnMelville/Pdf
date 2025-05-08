@@ -42,4 +42,7 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
 
     /// <inheritdoc />
     public abstract ValueTask<MacStyles> GetFontStyleAsync();
+
+    /// <inheritdoc />
+    public abstract CidToGlyphMappingStyle TypeGlyphMapping { get; }
 }

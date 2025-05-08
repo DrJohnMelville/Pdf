@@ -301,4 +301,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     /// <inheritdoc />
     public override async ValueTask<MacStyles> GetFontStyleAsync() =>
         (await HeadTableAsync().CA()).MacStyle;
+
+    /// <inheritdoc />
+    public override CidToGlyphMappingStyle TypeGlyphMapping => CidToGlyphMappingStyle.TrueType;
 }

@@ -111,4 +111,7 @@ internal partial class CffGenericFont :
     public float GlyphWidth(ushort glyph) => 0f;
 
     public void Dispose() => topDictData.Dispose();
+
+    /// <inheritdoc />
+    public override CidToGlyphMappingStyle TypeGlyphMapping => CidToGlyphMappingStyle.CFF;
 }

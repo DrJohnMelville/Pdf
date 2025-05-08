@@ -45,4 +45,19 @@ public interface IGenericFont
     /// </summary>
     /// <returns>A MacStyles enum.  This may be syntesized on non SFnt fonts.</returns>
     ValueTask<MacStyles> GetFontStyleAsync();
+
+    /// <summary>
+    /// Pdf uses different CID mapping styles that differ based on the kind of font in use
+    /// </summary>
+    public CidToGlyphMappingStyle TypeGlyphMapping { get; }
+
+}
+
+/// <summary>
+/// Represents different CID to glyph mapping rules that should be for differnt font types
+/// </summary>
+public enum CidToGlyphMappingStyle
+{
+     CFF = 0, // CFF font maping is stored in the single 
+     TrueType = 0,
 }

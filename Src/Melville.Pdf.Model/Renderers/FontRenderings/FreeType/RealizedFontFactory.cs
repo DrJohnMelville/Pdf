@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -44,13 +45,14 @@ internal readonly partial struct RealizedFontFactory
     private async ValueTask<IRealizedFont> FontFromFaceAsync(IGenericFont iFace)
     {
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
+        var characterToGlyph = await new CharacterToGlyphMapFactory(iFace, fontDefinitionDictionary, encoding).ParseAsync().CA();
+        var nameToGlyphMapping = await new NameToGlyphMappingFactory(iFace).CreateAsync().CA();
+        var readCharacter = await new ReadCharacterFactory(fontDefinitionDictionary, encoding, nameToGlyphMapping).CreateAsync().CA();
+        var fontWidthComputer = await new FontWidthParser(fontDefinitionDictionary).ParseAsync().CA();
         return
             new GenericToRealizedFontWrapper(iFace,
-                await new FontRenderings.GlyphMappings.ReadCharacterFactory(
-                        fontDefinitionDictionary, encoding,
-                        await new NameToGlyphMappingFactory(iFace).CreateAsync().CA())
-                    .CreateAsync().CA(), 
-                await new CharacterToGlyphMapFactory(iFace, fontDefinitionDictionary, encoding).ParseAsync().CA(), 
-                await new FontWidthParser(fontDefinitionDictionary).ParseAsync().CA());
+                readCharacter, 
+                characterToGlyph, 
+                fontWidthComputer);
     }
 }

@@ -27,50 +27,48 @@ internal readonly partial struct ReadCharacterFactory
     {
        var outerFontCMap = encoding.IsIdentityCdiEncoding()?
             TwoByteCharacters.Instance:
-            (await ReadCMapAsync(encoding.LowLevel, HasNoBaseFont.Instance).CA())??SingleByteCharacters.Instance;
-       
-        var inner = await font.Type0SubFontAsync().CA();
-        var sysInfo = await inner.CidSystemInfoAsync().CA();
-        if (sysInfo is null) return outerFontCMap;
+            (await ReadCMapAsync(encoding.LowLevel, HasNoBaseFont.Instance).CA())??
+            TwoByteCharacters.Instance;
 
-        return await ConstructInnerCmapAsync(outerFontCMap, sysInfo).CA();
+       return outerFontCMap;
     }
 
-    private async Task<IReadCharacter> ConstructInnerCmapAsync(
-        IReadCharacter outerFontCMap, PdfDictionary sysInfo)
-    {
-        if (sysInfo is null) return await FailedCmapReadAsync(outerFontCMap).CA();
-
-        var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
-        var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
-        if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
-            return outerFontCMap;
-
-        var name = PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
-        return await ConstructCompositeAsync(name, outerFontCMap).CA() ??
-               await FailedCmapReadAsync(outerFontCMap).CA();
-    }
-
-    private async Task<IReadCharacter> FailedCmapReadAsync(IReadCharacter outerFontCMap)
-    {
-        return outerFontCMap;
-        if (await font.ToUnicodeAsync() is not { IsNull: false } unicode) return outerFontCMap;
-        return await 
-            ReadUnicodeCmapAsync(unicode).CA() ?? outerFontCMap;
-    }
-
-    private static ValueTask<IReadCharacter?> ReadUnicodeCmapAsync(PdfDirectObject unicode)
-    {
-        return new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
-            .ParseCMapAsync(unicode);
-    }
-
-    private async Task<IReadCharacter?> ConstructCompositeAsync(
-        PdfDirectObject innerCMapName, IReadCharacter outerFontCMap) =>
-        await ReadCMapAsync(innerCMapName, TwoByteCharacters.Instance).CA() 
-               is {} inner? 
-            new CompositeCmap(outerFontCMap, inner): 
-            await FailedCmapReadAsync(outerFontCMap).CA();
+    // THIS needs to go overt to CharacterTo GlyphMappingFactory.
+    // private async Task<IReadCharacter> ConstructInnerCmapAsync(
+    //     IReadCharacter outerFontCMap, PdfDictionary sysInfo)
+    // {
+    //     if (sysInfo is null) return await FailedCmapReadAsync(outerFontCMap).CA();
+    //
+    //     var ordering = await sysInfo.GetOrDefaultAsync(KnownNames.Ordering, KnownNames.Identity).CA();
+    //     var registry = await sysInfo.GetOrDefaultAsync(KnownNames.Registry, KnownNames.Identity).CA();
+    //     if (registry.Equals(KnownNames.Identity) || ordering.Equals(KnownNames.Identity))
+    //         return outerFontCMap;
+    //
+    //     var name = PdfDirectObject.CreateName($"{registry}-{ordering}-UCS2");
+    //     return await ConstructCompositeAsync(name, outerFontCMap).CA() ??
+    //            await FailedCmapReadAsync(outerFontCMap).CA();
+    // }
+    //
+    // private async Task<IReadCharacter> FailedCmapReadAsync(IReadCharacter outerFontCMap)
+    // {
+    //     return outerFontCMap;
+    //     if (await font.ToUnicodeAsync() is not { IsNull: false } unicode) return outerFontCMap;
+    //     return await 
+    //         ReadUnicodeCmapAsync(unicode).CA() ?? outerFontCMap;
+    // }
+    //
+    // private static ValueTask<IReadCharacter?> ReadUnicodeCmapAsync(PdfDirectObject unicode)
+    // {
+    //     return new CMapFactory(GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance)
+    //         .ParseCMapAsync(unicode);
+    // }
+    //
+    // private async Task<IReadCharacter?> ConstructCompositeAsync(
+    //     PdfDirectObject innerCMapName, IReadCharacter outerFontCMap) =>
+    //     await ReadCMapAsync(innerCMapName, TwoByteCharacters.Instance).CA() 
+    //            is {} inner? 
+    //         new CompositeCmap(outerFontCMap, inner): 
+    //         await FailedCmapReadAsync(outerFontCMap).CA();
 
     private ValueTask<IReadCharacter?> ReadCMapAsync(
         PdfDirectObject cMapName, IReadCharacter baseMapper) =>

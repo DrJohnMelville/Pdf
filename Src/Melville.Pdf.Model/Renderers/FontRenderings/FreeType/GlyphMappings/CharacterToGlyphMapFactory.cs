@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
@@ -117,7 +118,14 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
         var subFont = await font.Type0SubFontAsync().CA();
         if (await subFont.CidToGidMapStreamAsync().CA() is { } mapStream)
             return await ParseCmapStreamAsync(mapStream).CA();
-        
+
+        if (iFont.TypeGlyphMapping is CidToGlyphMappingStyle.CFF)
+        {
+            var cmaps = await iFont.GetCmapSourceAsync().CA();
+            return new CMapWrapper(await cmaps.GetByIndexAsync(0).CA());
+        }
+
+#warning this is all wrong -- need to steal commented out code from ReadCharacterFactory.
         var sysInfo = await subFont.CidSystemInfoAsync().CA();
         if (sysInfo is not null)
         {

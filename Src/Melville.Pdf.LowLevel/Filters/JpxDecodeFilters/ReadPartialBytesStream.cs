@@ -15,16 +15,18 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
         Height = image.Height;
         ImageComponents = image.NumberOfComponents;
         RawImageCreator.Register();
-        var data = image.As<RawImage>().Bytes;
+        var data = image.As<RawImage>();
         source = CompressArray(data, bytesPerQuad);
     }
 
-    private static ReadOnlyMemory<byte> CompressArray(byte[] bytes, int bytesPerQuad)
+    private static ReadOnlyMemory<byte> CompressArray(RawImage image, int bytesPerQuad)
     {
-        if (bytesPerQuad > 3) return new ReadOnlyMemory<byte>(bytes);
-        if (bytes.Length % 4 != 0) throw new ArgumentException("Invalid length for JPX image");
+        if (bytesPerQuad >= image.Components) return new ReadOnlyMemory<byte>(image.Bytes);
+      
+        var bytes = image.Bytes;
+        if (bytes.Length % bytesPerQuad != 0) throw new ArgumentException("Invalid length for JPX image");
         int target = bytesPerQuad;
-        for (int source = 4; source < bytes.Length; source+=4)
+        for (int source = bytesPerQuad; source < bytes.Length; source+=bytesPerQuad)
         {
             bytes.AsSpan(source, bytesPerQuad).CopyTo(bytes.AsSpan(target));
             target += bytesPerQuad;

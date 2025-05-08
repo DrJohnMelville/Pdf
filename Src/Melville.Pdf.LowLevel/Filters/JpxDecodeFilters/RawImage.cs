@@ -6,14 +6,17 @@ namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters
     {
         public new int Width { get; }
         public new int Height { get; }
+        public new int Components { get; }
         public new byte[] Bytes { get; }
 
         /// <inheritdoc />
-        public RawImage(int width, int height, byte[] bytes) : base(width, height, bytes)
+        public RawImage(int width, int height, int components, byte[] bytes) : 
+            base(width, height, components, bytes)
         {
             Width = width;
             Height = height;
             Bytes = bytes;
+            Components = components;
         }
 
         /// <inheritdoc />
