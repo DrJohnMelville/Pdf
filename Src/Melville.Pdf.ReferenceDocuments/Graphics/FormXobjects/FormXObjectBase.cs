@@ -1,5 +1,8 @@
 ﻿using System.Numerics;
+using System.Security.AccessControl;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
+using Melville.Postscript.Interpreter.Values;
+using Microsoft.CodeAnalysis;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 

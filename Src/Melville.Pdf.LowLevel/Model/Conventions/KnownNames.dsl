@@ -144,6 +144,7 @@ Pdf:All
 Pdf:Alternate
 Pdf:And
 Pdf:Annot
+Pdf:Annots
 Pdf:AP
 Pdf:AS
 Pdf:Ascent
@@ -294,6 +295,7 @@ Pdf:Prev
 Pdf:R
 Pdf:RBGroups
 Pdf:Range
+Pdf:Rect
 Pdf:Registry
 Pdf:Resources
 Pdf:Root
@@ -332,6 +334,7 @@ Pdf:Version
 Pdf:V
 Pdf:W
 Pdf:W2
+Pdf:Watermark
 Pdf:Widget
 Pdf:Width
 Pdf:Widths

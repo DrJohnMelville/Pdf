@@ -4,15 +4,15 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Annotations;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.ColorOperations;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -49,7 +49,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         if (newTransform.IsIdentity) return;
         StateOps.ModifyTransformMatrix(in newTransform);
     }
-
+    
 
     public async ValueTask LoadGraphicStateDictionaryAsync(PdfDirectObject dictionaryName) =>
          await GraphicsState.LoadGraphicStateDictionaryAsync(
@@ -71,7 +71,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask DoAsync(PdfDirectObject name) =>
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name).CA())
             .TryGet(out PdfStream? stream)? 
-            stream: throw new PdfParseException("Co command can only be called on Streams")).CA();
+            stream: throw new PdfParseException("Do command can only be called on Streams")).CA();
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
@@ -129,17 +129,12 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         SaveGraphicsState();
         var formXObject = new PdfFormXObject(xObjectAsStream, page);
-        await TryApplyFormXObjectMatrixAsync(formXObject).CA();
+        ModifyTransformMatrix(await formXObject.MatrixAsync().CA());
         
         await TryClipToFormXObjectBoundingBoxAsync(formXObject).CA();
 
         await RenderAsync(formXObject).CA();
         RestoreGraphicsState();
-    }
-
-    private async Task TryApplyFormXObjectMatrixAsync(PdfFormXObject formXObject)
-    {
-        ModifyTransformMatrix(await formXObject.MatrixAsync().CA());
     }
 
     private async Task TryClipToFormXObjectBoundingBoxAsync(PdfFormXObject formXObject)
@@ -167,11 +162,12 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
             await page.GetContentBytesAsync().CA());
         await new ContentStreamParser(wrapOutput(this)).ParseAsync(
             reader).CA();
+        await TryRenderAnnotationsAsync().CA();
     }
 
     #endregion
     
-    #region Text OperationsB
+    #region Text Operations
 
     public void BeginTextObject() => GraphicsState.SetBothTextMatrices(Matrix3x2.Identity);
 
@@ -342,5 +338,50 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     #region Compatability Operators
     public void BeginCompatibilitySection() { }
     public void EndCompatibilitySection() { }
+    #endregion
+
+    #region Annotations
+
+    public async ValueTask TryRenderAnnotationsAsync()
+    {
+        if (await page.LowLevel.GetOrNullAsync<PdfArray>(KnownNames.Annots).CA() is { } annots)
+        {
+            await foreach (var annot in annots.CA())
+            {
+                if (annot.TryGet(out PdfDictionary? annotDict)) 
+                  await RenderSingleAnnotationAsync(new Annotation(annotDict)).CA();
+            }
+        }
+    }
+
+    private async ValueTask RenderSingleAnnotationAsync(Annotation annotation)
+    {
+        if (await annotation.GetVisibleFormAsync().CA() is { } form)
+        {
+            SaveGraphicsState();
+            var formXObject = new PdfFormXObject(form, page);
+
+            var matrix = await formXObject.MatrixAsync().CA();
+            var bBox = await formXObject.BboxAsync().CA();
+            var rect = await annotation.RectAsync().CA();
+
+            var xform = CreateAnnotationTransform(matrix, bBox, rect);
+
+            ModifyTransformMatrix(xform);
+
+
+            await TryClipToFormXObjectBoundingBoxAsync(formXObject).CA();
+
+            await RenderAsync(formXObject).CA();
+            RestoreGraphicsState();
+        }
+    }
+
+    private Matrix3x2 CreateAnnotationTransform(Matrix3x2 matrix, PdfRect? bBox, PdfRect? rect)
+    {
+        if (!(bBox.HasValue && rect.HasValue)) return matrix;
+        var targetBox = bBox.Value.BoundTransformedRect(matrix);
+        return targetBox.TransformTo(rect.Value); }
+
     #endregion
 }

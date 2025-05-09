@@ -1,5 +1,5 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -66,4 +66,34 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
         var ur = Vector2.Transform(new Vector2((float)Right, (float)Top), transform);
         return FromDoubleSpan(ll.X, ll.Y, ur.X, ur.Y);
     }
+
+    /// <summary>
+    /// Apply a given transform to the rectangle and return the smallest axis aligned rectangle that
+    /// contains the transformed rectangle.  This is not the same as transforming the rectangle,
+    /// </summary>
+    /// <param name="transform">Transform to apply to the rectangle</param>
+    /// <returns>A new rectangle that bounds the transformed rectangle.</returns>
+    public PdfRect BoundTransformedRect(in Matrix3x2 transform)
+    {
+        var (bl, tr) = (stackalloc Vector2[]
+        {
+            transform.Transform((float)Left, (float)Bottom),
+            transform.Transform((float)Left, (float)Top),
+            transform.Transform((float)Right, (float)Top),
+            transform.Transform((float)Right, (float)Bottom),
+        }).MinBoundingBox();
+        return new PdfRect(bl.X, bl.Y, tr.X, tr.Y);
+    }
+
+    /// <summary>
+    /// Returns a transform that maps the bottom left of this rectangle to the bottom left of
+    /// the final rectangle and also maps the top right of this rectangle to the top right of the final
+    /// rectangle.
+    /// </summary>
+    /// <param name="final">The rectangle to map this rectangle onto.</param>
+    /// <returns></returns>
+    public Matrix3x2 TransformTo(PdfRect final) =>
+        Matrix3x2.CreateTranslation((float)-Left, (float)-Bottom) *
+        Matrix3x2.CreateScale((float)(final.Width / Width), (float)(final.Height / Height)) *
+        Matrix3x2.CreateTranslation((float)final.Left, (float)final.Bottom);
 }
