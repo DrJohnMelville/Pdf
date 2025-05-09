@@ -586,3 +586,5 @@ RenderingTest.cs_Skia-Japan1|1377194269
 RenderingTest.cs_Skia-Korea1|2466719345
 RenderingTest.cs_wpf-Jpeg2000ColorImage|1449483858
 RenderingTest.cs_Skia-Jpeg2000ColorImage|152254151
+RenderingTest.cs_wpf-WithAnnotation|3576178036
+RenderingTest.cs_Skia-WithAnnotation|1689464111

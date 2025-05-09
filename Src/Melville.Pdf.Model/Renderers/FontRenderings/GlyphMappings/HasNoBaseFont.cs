@@ -8,8 +8,8 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings
     [StaticSingleton]
     internal partial class HasNoBaseFont: IReadCharacter
     {
-        public Memory<uint> GetCharacters(
-            in ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer, out int bytesConsumed) => 
+        public Span<uint> GetCharacters(
+            in ReadOnlySpan<byte> input, in Span<uint> scratchBuffer, out int bytesConsumed) => 
             throw new PdfParseException("Builtin CMAPS should not rely on a base font.");
     }
 }

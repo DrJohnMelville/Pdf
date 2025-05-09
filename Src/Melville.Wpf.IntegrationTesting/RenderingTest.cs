@@ -17,7 +17,7 @@ public class RenderingTest:IClassFixture<StringTestDatabase>
     public RenderingTest(StringTestDatabase hashes)
     {
         this.hashes = hashes; 
-        //hashes.Recording = true;
+        hashes.Recording = true;
     }
 
     public static IEnumerable<object[]> GeneratorTests() =>

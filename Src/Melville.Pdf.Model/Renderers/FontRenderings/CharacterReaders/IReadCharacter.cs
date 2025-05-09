@@ -17,8 +17,8 @@ public interface IReadCharacter
     /// <param name="bytesConsumed">Receives the number of bytes consumed by the operation</param>
     /// <returns>A memory containing the character(s) read from the input.  This can be but
     /// is not required to be a portion of the scratchBuffer</returns>
-    Memory<uint> GetCharacters(
-        in ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer, out int bytesConsumed);
+    Span<uint> GetCharacters(
+        in ReadOnlySpan<byte> input, in Span<uint> scratchBuffer, out int bytesConsumed);
 }
 
 /// <summary>
@@ -37,8 +37,9 @@ public static class ReadCharacterOperations
     public static Memory<uint> GetCharacters(this IReadCharacter target,
         ref ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer)
     {
-        var ret = target.GetCharacters(input, scratchBuffer, out var bytesConsumed);
+        var ret = target.GetCharacters(input.Span, scratchBuffer.Span, out var bytesConsumed);
         input = input[bytesConsumed..];
-        return ret;
+        var retMemory = scratchBuffer[..ret.Length];
+        return ret.SequenceEqual(retMemory.Span)?retMemory:ret.ToArray().AsMemory();
     }
 }

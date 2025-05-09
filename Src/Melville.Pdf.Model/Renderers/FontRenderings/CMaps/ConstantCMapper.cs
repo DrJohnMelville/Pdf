@@ -7,10 +7,10 @@ internal partial class ConstantCMapper : CMapMapperBase
 {
     [FromConstructor] private readonly uint constantValue;
 
-    public override int WriteMapping(in VariableBitChar offset, Memory<uint> target)
+    public override int WriteMapping(in VariableBitChar offset, Span<uint> target)
     {
         if (target.Length < 1) return -1;
-        target.Span[0] = constantValue;
+        target[0] = constantValue;
         return 1;
     }
 }

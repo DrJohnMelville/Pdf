@@ -10,17 +10,17 @@ internal partial class BaseFontConstantMapper : CMapMapperBase
     [FromConstructor] private readonly IReadCharacter baseFont;
     [FromConstructor] private readonly PostscriptValue mappedValue;
 
-    public override int WriteMapping(in VariableBitChar character, Memory<uint> target)
+    public override int WriteMapping(in VariableBitChar character, Span<uint> target)
     {
         var currentPosition = 0;
         using var source = mappedValue.Get<RentedMemorySource>();
-        var inputMemory = source.Memory;
-        while (inputMemory.Length > 0)
+        var inputSpan = source.Memory.Span;
+        while (inputSpan.Length > 0)
         {
             var outputChars = baseFont.GetCharacters(
-                inputMemory, target[currentPosition..], out var bytesConsumed);
+                inputSpan, target[currentPosition..], out var bytesConsumed);
             if (bytesConsumed < 0) return -1;
-            inputMemory = inputMemory.Slice(bytesConsumed);
+            inputSpan = inputSpan.Slice(bytesConsumed);
             currentPosition += outputChars.Length;
         }
 

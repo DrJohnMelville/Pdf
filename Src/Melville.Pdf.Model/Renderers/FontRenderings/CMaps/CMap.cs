@@ -20,35 +20,35 @@ internal class CMap: IReadCharacter
             .MinMax();
     }
 
-    public Memory<uint> GetCharacters(
-        in ReadOnlyMemory<byte> input, in Memory<uint> scratchBuffer, out int bytesConsumed)
+    public Span<uint> GetCharacters(
+        in ReadOnlySpan<byte> input, in Span<uint> scratchBuffer, out int bytesConsumed)
     {
         VariableBitChar character = new();
         bytesConsumed = 0;
         for (var i = 0; i < maxByteLen; i++)
         {
             if (bytesConsumed >= input.Length) return scratchBuffer[..0];
-            character = character.AddByte(input.Span[bytesConsumed++]);
+            character = character.AddByte(input[bytesConsumed++]);
             foreach (var byteRange in byteRanges)
             {
                 if (byteRange.AppliesTo(character))
                 {
-                    return RenderToBuffer(scratchBuffer, byteRange, character);
+                    var outputBuffer = scratchBuffer;
+                    while (true) {
+                        if (byteRange.WriteMapping(character, outputBuffer) is var bytesWritten and >= 0)
+                        {
+                            return outputBuffer[..bytesWritten];
+                        }
+                        if (scratchBuffer.Length >= 128) break;
+                        outputBuffer = new uint[outputBuffer.Length*2].AsSpan();
+                    }
                 }
             }
         }
 
         bytesConsumed = minByteLen;
         if (scratchBuffer.Length == 0) return new uint[] { 0 };
-        scratchBuffer.Span[0] = 0;
+        scratchBuffer[0] = 0;
         return scratchBuffer[..1];
-    }
-
-    private static Memory<uint> RenderToBuffer(
-        Memory<uint> scratchBuffer, ByteRange byteRange, in VariableBitChar character)
-    {
-        return byteRange.WriteMapping(character, scratchBuffer) >= 0 ? 
-            scratchBuffer[..byteRange.WriteMapping(character, scratchBuffer)] : 
-            RenderToBuffer(new uint[Math.Max(128, 2 * scratchBuffer.Length)], byteRange, character);
     }
 }

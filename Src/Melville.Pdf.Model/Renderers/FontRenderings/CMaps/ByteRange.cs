@@ -18,7 +18,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
 
         public void AddMapper(CMapMapperBase mapper) => mappers.Add(mapper);
 
-        public override int WriteMapping(in VariableBitChar character, Memory<uint> target)
+        public override int WriteMapping(in VariableBitChar character, Span<uint> target)
         {
             for (int i = mappers.Count -1; i >= 0; i--)
             {
@@ -26,7 +26,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
                 if (candidate.AppliesTo(character)) 
                     return candidate.WriteMapping(character, target);
             }
-            return WriteNotDefinedMapping(target.Span);
+            return WriteNotDefinedMapping(target);
         }
 
         private static int WriteNotDefinedMapping(Span<uint> target)

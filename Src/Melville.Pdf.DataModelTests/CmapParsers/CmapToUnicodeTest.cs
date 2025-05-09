@@ -34,10 +34,10 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
     {
         var soura = hexSource.BitsFromHex();
         var target = new uint[10];
-        var result = maps.Maps[map].GetCharacters(soura.AsMemory(), target, out var consumed);
+        var result = maps.Maps[map].GetCharacters(soura.AsSpan(), target, out var consumed);
         Assert.Equal(expecteDConsumed, consumed);
         Assert.Equal(hexDest, string.Join("",
-            result.Span.ToArray().Select(i=> i.ToString("X4"))));
+            result.ToArray().Select(i=> i.ToString("X4"))));
     }
 
     [Fact]
@@ -45,10 +45,10 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
     {
         var soura = "0061".BitsFromHex();
         var target = new uint[2];
-        var result = maps.Maps[1].GetCharacters(soura.AsMemory(), target, out var consumed);
+        var result = maps.Maps[1].GetCharacters(soura.AsSpan(), target, out var consumed);
         Assert.Equal(2, consumed);
         Assert.Equal("00660066006C", string.Join("",
-            result.Span.ToArray().Select(i=> i.ToString("X4"))));
+            result.ToArray().Select(i=> i.ToString("X4"))));
 
     }
 }
