@@ -18,6 +18,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
+    [FromConstructor] private readonly int sourceObjectNumber;
     [FromConstructor] private readonly SubsetByteSource subsetReader;
     [FromConstructor] private readonly RootObjectParser parser;
     [FromConstructor] private readonly int desiredObjectNumber;
@@ -25,7 +26,7 @@ internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
     private PdfDirectObject result = default;
 
     public static async ValueTask<ObjectStreamParser> CreateAsync(
-        ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
+        ParsingFileOwner owner, int sourceObjectNumber, PdfStream source, int desiredObjectNumber)
     {
         var sourceStream = await source.StreamContentAsync().CA();
         var bytes = new SubsetByteSource( MultiplexSourceFactory.SingleReaderForStream(sourceStream));
@@ -33,14 +34,11 @@ internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
         var parser = new RootObjectParser(reader);
 
         
-        return new(owner, bytes, parser, desiredObjectNumber, source);
+        return new(owner, sourceObjectNumber, bytes, parser, desiredObjectNumber, source);
     }
 
     
-    public void Dispose()
-    {
-        subsetReader.Dispose();
-    }
+    public void Dispose() => subsetReader.Dispose();
 
     public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject priorResult)
     {
@@ -69,7 +67,9 @@ internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
     {
         var obj = await ReadSingleObjectAsync(priorOffset, nextOffset).CA();
         if (priorObjectNumber == desiredObjectNumber) result = obj;
-        owner.NewIndirectResolver.RegisterDirectObject(priorObjectNumber, 0, obj, false);
+        
+        owner.NewIndirectResolver.TryRegisterFromObjectStream(
+            sourceObjectNumber, priorObjectNumber, obj);
     }
 
     private async Task<PdfDirectObject> ReadSingleObjectAsync(int objectOffset, int nextOffset)

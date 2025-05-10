@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
@@ -45,6 +46,10 @@ public readonly partial struct PdfIndirectObject
         valueStrategy is IIndirectObjectSource source?
             source.LookupAsync(Memento):
         new(CreateDirectValueUnsafe());
+
+    public bool VerifyIsIndirectRefFromObjectStream(int objectStreamNumber) =>
+        valueStrategy is ObjectStreamDeferredPdfStrategy  deferredStrategy &&
+           deferredStrategy.ComesFromStream(objectStreamNumber, Memento);
 
     private PdfDirectObject CreateDirectValueUnsafe()
     {

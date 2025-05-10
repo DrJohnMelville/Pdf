@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -55,6 +56,14 @@ internal class IndirectObjectRegistry : IIndirectObjectSource, IIndirectObjectRe
         ref var item = ref CollectionsMarshal.GetValueRefOrAddDefault(items, (number, generation), out var previouslyDefined);
         if (previouslyDefined && doNotOverwrite ) return; 
         item = value;
+    }
+
+    internal void TryRegisterFromObjectStream(
+        int sourceStreamNumber, int objectNumber, in PdfIndirectObject value)
+    {
+        ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(items, (objectNumber, 0));
+        if (!Unsafe.IsNullRef(ref item) &&
+            item.VerifyIsIndirectRefFromObjectStream(sourceStreamNumber)) item = value;
     }
 
     public static MementoUnion PairToMemento(int number, int generation) => 
