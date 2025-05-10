@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CoreJ2K" Version="1.1.1.48" />
       <PackageReference Include="Melville.Hacks" Version="0.7.6" />
       <PackageReference Include="Melville.Linq" Version="0.7.6" />
       <PackageReference Include="System.IO.Pipelines" Version="9.0.1" />
@@ -36,11 +37,4 @@
       <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="CoreJ2K">
-        <HintPath>..\..\..\CoreJ2K\CoreJ2K\bin\Release\netstandard2.1\CoreJ2K.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-		
 </Project>
