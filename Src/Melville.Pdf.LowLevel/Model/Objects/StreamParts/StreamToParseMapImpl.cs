@@ -15,11 +15,14 @@ public static class StreamToParseMapImpl
     /// </summary>
     /// <param name="map">The parsemap to det the data for </param>
     /// <param name="s">The stream that is the source of the data the parsemap will parse</param>
+#if DEBUG
     public static async ValueTask SetDataAsync(this ParseMap? map, PdfStream s)
     {
-#if DEBUG
         if (map == null) return;
         await map.SetDataAsync(await s.StreamContentAsync().CA()).CA();
-#endif
     }
+#else
+    public static ValueTask SetDataAsync(this ParseMap? map, PdfStream s) =>
+        ValueTask.CompletedTask;
+#endif
 }

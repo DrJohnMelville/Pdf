@@ -48,8 +48,8 @@ public readonly partial struct PdfIndirectObject
         new(CreateDirectValueUnsafe());
 
     internal bool VerifyIsIndirectRefFromObjectStream(int objectStreamNumber) =>
-        valueStrategy is ObjectStreamDeferredPdfStrategy  deferredStrategy &&
-           deferredStrategy.ComesFromStream(objectStreamNumber, Memento);
+        valueStrategy is IHasStreamSourcePreference preference &&
+           preference.ComesFromStream(objectStreamNumber, Memento);
 
     private PdfDirectObject CreateDirectValueUnsafe()
     {

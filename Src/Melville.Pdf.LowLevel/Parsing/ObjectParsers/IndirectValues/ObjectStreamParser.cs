@@ -40,9 +40,8 @@ internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
     
     public void Dispose() => subsetReader.Dispose();
 
-    public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject priorResult)
+    public async ValueTask<PdfDirectObject> ParseAsync()
     {
-        result = priorResult;
         await ObjectStreamOperations.ReportIncludedObjectsAsync(source,
             new InternalObjectTargetForStream(this, -1), subsetReader).CA();
         await DeclareObjectStreamObjectAsync(-1, -1, -1, int.MaxValue).CA();

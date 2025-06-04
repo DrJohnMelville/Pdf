@@ -8,7 +8,7 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource
+internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource, IHasStreamSourcePreference
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
 
@@ -30,12 +30,14 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource
     private async Task<PdfDirectObject> ReadObjectStreamAsync(
         int sourceObjectNumber, PdfStream source, int desiredObjectNumber)
     {
-        var ret = await TryReadExtendsStreamAsync(sourceObjectNumber, source, desiredObjectNumber).CA();
 
         using var parser = 
             await ObjectStreamParser.CreateAsync(owner, sourceObjectNumber, source, desiredObjectNumber).CA();
 
-        return await parser.ParseAsync(ret).CA();
+        var ret = await parser.ParseAsync().CA();
+        return ret.IsNull ? 
+            await TryReadExtendsStreamAsync(sourceObjectNumber, source, desiredObjectNumber).CA() : 
+            ret;
     }
 
     private async Task<PdfDirectObject> TryReadExtendsStreamAsync(

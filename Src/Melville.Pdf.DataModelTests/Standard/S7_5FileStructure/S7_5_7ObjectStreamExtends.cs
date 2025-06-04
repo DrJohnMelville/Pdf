@@ -112,7 +112,7 @@ public class S7_5_7ObjectStreamExtends
         """);
         await using var r2 = mbs.CreateReader();
         var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
-        Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
+        Assert.Equal("1234", (await reader.Objects[(2, 0)].LoadValueAsync()).ToString());
         Assert.Equal("NewStr", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
 

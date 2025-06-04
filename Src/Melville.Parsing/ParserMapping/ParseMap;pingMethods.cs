@@ -34,13 +34,13 @@ public static partial class ParseMappingMethods
     /// <summary>
     /// Creates a new parse map for the given source.
     /// </summary>
-    /// <param name="source">The item to monitor for parsing</param>
+    /// <param name="parseSource">The item to monitor for parsing</param>
     public static ParseMap MonitorParsing(this Stream parseSource) => flyweightMap;
     
     /// <summary>
     /// Creates a new parse map for the given source.
     /// </summary>
-    /// <param name="source">The item to monitor for parsing</param>
+    /// <param name="parseSource">The item to monitor for parsing</param>
     public static ParseMap MonitorParsing(this IByteSource parseSource) => flyweightMap;
 
 #endif
