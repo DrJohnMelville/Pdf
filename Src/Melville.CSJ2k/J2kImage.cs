@@ -1235,7 +1235,7 @@ namespace CoreJ2K
             {
                 var bytes = new byte[2];
                 inStream.Position = 0;
-                inStream.Read(bytes, 0, 2);
+                inStream.ReadExactly(bytes, 0, 2);
                 inStream.Position = 0;
                 var imgType = Encoding.UTF8.GetString(bytes, 0, 2);
                 return imgType;

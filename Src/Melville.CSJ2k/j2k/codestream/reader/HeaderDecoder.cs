@@ -2106,7 +2106,7 @@ namespace CoreJ2K.j2k.codestream.reader
 			
 			// Read Nppm and Ippm data 
 			pPMMarkerData[indx] = new byte[remSegLen];
-            ehs.BaseStream.Read(pPMMarkerData[indx], 0, remSegLen); //SupportClass.ReadInput(ehs.BaseStream, pPMMarkerData[indx], 0, remSegLen);
+            ehs.BaseStream.ReadExactly(pPMMarkerData[indx], 0, remSegLen); //SupportClass.ReadInput(ehs.BaseStream, pPMMarkerData[indx], 0, remSegLen);
 			
 			// Check marker length
 			checkMarkerLength(ehs, "PPM marker");
@@ -2158,7 +2158,7 @@ namespace CoreJ2K.j2k.codestream.reader
 			
 			// Ippt (packed packet headers)
 			temp = new byte[curMarkSegLen - 3];
-            ehs.BaseStream.Read(temp, 0, temp.Length); //SupportClass.ReadInput(ehs.BaseStream, temp, 0, temp.Length);
+            ehs.BaseStream.ReadExactly(temp, 0, temp.Length); //SupportClass.ReadInput(ehs.BaseStream, temp, 0, temp.Length);
 			tilePartPkdPktHeaders[tile][tpIdx][indx] = temp;
 			
 			// Check marker length

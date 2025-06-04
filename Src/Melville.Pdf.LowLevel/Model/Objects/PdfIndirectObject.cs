@@ -47,7 +47,7 @@ public readonly partial struct PdfIndirectObject
             source.LookupAsync(Memento):
         new(CreateDirectValueUnsafe());
 
-    public bool VerifyIsIndirectRefFromObjectStream(int objectStreamNumber) =>
+    internal bool VerifyIsIndirectRefFromObjectStream(int objectStreamNumber) =>
         valueStrategy is ObjectStreamDeferredPdfStrategy  deferredStrategy &&
            deferredStrategy.ComesFromStream(objectStreamNumber, Memento);
 
