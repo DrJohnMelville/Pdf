@@ -1,6 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
-        <Version>0.6.4-preview</Version>
+        <Version>0.6.4</Version>
         <LangVersion>13</LangVersion>
         <Authors>John Melville, MS, MD</Authors>
         <Company>Melville Computing</Company>
