@@ -8,6 +8,8 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParseMappings;
 
+// Parse Mapping is a debug only feature.
+#if DEBUG
 public class ParseMappingTest
 {
     [Fact]
@@ -77,3 +79,4 @@ public class ParseMappingTest
             ]);
     }
 }
+#endif
