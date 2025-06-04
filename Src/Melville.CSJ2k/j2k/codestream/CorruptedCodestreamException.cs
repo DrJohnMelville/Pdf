@@ -43,7 +43,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> This exception is thrown whenever an illegal value is read from a bit
@@ -51,14 +51,14 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// which is illegal.
 	/// 
 	/// </summary>
-	internal class CorruptedCodestreamException:System.IO.IOException
+	public class CorruptedCodestreamException:System.IO.IOException
 	{
 		
 		/// <summary> Constructs a new <tt>CorruptedCodestreamException</tt> exception with
 		/// no detail message.
 		/// 
 		/// </summary>
-		public CorruptedCodestreamException():base()
+		public CorruptedCodestreamException()
 		{
 		}
 		
@@ -69,7 +69,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <param name="s">The detail message.
 		/// 
 		/// </param>
-		public CorruptedCodestreamException(System.String s):base(s)
+		public CorruptedCodestreamException(string s):base(s)
 		{
 		}
 	}

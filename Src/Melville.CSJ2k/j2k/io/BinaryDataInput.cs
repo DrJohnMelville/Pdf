@@ -42,24 +42,22 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.io
+namespace CoreJ2K.j2k.io
 {
 	
 	/// <summary> This interface defines the input of binary data from streams and/or files.
 	/// 
-	/// <p>Byte level input (i.e., for byte, int, long, float, etc.) should always
+	/// Byte level input (i.e., for byte, int, long, float, etc.) should always
 	/// be byte aligned. For example, a request to read an <tt>int</tt> should
-	/// always realign the input at the byte level.</p>
+	/// always realign the input at the byte level.
 	/// 
-	/// <p>The implementation of this interface should clearly define if multi-byte
+	/// The implementation of this interface should clearly define if multi-byte
 	/// input data is read in little- or big-endian byte ordering (least
-	/// significant byte first or most significant byte first, respectively).</p>
+	/// significant byte first or most significant byte first, respectively).
 	/// 
 	/// </summary>
-	/// <seealso cref="EndianType">
-	/// 
-	/// </seealso>
-	internal interface BinaryDataInput
+	/// <seealso cref="EndianType" />
+	public interface BinaryDataInput
 	{
 		/// <summary> Returns the endianess (i.e., byte ordering) of the implementing
 		/// class. Note that an implementing class may implement only one type of
@@ -70,9 +68,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// <tt>EndianType.LITTLE_ENDIAN</tt>
 		/// 
 		/// </returns>
-		/// <seealso cref="EndianType">
-		/// 
-		/// </seealso>
+		/// <seealso cref="EndianType" />
 		int ByteOrdering
 		{
 			get;

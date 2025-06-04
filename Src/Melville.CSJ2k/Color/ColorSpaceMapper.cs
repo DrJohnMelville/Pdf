@@ -6,12 +6,12 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using CoreJ2K.Icc;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.Icc;
-
-namespace Melville.CSJ2K.Color
+namespace CoreJ2K.Color
 {
 
     /// <summary> This is the base class for all modules in the colorspace and icc
@@ -22,13 +22,13 @@ namespace Melville.CSJ2K.Color
     /// and getInternCompData methods.
     /// 
     /// </summary>
-    /// <seealso cref="jj2000.j2k.colorspace.ColorSpace">
+    /// <seealso cref="j2k.colorspace.ColorSpace">
     /// </seealso>
     /// <version> 	1.0
     /// </version>
     /// <author> 	Bruce A. Kern
     /// </author>
-    internal abstract class ColorSpaceMapper : ImgDataAdapter, BlkImgDataSrc
+    public abstract class ColorSpaceMapper : ImgDataAdapter, BlkImgDataSrc
     {
         private void InitBlock()
         {
@@ -49,21 +49,14 @@ namespace Melville.CSJ2K.Color
         /// if no options are supported.
         /// 
         /// </returns>
-        public static System.String[][] ParameterInfo
-        {
-            get
-            {
-                return pinfo;
-            }
-
-        }
+        public static string[][] ParameterInfo => pinfo;
 
         /// <summary> Arrange for the input DataBlk to receive an
         /// appropriately sized and typed data buffer
         /// </summary>
         /// <param name="db">input DataBlk
         /// </param>
-        /// <seealso cref="jj2000.j2k.image.DataBlk">
+        /// <seealso cref="j2k.image.DataBlk">
         /// </seealso>
         protected internal static DataBlk InternalBuffer
         {
@@ -87,7 +80,7 @@ namespace Melville.CSJ2K.Color
 
 
                     default:
-                        throw new System.ArgumentException("Invalid output datablock" + " type");
+                        throw new ArgumentException("Invalid output datablock" + " type");
 
                 }
             }
@@ -96,10 +89,6 @@ namespace Melville.CSJ2K.Color
 
         /// <summary>The prefix for ICC Profiler options </summary>
         public const char OPT_PREFIX = 'I';
-
-        /// <summary>Platform dependant end of line String. </summary>
-        //UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-        protected internal static readonly System.String eol = System.Environment.NewLine;
 
         // Temporary data buffers needed during profiling.
         protected internal DataBlkInt[] inInt; // Integer input data.
@@ -128,10 +117,8 @@ namespace Melville.CSJ2K.Color
         protected internal int[] fixedPtBitsArray = null;
 
         /// <summary>The list of parameters that are accepted for ICC profiling.</summary>
-        //UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-        private static readonly System.String[][] pinfo = new System.String[][]
-                                                              {
-                                                                  new System.String[]
+        private static readonly string[][] pinfo = {
+                                                                  new string[]
                                                                       {
                                                                           "IcolorSpacedebug", null,
                                                                           "Print debugging messages during colorspace mapping.",
@@ -155,24 +142,14 @@ namespace Melville.CSJ2K.Color
         protected internal DataBlk[] srcBlk = null;
 
 
-        //UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'ComputedComponents' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
-        protected internal class ComputedComponents
+        protected internal sealed class ComputedComponents
         {
             private void InitBlock(ColorSpaceMapper enclosingInstance)
             {
-                this.enclosingInstance = enclosingInstance;
+                this.Enclosing_Instance = enclosingInstance;
             }
 
-            private ColorSpaceMapper enclosingInstance;
-
-            public ColorSpaceMapper Enclosing_Instance
-            {
-                get
-                {
-                    return enclosingInstance;
-                }
-
-            }
+            public ColorSpaceMapper Enclosing_Instance { get; private set; }
 
             //private int tIdx = - 1;
             private int h = -1;
@@ -199,7 +176,7 @@ namespace Melville.CSJ2K.Color
                 set_Renamed(db);
             }
 
-            public virtual void set_Renamed(DataBlk db)
+            public void set_Renamed(DataBlk db)
             {
                 h = db.h;
                 w = db.w;
@@ -209,7 +186,7 @@ namespace Melville.CSJ2K.Color
                 scanw = db.scanw;
             }
 
-            public virtual void clear()
+            public void clear()
             {
                 h = w = ulx = uly = offset = scanw = -1;
             }
@@ -223,7 +200,6 @@ namespace Melville.CSJ2K.Color
             /* end class ComputedComponents */
         }
 
-        //UPGRADE_NOTE: The initialization of  'computed' was moved to method 'InitBlock'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
         protected internal ComputedComponents computed;
 
         /// <summary> Copy the DataBlk geometry from source to target
@@ -262,7 +238,7 @@ namespace Melville.CSJ2K.Color
         {
 
             // Check parameters
-            csMap.pl.checkList(OPT_PREFIX, Melville.CSJ2K.j2k.util.ParameterList.toNameArray(pinfo));
+            csMap.pl.checkList(OPT_PREFIX, ParameterList.toNameArray(pinfo));
 
             // Perform ICCProfiling or ColorSpace tranfsormation.
             if (csMap.Method == ColorSpace.MethodEnum.ICC_PROFILED)
@@ -271,7 +247,7 @@ namespace Melville.CSJ2K.Color
             }
             else
             {
-                ColorSpace.CSEnum colorspace = csMap.getColorSpace();
+                var colorspace = csMap.getColorSpace();
 
                 if (colorspace == ColorSpace.CSEnum.sRGB)
                 {
@@ -323,8 +299,8 @@ namespace Melville.CSJ2K.Color
         private void initialize()
         {
 
-            this.pl = csMap.pl;
-            this.ncomps = src.NumComps;
+            pl = csMap.pl;
+            ncomps = src.NumComps;
 
             shiftValueArray = new int[ncomps];
             maxValueArray = new int[ncomps];
@@ -346,19 +322,23 @@ namespace Melville.CSJ2K.Color
             /* For each component, get a reference to the pixel data and
 			* set up working DataBlks for both integer and float output.
 			*/
-            for (int i = 0; i < ncomps; ++i)
+            for (var i = 0; i < ncomps; ++i)
             {
 
                 shiftValueArray[i] = 1 << (src.getNomRangeBits(i) - 1);
                 maxValueArray[i] = (1 << src.getNomRangeBits(i)) - 1;
-                fixedPtBitsArray[i] = src.getFixedPoint(i);
+                fixedPtBitsArray[i] = src.GetFixedPoint(i);
 
                 inInt[i] = new DataBlkInt();
                 inFloat[i] = new DataBlkFloat();
-                workInt[i] = new DataBlkInt();
-                workInt[i].progressive = inInt[i].progressive;
-                workFloat[i] = new DataBlkFloat();
-                workFloat[i].progressive = inFloat[i].progressive;
+                workInt[i] = new DataBlkInt
+                {
+                    progressive = inInt[i].progressive
+                };
+                workFloat[i] = new DataBlkFloat
+                {
+                    progressive = inFloat[i].progressive
+                };
             }
         }
 
@@ -370,16 +350,16 @@ namespace Melville.CSJ2K.Color
         /// applicable.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The number of bits corresponding to the nominal range of the
         /// data. Fro floating-point data this value is not applicable and the
         /// return value is undefined.
         /// </returns>
-        public virtual int getFixedPoint(int c)
+        public virtual int GetFixedPoint(int compIndex)
         {
-            return src.getFixedPoint(c);
+            return src.GetFixedPoint(compIndex);
         }
 
         /// <summary> Returns, in the blk argument, a block of image data containing the
@@ -387,23 +367,23 @@ namespace Melville.CSJ2K.Color
         /// returned, as a copy of the internal data, therefore the returned data
         /// can be modified "in place".
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' of
         /// the returned data is 0, and the 'scanw' is the same as the block's
         /// width. See the 'DataBlk' class.
         /// 
-        /// <P>This method, in general, is less efficient than the
+        /// This method, in general, is less efficient than the
         /// 'getInternCompData()' method since, in general, it copies the
         /// data. However if the array of returned data is to be modified by the
         /// caller then this method is preferable.
         /// 
-        /// <P>If the data array in 'blk' is 'null', then a new one is created. If
+        /// If the data array in 'blk' is 'null', then a new one is created. If
         /// the data array is not 'null' then it is reused, and it must be large
         /// enough to contain the block's data. Otherwise an 'ArrayStoreException'
         /// or an 'IndexOutOfBoundsException' is thrown by the Java system.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -417,12 +397,12 @@ namespace Melville.CSJ2K.Color
         /// <param name="c">The index of the component from which to get the data.
         /// 
         /// </param>
-        /// <seealso cref="getInternCompData">
+        /// <seealso cref="GetInternCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getCompData(DataBlk out_Renamed, int c)
+        public virtual DataBlk GetCompData(DataBlk out_Renamed, int c)
         {
-            return src.getCompData(out_Renamed, c);
+            return src.GetCompData(out_Renamed, c);
         }
 
         /// <summary> Closes the underlying file or network connection from where the
@@ -431,7 +411,7 @@ namespace Melville.CSJ2K.Color
         /// </summary>
         /// <exception cref="IOException">If an I/O error occurs.
         /// </exception>
-        public void close()
+        public void Close()
         {
             // Do nothing.
         }
@@ -440,13 +420,13 @@ namespace Melville.CSJ2K.Color
         /// component, false if not.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
+        /// <param name="compIndex">The index of the component, from 0 to C-1.
         /// 
         /// </param>
         /// <returns> true if the data was originally signed, false if not.
         /// 
         /// </returns>
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }
@@ -456,23 +436,23 @@ namespace Melville.CSJ2K.Color
         /// returned, as a reference to the internal data, if any, instead of as a
         /// copy, therefore the returned data should not be modified.
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' and
         /// 'scanw' of the returned data can be arbitrary. See the 'DataBlk' class.
         /// 
-        /// <P>This method, in general, is more efficient than the 'getCompData()'
+        /// This method, in general, is more efficient than the 'getCompData()'
         /// method since it may not copy the data. However if the array of returned
         /// data is to be modified by the caller then the other method is probably
         /// preferable.
         /// 
-        /// <P>If possible, the data in the returned 'DataBlk' should be the
+        /// If possible, the data in the returned 'DataBlk' should be the
         /// internal data itself, instead of a copy, in order to increase the data
         /// transfer efficiency. However, this depends on the particular
         /// implementation (it may be more convenient to just return a copy of the
         /// data). This is the reason why the returned data should not be modified.
         /// 
-        /// <P>If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
+        /// If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
         /// is created if necessary. The implementation of this interface may
         /// choose to return the same array or a new one, depending on what is more
         /// efficient. Therefore, the data array in <tt>blk</tt> prior to the
@@ -480,7 +460,7 @@ namespace Melville.CSJ2K.Color
         /// new array may have been created. Instead, get the array from
         /// <tt>blk</tt> after the method has returned.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -489,18 +469,18 @@ namespace Melville.CSJ2K.Color
         /// to return the data.
         /// 
         /// </param>
-        /// <param name="c">The index of the component from which to get the data.
+        /// <param name="compIndex">The index of the component from which to get the data.
         /// 
         /// </param>
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        /// <seealso cref="getCompData">
+        /// <seealso cref="GetCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getInternCompData(DataBlk out_Renamed, int c)
+        public virtual DataBlk GetInternCompData(DataBlk out_Renamed, int compIndex)
         {
-            return src.getInternCompData(out_Renamed, c);
+            return src.GetInternCompData(out_Renamed, compIndex);
         }
 
         /* end class ColorSpaceMapper */

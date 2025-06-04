@@ -41,17 +41,17 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This interface defines the identifiers for the different types of filters
 	/// that are supported.
 	/// 
-	/// <p>The identifier values are the same as those used in the codestream
-	/// syntax, for the filters that are defined in the standard.</p>
+	/// The identifier values are the same as those used in the codestream
+	/// syntax, for the filters that are defined in the standard.
 	/// 
 	/// </summary>
-	internal struct FilterTypes_Fields{
+	public struct FilterTypes_Fields{
 		/// <summary>W7x9 filter: 0x00 </summary>
 		public const int W9X7 = 0;
 		/// <summary>W5x3 filter: 0x01 </summary>
@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <summary>User-defined filter: -1 </summary>
 		public const int CUSTOM = - 1;
 	}
-	internal interface FilterTypes
+	public interface FilterTypes
 	{
 		//UPGRADE_NOTE: Members of interface 'FilterTypes' were extracted into structure 'FilterTypes_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
 /*
@@ -34,18 +34,18 @@
  * Copyright (c) 1999/2000 JJ2000 Partners.
  */
 
-namespace Melville.CSJ2K.j2k.util
+namespace CoreJ2K.j2k.util
 {
     using System.IO;
 
     /// <summary> This class implements the MsgLogger interface for streams. Streams can
     /// be simple files, terminals, stdout, stderr, etc. The messages or simple
     /// strings are formatted using the linewidth given to the constructor.
-    /// <p>Messages are printed to the 'err' stream if they are of severity WARNING
+    /// Messages are printed to the 'err' stream if they are of severity WARNING
     /// or ERROR, otherwise they are printed to the 'out' stream. Simple strings
-    /// are always printed the 'out' stream.</p>
+    /// are always printed the 'out' stream.
     /// </summary>
-    internal abstract class StreamMsgLogger : IMsgLogger
+    public abstract class StreamMsgLogger : IMsgLogger
     {
         /// <summary>The 'out' stream </summary>
         private StreamWriter out_Renamed;
@@ -135,11 +135,11 @@ namespace Melville.CSJ2K.j2k.util
                     break;
 
                 default:
-                    throw new System.ArgumentException("Severity " + sev + " not valid.");
+                    throw new System.ArgumentException($"Severity {sev} not valid.");
 
             }
 
-            mp.print(lout, 0, prefix.Length, prefix + msg);
+            mp.print(lout, 0, prefix.Length, $"{prefix}{msg}");
             lout.Flush();
         }
 

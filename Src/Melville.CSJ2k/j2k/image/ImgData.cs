@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 	
 	/// <summary> This interface defines methods to access image attributes (width, height,
@@ -54,10 +54,8 @@ namespace Melville.CSJ2K.j2k.image
 	/// other interfaces, such as 'BlkImgDataSrc'.
 	/// 
 	/// </summary>
-	/// <seealso cref="BlkImgDataSrc">
-	/// 
-	/// </seealso>
-	internal interface ImgData
+	/// <seealso cref="BlkImgDataSrc" />
+	public interface ImgData
 	{
 		/// <summary> Returns the overall width of the current tile in pixels. This is the
 		/// tile's width without accounting for any component subsampling. This is
@@ -195,9 +193,7 @@ namespace Melville.CSJ2K.j2k.image
 		/// <returns> The horizontal subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="ImgData" />
 		int getCompSubsX(int c);
 		
 		/// <summary> Returns the component subsampling factor in the vertical direction, for
@@ -212,9 +208,7 @@ namespace Melville.CSJ2K.j2k.image
 		/// <returns> The vertical subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="ImgData" />
 		int getCompSubsY(int c);
 		
 		/// <summary> Returns the width in pixels of the specified tile-component
@@ -281,14 +275,14 @@ namespace Melville.CSJ2K.j2k.image
 		/// "range bits" of the image data that generated the coefficients.
 		/// 
 		/// </summary>
-		/// <param name="c">The index of the component.
+		/// <param name="compIndex">The index of the component.
 		/// 
 		/// </param>
 		/// <returns> The number of bits corresponding to the nominal range of the
 		/// image data (in the image domain).
 		/// 
 		/// </returns>
-		int getNomRangeBits(int c);
+		int getNomRangeBits(int compIndex);
 		
 		/// <summary> Changes the current tile, given the new indices. An
 		/// IllegalArgumentException is thrown if the coordinates do not correspond

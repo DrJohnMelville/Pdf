@@ -40,44 +40,31 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.entropy
+namespace CoreJ2K.j2k.entropy
 {
 	
 	/// <summary> This class extends ModuleSpec class for code-blocks sizes holding purposes.
 	/// 
-	/// <P>It stores the size a of code-block. 
+	/// It stores the size a of code-block. 
 	/// 
 	/// </summary>
-	internal class CBlkSizeSpec:ModuleSpec
+	public class CBlkSizeSpec:ModuleSpec
 	{
 		/// <summary> Returns the maximum code-block's width
 		/// 
 		/// </summary>
-		virtual public int MaxCBlkWidth
-		{
-			get
-			{
-				return maxCBlkWidth;
-			}
-			
-		}
+		public virtual int MaxCBlkWidth => maxCBlkWidth;
+
 		/// <summary> Returns the maximum code-block's height
 		/// 
 		/// </summary>
-		virtual public int MaxCBlkHeight
-		{
-			get
-			{
-				return maxCBlkHeight;
-			}
-			
-		}
-		
+		public virtual int MaxCBlkHeight => maxCBlkHeight;
+
 		/// <summary>Name of the option </summary>
-		private const System.String optName = "Cblksiz";
+		private const string optName = "Cblksiz";
 		
 		/// <summary>The maximum code-block width </summary>
 		private int maxCBlkWidth = 0;
@@ -126,18 +113,18 @@ namespace Melville.CSJ2K.j2k.entropy
 		public CBlkSizeSpec(int nt, int nc, byte type, ParameterList pl):base(nt, nc, type)
 		{
 			
-			bool firstVal = true;
-			System.String param = pl.getParameter(optName);
+			var firstVal = true;
+			var param = pl.getParameter(optName);
 			
 			// Precinct partition is used : parse arguments
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
 			bool[] compSpec = null; // Components concerned by the specification
             int ci, ti; //  i, xIdx removed
-			System.String word = null; // current word
-			System.String errMsg = null;
+			string word = null; // current word
+			string errMsg = null;
 			
 			while (stk.HasMoreTokens())
 			{
@@ -149,113 +136,104 @@ namespace Melville.CSJ2K.j2k.entropy
 					
 					case 't':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_TILE_DEF;
-						}
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					
 					case 'c':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_COMP_DEF;
-						}
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					
 					default: 
-						if (!System.Char.IsDigit(word[0]))
+						if (!char.IsDigit(word[0]))
 						{
-							errMsg = "Bad construction for parameter: " + word;
-							throw new System.ArgumentException(errMsg);
+							errMsg = $"Bad construction for parameter: {word}";
+							throw new ArgumentException(errMsg);
 						}
-						System.Int32[] dim = new System.Int32[2];
+						var dim = new int[2];
 						// Get code-block's width
 						try
 						{
-							dim[0] = System.Int32.Parse(word);
+							dim[0] = int.Parse(word);
 							// Check that width is not >
 							// StdEntropyCoderOptions.MAX_CB_DIM
-							if (dim[0] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+							if (dim[0] > StdEntropyCoderOptions.MAX_CB_DIM)
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "width cannot be greater than " + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM;
-								throw new System.ArgumentException(errMsg);
+								errMsg =
+									$"'{optName}' option : the code-block's width cannot be greater than {StdEntropyCoderOptions.MAX_CB_DIM}";
+								throw new ArgumentException(errMsg);
 							}
 							// Check that width is not <
 							// StdEntropyCoderOptions.MIN_CB_DIM
-							if (dim[0] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM)
+							if (dim[0] < StdEntropyCoderOptions.MIN_CB_DIM)
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "width cannot be less than " + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM;
-								throw new System.ArgumentException(errMsg);
+								errMsg =
+									$"'{optName}' option : the code-block's width cannot be less than {StdEntropyCoderOptions.MIN_CB_DIM}";
+								throw new ArgumentException(errMsg);
 							}
 							// Check that width is a power of 2
 							if (dim[0] != (1 << MathUtil.log2(dim[0])))
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "width must be a power of 2";
-								throw new System.ArgumentException(errMsg);
+								errMsg = $"'{optName}' option : the code-block's width must be a power of 2";
+								throw new ArgumentException(errMsg);
 							}
 						}
-						catch (System.FormatException)
+						catch (FormatException)
 						{
-							errMsg = "'" + optName + "' option : the code-block's " + "width could not be parsed.";
-							throw new System.ArgumentException(errMsg);
+							errMsg = $"'{optName}' option : the code-block's width could not be parsed.";
+							throw new ArgumentException(errMsg);
 						}
 						// Get the next word in option
 						try
 						{
 							word = stk.NextToken();
 						}
-						catch (System.ArgumentOutOfRangeException)
+						catch (ArgumentOutOfRangeException)
 						{
-							errMsg = "'" + optName + "' option : could not parse the " + "code-block's height";
-							throw new System.ArgumentException(errMsg);
+							errMsg = $"'{optName}' option : could not parse the code-block's height";
+							throw new ArgumentException(errMsg);
 						}
 						// Get the code-block's height
 						try
 						{
-							dim[1] = System.Int32.Parse(word);
+							dim[1] = int.Parse(word);
 							// Check that height is not >
 							// StdEntropyCoderOptions.MAX_CB_DIM
-							if (dim[1] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+							if (dim[1] > StdEntropyCoderOptions.MAX_CB_DIM)
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "height cannot be greater than " + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM;
-								throw new System.ArgumentException(errMsg);
+								errMsg =
+									$"'{optName}' option : the code-block's height cannot be greater than {StdEntropyCoderOptions.MAX_CB_DIM}";
+								throw new ArgumentException(errMsg);
 							}
 							// Check that height is not <
 							// StdEntropyCoderOptions.MIN_CB_DIM
-							if (dim[1] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM)
+							if (dim[1] < StdEntropyCoderOptions.MIN_CB_DIM)
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "height cannot be less than " + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM;
-								throw new System.ArgumentException(errMsg);
+								errMsg =
+									$"'{optName}' option : the code-block's height cannot be less than {StdEntropyCoderOptions.MIN_CB_DIM}";
+								throw new ArgumentException(errMsg);
 							}
 							// Check that height is a power of 2
 							if (dim[1] != (1 << MathUtil.log2(dim[1])))
 							{
-								errMsg = "'" + optName + "' option : the code-block's " + "height must be a power of 2";
-								throw new System.ArgumentException(errMsg);
+								errMsg = $"'{optName}' option : the code-block's height must be a power of 2";
+								throw new ArgumentException(errMsg);
 							}
 							// Check that the code-block 'area' (i.e. width*height) is
 							// not greater than StdEntropyCoderOptions.MAX_CB_AREA
-							if (dim[0] * dim[1] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_AREA)
+							if (dim[0] * dim[1] > StdEntropyCoderOptions.MAX_CB_AREA)
 							{
-								errMsg = "'" + optName + "' option : The " + "code-block's area (i.e. width*height) " + "cannot be greater than " + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_AREA;
-								throw new System.ArgumentException(errMsg);
+								errMsg =
+									$"'{optName}' option : The code-block's area (i.e. width*height) cannot be greater than {StdEntropyCoderOptions.MAX_CB_AREA}";
+								throw new ArgumentException(errMsg);
 							}
 						}
-						catch (System.FormatException)
+						catch (FormatException)
 						{
-							errMsg = "'" + optName + "' option : the code-block's height " + "could not be parsed.";
-							throw new System.ArgumentException(errMsg);
+							errMsg = $"'{optName}' option : the code-block's height could not be parsed.";
+							throw new ArgumentException(errMsg);
 						}
 						
 						// Store the maximum dimensions if necessary
@@ -273,7 +251,7 @@ namespace Melville.CSJ2K.j2k.entropy
 						{
 							// This is the first time a value is given so we set it as
 							// the default one 
-							setDefault((System.Object) (dim));
+							setDefault(dim);
 							firstVal = false;
 						}
 						
@@ -281,7 +259,7 @@ namespace Melville.CSJ2K.j2k.entropy
 						{
 							
 							case SPEC_DEF: 
-								setDefault((System.Object) (dim));
+								setDefault(dim);
 								break;
 							
 							case SPEC_TILE_DEF: 
@@ -289,7 +267,7 @@ namespace Melville.CSJ2K.j2k.entropy
 								{
 									if (tileSpec[ti])
 									{
-										setTileDef(ti, (System.Object) (dim));
+										setTileDef(ti, dim);
 									}
 								}
 								break;
@@ -299,7 +277,7 @@ namespace Melville.CSJ2K.j2k.entropy
 								{
 									if (compSpec[ci])
 									{
-										setCompDef(ci, (System.Object) (dim));
+										setCompDef(ci, dim);
 									}
 								}
 								break;
@@ -311,7 +289,7 @@ namespace Melville.CSJ2K.j2k.entropy
 									{
 										if (tileSpec[ti] && compSpec[ci])
 										{
-											setTileCompVal(ti, ci, (System.Object) (dim));
+											setTileCompVal(ti, ci, dim);
 										}
 									}
 								}
@@ -362,24 +340,24 @@ namespace Melville.CSJ2K.j2k.entropy
 		public virtual int getCBlkWidth(byte type, int t, int c)
 		{
 			//UPGRADE_TODO: The 'System.Int32' structure does not have an equivalent to NULL. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1291'"
-			System.Int32[] dim = null;
+			int[] dim = null;
 			switch (type)
 			{
 				
 				case SPEC_DEF: 
-					dim = (System.Int32[]) getDefault();
+					dim = (int[]) getDefault();
 					break;
 				
 				case SPEC_COMP_DEF: 
-					dim = (System.Int32[]) getCompDef(c);
+					dim = (int[]) getCompDef(c);
 					break;
 				
 				case SPEC_TILE_DEF: 
-					dim = (System.Int32[]) getTileDef(t);
+					dim = (int[]) getTileDef(t);
 					break;
 				
 				case SPEC_TILE_COMP: 
-					dim = (System.Int32[]) getTileCompVal(t, c);
+					dim = (int[]) getTileCompVal(t, c);
 					break;
 				}
 			return dim[0];
@@ -423,24 +401,24 @@ namespace Melville.CSJ2K.j2k.entropy
 		public virtual int getCBlkHeight(byte type, int t, int c)
 		{
 			//UPGRADE_TODO: The 'System.Int32' structure does not have an equivalent to NULL. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1291'"
-			System.Int32[] dim = null;
+			int[] dim = null;
 			switch (type)
 			{
 				
 				case SPEC_DEF: 
-					dim = (System.Int32[]) getDefault();
+					dim = (int[]) getDefault();
 					break;
 				
 				case SPEC_COMP_DEF: 
-					dim = (System.Int32[]) getCompDef(c);
+					dim = (int[]) getCompDef(c);
 					break;
 				
 				case SPEC_TILE_DEF: 
-					dim = (System.Int32[]) getTileDef(t);
+					dim = (int[]) getTileDef(t);
 					break;
 				
 				case SPEC_TILE_COMP: 
-					dim = (System.Int32[]) getTileCompVal(t, c);
+					dim = (int[]) getTileCompVal(t, c);
 					break;
 				}
 			return dim[1];
@@ -452,12 +430,12 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// <param name="value">Default value
 		/// 
 		/// </param>
-		public override void  setDefault(System.Object value_Renamed)
+		public sealed override void  setDefault(object value_Renamed)
 		{
 			base.setDefault(value_Renamed);
 			
 			// Store the biggest code-block dimensions
-			storeHighestDims((System.Int32[]) value_Renamed);
+			storeHighestDims((int[]) value_Renamed);
 		}
 		
 		/// <summary> Sets default value for specified tile and specValType tag if allowed by
@@ -470,12 +448,12 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// <param name="value">Tile's default value
 		/// 
 		/// </param>
-		public override void  setTileDef(int t, System.Object value_Renamed)
+		public sealed override void  setTileDef(int t, object value_Renamed)
 		{
 			base.setTileDef(t, value_Renamed);
 			
 			// Store the biggest code-block dimensions
-			storeHighestDims((System.Int32[]) value_Renamed);
+			storeHighestDims((int[]) value_Renamed);
 		}
 		
 		/// <summary> Sets default value for specified component and specValType tag if
@@ -488,12 +466,12 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// <param name="value">Component's default value
 		/// 
 		/// </param>
-		public override void  setCompDef(int c, System.Object value_Renamed)
+		public sealed override void  setCompDef(int c, object value_Renamed)
 		{
 			base.setCompDef(c, value_Renamed);
 			
 			// Store the biggest code-block dimensions
-			storeHighestDims((System.Int32[]) value_Renamed);
+			storeHighestDims((int[]) value_Renamed);
 		}
 		
 		/// <summary> Sets value for specified tile-component.
@@ -508,12 +486,12 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// <param name="value">Tile-component's value
 		/// 
 		/// </param>
-		public override void  setTileCompVal(int t, int c, System.Object value_Renamed)
+		public sealed override void  setTileCompVal(int t, int c, object value_Renamed)
 		{
 			base.setTileCompVal(t, c, value_Renamed);
 			
 			// Store the biggest code-block dimensions
-			storeHighestDims((System.Int32[]) value_Renamed);
+			storeHighestDims((int[]) value_Renamed);
 		}
 		
 		/// <summary> Stores the highest code-block width and height
@@ -523,7 +501,7 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// height.
 		/// 
 		/// </param>
-		private void  storeHighestDims(System.Int32[] dim)
+		private void  storeHighestDims(int[] dim)
 		{
 			// Store the biggest code-block dimensions
 			if (dim[0] > maxCBlkWidth)

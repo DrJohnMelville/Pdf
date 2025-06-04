@@ -41,8 +41,9 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
 
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 
     /// <summary> This class is responsible of all data type conversions. It should be used,
@@ -55,7 +56,7 @@ namespace Melville.CSJ2K.j2k.image
     /// need to be reimplemented by subclasses.
     /// 
     /// </summary>
-    internal class ImgDataConverter : ImgDataAdapter, BlkImgDataSrc
+    public class ImgDataConverter : ImgDataAdapter, BlkImgDataSrc
     {
 
         /// <summary>The block used to request data from the source in the case that a
@@ -117,14 +118,14 @@ namespace Melville.CSJ2K.j2k.image
         /// significant bit in the data.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The position of the fixed-point, which is the same as the
         /// number of fractional bits.
         /// 
         /// </returns>
-        public virtual int getFixedPoint(int c)
+        public virtual int GetFixedPoint(int compIndex)
         {
             return fp;
         }
@@ -135,23 +136,23 @@ namespace Melville.CSJ2K.j2k.image
         /// returned, as a copy of the internal data, therefore the returned data
         /// can be modified "in place".
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' of
         /// the returned data is 0, and the 'scanw' is the same as the block's
         /// width. See the 'DataBlk' class.
         /// 
-        /// <P>This method, in general, is less efficient than the
+        /// This method, in general, is less efficient than the
         /// 'getInternCompData()' method since, in general, it copies the
         /// data. However if the array of returned data is to be modified by the
         /// caller then this method is preferable.
         /// 
-        /// <P>If the data array in 'blk' is 'null', then a new one is created. If
+        /// If the data array in 'blk' is 'null', then a new one is created. If
         /// the data array is not 'null' then it is reused, and it must be large
         /// enough to contain the block's data. Otherwise an 'ArrayStoreException'
         /// or an 'IndexOutOfBoundsException' is thrown by the Java system.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -165,10 +166,10 @@ namespace Melville.CSJ2K.j2k.image
         /// <param name="c">The index of the component from which to get the data.
         /// 
         /// </param>
-        /// <seealso cref="getInternCompData">
+        /// <seealso cref="GetInternCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getCompData(DataBlk blk, int c)
+        public virtual DataBlk GetCompData(DataBlk blk, int c)
         {
             return getData(blk, c, false);
         }
@@ -179,7 +180,7 @@ namespace Melville.CSJ2K.j2k.image
         /// </summary>
         /// <exception cref="IOException">If an I/O error occurs.
         /// </exception>
-        public void close()
+        public void Close()
         {
             // Do nothing.
         }
@@ -188,13 +189,13 @@ namespace Melville.CSJ2K.j2k.image
         /// component, false if not.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
+        /// <param name="compIndex">The index of the component, from 0 to C-1.
         /// 
         /// </param>
         /// <returns> true if the data was originally signed, false if not.
         /// 
         /// </returns>
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }
@@ -205,21 +206,21 @@ namespace Melville.CSJ2K.j2k.image
         /// returned, as a reference to the internal data, if any, instead of as a
         /// copy, therefore the returned data should not be modified.
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' and
         /// 'scanw' of the returned data can be arbitrary. See the 'DataBlk' class.
         /// 
-        /// <P> If source data and expected data (blk) are using the same type,
+        ///  If source data and expected data (blk) are using the same type,
         /// block returned without any modification. If not appropriate cast is
         /// used.
         /// 
-        /// <P>This method, in general, is more efficient than the 'getCompData()'
+        /// This method, in general, is more efficient than the 'getCompData()'
         /// method since it may not copy the data. However if the array of returned
         /// data is to be modified by the caller then the other method is probably
         /// preferable.
         /// 
-        /// <P>If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
+        /// If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
         /// is created if necessary. The implementation of this interface may
         /// choose to return the same array or a new one, depending on what is more
         /// efficient. Therefore, the data array in <tt>blk</tt> prior to the
@@ -227,7 +228,7 @@ namespace Melville.CSJ2K.j2k.image
         /// new array may have been created. Instead, get the array from
         /// <tt>blk</tt> after the method has returned.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -236,18 +237,18 @@ namespace Melville.CSJ2K.j2k.image
         /// to return the data.
         /// 
         /// </param>
-        /// <param name="c">The index of the component from which to get the data.
+        /// <param name="compIndex">The index of the component from which to get the data.
         /// 
         /// </param>
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        /// <seealso cref="getCompData">
+        /// <seealso cref="GetCompData">
         /// 
         /// </seealso>
-        public DataBlk getInternCompData(DataBlk blk, int c)
+        public DataBlk GetInternCompData(DataBlk blk, int compIndex)
         {
-            return getData(blk, c, true);
+            return getData(blk, compIndex, true);
         }
 
         /// <summary> Implements the 'getInternCompData()' and the 'getCompData()'
@@ -268,10 +269,10 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The requested data block
         /// 
         /// </returns>
-        /// <seealso cref="getInternCompData">
+        /// <seealso cref="GetInternCompData">
         /// 
         /// </seealso>
-        /// <seealso cref="getCompData">
+        /// <seealso cref="GetCompData">
         /// 
         /// </seealso>
         private DataBlk getData(DataBlk blk, int c, bool intern)
@@ -279,7 +280,7 @@ namespace Melville.CSJ2K.j2k.image
             DataBlk reqBlk; // Reference to block used in request to source
 
             // Keep request data type
-            int otype = blk.DataType;
+            var otype = blk.DataType;
 
             if (otype == srcBlk.DataType)
             {
@@ -298,19 +299,13 @@ namespace Melville.CSJ2K.j2k.image
             }
 
             // Get source data block
-            if (intern)
-            {
-                // We can use the intern variant
-                srcBlk = src.getInternCompData(reqBlk, c);
-            }
-            else
-            {
+            // We can use the intern variant
+            srcBlk = intern ? src.GetInternCompData(reqBlk, c) :
                 // Do not use the intern variant. Note that this is not optimal
                 // since if we are going to convert below then we could have used
                 // the intern variant. But there is currently no way to know if we
                 // will need to do conversion or not before getting the data.
-                srcBlk = src.getCompData(reqBlk, c);
-            }
+                src.GetCompData(reqBlk, c);
 
             // Check if casting is needed
             if (srcBlk.DataType == otype)
@@ -321,8 +316,8 @@ namespace Melville.CSJ2K.j2k.image
             int i;
             int k, kSrc, kmin;
             float mult;
-            int w = srcBlk.w;
-            int h = srcBlk.h;
+            var w = srcBlk.w;
+            var h = srcBlk.h;
 
             switch (otype)
             {
@@ -346,7 +341,7 @@ namespace Melville.CSJ2K.j2k.image
                     srcIArr = (int[])srcBlk.Data;
 
                     // Cast data from source to blk
-                    fp = src.getFixedPoint(c);
+                    fp = src.GetFixedPoint(c);
                     if (fp != 0)
                     {
                         mult = 1.0f / (1 << fp);
@@ -371,7 +366,7 @@ namespace Melville.CSJ2K.j2k.image
                             for (kmin = k - w; k > kmin; k--, kSrc--)
                             {
                                 //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                                farr[k] = ((float)(srcIArr[kSrc]));
+                                farr[k] = srcIArr[kSrc];
                             }
                             // Jump to geggining of next line in source
                             kSrc -= (srcBlk.scanw - w);
@@ -400,7 +395,7 @@ namespace Melville.CSJ2K.j2k.image
                     if (fp != 0)
                     {
                         //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                        mult = (float)(1 << fp);
+                        mult = 1 << fp;
                         for (i = h - 1, k = w * h - 1, kSrc = srcBlk.offset + (h - 1) * srcBlk.scanw + w - 1;
                              i >= 0;
                              i--)
@@ -448,7 +443,7 @@ namespace Melville.CSJ2K.j2k.image
                     break; // End cast FLOAT -> INT
 
                 default:
-                    throw new System.ArgumentException("Only integer and float data " + "are " + "supported by JJ2000");
+                    throw new ArgumentException("Only integer and float data are supported by JJ2000");
 
             }
             return blk;

@@ -6,8 +6,9 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
 
-namespace Melville.CSJ2K.Icc.Lut
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> A Linear 16 bit SRGB to SRGB lut
@@ -17,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class LookUpTable16LinearSRGBtoSRGB:LookUpTable16
+	public class LookUpTable16LinearSRGBtoSRGB:LookUpTable16
 	{
 		
 		/// <summary> Factory method for creating the lut.</summary>
@@ -53,25 +54,25 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <param name="ksRGB8ReduceAfterExp">post shadow region parameter
 		/// </param>
-		protected internal LookUpTable16LinearSRGBtoSRGB(int wShadowCutoff, double dfShadowSlope, int ksRGBLinearMaxValue, double ksRGB8ScaleAfterExp, double ksRGBExponent, double ksRGB8ReduceAfterExp):base(ksRGBLinearMaxValue + 1, (short) 0)
+		protected internal LookUpTable16LinearSRGBtoSRGB(int wShadowCutoff, double dfShadowSlope, int ksRGBLinearMaxValue, double ksRGB8ScaleAfterExp, double ksRGBExponent, double ksRGB8ReduceAfterExp):base(ksRGBLinearMaxValue + 1, 0)
 		{
 			
-			int i = - 1;
+			var i = - 1;
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			double dfNormalize = 1.0 / (float) ksRGBLinearMaxValue;
+			var dfNormalize = 1.0 / (float) ksRGBLinearMaxValue;
 			
 			// Generate the final linear-sRGB to non-linear sRGB LUT
 			for (i = 0; i <= wShadowCutoff; i++)
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (byte) System.Math.Floor(dfShadowSlope * (double) i + 0.5);
+				lut[i] = (byte) Math.Floor(dfShadowSlope * i + 0.5);
 			}
 			
 			// Now calculate the rest
 			for (; i <= ksRGBLinearMaxValue; i++)
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (byte) System.Math.Floor(ksRGB8ScaleAfterExp * System.Math.Pow((double) i * dfNormalize, ksRGBExponent) - ksRGB8ReduceAfterExp + 0.5);
+				lut[i] = (byte) Math.Floor(ksRGB8ScaleAfterExp * Math.Pow(i * dfNormalize, ksRGBExponent) - ksRGB8ReduceAfterExp + 0.5);
 			}
 		}
 		

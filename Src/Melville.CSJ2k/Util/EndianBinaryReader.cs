@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.IO;
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
     internal class EndianBinaryReader : BinaryReader
     {
@@ -343,25 +343,6 @@ namespace Melville.CSJ2K.Util
         //
         //   System.IO.EndOfStreamException:
         //     The end of the stream is reached.
-#if DOTNET
-        public override decimal ReadDecimal()
-        {
-            if (_bigEndian)
-            {
-                // TODO: Is the whole thing reversed or just the individual ints?
-                // Maybe we should just call ReadInt32 4 times?
-                byte[] buf = this.ReadBytes(16);
-                Array.Reverse(buf);
-                int[] decimalints = new int[4];
-                decimalints[0]=BitConverter.ToInt32(buf, 0);
-                decimalints[1]=BitConverter.ToInt32(buf, 4);
-                decimalints[2]=BitConverter.ToInt32(buf, 8);
-                decimalints[3]=BitConverter.ToInt32(buf, 12);
-                return new decimal(decimalints);
-            }
-            else return base.ReadDecimal();
-        }
-#endif
         //
         // Summary:
         //     Reads an 8-byte floating point value from the current stream and advances
@@ -383,7 +364,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(8);
+                var buf = ReadBytes(8);
                 Array.Reverse(buf);
                 return BitConverter.ToDouble(buf, 0);
             }
@@ -411,7 +392,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(2);
+                var buf = ReadBytes(2);
                 Array.Reverse(buf);
                 return BitConverter.ToInt16(buf, 0);
             }
@@ -439,7 +420,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(4);
+                var buf = ReadBytes(4);
                 Array.Reverse(buf);
                 return BitConverter.ToInt32(buf, 0);
             }
@@ -467,7 +448,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(8);
+                var buf = ReadBytes(8);
                 Array.Reverse(buf);
                 return BitConverter.ToInt64(buf, 0);
             }
@@ -514,7 +495,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(4);
+                var buf = ReadBytes(4);
                 Array.Reverse(buf);
                 return BitConverter.ToSingle(buf, 0);
             }
@@ -560,7 +541,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(2);
+                var buf = ReadBytes(2);
                 Array.Reverse(buf);
                 return BitConverter.ToUInt16(buf, 0);
             }
@@ -588,7 +569,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(4);
+                var buf = ReadBytes(4);
                 Array.Reverse(buf);
                 return BitConverter.ToUInt32(buf, 0);
             }
@@ -616,7 +597,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = this.ReadBytes(8);
+                var buf = ReadBytes(8);
                 Array.Reverse(buf);
                 return BitConverter.ToUInt64(buf, 0);
             }

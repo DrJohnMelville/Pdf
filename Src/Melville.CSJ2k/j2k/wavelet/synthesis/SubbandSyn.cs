@@ -41,25 +41,26 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This class represents a subband in a tree structure that describes the
 	/// subband decomposition for a wavelet transform, specifically for the
 	/// syhthesis side.
 	/// 
-	/// <p>The element can be either a node or a leaf of the tree. If it is a node
+	/// The element can be either a node or a leaf of the tree. If it is a node
 	/// then ther are 4 descendants (LL, HL, LH and HH). If it is a leaf there are
-	/// no descendants.</p>
+	/// no descendants.
 	/// 
-	/// <p>The tree is bidirectional. Each element in the tree structure has a
+	/// The tree is bidirectional. Each element in the tree structure has a
 	/// "parent", which is the subband from which the element was obtained by
 	/// decomposition. The only exception is the root element which has no parent
-	/// (i.e.it's null), for obvious reasons.</p>
+	/// (i.e.it's null), for obvious reasons.
 	/// 
 	/// </summary>
-	internal class SubbandSyn:Subband
+	public class SubbandSyn:Subband
 	{
 		/// <summary> Returns the parent of this subband. The parent of a subband is the
 		/// subband from which this one was obtained by decomposition. The root
@@ -69,70 +70,40 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The parent subband, or null for the root one.
 		/// 
 		/// </returns>
-		override public Subband Parent
-		{
-			get
-			{
-				return parent;
-			}
-			
-		}
+		public override Subband Parent => parent;
+
 		/// <summary> Returns the LL child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The LL child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband LL
-		{
-			get
-			{
-				return subb_LL;
-			}
-			
-		}
+		public override Subband LL => subb_LL;
+
 		/// <summary> Returns the HL (horizontal high-pass) child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The HL child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband HL
-		{
-			get
-			{
-				return subb_HL;
-			}
-			
-		}
+		public override Subband HL => subb_HL;
+
 		/// <summary> Returns the LH (vertical high-pass) child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The LH child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband LH
-		{
-			get
-			{
-				return subb_LH;
-			}
-			
-		}
+		public override Subband LH => subb_LH;
+
 		/// <summary> Returns the HH child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The HH child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband HH
-		{
-			get
-			{
-				return subb_HH;
-			}
-			
-		}
+		public override Subband HH => subb_HH;
+
 		/// <summary> This function returns the horizontal wavelet filter relevant to this
 		/// subband
 		/// 
@@ -140,14 +111,8 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The horizontal wavelet filter
 		/// 
 		/// </returns>
-		override public WaveletFilter HorWFilter
-		{
-			get
-			{
-				return hFilter;
-			}
-			
-		}
+		public override WaveletFilter HorWFilter => hFilter;
+
 		/// <summary> This function returns the vertical wavelet filter relevant to this
 		/// subband
 		/// 
@@ -155,15 +120,8 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The vertical wavelet filter
 		/// 
 		/// </returns>
-		override public WaveletFilter VerWFilter
-		{
-			get
-			{
-				return hFilter;
-			}
-			
-		}
-		
+		public override WaveletFilter VerWFilter => hFilter;
+
 		/// <summary>The reference to the parent of this subband. It is null for the root
 		/// element. It is null by default.  
 		/// </summary>
@@ -217,8 +175,8 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// top-level dimensions, the number of decompositions, and the
 		/// decomposition tree as specified.
 		/// 
-		/// <p>This constructor just calls the same constructor of the super
-		/// class.</p>
+		/// This constructor just calls the same constructor of the super
+		/// class.
 		/// 
 		/// </summary>
 		/// <param name="w">The top-level width
@@ -259,7 +217,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// the childs and initializes them. An IllegalArgumentException is thrown
 		/// if this subband is not a leaf.
 		/// 
-		/// <p>It uses the initChilds() method to initialize the childs.</p>
+		/// It uses the initChilds() method to initialize the childs.
 		/// 
 		/// </summary>
 		/// <param name="hfilter">The horizontal wavelet filter used to decompose this
@@ -273,21 +231,19 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> A reference to the LL leaf (subb_LL).
 		/// 
 		/// </returns>
-		/// <seealso cref="Subband.initChilds">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband.initChilds" />
 		protected internal override Subband split(WaveletFilter hfilter, WaveletFilter vfilter)
 		{
 			// Test that this is a node
 			if (isNode)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			// Modify this element into a node and set the filters
 			isNode = true;
-			this.hFilter = (SynWTFilter) hfilter;
-			this.vFilter = (SynWTFilter) vfilter;
+			hFilter = (SynWTFilter) hfilter;
+			vFilter = (SynWTFilter) vfilter;
 			
 			// Create childs
 			subb_LL = new SubbandSyn();

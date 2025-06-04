@@ -41,19 +41,17 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 *  */
 
-using Melville.CSJ2K.j2k.image.invcomptransf;
+using CoreJ2K.j2k.image.invcomptransf;
 
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 	
 	/// <summary> This class extends the ModuleSpec class in order to hold tile
 	/// specifications for multiple component transformation
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class CompTransfSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public class CompTransfSpec:ModuleSpec
 	{
 		/// <summary> Check if component transformation is used in any of the tiles. This
 		/// method must not be used by the encoder.
@@ -63,20 +61,20 @@ namespace Melville.CSJ2K.j2k.image
 		/// tile.
 		/// 
 		/// </returns>
-		virtual public bool CompTransfUsed
+		public virtual bool CompTransfUsed
 		{
 			get
 			{
-				if (((System.Int32) def) != InvCompTransf.NONE)
+				if (((int) def) != InvCompTransf.NONE)
 				{
 					return true;
 				}
 				
 				if (tileDef != null)
 				{
-					for (int t = nTiles - 1; t >= 0; t--)
+					for (var t = nTiles - 1; t >= 0; t--)
 					{
-						if (tileDef[t] != null && (((System.Int32) tileDef[t]) != InvCompTransf.NONE))
+						if (tileDef[t] != null && (((int) tileDef[t]) != InvCompTransf.NONE))
 						{
 							return true;
 						}

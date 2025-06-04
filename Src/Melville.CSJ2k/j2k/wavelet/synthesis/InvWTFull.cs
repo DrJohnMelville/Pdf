@@ -45,39 +45,37 @@
 * */
 using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.image;
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This class implements the InverseWT with the full-page approach for int and
 	/// float data.
 	/// 
-	/// <p>The image can be reconstructed at different (image) resolution levels
+	/// The image can be reconstructed at different (image) resolution levels
 	/// indexed from the lowest resolution available for each tile-component. This
-	/// is controlled by the setImgResLevel() method.</p>
+	/// is controlled by the setImgResLevel() method.
 	/// 
-	/// <p>Note: Image resolution level indexes may differ from tile-component
+	/// Note: Image resolution level indexes may differ from tile-component
 	/// resolution index. They are indeed indexed starting from the lowest number
-	/// of decomposition levels of each component of each tile.</p>
+	/// of decomposition levels of each component of each tile.
 	/// 
-	/// <p>Example: For an image (1 tile) with 2 components (component 0 having 2
+	/// Example: For an image (1 tile) with 2 components (component 0 having 2
 	/// decomposition levels and component 1 having 3 decomposition levels), the
 	/// first (tile-) component has 3 resolution levels and the second one has 4
 	/// resolution levels, whereas the image has only 3 resolution levels
-	/// available.</p>
+	/// available.
 	/// 
-	/// <p>This implementation does not support progressive data: Data is
+	/// This implementation does not support progressive data: Data is
 	/// considered to be non-progressive (i.e. "final" data) and the 'progressive'
 	/// attribute of the 'DataBlk' class is always set to false, see the 'DataBlk'
-	/// class.</p>
+	/// class.
 	/// 
 	/// </summary>
-	/// <seealso cref="DataBlk">
-	/// 
-	/// </seealso>
-	internal class InvWTFull:InverseWT
+	/// <seealso cref="DataBlk" />
+	public class InvWTFull:InverseWT
 	{
 		
 		/// <summary>The total number of code-blocks to decode </summary>
@@ -118,7 +116,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		public InvWTFull(CBlkWTDataSrcDec src, DecoderSpecs decSpec):base(src, decSpec)
 		{
 			this.src = src;
-			int nc = src.NumComps;
+			var nc = src.NumComps;
 			reconstructedComps = new DataBlk[nc];
 			ndl = new int[nc];
 		}
@@ -172,7 +170,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			{
 				// Reversibility not yet calculated for this tile
 				reversible[t] = new bool[NumComps];
-				for (int i = reversible[t].Length - 1; i >= 0; i--)
+				for (var i = reversible[t].Length - 1; i >= 0; i--)
 				{
 					reversible[t][i] = isSubbandReversible(src.getSynSubbandTree(t, i));
 				}
@@ -184,26 +182,26 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// corresponding to the nominal range of the data in the specified
 		/// component.
 		/// 
-		/// <p>The returned value corresponds to the nominal dynamic range of the
+		/// The returned value corresponds to the nominal dynamic range of the
 		/// reconstructed image data, as long as the getNomRangeBits() method of
 		/// the source returns a value corresponding to the nominal dynamic range
-		/// of the image data and not not of the wavelet coefficients.</p>
+		/// of the image data and not not of the wavelet coefficients.
 		/// 
-		/// <p>If this number is <i>b</b> then for unsigned data the nominal range
+		/// If this number is <i>b</b> then for unsigned data the nominal range
 		/// is between 0 and 2^b-1, and for signed data it is between -2^(b-1) and
-		/// 2^(b-1)-1.</p>
+		/// 2^(b-1)-1.
 		/// 
 		/// </summary>
-		/// <param name="c">The index of the component.
+		/// <param name="compIndex">The index of the component.
 		/// 
 		/// </param>
 		/// <returns> The number of bits corresponding to the nominal range of the
 		/// data.
 		/// 
 		/// </returns>
-		public override int getNomRangeBits(int c)
+		public override int getNomRangeBits(int compIndex)
 		{
-			return src.getNomRangeBits(c);
+			return src.getNomRangeBits(compIndex);
 		}
 		
 		/// <summary> Returns the position of the fixed point in the specified
@@ -214,21 +212,21 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// and 0 should be returned. Position 0 is the position of the least
 		/// significant bit in the data.
 		/// 
-		/// <p>This default implementation assumes that the wavelet transform does
+		/// This default implementation assumes that the wavelet transform does
 		/// not modify the fixed point. If that were the case this method should be
-		/// overriden.</p>
+		/// overriden.
 		/// 
 		/// </summary>
-		/// <param name="c">The index of the component.
+		/// <param name="compIndex">The index of the component.
 		/// 
 		/// </param>
 		/// <returns> The position of the fixed-point, which is the same as the
 		/// number of fractional bits. For floating-point data 0 is returned.
 		/// 
 		/// </returns>
-		public override int getFixedPoint(int c)
+		public override int GetFixedPoint(int compIndex)
 		{
-			return src.getFixedPoint(c);
+			return src.getFixedPoint(compIndex);
 		}
 		
 		/// <summary> Returns a block of image data containing the specifed rectangular area,
@@ -236,60 +234,53 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// below). The rectangular area is specified by the coordinates and
 		/// dimensions of the 'blk' object.
 		/// 
-		/// <p>The area to return is specified by the 'ulx', 'uly', 'w' and 'h'
+		/// The area to return is specified by the 'ulx', 'uly', 'w' and 'h'
 		/// members of the 'blk' argument. These members are not modified by this
-		/// method.</p>
+		/// method.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
-		/// arbitrary. See the 'DataBlk' class.</p>
+		/// arbitrary. See the 'DataBlk' class.
 		/// 
-		/// <p>The returned data has its 'progressive' attribute unset
-		/// (i.e. false).</p>
+		/// The returned data has its 'progressive' attribute unset
+		/// (i.e. false).
 		/// 
 		/// </summary>
 		/// <param name="blk">Its coordinates and dimensions specify the area to return.
 		/// 
 		/// </param>
-		/// <param name="c">The index of the component from which to get the data.
+		/// <param name="compIndex">The index of the component from which to get the data.
 		/// 
 		/// </param>
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getInternCompData">
-		/// 
-		/// </seealso>
-		public override DataBlk getInternCompData(DataBlk blk, int c)
+		/// <seealso cref="GetInternCompData" />
+		public override DataBlk GetInternCompData(DataBlk blk, int compIndex)
 		{
-			int tIdx = TileIdx;
-			if (src.getSynSubbandTree(tIdx, c).HorWFilter == null)
-			{
-				dtype = DataBlk.TYPE_INT;
-			}
-			else
-			{
-				dtype = src.getSynSubbandTree(tIdx, c).HorWFilter.DataType;
-			}
+			var tIdx = TileIdx;
+			dtype = src.getSynSubbandTree(tIdx, compIndex).HorWFilter == null 
+				? DataBlk.TYPE_INT 
+				: src.getSynSubbandTree(tIdx, compIndex).HorWFilter.DataType;
 			
 			//If the source image has not been decomposed 
-			if (reconstructedComps[c] == null)
+			if (reconstructedComps[compIndex] == null)
 			{
 				//Allocate component data buffer
 				switch (dtype)
 				{
 					
 					case DataBlk.TYPE_FLOAT: 
-						reconstructedComps[c] = new DataBlkFloat(0, 0, getTileCompWidth(tIdx, c), getTileCompHeight(tIdx, c));
+						reconstructedComps[compIndex] = new DataBlkFloat(0, 0, getTileCompWidth(tIdx, compIndex), getTileCompHeight(tIdx, compIndex));
 						break;
 					
 					case DataBlk.TYPE_INT: 
-						reconstructedComps[c] = new DataBlkInt(0, 0, getTileCompWidth(tIdx, c), getTileCompHeight(tIdx, c));
+						reconstructedComps[compIndex] = new DataBlkInt(0, 0, getTileCompWidth(tIdx, compIndex), getTileCompHeight(tIdx, compIndex));
 						break;
 					}
 				//Reconstruct source image
-				waveletTreeReconstruction(reconstructedComps[c], src.getSynSubbandTree(tIdx, c), c);
+				waveletTreeReconstruction(reconstructedComps[compIndex], src.getSynSubbandTree(tIdx, compIndex), compIndex);
 			}
 			
 			if (blk.DataType != dtype)
@@ -304,9 +295,9 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 				}
 			}
 			// Set the reference to the internal buffer
-			blk.Data = reconstructedComps[c].Data;
-			blk.offset = reconstructedComps[c].w * blk.uly + blk.ulx;
-			blk.scanw = reconstructedComps[c].w;
+			blk.Data = reconstructedComps[compIndex].Data;
+			blk.offset = reconstructedComps[compIndex].w * blk.uly + blk.ulx;
+			blk.scanw = reconstructedComps[compIndex].w;
 			blk.progressive = false;
 			return blk;
 		}
@@ -315,22 +306,22 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// in the specified component, as a copy (see below). The rectangular area
 		/// is specified by the coordinates and dimensions of the 'blk' object.
 		/// 
-		/// <p>The area to return is specified by the 'ulx', 'uly', 'w' and 'h'
+		/// The area to return is specified by the 'ulx', 'uly', 'w' and 'h'
 		/// members of the 'blk' argument. These members are not modified by this
-		/// method.</p>
+		/// method.
 		/// 
-		/// <p>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
 		/// any problems after being returned. The 'offset' of the returned data is
 		/// 0, and the 'scanw' is the same as the block's width. See the 'DataBlk'
-		/// class.</p>
+		/// class.
 		/// 
-		/// <p>If the data array in 'blk' is <tt>null</tt>, then a new one is
+		/// If the data array in 'blk' is <tt>null</tt>, then a new one is
 		/// created. If the data array is not <tt>null</tt> then it must be big
-		/// enough to contain the requested area.</p>
+		/// enough to contain the requested area.
 		/// 
-		/// <p>The returned data always has its 'progressive' attribute unset (i.e
-		/// false)</p>
+		/// The returned data always has its 'progressive' attribute unset (i.e
+		/// false)
 		/// 
 		/// </summary>
 		/// <param name="blk">Its coordinates and dimensions specify the area to
@@ -345,13 +336,11 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getCompData">
-		/// 
-		/// </seealso>
-		public override DataBlk getCompData(DataBlk blk, int c)
+		/// <seealso cref="GetCompData" />
+		public override DataBlk GetCompData(DataBlk blk, int c)
 		{
 			//int j;
-            System.Object dst_data; // src_data removed
+            object dst_data; // src_data removed
             int[] dst_data_int; // src_data_int removed
             float[] dst_data_float; // src_data_float removed
 			
@@ -383,7 +372,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			
 			// Use getInternCompData() to get the data, since getInternCompData()
 			// returns reference to internal buffer, we must copy it.
-			blk = getInternCompData(blk, c);
+			blk = GetInternCompData(blk, c);
 			
 			// Copy the data
 			blk.Data = dst_data;
@@ -408,8 +397,8 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// </param>
 		private void  wavelet2DReconstruction(DataBlk db, SubbandSyn sb, int c)
 		{
-			System.Object data;
-			System.Object buf;
+			object data;
+			object buf;
 			int ulx, uly, w, h;
 			int i, j, k;
 			int offset;
@@ -448,8 +437,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 				// start index is even => use LPF
 				for (i = 0; i < h; i++, offset += db.w)
 				{
-                    // CONVERSION PROBLEM?
-					Array.Copy((System.Array)data, offset, (System.Array)buf, 0, w);
+					Array.Copy((Array)data, offset, (Array)buf, 0, w);
 					sb.hFilter.synthetize_lpf(buf, 0, (w + 1) / 2, 1, buf, (w + 1) / 2, w / 2, 1, data, offset, 1);
 				}
 			}
@@ -458,8 +446,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 				// start index is odd => use HPF
 				for (i = 0; i < h; i++, offset += db.w)
 				{
-                    // CONVERSION PROBLEM?
-					Array.Copy((System.Array)data, offset, (System.Array)buf, 0, w);
+					Array.Copy((Array)data, offset, (Array)buf, 0, w);
 					sb.hFilter.synthetize_hpf(buf, 0, w / 2, 1, buf, w / 2, (w + 1) / 2, 1, data, offset, 1);
 				}
 			}
@@ -548,7 +535,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			if (!sb.isNode)
 			{
 				int i, m, n;
-				System.Object src_data, dst_data;
+				object src_data, dst_data;
 				Coord ncblks;
 				
 				if (sb.w == 0 || sb.h == 0)
@@ -578,7 +565,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 						for (i = subbData.h - 1; i >= 0; i--)
 						{
                             // CONVERSION PROBLEM
-							Array.Copy((System.Array)src_data, subbData.offset + i * subbData.scanw, (System.Array)dst_data, (subbData.uly + i) * img.w + subbData.ulx, subbData.w);
+							Array.Copy((Array)src_data, subbData.offset + i * subbData.scanw, (Array)dst_data, (subbData.uly + i) * img.w + subbData.ulx, subbData.w);
 						}
 					}
 				}
@@ -599,7 +586,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 					waveletTreeReconstruction(img, (SubbandSyn) sb.HH, c);
 					
 					//Perform the 2D wavelet decomposition of the current subband
-					wavelet2DReconstruction(img, (SubbandSyn) sb, c);
+					wavelet2DReconstruction(img, sb, c);
 				}
 			}
 		}
@@ -614,12 +601,10 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> WT_IMPL_FULL
 		/// 
 		/// </returns>
-		/// <seealso cref="WaveletTransform.WT_IMPL_FULL">
-		/// 
-		/// </seealso>
+		/// <seealso cref="WaveletTransform.WT_IMPL_FULL" />
 		public override int getImplementationType(int c)
 		{
-			return Melville.CSJ2K.j2k.wavelet.WaveletTransform_Fields.WT_IMPL_FULL;
+			return WaveletTransform_Fields.WT_IMPL_FULL;
 		}
 		
 		/// <summary> Changes the current tile, given the new indexes. An
@@ -640,9 +625,9 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			// Change tile
 			base.setTile(x, y);
 			
-			int nc = src.NumComps;
-			int tIdx = src.TileIdx;
-			for (int c = 0; c < nc; c++)
+			var nc = src.NumComps;
+			var tIdx = src.TileIdx;
+			for (var c = 0; c < nc; c++)
 			{
 				ndl[c] = src.getSynSubbandTree(tIdx, c).resLvl;
 			}
@@ -658,10 +643,10 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			
 			cblkToDecode = 0;
 			SubbandSyn root, sb;
-			for (int c = 0; c < nc; c++)
+			for (var c = 0; c < nc; c++)
 			{
 				root = src.getSynSubbandTree(tIdx, c);
-				for (int r = 0; r <= reslvl - maxImgRes + root.resLvl; r++)
+				for (var r = 0; r <= reslvl - maxImgRes + root.resLvl; r++)
 				{
 					if (r == 0)
 					{
@@ -697,9 +682,9 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			// Change tile
 			base.nextTile();
 			
-			int nc = src.NumComps;
-			int tIdx = src.TileIdx;
-			for (int c = 0; c < nc; c++)
+			var nc = src.NumComps;
+			var tIdx = src.TileIdx;
+			for (var c = 0; c < nc; c++)
 			{
 				ndl[c] = src.getSynSubbandTree(tIdx, c).resLvl;
 			}

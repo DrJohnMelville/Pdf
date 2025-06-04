@@ -42,16 +42,16 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.image;
 
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This interface extends the ImgData interface with methods that are
 	/// necessary for forward wavelet data (i.e. data that is produced by a forward
 	/// wavelet transform).  
 	/// </summary>
-	internal interface ForwWTDataProps:ImgData
+	public interface ForwWTDataProps:ImgData
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.
@@ -101,12 +101,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The root of the subband tree structure, see Subband.
 		/// 
 		/// </returns>
-		/// <seealso cref="SubbandAn">
-		/// 
-		/// </seealso>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
+		/// <seealso cref="SubbandAn" />
+		/// <seealso cref="Subband" />
 		SubbandAn getAnSubbandTree(int t, int c);
 	}
 }

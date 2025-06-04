@@ -41,7 +41,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This class stores the specification of a layer distribution in the bit
@@ -52,25 +52,25 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// between the optimized layers, with the difference that they are not
 	/// optimized (i.e. they have no precise target bitrate).
 	/// 
-	/// <p>The overall target bitrate for the bit stream is always added as the
+	/// The overall target bitrate for the bit stream is always added as the
 	/// last optimization point without any extra layers after it. If there are
 	/// some optimization points whose target bitrate is larger than the overall
 	/// target bitrate, the overall target bitrate will still appear as the last
 	/// optimization point, even though it does not follow the increasing target
 	/// bitrate order of the other optimization points. The rate allocator is
 	/// responsible for eliminating layers that have target bitrates larger than
-	/// the overall target bitrate.</p>
+	/// the overall target bitrate.
 	/// 
-	/// <p>Optimization points can be added with the addOptPoint() method. It takes
+	/// Optimization points can be added with the addOptPoint() method. It takes
 	/// the target bitrate for the optimized layer and the number of extra layers
-	/// to add after it.</p>
+	/// to add after it.
 	/// 
-	/// <p>Information about the total number of layers, total number of
+	/// Information about the total number of layers, total number of
 	/// optimization points, target bitrates, etc. can be obtained with the other
-	/// methods.</p>
+	/// methods.
 	/// 
 	/// </summary>
-	internal class LayersInfo
+	public class LayersInfo
 	{
 		/// <summary> Returns the overall target bitrate for the entire bit stream.
 		/// 
@@ -78,14 +78,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <returns> The overall target bitrate
 		/// 
 		/// </returns>
-		virtual public float TotBitrate
-		{
-			get
-			{
-				return totbrate;
-			}
-			
-		}
+		public virtual float TotBitrate => totbrate;
+
 		/// <summary> Returns the total number of layers, according to the layer
 		/// specification of this object and the overall target bitrate.
 		/// 
@@ -93,14 +87,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <returns> The total number of layers, according to the layer spec.
 		/// 
 		/// </returns>
-		virtual public int TotNumLayers
-		{
-			get
-			{
-				return totlyrs;
-			}
-			
-		}
+		public virtual int TotNumLayers => totlyrs;
+
 		/// <summary> Returns the number of layers to optimize, or optimization points, as
 		/// specified by this object.
 		/// 
@@ -108,16 +96,10 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <returns> The number of optimization points
 		/// 
 		/// </returns>
-		virtual public int NOptPoints
-		{
-			get
-			{
-				// overall target bitrate is counted as extra
-				return nopt + 1;
-			}
-			
-		}
-		
+		public virtual int NOptPoints =>
+			// overall target bitrate is counted as extra
+			nopt + 1;
+
 		/// <summary>The initial size for the arrays: 10 </summary>
 		private const int SZ_INIT = 10;
 		
@@ -160,7 +142,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		{
 			if (brate <= 0)
 			{
-				throw new System.ArgumentException("Overall target bitrate must " + "be a positive number");
+				throw new ArgumentException("Overall target bitrate must " + "be a positive number");
 			}
 			totbrate = brate;
 		}
@@ -217,22 +199,22 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// Check validity of arguments
 			if (brate <= 0)
 			{
-				throw new System.ArgumentException("Target bitrate must be positive");
+				throw new ArgumentException("Target bitrate must be positive");
 			}
 			if (elyrs < 0)
 			{
-				throw new System.ArgumentException("The number of extra layers " + "must be 0 or more");
+				throw new ArgumentException("The number of extra layers " + "must be 0 or more");
 			}
 			if (nopt > 0 && optbrate[nopt - 1] >= brate)
 			{
-				throw new System.ArgumentException("New optimization point must have " + "a target bitrate higher than the " + "preceding one");
+				throw new ArgumentException("New optimization point must have " + "a target bitrate higher than the " + "preceding one");
 			}
 			// Check room for new optimization point
 			if (optbrate.Length == nopt)
 			{
 				// Need more room
-				float[] tbr = optbrate;
-				int[] tel = extralyrs;
+				var tbr = optbrate;
+				var tel = extralyrs;
 				// both arrays always have same size
 				optbrate = new float[optbrate.Length + SZ_INCR];
 				extralyrs = new int[extralyrs.Length + SZ_INCR];

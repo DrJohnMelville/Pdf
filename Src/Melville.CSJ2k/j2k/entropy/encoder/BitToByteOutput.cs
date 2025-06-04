@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This class provides an adapter to perform bit based output on byte based
@@ -52,7 +52,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// of a trailing 0xFF, since they are synthetized be the decoder.
 	/// 
 	/// </summary>
-	class BitToByteOutput
+	internal class BitToByteOutput
 	{
 		/// <summary> Set the flag according to whether or not the predictable termination is
 		/// requested.
@@ -61,13 +61,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="isPredTerm">Whether or not predictable termination is requested.
 		/// 
 		/// </param>
-		virtual internal bool PredTerm
+		internal virtual bool PredTerm
 		{
-			set
-			{
-				this.isPredTerm = value;
-			}
-			
+			set => isPredTerm = value;
 		}
 		
 		/// <summary>Whether or not predictable termination is requested. This value is
@@ -260,7 +256,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		public virtual int terminate()
 		{
 			flush();
-			int savedNb = nb;
+			var savedNb = nb;
 			reset();
 			return savedNb;
 		}

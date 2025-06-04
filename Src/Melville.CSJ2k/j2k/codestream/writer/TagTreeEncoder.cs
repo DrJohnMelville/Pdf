@@ -41,9 +41,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.j2k.util;
+using CoreJ2K.j2k.util;
 
-namespace Melville.CSJ2K.j2k.codestream.writer
+namespace CoreJ2K.j2k.codestream.writer
 {
 	
 	/// <summary> This class implements the tag tree encoder. A tag tree codes a 2D matrix of
@@ -52,33 +52,29 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// procedure encodes the sufficient information to identify whether or not the
 	/// value is greater than or equal to the threshold.
 	/// 
-	/// <p>The tag tree saves encoded information to a BitOutputBuffer.</p>
+	/// The tag tree saves encoded information to a BitOutputBuffer.
 	/// 
-	/// <p>A particular and useful property of tag trees is that it is possible to
+	/// A particular and useful property of tag trees is that it is possible to
 	/// change a value of the matrix, provided both new and old values of the
 	/// element are both greater than or equal to the largest threshold which has
 	/// yet been supplied to the coding procedure 'encode()'. This property can be
-	/// exploited through the 'setValue()' method.</p>
+	/// exploited through the 'setValue()' method.
 	/// 
-	/// <p>This class allows saving the state of the tree at any point and
-	/// restoring it at a later time, by calling save() and restore().</p>
+	/// This class allows saving the state of the tree at any point and
+	/// restoring it at a later time, by calling save() and restore().
 	/// 
-	/// <p>A tag tree can also be reused, or restarted, if one of the reset()
-	/// methods is called.</p>
+	/// A tag tree can also be reused, or restarted, if one of the reset()
+	/// methods is called.
 	/// 
-	/// <p>The TagTreeDecoder class implements the tag tree decoder.</p>
+	/// The TagTreeDecoder class implements the tag tree decoder.
 	/// 
-	/// <p>Tag trees that have one dimension, or both, as 0 are allowed for
-	/// convenience. Of course no values can be set or coded in such cases.</p>
+	/// Tag trees that have one dimension, or both, as 0 are allowed for
+	/// convenience. Of course no values can be set or coded in such cases.
 	/// 
 	/// </summary>
-	/// <seealso cref="BitOutputBuffer">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.codestream.reader.TagTreeDecoder">
-	/// 
-	/// </seealso>
-	internal class TagTreeEncoder
+	/// <seealso cref="BitOutputBuffer" />
+	/// <seealso cref="j2k.codestream.reader.TagTreeDecoder" />
+	public class TagTreeEncoder
 	{
 		/// <summary> Returns the number of leafs along the horizontal direction.
 		/// 
@@ -86,47 +82,33 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// <returns> The number of leafs along the horizontal direction.
 		/// 
 		/// </returns>
-		virtual public int Width
-		{
-			get
-			{
-				return w;
-			}
-			
-		}
+		public virtual int Width => w;
+
 		/// <summary> Returns the number of leafs along the vertical direction.
 		/// 
 		/// </summary>
 		/// <returns> The number of leafs along the vertical direction.
 		/// 
 		/// </returns>
-		virtual public int Height
-		{
-			get
-			{
-				return h;
-			}
-			
-		}
+		public virtual int Height => h;
+
 		/// <summary> Sets the values of the leafs to the new set of values and updates the
 		/// tag tree accordingly. No leaf can change its value if either the new or
 		/// old value is smaller than largest threshold which has yet been supplied
 		/// to 'encode()'. However such a leaf can keep its old value (i.e. new and
 		/// old value must be identical.
 		/// 
-		/// <p>This method is more efficient than the setValue() method if a large
+		/// This method is more efficient than the setValue() method if a large
 		/// proportion of the leafs change their value. Note that for leafs which
 		/// don't have their value defined yet the value should be
-		/// Integer.MAX_VALUE (which is the default initialization value).</p>
+		/// Integer.MAX_VALUE (which is the default initialization value).
 		/// 
 		/// </summary>
 		/// <param name="val">The new values for the leafs, in lexicographical order.
 		/// 
 		/// </param>
-		/// <seealso cref="setValue">
-		/// 
-		/// </seealso>
-		virtual public int[] Values
+		/// <seealso cref="setValue" />
+		public virtual int[] Values
 		{
 			set
 			{
@@ -134,7 +116,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 				if (lvls == 0)
 				{
 					// Can't set values on empty tree
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				}
 				// Check the values
 				maxt = treeS[lvls - 1][0];
@@ -142,7 +124,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 				{
 					if ((treeV[0][i] < maxt || value[i] < maxt) && treeV[0][i] != value[i])
 					{
-						throw new System.ArgumentException();
+						throw new ArgumentException();
 					}
 					// Update leaf value
 					treeV[0][i] = value[i];
@@ -195,7 +177,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// dimension and 'h' elements along the vertical direction. The total
 		/// number of elements is thus 'vdim' x 'hdim'.
 		/// 
-		/// <p>The values of all elements are initialized to Integer.MAX_VALUE.</p>
+		/// The values of all elements are initialized to Integer.MAX_VALUE.
 		/// 
 		/// </summary>
 		/// <param name="h">The number of elements along the horizontal direction.
@@ -210,14 +192,14 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// Check arguments
 			if (w < 0 || h < 0)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Initialize elements
 			init(w, h);
 			// Set values to max
 			for (k = treeV.Length - 1; k >= 0; k--)
 			{
-				ArrayUtil.intArraySet(treeV[k], System.Int32.MaxValue);
+				ArrayUtil.intArraySet(treeV[k], int.MaxValue);
 			}
 		}
 		
@@ -226,8 +208,8 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// number of elements is thus 'vdim' x 'hdim'. The values of the leafs in
 		/// the tag tree are initialized to the values of the 'val' array.
 		/// 
-		/// <p>The values in the 'val' array are supposed to appear in
-		/// lexicographical order, starting at index 0.</p>
+		/// The values in the 'val' array are supposed to appear in
+		/// lexicographical order, starting at index 0.
 		/// 
 		/// </summary>
 		/// <param name="h">The number of elements along the horizontal direction.
@@ -245,7 +227,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// Check arguments
 			if (w < 0 || h < 0 || val.Length < w * h)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Initialize elements
 			init(w, h);
@@ -386,7 +368,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// Check arguments
 			if (lvls == 0 || n < 0 || n >= w || v < treeS[lvls - 1][0] || treeV[0][m * w + n] < treeS[lvls - 1][0])
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Update the leaf value
 			treeV[0][m * w + n] = v;
@@ -434,7 +416,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// Check arguments
 			if (m >= h || n >= w || t < 0)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			// Initialize
@@ -491,9 +473,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// restores the tag tree the saved state.
 		/// 
 		/// </summary>
-		/// <seealso cref="restore">
-		/// 
-		/// </seealso>
+		/// <seealso cref="restore" />
 		public virtual void  save()
 		{
 			int k; // i removed
@@ -528,9 +508,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// not been saved yet.
 		/// 
 		/// </summary>
-		/// <seealso cref="save">
-		/// 
-		/// </seealso>
+		/// <seealso cref="save" />
 		public virtual void  restore()
 		{
 			int k; // i removed
@@ -538,7 +516,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			if (!saved)
 			{
 				// Nothing saved yet
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			// Copy the arrays
@@ -560,7 +538,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// and states to 0
 			for (k = lvls - 1; k >= 0; k--)
 			{
-				ArrayUtil.intArraySet(treeV[k], System.Int32.MaxValue);
+				ArrayUtil.intArraySet(treeV[k], int.MaxValue);
 				ArrayUtil.intArraySet(treeS[k], 0);
 			}
 			// Invalidate saved tree

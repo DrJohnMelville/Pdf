@@ -43,13 +43,13 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.encoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.analysis;
 
-using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.encoder;
-using Melville.CSJ2K.j2k.image;
-
-namespace Melville.CSJ2K.j2k.quantization.quantizer
+namespace CoreJ2K.j2k.quantization.quantizer
 {
 	
 	/// <summary> This class implements scalar quantization of integer or floating-point
@@ -57,37 +57,33 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 	/// and the output is the quantized wavelet coefficients represented in
 	/// sign-magnitude (see below).
 	/// 
-	/// <p>Sign magnitude representation is used (instead of two's complement) for
+	/// Sign magnitude representation is used (instead of two's complement) for
 	/// the output data. The most significant bit is used for the sign (0 if
 	/// positive, 1 if negative). Then the magnitude of the quantized coefficient
 	/// is stored in the next M most significat bits. The rest of the bits (least
 	/// significant bits) can contain a fractional value of the quantized
 	/// coefficient. This fractional value is not to be coded by the entropy
 	/// coder. However, it can be used to compute rate-distortion measures with
-	/// greater precision.</p>
+	/// greater precision.
 	/// 
-	/// <p>The value of M is determined for each subband as the sum of the number
+	/// The value of M is determined for each subband as the sum of the number
 	/// of guard bits G and the nominal range of quantized wavelet coefficients in
-	/// the corresponding subband (Rq), minus 1:</p>
+	/// the corresponding subband (Rq), minus 1:
 	/// 
-	/// <p>M = G + Rq -1</p>
+	/// M = G + Rq -1
 	/// 
-	/// <p>The value of G should be the same for all subbands. The value of Rq
+	/// The value of G should be the same for all subbands. The value of Rq
 	/// depends on the quantization step size, the nominal range of the component
 	/// before the wavelet transform and the analysis gain of the subband (see
-	/// Subband).</p>
+	/// Subband).
 	/// 
-	/// <p>The blocks of data that are requested should not cross subband
-	/// boundaries.</p>
+	/// The blocks of data that are requested should not cross subband
+	/// boundaries.
 	/// 
 	/// </summary>
-	/// <seealso cref="Subband">
-	/// 
-	/// </seealso>
-	/// <seealso cref="Quantizer">
-	/// 
-	/// </seealso>
-	internal class StdQuantizer:Quantizer
+	/// <seealso cref="Subband" />
+	/// <seealso cref="Quantizer" />
+	public class StdQuantizer:Quantizer
 	{
 		/// <summary> Returns the quantization type spec object associated to the quantizer.
 		/// 
@@ -95,15 +91,8 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// <returns> The quantization type spec
 		/// 
 		/// </returns>
-		virtual public QuantTypeSpec QuantTypeSpec
-		{
-			get
-			{
-				return qts;
-			}
-			
-		}
-		
+		public virtual QuantTypeSpec QuantTypeSpec => qts;
+
 		/// <summary>The number of mantissa bits for the quantization steps </summary>
 		public const int QSTEP_MANTISSA_BITS = 11;
 		
@@ -111,17 +100,15 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		// NOTE: formulas in 'convertFromExpMantissa()' and
 		// 'convertToExpMantissa()' methods do not support more than 5 bits.
 		public const int QSTEP_EXPONENT_BITS = 5;
-		
+
 		/// <summary>The maximum value of the mantissa for the quantization steps </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'QSTEP_MAX_MANTISSA '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		public static readonly int QSTEP_MAX_MANTISSA = (1 << QSTEP_MANTISSA_BITS) - 1;
-		
+		public const int QSTEP_MAX_MANTISSA = (1 << QSTEP_MANTISSA_BITS) - 1;
+
 		/// <summary>The maximum value of the exponent for the quantization steps </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'QSTEP_MAX_EXPONENT '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		public static readonly int QSTEP_MAX_EXPONENT = (1 << QSTEP_EXPONENT_BITS) - 1;
-		
+		public const int QSTEP_MAX_EXPONENT = (1 << QSTEP_EXPONENT_BITS) - 1;
+
 		/// <summary>Natural log of 2, used as a convenience variable </summary>
-		private static double log2 = System.Math.Log(2);
+		private static double log2 = Math.Log(2);
 		
 		/// <summary>The quantization type specifications </summary>
 		private QuantTypeSpec qts;
@@ -129,7 +116,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// <summary>The quantization step size specifications </summary>
 		private QuantStepSizeSpec qsss;
 		
-		/// <summary>The guard bits specifications </summary>
+		/// <summary>The guard bits specifications</summary>
 		private GuardBitsSpec gbs;
 		
 		/// <summary>The 'CBlkWTDataFloat' object used to request data, used when
@@ -145,9 +132,9 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// the value of 'derived' is ignored. If the source data is not integer
 		/// (int) then the quantizer can not be reversible.
 		/// 
-		/// <p>After initializing member attributes, getAnSubbandTree is called for
+		/// After initializing member attributes, getAnSubbandTree is called for
 		/// all components setting the 'stepWMSE' for all subbands in the current
-		/// tile.</p>
+		/// tile.
 		/// 
 		/// </summary>
 		/// <param name="src">The source of wavelet transform coefficients.
@@ -178,7 +165,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// </returns>
 		public override int getNumGuardBits(int t, int c)
 		{
-			return ((System.Int32) gbs.getTileCompVal(t, c));
+			return ((int) gbs.getTileCompVal(t, c));
 		}
 		
 		/// <summary> Returns true if the quantized data is reversible, for the specified
@@ -226,18 +213,18 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// the code-blocks have been returned for the current tile calls to this
 		/// method will return 'null'.
 		/// 
-		/// <p>When changing the current tile (through 'setTile()' or 'nextTile()')
+		/// When changing the current tile (through 'setTile()' or 'nextTile()')
 		/// this method will always return the first code-block, as if this method
-		/// was never called before for the new current tile.</p>
+		/// was never called before for the new current tile.
 		/// 
-		/// <p>The data returned by this method is always a copy of the
+		/// The data returned by this method is always a copy of the
 		/// data. Therfore it can be modified "in place" without any problems after
 		/// being returned. The 'offset' of the returned data is 0, and the 'scanw'
-		/// is the same as the code-block width. See the 'CBlkWTData' class.</p>
+		/// is the same as the code-block width. See the 'CBlkWTData' class.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
+		/// The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -253,9 +240,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="CBlkWTData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="CBlkWTData" />
 		public override CBlkWTData getNextCodeBlock(int c, CBlkWTData cblk)
 		{
 			return getNextInternCodeBlock(c, cblk);
@@ -269,18 +254,18 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// have been returned for the current tile calls to this method will
 		/// return 'null'.
 		/// 
-		/// <p>When changing the current tile (through 'setTile()' or 'nextTile()')
+		/// When changing the current tile (through 'setTile()' or 'nextTile()')
 		/// this method will always return the first code-block, as if this method
-		/// was never called before for the new current tile.</p>
+		/// was never called before for the new current tile.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
-		/// arbitrary. See the 'CBlkWTData' class.</p>
+		/// arbitrary. See the 'CBlkWTData' class.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
+		/// The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -296,9 +281,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="CBlkWTData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="CBlkWTData" />
 		public override CBlkWTData getNextInternCodeBlock(int c, CBlkWTData cblk)
 		{
 			// NOTE: this method is declared final since getNextCodeBlock() relies
@@ -314,7 +297,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 			SubbandAn sb;
 			float stepUDR; // The quantization step size (for a dynamic
 			// range of 1, or unit)
-			int g = ((System.Int32) gbs.getTileCompVal(tIdx, c));
+			var g = ((int) gbs.getTileCompVal(tIdx, c));
 			
 			// Are we quantizing ints or floats?
 			intq = (src.getDataType(tIdx, c) == DataBlk.TYPE_INT);
@@ -406,19 +389,19 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 			{
 				// Non-reversible, use step size
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Float.floatValue' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				float baseStep = (float) ((System.Single) qsss.getTileCompVal(tIdx, c));
+				var baseStep = (float) qsss.getTileCompVal(tIdx, c);
 				
 				// Calculate magnitude bits and quantization step size 
 				if (isDerived(tIdx, c))
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					cblk.magbits = g - 1 + sb.level - (int) System.Math.Floor(System.Math.Log(baseStep) / log2);
+					cblk.magbits = g - 1 + sb.level - (int) Math.Floor(Math.Log(baseStep) / log2);
 					stepUDR = baseStep / (1 << sb.level);
 				}
 				else
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					cblk.magbits = g - 1 - (int) System.Math.Floor(System.Math.Log(baseStep / (sb.l2Norm * (1 << sb.anGainExp))) / log2);
+					cblk.magbits = g - 1 - (int) Math.Floor(Math.Log(baseStep / (sb.l2Norm * (1 << sb.anGainExp))) / log2);
 					stepUDR = baseStep / (sb.l2Norm * (1 << sb.anGainExp));
 				}
 				shiftBits = 31 - cblk.magbits;
@@ -477,9 +460,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// <param name="c">The component index
 		/// 
 		/// </param>
-		/// <seealso cref="SubbandAn.stepWMSE">
-		/// 
-		/// </seealso>
+		/// <seealso cref="SubbandAn.stepWMSE" />
 		protected internal override void  calcSbParams(SubbandAn sb, int c)
 		{
 			float baseStep;
@@ -492,16 +473,16 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 				if (isReversible(tIdx, c))
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					sb.stepWMSE = (float) System.Math.Pow(2, - (src.getNomRangeBits(c) << 1)) * sb.l2Norm * sb.l2Norm;
+					sb.stepWMSE = (float) Math.Pow(2, - (src.getNomRangeBits(c) << 1)) * sb.l2Norm * sb.l2Norm;
 				}
 				else
 				{
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Float.floatValue' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-					baseStep = (float) ((System.Single) qsss.getTileCompVal(tIdx, c));
+					baseStep = (float) qsss.getTileCompVal(tIdx, c);
 					if (isDerived(tIdx, c))
 					{
 						//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-						sb.stepWMSE = baseStep * baseStep * (float) System.Math.Pow(2, (sb.anGainExp - sb.level) << 1) * sb.l2Norm * sb.l2Norm;
+						sb.stepWMSE = baseStep * baseStep * (float) Math.Pow(2, (sb.anGainExp - sb.level) << 1) * sb.l2Norm * sb.l2Norm;
 					}
 					else
 					{
@@ -535,7 +516,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 			int exp;
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			exp = (int) System.Math.Ceiling((- System.Math.Log(step)) / log2);
+			exp = (int) Math.Ceiling((- Math.Log(step)) / log2);
 			if (exp > QSTEP_MAX_EXPONENT)
 			{
 				// If step size is too small for exponent representation, use the
@@ -567,7 +548,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 			// exponent, otherwise (-1<<exp) might overflow (the - is used to be
 			// able to represent 2**31)
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			return (- 1f - ((float) (ems & QSTEP_MAX_MANTISSA)) / ((float) (1 << QSTEP_MANTISSA_BITS))) / (float) (- 1 << ((ems >> QSTEP_MANTISSA_BITS) & QSTEP_MAX_EXPONENT));
+			return (- 1f - (ems & QSTEP_MAX_MANTISSA) / ((float) (1 << QSTEP_MANTISSA_BITS))) / (- 1 << ((ems >> QSTEP_MANTISSA_BITS) & QSTEP_MAX_EXPONENT));
 		}
 		
 		/// <summary> Returns the maximum number of magnitude bits in any subband of the
@@ -590,14 +571,9 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 			}
 			else
 			{
-				if (isDerived(tIdx, c))
-				{
-					return getMaxMagBitsDerived(sb, tIdx, c);
-				}
-				else
-				{
-					return getMaxMagBitsExpounded(sb, tIdx, c);
-				}
+				return isDerived(tIdx, c) 
+					? getMaxMagBitsDerived(sb, tIdx, c) 
+					: getMaxMagBitsExpounded(sb, tIdx, c);
 			}
 		}
 		
@@ -618,7 +594,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		private int getMaxMagBitsRev(Subband sb, int c)
 		{
 			int tmp, max = 0;
-			int g = ((System.Int32) gbs.getTileCompVal(tIdx, c));
+			var g = ((int) gbs.getTileCompVal(tIdx, c));
 			
 			if (!sb.isNode)
 				return g - 1 + src.getNomRangeBits(c) + sb.anGainExp;
@@ -656,14 +632,14 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		private int getMaxMagBitsDerived(Subband sb, int t, int c)
 		{
 			int tmp, max = 0;
-			int g = ((System.Int32) gbs.getTileCompVal(t, c));
+			var g = ((int) gbs.getTileCompVal(t, c));
 			
 			if (!sb.isNode)
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Float.floatValue' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				float baseStep = (float) ((System.Single) qsss.getTileCompVal(t, c));
+				var baseStep = (float) qsss.getTileCompVal(t, c);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				return g - 1 + sb.level - (int) System.Math.Floor(System.Math.Log(baseStep) / log2);
+				return g - 1 + sb.level - (int) Math.Floor(Math.Log(baseStep) / log2);
 			}
 			
 			max = getMaxMagBitsDerived(sb.LL, t, c);
@@ -700,14 +676,14 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		private int getMaxMagBitsExpounded(Subband sb, int t, int c)
 		{
 			int tmp, max = 0;
-			int g = ((System.Int32) gbs.getTileCompVal(t, c));
+			var g = ((int) gbs.getTileCompVal(t, c));
 			
 			if (!sb.isNode)
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Float.floatValue' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				float baseStep = (float) ((System.Single) qsss.getTileCompVal(t, c));
+				var baseStep = (float) qsss.getTileCompVal(t, c);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				return g - 1 - (int) System.Math.Floor(System.Math.Log(baseStep / (((SubbandAn) sb).l2Norm * (1 << sb.anGainExp))) / log2);
+				return g - 1 - (int) Math.Floor(Math.Log(baseStep / (((SubbandAn) sb).l2Norm * (1 << sb.anGainExp))) / log2);
 			}
 			
 			max = getMaxMagBitsExpounded(sb.LL, t, c);

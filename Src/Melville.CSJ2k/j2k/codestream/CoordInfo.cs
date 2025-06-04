@@ -41,7 +41,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> This class is used to store the coordinates of objects such as code-blocks
@@ -50,12 +50,9 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// (CBlkCoordInfo and PrecCoordInfo).
 	/// 
 	/// </summary>
-	/// <seealso cref="PrecCoordInfo">
-	/// </seealso>
-	/// <seealso cref="CBlkCoordInfo">
-	/// 
-	/// </seealso>
-	internal abstract class CoordInfo
+	/// <seealso cref="PrecCoordInfo" />
+	/// <seealso cref="CBlkCoordInfo" />
+	public abstract class CoordInfo
 	{
 		
 		/// <summary>Horizontal upper left coordinate in the subband </summary>
@@ -107,9 +104,9 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <returns> String with object's information
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "ulx=" + ulx + ",uly=" + uly + ",w=" + w + ",h=" + h;
+			return $"ulx={ulx},uly={uly},w={w},h={h}";
 		}
 	}
 }

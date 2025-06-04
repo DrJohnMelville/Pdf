@@ -41,22 +41,19 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.io
+namespace CoreJ2K.j2k.io
 {
 	
 	/// <summary> This abstract class defines the interface to perform random access I/O. It
 	/// implements the <tt>BinaryDataInput</tt> and <tt>BinaryDataOutput</tt>
 	/// interfaces so that binary data input/output can be performed.
 	/// 
-	/// <p>This interface supports streams of up to 2 GB in length.</p>
+	/// This interface supports streams of up to 2 GB in length.
 	/// 
 	/// </summary>
-	/// <seealso cref="BinaryDataInput">
-	/// </seealso>
-	/// <seealso cref="BinaryDataOutput">
-	/// 
-	/// </seealso>
-	internal interface RandomAccessIO:BinaryDataInput, BinaryDataOutput
+	/// <seealso cref="BinaryDataInput" />
+	/// <seealso cref="BinaryDataOutput" />
+	public interface RandomAccessIO:BinaryDataInput, BinaryDataOutput
 	{
 		/// <summary> Returns the current position in the stream, which is the position from
 		/// where the next byte of data would be read. The first byte in the stream

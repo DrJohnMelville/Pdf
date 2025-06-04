@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.IO;
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
     internal class EndianBinaryWriter : BinaryWriter
     {
@@ -155,86 +155,7 @@ namespace Melville.CSJ2K.Util
         //
         //   System.IO.IOException:
         //     An I/O error occurs.
-        //public virtual void Write(byte[] buffer);
-        //
-        // Summary:
-        //     Writes a Unicode character to the current stream and advances the current
-        //     position of the stream in accordance with the Encoding used and the specific
-        //     characters being written to the stream.
-        //
-        // Parameters:
-        //   ch:
-        //     The non-surrogate, Unicode character to write.
-        //
-        // Exceptions:
-        //   System.ObjectDisposedException:
-        //     The stream is closed.
-        //
-        //   System.ArgumentException:
-        //     ch is a single surrogate character.
-        //
-        //   System.IO.IOException:
-        //     An I/O error occurs.
-        //public virtual void Write(char ch);
-        //
-        // Summary:
-        //     Writes a character array to the current stream and advances the current position
-        //     of the stream in accordance with the Encoding used and the specific characters
-        //     being written to the stream.
-        //
-        // Parameters:
-        //   chars:
-        //     A character array containing the data to write.
-        //
-        // Exceptions:
-        //   System.ObjectDisposedException:
-        //     The stream is closed.
-        //
-        //   System.IO.IOException:
-        //     An I/O error occurs.
-        //
-        //   System.ArgumentNullException:
-        //     chars is null.
-        //public virtual void Write(char[] chars);
-        //
-        // Summary:
-        //     Writes a decimal value to the current stream and advances the stream position
-        //     by sixteen bytes.
-        //
-        // Parameters:
-        //   value:
-        //     The decimal value to write.
-        //
-        // Exceptions:
-        //   System.ObjectDisposedException:
-        //     The stream is closed.
-        //
-        //   System.IO.IOException:
-        //     An I/O error occurs.
-#if DOTNET
-        public override void Write(decimal value)
-        {
-            if (_bigEndian)
-            {
-                throw new System.NotImplementedException();
-                /*
-                int[] decimalints=decimal.GetBits(value);
-                
-                // TODO: Is the whole thing reversed or just the individual ints?
-                // Maybe we should just call ReadInt32 4 times?
-                //byte[] buf = this.ReadBytes(16);
-                //Array.Reverse(buf);
-                //int[] decimalints = new int[4];
-                //decimalints[0] = BitConverter.ToInt32(buf, 0);
-                //decimalints[1] = BitConverter.ToInt32(buf, 4);
-                //decimalints[2] = BitConverter.ToInt32(buf, 8);
-                //decimalints[3] = BitConverter.ToInt32(buf, 12);
-                //return new decimal(decimalints);
-                */
-            }
-            else base.Write(value);
-        }
-#endif
+
         //
         // Summary:
         //     Writes an eight-byte floating-point value to the current stream and advances
@@ -254,7 +175,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -279,7 +200,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -304,7 +225,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -329,7 +250,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -371,7 +292,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -417,7 +338,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -442,7 +363,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }
@@ -467,7 +388,7 @@ namespace Melville.CSJ2K.Util
         {
             if (_bigEndian)
             {
-                byte[] buf = BitConverter.GetBytes(value);
+                var buf = BitConverter.GetBytes(value);
                 Array.Reverse(buf);
                 base.Write(buf);
             }

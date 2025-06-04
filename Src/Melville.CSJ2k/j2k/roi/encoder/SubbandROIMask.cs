@@ -40,8 +40,9 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 *  */
+using System;
 
-namespace Melville.CSJ2K.j2k.roi.encoder
+namespace CoreJ2K.j2k.roi.encoder
 {
 	
 	/// <summary> This abstract class describes the ROI mask for a single subband. Each
@@ -49,7 +50,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// references to the masks of the children subbands of the subband
 	/// corresponding to this mask.  
 	/// </summary>
-	internal abstract class SubbandROIMask
+	public abstract class SubbandROIMask
 	{
 		
 		/// <summary>The subband masks of the child LL </summary>
@@ -122,7 +123,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 			// Check that we are inside this subband
 			if (x < ulx || y < uly || x >= ulx + w || y >= uly + h)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			cur = this;
@@ -133,30 +134,12 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 				if (x < hhs.ulx)
 				{
 					// Is the result of horizontal low-pass
-					if (y < hhs.uly)
-					{
-						// Vertical low-pass
-						cur = cur.ll;
-					}
-					else
-					{
-						// Vertical high-pass
-						cur = cur.lh;
-					}
+					cur = y < hhs.uly ? cur.ll : cur.lh;
 				}
 				else
 				{
 					// Is the result of horizontal high-pass
-					if (y < hhs.uly)
-					{
-						// Vertical low-pass
-						cur = cur.hl;
-					}
-					else
-					{
-						// Vertical high-pass
-						cur = cur.hh;
-					}
+					cur = y < hhs.uly ? cur.hl : cur.hh;
 				}
 			}
 			return cur;

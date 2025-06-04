@@ -42,9 +42,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.image;
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This abstract class defines methods to transfer wavelet data in a
@@ -52,37 +52,32 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// 'getCodeBlock()' or 'getInternCodeBlock()' a new code-block is
 	/// returned. The code-blocks are returned in no specific order.
 	/// 
-	/// <p>This class is the source of data, in general, for the inverse wavelet
-	/// transforms. See the 'InverseWT' class.</p>
+	/// This class is the source of data, in general, for the inverse wavelet
+	/// transforms. See the 'InverseWT' class.
 	/// 
 	/// </summary>
-	/// <seealso cref="InvWTData">
-	/// </seealso>
-	/// <seealso cref="WaveletTransform">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.quantization.dequantizer.CBlkQuantDataSrcDec">
-	/// </seealso>
-	/// <seealso cref="InverseWT">
-	/// 
-	/// </seealso>
-	internal interface CBlkWTDataSrcDec:InvWTData
+	/// <seealso cref="InvWTData" />
+	/// <seealso cref="WaveletTransform" />
+	/// <seealso cref="j2k.quantization.dequantizer.CBlkQuantDataSrcDec" />
+	/// <seealso cref="InverseWT" />
+	public interface CBlkWTDataSrcDec:InvWTData
 	{
 		
 		/// <summary> Returns the number of bits, referred to as the "range bits",
 		/// corresponding to the nominal range of the data in the specified
 		/// component.
 		/// 
-		/// <p>The returned value corresponds to the nominal dynamic range of the
+		/// The returned value corresponds to the nominal dynamic range of the
 		/// reconstructed image data, not of the wavelet coefficients
 		/// themselves. This is because different subbands have different gains and
 		/// thus different nominal ranges. To have an idea of the nominal range in
 		/// each subband the subband analysis gain value from the subband tree
 		/// structure, returned by the 'getSynSubbandTree()' method, can be
-		/// used. See the 'Subband' class for more details.</p>
+		/// used. See the 'Subband' class for more details.
 		/// 
-		/// <p>If this number is <i>b</b> then for unsigned data the nominal range
+		/// If this number is <i>b</b> then for unsigned data the nominal range
 		/// is between 0 and 2^b-1, and for signed data it is between -2^(b-1) and
-		/// 2^(b-1)-1.</p>
+		/// 2^(b-1)-1.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component.
@@ -92,9 +87,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// data.
 		/// 
 		/// </returns>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband" />
 		int getNomRangeBits(int c);
 		
 		/// <summary> Returns the position of the fixed point in the specified component, or
@@ -119,20 +112,20 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component, as a copy (see below).
 		/// 
-		/// <p>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk' object. If a
 		/// code-block is progressive it means that in a later request to this
 		/// method for the same code-block it is possible to retrieve data which is
 		/// a better approximation, since meanwhile more data to decode for the
 		/// code-block could have been received. If the code-block is not
 		/// progressive then later calls to this method for the same code-block
-		/// will return the exact same data values.</p>
+		/// will return the exact same data values.
 		/// 
-		/// <p>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
 		/// any problems after being returned. The 'offset' of the returned data is 
 		/// 0, and the 'scanw' is the same as the code-block width. See the
-		/// 'DataBlk' class.</p>
+		/// 'DataBlk' class.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -159,27 +152,25 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		DataBlk getCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk);
 		
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component (as a reference or copy).
 		/// 
-		/// <p>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk' object. If a
 		/// code-block is progressive it means that in a later request to this
 		/// method for the same code-block it is possible to retrieve data which is
 		/// a better approximation, since meanwhile more data to decode for the
 		/// code-block could have been received. If the code-block is not
 		/// progressive then later calls to this method for the same code-block
-		/// will return the exact same data values.</p>
+		/// will return the exact same data values.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
-		/// arbitrary. See the 'DataBlk' class.</p>
+		/// arbitrary. See the 'DataBlk' class.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -206,9 +197,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		DataBlk getInternCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk);
 	}
 }

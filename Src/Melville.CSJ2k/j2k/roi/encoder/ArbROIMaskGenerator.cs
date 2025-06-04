@@ -40,32 +40,28 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.image.input;
+using CoreJ2K.j2k.quantization.quantizer;
+using CoreJ2K.j2k.wavelet;
 
-using Melville.CSJ2K.j2k.quantization.quantizer;
-using Melville.CSJ2K.j2k.image.input;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.image;
-
-namespace Melville.CSJ2K.j2k.roi.encoder
+namespace CoreJ2K.j2k.roi.encoder
 {
 	
 	/// <summary> This class generates the ROI bit-mask when, at least, one ROI is not
 	/// rectangular. In this case, the fast ROI bit-mask algorithm generation can
 	/// not be used.
 	/// 
-	/// <P>The values are calculated from the scaling factors of the ROIs. The
+	/// The values are calculated from the scaling factors of the ROIs. The
 	/// values with which to scale are equal to u-umin where umin is the lowest
 	/// scaling factor within the block. The umin value is sent to the entropy
 	/// coder to be used for scaling the distortion values.
 	/// 
 	/// </summary>
-	/// <seealso cref="ROIMaskGenerator">
-	/// 
-	/// </seealso>
-	/// <seealso cref="ArbROIMaskGenerator">
-	/// 
-	/// </seealso>
-	internal class ArbROIMaskGenerator:ROIMaskGenerator
+	/// <seealso cref="ROIMaskGenerator" />
+	/// <seealso cref="ArbROIMaskGenerator" />
+	public class ArbROIMaskGenerator:ROIMaskGenerator
 	{
 		
 		/// <summary>The source of quantized wavelet transform coefficients </summary>
@@ -84,7 +80,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		private int[] paddedMaskLine;
 		
 		/// <summary>Flag indicating if any ROI was found to be in this tile </summary>
-		new private bool roiInTile;
+		private new bool roiInTile;
 		
 		/// <summary> The constructor of the arbitrary mask generator
 		/// 
@@ -107,10 +103,10 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// <summary> This functions gets a DataBlk the size of the current code-block an
 		/// fills this block with the ROI mask.
 		/// 
-		/// <P> In order to get the mask for a particular Subband, the subband tree
+		///  In order to get the mask for a particular Subband, the subband tree
 		/// is traversed and at each decomposition, the ROI masks are computed.
 		/// 
-		/// <P> The widths of the synthesis filters corresponding to the wavelet
+		///  The widths of the synthesis filters corresponding to the wavelet
 		/// filters used in the wavelet transform are used to expand the ROI masks
 		/// in the decompositions.
 		/// 
@@ -132,13 +128,13 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </returns>
 		public override bool getROIMask(DataBlkInt db, Subband sb, int magbits, int c)
 		{
-			int x = db.ulx;
-			int y = db.uly;
-			int w = db.w;
-			int h = db.h;
-			int tilew = sb.w;
-			int tileh = sb.h;
-			int[] maskData = (int[]) db.Data;
+			var x = db.ulx;
+			var y = db.uly;
+			var w = db.w;
+			var h = db.h;
+			var tilew = sb.w;
+			var tileh = sb.h;
+			var maskData = (int[]) db.Data;
 			int i, j, k, bi, wrap;
 			
 			// If the ROI mask has not been calculated for this tile and
@@ -151,7 +147,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 			if (!roiInTile)
 				return false;
 			
-			int[] mask = roiMask[c]; // local copy
+			var mask = roiMask[c]; // local copy
 			
 			// Copy relevant part of the ROI mask to the datablock
 			i = (y + h - 1) * tilew + x + w - 1;
@@ -171,14 +167,14 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// <summary> This function returns the relevant data of the mask generator 
 		/// 
 		/// </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			return ("Fast rectangular ROI mask generator");
 		}
 		
 		/// <summary> This function generates the ROI mask for one tile-component. 
 		/// 
-		/// <P> Once the mask is generated in the pixel domain. it is decomposed
+		///  Once the mask is generated in the pixel domain. it is decomposed
 		/// following the same decomposition scheme as the wavelet transform.
 		/// 
 		/// </summary>
@@ -193,18 +189,18 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		public override void  makeMask(Subband sb, int magbits, int c)
 		{
 			int[] mask; // local copy
-			ROI[] rois = this.roi_array; // local copy
+			var rois = roi_array; // local copy
             int i, j, k, r, maxj; // mink, minj removed
 			int lrx, lry;
 			int x, y, w, h;
 			int cx, cy, rad;
 			int wrap;
 			int curScalVal;
-			int tileulx = sb.ulcx;
-			int tileuly = sb.ulcy;
-			int tilew = sb.w;
-			int tileh = sb.h;
-			int lineLen = (tilew > tileh)?tilew:tileh;
+			var tileulx = sb.ulcx;
+			var tileuly = sb.ulcy;
+			var tilew = sb.w;
+			var tileh = sb.h;
+			var lineLen = (tilew > tileh)?tilew:tileh;
 			
 			// Make sure there is a sufficiently large mask buffer
 			if (roiMask[c] == null || (roiMask[c].Length < (tilew * tileh)))
@@ -235,10 +231,10 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 					
 					if (rois[r].arbShape)
 					{
-						ImgReaderPGM maskPGM = rois[r].maskPGM; // Local copy
+						var maskPGM = rois[r].maskPGM; // Local copy
 						
 						if ((src.ImgWidth != maskPGM.ImgWidth) || (src.ImgHeight != maskPGM.ImgHeight))
-							throw new System.ArgumentException("Input image and" + " ROI mask must " + "have the same " + "size");
+							throw new ArgumentException("Input image and ROI mask must have the same size");
 						x = src.ImgULX;
 						y = src.ImgULY;
 						lrx = x + src.ImgWidth - 1;
@@ -253,8 +249,8 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 						y -= tileuly;
 						lry -= tileuly;
 						
-						int offx = 0;
-						int offy = 0;
+						var offx = 0;
+						var offy = 0;
 						if (x < 0)
 						{
 							offx = - x;
@@ -270,9 +266,9 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 						
 						
 						// Get shape line by line to reduce memory
-						DataBlkInt srcblk = new DataBlkInt();
-						int mDcOff = - ImgReaderPGM.DC_OFFSET;
-						int nROIcoeff = 0;
+						var srcblk = new DataBlkInt();
+						var mDcOff = - ImgReaderPGM.DC_OFFSET;
+						var nROIcoeff = 0;
 						int[] src_data;
 						srcblk.ulx = offx;
 						srcblk.w = w;
@@ -284,7 +280,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 						for (k = h; k > 0; k--)
 						{
 							srcblk.uly = offy + k - 1;
-							srcblk = (DataBlkInt) maskPGM.getInternCompData(srcblk, 0);
+							srcblk = (DataBlkInt) maskPGM.GetInternCompData(srcblk, 0);
 							src_data = srcblk.DataInt;
 							
 							for (j = maxj; j > 0; j--, i--)
@@ -367,12 +363,12 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 			{
 				// Decompose the mask according to the subband tree
 				// Calculate size of padded line buffer
-				WaveletFilter vFilter = sb.VerWFilter;
-				WaveletFilter hFilter = sb.HorWFilter;
-				int lvsup = vFilter.SynLowNegSupport + vFilter.SynLowPosSupport;
-				int hvsup = vFilter.SynHighNegSupport + vFilter.SynHighPosSupport;
-				int lhsup = hFilter.SynLowNegSupport + hFilter.SynLowPosSupport;
-				int hhsup = hFilter.SynHighNegSupport + hFilter.SynHighPosSupport;
+				var vFilter = sb.VerWFilter;
+				var hFilter = sb.HorWFilter;
+				var lvsup = vFilter.SynLowNegSupport + vFilter.SynLowPosSupport;
+				var hvsup = vFilter.SynHighNegSupport + vFilter.SynHighPosSupport;
+				var lhsup = hFilter.SynLowNegSupport + hFilter.SynLowPosSupport;
+				var hhsup = hFilter.SynHighNegSupport + hFilter.SynHighPosSupport;
 				lvsup = (lvsup > hvsup)?lvsup:hvsup;
 				lhsup = (lhsup > hhsup)?lhsup:hhsup;
 				lvsup = (lvsup > lhsup)?lvsup:lhsup;
@@ -402,19 +398,19 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </param>
 		private void  decomp(Subband sb, int tilew, int tileh, int c)
 		{
-			int ulx = sb.ulx;
-			int uly = sb.uly;
-			int w = sb.w;
-			int h = sb.h;
+			var ulx = sb.ulx;
+			var uly = sb.uly;
+			var w = sb.w;
+			var h = sb.h;
 			int scalVal, maxVal = 0;
 			int j, k, s, mi = 0, pin; // i, hi, li removed
 			int hmax, lmax; // smax removed
 			int lineoffs; // wrap, lastlow removed
-			int[] mask = roiMask[c]; // local copy
-			int[] low = maskLineLow; // local copy
-			int[] high = maskLineHigh; // local copy
-			int[] padLine = paddedMaskLine; // local copy
-			int highFirst = 0;
+			var mask = roiMask[c]; // local copy
+			var low = maskLineLow; // local copy
+			var high = maskLineHigh; // local copy
+			var padLine = paddedMaskLine; // local copy
+			var highFirst = 0;
 			int lastpin;
 			
 			
@@ -425,13 +421,13 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 			
 			// Calculate number of high and low samples after decomposition
 			// and get support for low and high filters
-			WaveletFilter filter = sb.HorWFilter;
-			int lnSup = filter.SynLowNegSupport;
-			int hnSup = filter.SynHighNegSupport;
-			int lpSup = filter.SynLowPosSupport;
-			int hpSup = filter.SynHighPosSupport;
-			int lsup = lnSup + lpSup + 1;
-			int hsup = hnSup + hpSup + 1;
+			var filter = sb.HorWFilter;
+			var lnSup = filter.SynLowNegSupport;
+			var hnSup = filter.SynHighNegSupport;
+			var lpSup = filter.SynLowPosSupport;
+			var hpSup = filter.SynHighPosSupport;
+			var lsup = lnSup + lpSup + 1;
+			var hsup = hnSup + hpSup + 1;
 			
 			// Calculate number of high/low coeffis in subbands
 			highFirst = sb.ulcx % 2;
@@ -454,8 +450,8 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 				}
 			}
 			
-			int maxnSup = (lnSup > hnSup)?lnSup:hnSup; // Maximum negative support
-			int maxpSup = (lpSup > hpSup)?lpSup:hpSup; // Maximum positive support
+			var maxnSup = (lnSup > hnSup)?lnSup:hnSup; // Maximum negative support
+			var maxpSup = (lpSup > hpSup)?lpSup:hpSup; // Maximum positive support
 			
 			
 			// Set padding to 0

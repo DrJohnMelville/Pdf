@@ -39,7 +39,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> This interface defines the values of the different markers in the JPEG 2000
@@ -48,7 +48,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// also defines some other constants such as bit-masks and bit-shifts.
 	/// 
 	/// </summary>
-	internal struct Markers
+	public struct Markers
     {
         /// <summary>Start of codestream (SOC): 0xFF4F </summary>
         public const short SOC = unchecked((short)0xff4f);
@@ -152,6 +152,6 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <summary>Comment (COM): 0xFF64 </summary>
 		public const short COM = unchecked((short)0xff64);
 		/// <summary>General use registration value (COM): 0x0001 </summary>
-		public const short RCOM_GEN_USE = unchecked((short)0x0001);
+		public const short RCOM_GEN_USE = unchecked(0x0001);
 	}
 }

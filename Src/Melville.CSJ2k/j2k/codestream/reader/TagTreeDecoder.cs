@@ -40,10 +40,10 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.codestream.reader
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class implements the tag tree decoder. A tag tree codes a 2D matrix of
@@ -53,18 +53,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// not the value is greater than or equal to the threshold, and updates the
 	/// value accordingly.
 	/// 
-	/// <p>In general the decoding procedure must follow the same sequence of
+	/// In general the decoding procedure must follow the same sequence of
 	/// elements and thresholds as the encoding one. The encoder is implemented by
-	/// the TagTreeEncoder class.</p>
+	/// the TagTreeEncoder class.
 	/// 
-	/// <p>Tag trees that have one dimension, or both, as 0 are allowed for
-	/// convenience. Of course no values can be set or coded in such cases.</p>
+	/// Tag trees that have one dimension, or both, as 0 are allowed for
+	/// convenience. Of course no values can be set or coded in such cases.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.codestream.writer.TagTreeEncoder">
-	/// 
-	/// </seealso>
-	internal class TagTreeDecoder
+	/// <seealso cref="j2k.codestream.writer.TagTreeEncoder" />
+	public class TagTreeDecoder
 	{
 		/// <summary> Returns the number of leafs along the horizontal direction.
 		/// 
@@ -72,29 +70,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The number of leafs along the horizontal direction.
 		/// 
 		/// </returns>
-		virtual public int Width
-		{
-			get
-			{
-				return w;
-			}
-			
-		}
+		public virtual int Width => w;
+
 		/// <summary> Returns the number of leafs along the vertical direction.
 		/// 
 		/// </summary>
 		/// <returns> The number of leafs along the vertical direction.
 		/// 
 		/// </returns>
-		virtual public int Height
-		{
-			get
-			{
-				return h;
-			}
-			
-		}
-		
+		public virtual int Height => h;
+
 		/// <summary>The horizontal dimension of the base level </summary>
 		protected internal int w;
 		
@@ -120,9 +105,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// dimension and 'h' elements along the vertical direction. The total
 		/// number of elements is thus 'vdim' x 'hdim'.
 		/// 
-		/// <p>The values of all elements are initialized to Integer.MAX_VALUE
+		/// The values of all elements are initialized to Integer.MAX_VALUE
 		/// (i.e. no information decoded so far). The states are initialized all to
-		/// 0.</p>
+		/// 0.
 		/// 
 		/// </summary>
 		/// <param name="h">The number of elements along the vertical direction.
@@ -138,7 +123,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Check arguments
 			if (w < 0 || h < 0)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Initialize dimensions
 			this.w = w;
@@ -168,7 +153,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				treeV[i] = new int[h * w];
 				// Initialize to infinite value
-				ArrayUtil.intArraySet(treeV[i], System.Int32.MaxValue);
+				ArrayUtil.intArraySet(treeV[i], int.MaxValue);
 				
 				// (no need to initialize to 0 since it's the default)
 				treeS[i] = new int[h * w];
@@ -213,7 +198,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Check arguments
 			if (m >= h || n >= w || t < 0)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			// Initialize
@@ -289,15 +274,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The current value of the element.
 		/// 
 		/// </returns>
-		/// <seealso cref="update">
-		/// 
-		/// </seealso>
+		/// <seealso cref="update" />
 		public virtual int getValue(int m, int n)
 		{
 			// Check arguments
 			if (m >= h || n >= w)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Return value
 			return treeV[0][m * w + n];

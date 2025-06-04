@@ -39,23 +39,23 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-
+using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.codestream;
-using Melville.CSJ2K.j2k.util;
+using CoreJ2K.j2k.codestream;
+using CoreJ2K.j2k.util;
 
-namespace Melville.CSJ2K.j2k.entropy
+namespace CoreJ2K.j2k.entropy
 {
 	
 	/// <summary> This class extends ModuleSpec class for progression type(s) and progression
 	/// order changes holding purposes.
 	/// 
-	/// <p>It stores  the progression type(s) used in the  codestream. There can be
+	/// It stores  the progression type(s) used in the  codestream. There can be
 	/// several progression  type(s) if  progression order  changes are  used (POC
-	/// markers).</p>
+	/// markers).
 	/// 
 	/// </summary>
-	internal class ProgressionSpec:ModuleSpec
+	public sealed class ProgressionSpec:ModuleSpec
 	{
 		
 		/// <summary> Creates a new ProgressionSpec object for the specified number of tiles
@@ -75,9 +75,9 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// </param>
 		public ProgressionSpec(int nt, int nc, byte type):base(nt, nc, type)
 		{
-			if (type != ModuleSpec.SPEC_TYPE_TILE)
+			if (type != SPEC_TYPE_TILE)
 			{
-				throw new System.InvalidOperationException("Illegal use of class ProgressionSpec !");
+				throw new InvalidOperationException("Illegal use of class ProgressionSpec !");
 			}
 		}
 		
@@ -107,26 +107,19 @@ namespace Melville.CSJ2K.j2k.entropy
 		public ProgressionSpec(int nt, int nc, int nl, IntegerSpec dls, byte type, ParameterList pl):base(nt, nc, type)
 		{
 			
-			System.String param = pl.getParameter("Aptype");
+			var param = pl.getParameter("Aptype");
 			Progression[] prog;
-			int mode = - 1;
+			var mode = - 1;
 			
 			if (param == null)
 			{
 				// No parameter specified
-				if (pl.getParameter("Rroi") == null)
-				{
-					mode = checkProgMode("res");
-				}
-				else
-				{
-					mode = checkProgMode("layer");
-				}
-				
+				mode = checkProgMode(pl.getParameter("Rroi") == null ? "res" : "layer");
+
 				if (mode == - 1)
 				{
-					System.String errMsg = "Unknown progression type : '" + param + "'";
-					throw new System.ArgumentException(errMsg);
+					var errMsg = $"Unknown progression type : '{param}'";
+					throw new ArgumentException(errMsg);
 				}
 				prog = new Progression[1];
 				prog[0] = new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
@@ -134,19 +127,19 @@ namespace Melville.CSJ2K.j2k.entropy
 				return ;
 			}
 			
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
-			System.String word = null; // current word
-			System.String errMsg2 = null; // Error message
-			bool needInteger = false; // True if an integer value is expected
-			int intType = 0; // Type of read integer value (0=index of first
+			string word = null; // current word
+			string errMsg2 = null; // Error message
+			var needInteger = false; // True if an integer value is expected
+			var intType = 0; // Type of read integer value (0=index of first
 			// resolution level, 1= index of first component, 2=index of first  
 			// layer not included, 3= index of first resolution level not
 			// included, 4= index of  first component not included
-			System.Collections.Generic.List<Progression> progression = new List<Progression>(10);
-			int tmp = 0;
+			var progression = new List<Progression>(10);
+			var tmp = 0;
 			Progression curProg = null;
 			
 			while (stk.HasMoreTokens())
@@ -172,7 +165,7 @@ namespace Melville.CSJ2K.j2k.entropy
 							}
 							else if (curSpecType == SPEC_TILE_DEF)
 							{
-								for (int i = tileSpec.Length - 1; i >= 0; i--)
+								for (var i = tileSpec.Length - 1; i >= 0; i--)
 									if (tileSpec[i])
 									{
 										setTileDef(i, prog);
@@ -197,12 +190,13 @@ namespace Melville.CSJ2K.j2k.entropy
 							// Progression bound info
 							try
 							{
-								tmp = (System.Int32.Parse(word));
+								tmp = (int.Parse(word));
 							}
-							catch (System.FormatException)
+							catch (FormatException)
 							{
 								// Progression has missing parameters
-								throw new System.ArgumentException("Progression " + "order" + " specification " + "has missing " + "parameters: " + param);
+								throw new ArgumentException(
+									$"Progression order specification has missing parameters: {param}");
 							}
 							
 							switch (intType)
@@ -210,19 +204,19 @@ namespace Melville.CSJ2K.j2k.entropy
 								
 								case 0:  // cs
 									if (tmp < 0 || tmp > (dls.Max + 1))
-										throw new System.ArgumentException("Invalid res_start " + "in '-Aptype'" + " option: " + tmp);
+										throw new ArgumentException($"Invalid res_start in '-Aptype' option: {tmp}");
 									curProg.rs = tmp; break;
 								
 								case 1:  // rs
 									if (tmp < 0 || tmp > nc)
 									{
-										throw new System.ArgumentException("Invalid comp_start " + "in '-Aptype' " + "option: " + tmp);
+										throw new ArgumentException($"Invalid comp_start in '-Aptype' option: {tmp}");
 									}
 									curProg.cs = tmp; break;
 								
 								case 2:  // lye
 									if (tmp < 0)
-										throw new System.ArgumentException("Invalid layer_end " + "in '-Aptype'" + " option: " + tmp);
+										throw new ArgumentException($"Invalid layer_end in '-Aptype' option: {tmp}");
 									if (tmp > nl)
 									{
 										tmp = nl;
@@ -231,7 +225,7 @@ namespace Melville.CSJ2K.j2k.entropy
 								
 								case 3:  // ce
 									if (tmp < 0)
-										throw new System.ArgumentException("Invalid res_end " + "in '-Aptype'" + " option: " + tmp);
+										throw new ArgumentException($"Invalid res_end in '-Aptype' option: {tmp}");
 									if (tmp > (dls.Max + 1))
 									{
 										tmp = dls.Max + 1;
@@ -240,7 +234,7 @@ namespace Melville.CSJ2K.j2k.entropy
 								
 								case 4:  // re
 									if (tmp < 0)
-										throw new System.ArgumentException("Invalid comp_end " + "in '-Aptype'" + " option: " + tmp);
+										throw new ArgumentException($"Invalid comp_end in '-Aptype' option: {tmp}");
 									if (tmp > nc)
 									{
 										tmp = nc;
@@ -262,7 +256,7 @@ namespace Melville.CSJ2K.j2k.entropy
 							}
 							else
 							{
-								throw new System.InvalidOperationException("Error in usage of 'Aptype' " + "option: " + param);
+								throw new InvalidOperationException($"Error in usage of 'Aptype' option: {param}");
 							}
 						}
 						
@@ -272,19 +266,14 @@ namespace Melville.CSJ2K.j2k.entropy
 							mode = checkProgMode(word);
 							if (mode == - 1)
 							{
-								errMsg2 = "Unknown progression type : '" + word + "'";
-								throw new System.ArgumentException(errMsg2);
+								errMsg2 = $"Unknown progression type : '{word}'";
+								throw new ArgumentException(errMsg2);
 							}
 							needInteger = true;
 							intType = 0;
-							if (progression.Count == 0)
-							{
-								curProg = new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
-							}
-							else
-							{
-								curProg = new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
-							}
+							curProg = progression.Count == 0 
+								? new Progression(mode, 0, nc, 0, dls.Max + 1, nl) 
+								: new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
 							progression.Add(curProg);
 						}
 						break;
@@ -295,18 +284,11 @@ namespace Melville.CSJ2K.j2k.entropy
 			if (progression.Count == 0)
 			{
 				// No progression defined
-				if (pl.getParameter("Rroi") == null)
-				{
-					mode = checkProgMode("res");
-				}
-				else
-				{
-					mode = checkProgMode("layer");
-				}
+				mode = checkProgMode(pl.getParameter("Rroi") == null ? "res" : "layer");
 				if (mode == - 1)
 				{
-					errMsg2 = "Unknown progression type : '" + param + "'";
-					throw new System.ArgumentException(errMsg2);
+					errMsg2 = $"Unknown progression type : '{param}'";
+					throw new ArgumentException(errMsg2);
 				}
 				prog = new Progression[1];
 				prog[0] = new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
@@ -329,7 +311,7 @@ namespace Melville.CSJ2K.j2k.entropy
 			}
 			else if (curSpecType == SPEC_TILE_DEF)
 			{
-				for (int i = tileSpec.Length - 1; i >= 0; i--)
+				for (var i = tileSpec.Length - 1; i >= 0; i--)
 					if (tileSpec[i])
 					{
 						setTileDef(i, prog);
@@ -339,10 +321,10 @@ namespace Melville.CSJ2K.j2k.entropy
 			// Check that default value has been specified
 			if (getDefault() == null)
 			{
-				int ndefspec = 0;
-				for (int t = nt - 1; t >= 0; t--)
+				var ndefspec = 0;
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						if (specValType[t][c] == SPEC_DEF)
 						{
@@ -355,18 +337,11 @@ namespace Melville.CSJ2K.j2k.entropy
 				// receive the default progressiveness.
 				if (ndefspec != 0)
 				{
-					if (pl.getParameter("Rroi") == null)
-					{
-						mode = checkProgMode("res");
-					}
-					else
-					{
-						mode = checkProgMode("layer");
-					}
+					mode = checkProgMode(pl.getParameter("Rroi") == null ? "res" : "layer");
 					if (mode == - 1)
 					{
-						errMsg2 = "Unknown progression type : '" + param + "'";
-						throw new System.ArgumentException(errMsg2);
+						errMsg2 = $"Unknown progression type : '{param}'";
+						throw new ArgumentException(errMsg2);
 					}
 					prog = new Progression[1];
 					prog[0] = new Progression(mode, 0, nc, 0, dls.Max + 1, nl);
@@ -381,7 +356,7 @@ namespace Melville.CSJ2K.j2k.entropy
 					{
 						
 						case SPEC_TILE_DEF: 
-							for (int c = nc - 1; c >= 0; c--)
+							for (var c = nc - 1; c >= 0; c--)
 							{
 								if (specValType[0][c] == SPEC_TILE_DEF)
 									specValType[0][c] = SPEC_DEF;
@@ -390,7 +365,7 @@ namespace Melville.CSJ2K.j2k.entropy
 							break;
 						
 						case SPEC_COMP_DEF: 
-							for (int t = nt - 1; t >= 0; t--)
+							for (var t = nt - 1; t >= 0; t--)
 							{
 								if (specValType[t][0] == SPEC_COMP_DEF)
 									specValType[t][0] = SPEC_DEF;
@@ -418,30 +393,28 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// progression mode does not exist.
 		/// 
 		/// </returns>
-		/// <seealso cref="ProgressionType">
-		/// 
-		/// </seealso>
-		private int checkProgMode(System.String mode)
+		/// <seealso cref="ProgressionType" />
+		private int checkProgMode(string mode)
 		{
 			if (mode.Equals("res"))
 			{
-				return Melville.CSJ2K.j2k.codestream.ProgressionType.RES_LY_COMP_POS_PROG;
+				return ProgressionType.RES_LY_COMP_POS_PROG;
 			}
 			else if (mode.Equals("layer"))
 			{
-				return Melville.CSJ2K.j2k.codestream.ProgressionType.LY_RES_COMP_POS_PROG;
+				return ProgressionType.LY_RES_COMP_POS_PROG;
 			}
 			else if (mode.Equals("pos-comp"))
 			{
-				return Melville.CSJ2K.j2k.codestream.ProgressionType.POS_COMP_RES_LY_PROG;
+				return ProgressionType.POS_COMP_RES_LY_PROG;
 			}
 			else if (mode.Equals("comp-pos"))
 			{
-				return Melville.CSJ2K.j2k.codestream.ProgressionType.COMP_POS_RES_LY_PROG;
+				return ProgressionType.COMP_POS_RES_LY_PROG;
 			}
 			else if (mode.Equals("res-pos"))
 			{
-				return Melville.CSJ2K.j2k.codestream.ProgressionType.RES_POS_COMP_LY_PROG;
+				return ProgressionType.RES_POS_COMP_LY_PROG;
 			}
 			else
 			{

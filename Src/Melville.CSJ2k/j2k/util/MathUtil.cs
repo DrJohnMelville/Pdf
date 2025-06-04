@@ -40,15 +40,15 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-
-namespace Melville.CSJ2K.j2k.util
+using System;
+namespace CoreJ2K.j2k.util
 {
 	
 	/// <summary> This class contains a collection of utility methods fro mathematical
 	/// operations. All methods are static.
 	/// 
 	/// </summary>
-	internal class MathUtil
+	public class MathUtil
 	{
 		
 		/// <summary> Method that calculates the floor of the log, base 2, of 'x'. The
@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.util
 			// No log of 0 or negative
 			if (x <= 0)
 			{
-				throw new System.ArgumentException("" + x + " <= 0");
+				throw new ArgumentException($"Cannot calculate log2: {nameof(x)} <= 0");
 			}
 			// Calculate log2 (it's actually floor log2)
 			v = x;
@@ -94,7 +94,7 @@ namespace Melville.CSJ2K.j2k.util
 		{
 			if (x1 <= 0 || x2 <= 0)
 			{
-				throw new System.ArgumentException("Cannot compute the least " + "common multiple of two " + "numbers if one, at least," + "is negative.");
+				throw new ArgumentException("Cannot compute the least common multiple of two numbers if one, at least, is negative.");
 			}
 			int max, min;
 			if (x1 > x2)
@@ -107,14 +107,14 @@ namespace Melville.CSJ2K.j2k.util
 				max = x2;
 				min = x1;
 			}
-			for (int i = 1; i <= min; i++)
+			for (var i = 1; i <= min; i++)
 			{
 				if ((max * i) % min == 0)
 				{
 					return i * max;
 				}
 			}
-			throw new System.InvalidOperationException("Cannot find the least common multiple of numbers " + x1 + " and " + x2);
+			throw new InvalidOperationException($"Cannot find the least common multiple of numbers {x1} and {x2}");
 		}
 		
 		/// <summary> Method that calculates the Least Common Multiple (LCM) of several
@@ -128,14 +128,14 @@ namespace Melville.CSJ2K.j2k.util
 		{
 			if (x.Length < 2)
 			{
-				throw new System.InvalidOperationException("Do not use this method if there are less than" + " two numbers.");
+				throw new InvalidOperationException("Do not use this method if there are less than two numbers.");
 			}
-			int tmp = lcm(x[x.Length - 1], x[x.Length - 2]);
-			for (int i = x.Length - 3; i >= 0; i--)
+			var tmp = lcm(x[x.Length - 1], x[x.Length - 2]);
+			for (var i = x.Length - 3; i >= 0; i--)
 			{
 				if (x[i] <= 0)
 				{
-					throw new System.ArgumentException("Cannot compute the least " + "common multiple of " + "several numbers where " + "one, at least," + "is negative.");
+					throw new ArgumentException("Cannot compute the least common multiple of several numbers where one, at least, is negative.");
 				}
 				tmp = lcm(tmp, x[i]);
 			}
@@ -150,7 +150,7 @@ namespace Melville.CSJ2K.j2k.util
 		{
 			if (x1 < 0 || x2 < 0)
 			{
-				throw new System.ArgumentException("Cannot compute the GCD " + "if one integer is negative.");
+				throw new ArgumentException("Cannot compute the GCD if one integer is negative.");
 			}
 			int a, b, g, z;
 			
@@ -190,14 +190,14 @@ namespace Melville.CSJ2K.j2k.util
 		{
 			if (x.Length < 2)
 			{
-				throw new System.InvalidOperationException("Do not use this method if there are less than" + " two numbers.");
+				throw new InvalidOperationException("Do not use this method if there are less than two numbers.");
 			}
-			int tmp = gcd(x[x.Length - 1], x[x.Length - 2]);
-			for (int i = x.Length - 3; i >= 0; i--)
+			var tmp = gcd(x[x.Length - 1], x[x.Length - 2]);
+			for (var i = x.Length - 3; i >= 0; i--)
 			{
 				if (x[i] < 0)
 				{
-					throw new System.ArgumentException("Cannot compute the least " + "common multiple of " + "several numbers where " + "one, at least," + "is negative.");
+					throw new ArgumentException("Cannot compute the least common multiple of several numbers where one, at least, is negative.");
 				}
 				tmp = gcd(tmp, x[i]);
 			}

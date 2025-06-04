@@ -40,8 +40,8 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-
-namespace Melville.CSJ2K.j2k.image
+using System;
+namespace CoreJ2K.j2k.image
 {
 	
 	/// <summary> This is a generic abstract class to store data from a block of an
@@ -50,83 +50,58 @@ namespace Melville.CSJ2K.j2k.image
 	/// implement the different types of storage (<tt>int</tt>, <tt>float</tt>,
 	/// etc.).
 	/// 
-	/// <p>The data is always stored in one array, of the type matching the data
+	/// The data is always stored in one array, of the type matching the data
 	/// type (i.e. for 'int' it's an 'int[]'). The data should be stored in the
 	/// array in standard scan-line order. That is the samples go from the top-left
 	/// corner of the code-block to the lower-right corner by line and then
-	/// column.</p>
+	/// column.
 	/// 
-	/// <p>The member variable 'offset' gives the index in the array of the first
+	/// The member variable 'offset' gives the index in the array of the first
 	/// data element (i.e. the top-left coefficient (ulx,uly)). The member variable
 	/// 'scanw' gives the width of the scan that is used to store the data, that
 	/// can be different from the width of the block. Element '(x,y)' of the
 	/// code-block (i.e. '(ulx,uly)' is the top-left coefficient), will appear at
-	/// position 'offset+(y-uly)*scanw+(x-ulx)' in the array of data.</p>
+	/// position 'offset+(y-uly)*scanw+(x-ulx)' in the array of data.
 	/// 
-	/// <p>A block of data can have the <i>progressive</i> attribute set. Data is
+	/// A block of data can have the <i>progressive</i> attribute set. Data is
 	/// progressive when it is obtained by successive refinement and the values in
 	/// this block are approximations of the "final" values. When the final values
-	/// are returned the progressive attribute must be turned off.</p>
+	/// are returned the progressive attribute must be turned off.
 	/// 
-	/// <p>The classes <tt>DataBlkInt</tt> and <tt>DataBlkFloat</tt> provide
-	/// implementations for <tt>int</tt> and <tt>float</tt> types respectively.</p>
-	/// 
-	/// </summary>
-	/// <seealso cref="DataBlkInt">
-	/// 
-	/// </seealso>
-	/// <seealso cref="DataBlkFloat">
-	/// 
-	/// </seealso>
-	internal abstract class DataBlk
+	/// The classes <tt>DataBlkInt</tt> and <tt>DataBlkFloat</tt> provide
+	/// implementations for <tt>int</tt> and <tt>float</tt> types respectively.</summary>
+	/// <seealso cref="DataBlkInt" />
+	/// <seealso cref="DataBlkFloat" />
+	public abstract class DataBlk
 	{
-		/// <summary> Returns the data type of the <tt>DataBlk</tt> object, as defined in
-		/// this class.
-		/// 
-		/// </summary>
-		/// <returns> The data type of the object, as defined in thsi class.
-		/// 
-		/// </returns>
+		/// <summary> Returns the data type of the <tt>DataBlk</tt> object, as defined in this class.</summary>
+		/// <returns> The data type of the object, as defined in this class.</returns>
 		public abstract int DataType{get;}
-		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
+		
 		/// <summary> Returns the array containing the data, or null if there is no data. The
 		/// returned array is of the type returned by <tt>getDataType()</tt> (e.g.,
 		/// for <tt>TYPE_INT</tt>, it is a <tt>int[]</tt>).
 		/// 
-		/// <p>Each implementing class should provide a type specific equivalent
+		/// Each implementing class should provide a type specific equivalent
 		/// method (e.g., <tt>getDataInt()</tt> in <tt>DataBlkInt</tt>) which
 		/// returns an array of the correct type explicetely and not through an
-		/// <tt>Object</tt>.</p>
-		/// 
-		/// </summary>
-		/// <returns> The array containing the data, or <tt>null</tt> if there is no
-		/// data.
-		/// 
-		/// </returns>
-		/// <seealso cref="getDataType">
-		/// 
-		/// </seealso>
+		/// <tt>Object</tt>.</summary>
+		/// <returns> The array containing the data, or <tt>null</tt> if there is no data.</returns>
+		/// <seealso cref="getDataType" />
 		/// <summary> Sets the data array to the specified one. The type of the specified
 		/// data array must match the one returned by <tt>getDataType()</tt> (e.g.,
 		/// for <tt>TYPE_INT</tt>, it should be a <tt>int[]</tt>). If the wrong
 		/// type of array is given a <tt>ClassCastException</tt> will be thrown.
 		/// 
-		/// <p>The size of the array is not necessarily checked for consistency
-		/// with <tt>w</tt> and <tt>h</tt> or any other fields.</p>
+		/// The size of the array is not necessarily checked for consistency
+		/// with <tt>w</tt> and <tt>h</tt> or any other fields.
 		/// 
-		/// <p>Each implementing class should provide a type specific equivalent
+		/// Each implementing class should provide a type specific equivalent
 		/// method (e.g., <tt>setDataInt()</tt> in <tt>DataBlkInt</tt>) which takes
-		/// an array of the correct type explicetely and not through an
-		/// <tt>Object</tt>.</p>
-		/// 
-		/// </summary>
-		/// <param name="arr">The new data array to use
-		/// 
-		/// </param>
-		/// <seealso cref="getDataType">
-		/// 
-		/// </seealso>
-		public abstract System.Object Data{get;set;}
+		/// an array of the correct type explicitly and not through an
+		/// <tt>Object</tt>.</summary>
+		/// <seealso cref="getDataType" />
+		public abstract object Data{get;set;}
 		
 		/// <summary>The identifier for the <tt>byte</tt> data type, as signed 8 bits. </summary>
 		public const int TYPE_BYTE = 0;
@@ -142,42 +117,34 @@ namespace Melville.CSJ2K.j2k.image
 		
 		/// <summary>The horizontal coordinate (in pixels) of the upper-left corner of the
 		/// block of data. This is relative to the component of the image from
-		/// where this block was filled or is to be filled.  
-		/// </summary>
+		/// where this block was filled or is to be filled.</summary>
 		public int ulx;
 		
 		/// <summary>The vertical coordinate of the upper-left corner of the block of
 		/// data. This is relative to the component of the image from where this
-		/// block was filled or is to be filled.  
-		/// </summary>
+		/// block was filled or is to be filled.</summary>
 		public int uly;
 		
-		/// <summary>The width of the block, in pixels. </summary>
+		/// <summary>The width of the block, in pixels.</summary>
 		public int w;
 		
-		/// <summary>The height of the block, in pixels. </summary>
+		/// <summary>The height of the block, in pixels.</summary>
 		public int h;
 		
-		/// <summary>The offset in the array of the top-left coefficient </summary>
+		/// <summary>The offset in the array of the top-left coefficient</summary>
 		public int offset;
 		
-		/// <summary>The width of the scanlines used to store the data in the array </summary>
+		/// <summary>The width of the scanlines used to store the data in the array</summary>
 		public int scanw;
 		
-		/// <summary>The progressive attribute (<tt>false</tt> by default) </summary>
+		/// <summary>The progressive attribute (<tt>false</tt> by default)</summary>
 		public bool progressive;
 		
 		/// <summary> Returns the size in bits, given the data type. The data type must be
 		/// one defined in this class. An <tt>IllegalArgumentException</tt> is
-		/// thrown if <tt>type</tt> is not defined in this class.
-		/// 
-		/// </summary>
-		/// <param name="type">The data type.
-		/// 
-		/// </param>
-		/// <returns> The size in bits of the data type.
-		/// 
-		/// </returns>
+		/// thrown if <tt>type</tt> is not defined in this class.</summary>
+		/// <param name="type">The data type.</param>
+		/// <returns> The size in bits of the data type.</returns>
 		public static int getSize(int type)
 		{
 			switch (type)
@@ -194,20 +161,16 @@ namespace Melville.CSJ2K.j2k.image
 					return 32;
 				
 				default: 
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				
 			}
 		}
 		
-		/// <summary> Returns a string of informations about the DataBlk
-		/// 
-		/// </summary>
-		/// <returns> Block dimensions and progressiveness in a string
-		/// 
-		/// </returns>
-		public override System.String ToString()
+		/// <summary> Returns a string of informations about the DataBlk</summary>
+		/// <returns> Block dimensions and progressiveness in a string</returns>
+		public override string ToString()
 		{
-			System.String typeString = "";
+			var typeString = "";
 			switch (DataType)
 			{
 				
@@ -228,7 +191,8 @@ namespace Melville.CSJ2K.j2k.image
 					break;
 				}
 			
-			return "DataBlk: " + "upper-left(" + ulx + "," + uly + "), width=" + w + ", height=" + h + ", progressive=" + progressive + ", offset=" + offset + ", scanw=" + scanw + ", type=" + typeString;
+			return
+				$"DataBlk: upper-left({ulx},{uly}), width={w}, height={h}, progressive={progressive}, offset={offset}, scanw={scanw}, type={typeString}";
 		}
 	}
 }

@@ -6,27 +6,26 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-
-namespace Melville.CSJ2K.Icc
+using System;
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> This exception is thrown when the content of a profile
 	/// is incorrect.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.ICCProfile" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class ICCProfileException:System.Exception
+	public class ICCProfileException:Exception
 	{
 		
 		/// <summary>  Contruct with message</summary>
 		/// <param name="msg">returned by getMessage()
 		/// </param>
-		public ICCProfileException(System.String msg):base(msg)
+		public ICCProfileException(string msg):base(msg)
 		{
 		}
 		

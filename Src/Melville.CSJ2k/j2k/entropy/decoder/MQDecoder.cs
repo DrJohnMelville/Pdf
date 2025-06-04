@@ -42,8 +42,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.j2k.util;
-namespace Melville.CSJ2K.j2k.entropy.decoder
+using CoreJ2K.j2k.util;
+
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This class implements the MQ arithmetic decoder. It is implemented using
@@ -60,7 +61,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	// nLPS tables. See the JPEG book, chapter 13. The decoded decision can be
 	// calculated as (q>>>31).
 	
-	internal class MQDecoder
+	public class MQDecoder
 	{
 		/// <summary> Returns the number of contexts in the arithmetic coder.
 		/// 
@@ -68,14 +69,8 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <returns> The number of contexts
 		/// 
 		/// </returns>
-		virtual public int NumCtxts
-		{
-			get
-			{
-				return I.Length;
-			}
-			
-		}
+		public virtual int NumCtxts => I.Length;
+
 		/// <summary> Returns the underlying 'ByteInputBuffer' from where the MQ coded input
 		/// bytes are read.
 		/// 
@@ -83,30 +78,19 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <returns> The underlying ByteInputBuffer.
 		/// 
 		/// </returns>
-		virtual public ByteInputBuffer ByteInputBuffer
-		{
-			get
-			{
-				return in_Renamed;
-			}
-			
-		}
-		
+		public virtual ByteInputBuffer ByteInputBuffer => in_Renamed;
+
 		/// <summary>The data structures containing the probabilities for the LPS </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'qe'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly uint[] qe = new uint[]{0x5601, 0x3401, 0x1801, 0x0ac1, 0x0521, 0x0221, 0x5601, 0x5401, 0x4801, 0x3801, 0x3001, 0x2401, 0x1c01, 0x1601, 0x5601, 0x5401, 0x5101, 0x4801, 0x3801, 0x3401, 0x3001, 0x2801, 0x2401, 0x2201, 0x1c01, 0x1801, 0x1601, 0x1401, 0x1201, 0x1101, 0x0ac1, 0x09c1, 0x08a1, 0x0521, 0x0441, 0x02a1, 0x0221, 0x0141, 0x0111, 0x0085, 0x0049, 0x0025, 0x0015, 0x0009, 0x0005, 0x0001, 0x5601};
+		internal static readonly uint[] qe = {0x5601, 0x3401, 0x1801, 0x0ac1, 0x0521, 0x0221, 0x5601, 0x5401, 0x4801, 0x3801, 0x3001, 0x2401, 0x1c01, 0x1601, 0x5601, 0x5401, 0x5101, 0x4801, 0x3801, 0x3401, 0x3001, 0x2801, 0x2401, 0x2201, 0x1c01, 0x1801, 0x1601, 0x1401, 0x1201, 0x1101, 0x0ac1, 0x09c1, 0x08a1, 0x0521, 0x0441, 0x02a1, 0x0221, 0x0141, 0x0111, 0x0085, 0x0049, 0x0025, 0x0015, 0x0009, 0x0005, 0x0001, 0x5601};
 		
 		/// <summary>The indexes of the next MPS </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'nMPS'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] nMPS = new int[]{1, 2, 3, 4, 5, 38, 7, 8, 9, 10, 11, 12, 13, 29, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 45, 46};
+		internal static readonly int[] nMPS = {1, 2, 3, 4, 5, 38, 7, 8, 9, 10, 11, 12, 13, 29, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 45, 46};
 		
 		/// <summary>The indexes of the next LPS </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'nLPS'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] nLPS = new int[]{1, 6, 9, 12, 29, 33, 6, 14, 14, 14, 17, 18, 20, 21, 14, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46};
+		internal static readonly int[] nLPS = {1, 6, 9, 12, 29, 33, 6, 14, 14, 14, 17, 18, 20, 21, 14, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46};
 		
 		/// <summary>Whether LPS and MPS should be switched </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'switchLM'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] switchLM = new int[]{1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		internal static readonly int[] switchLM = {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		
 		/// <summary>The ByteInputBuffer used to read the compressed bit stream. </summary>
 		internal ByteInputBuffer in_Renamed;
@@ -133,7 +117,6 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		internal bool markerFound;
 		
 		/// <summary>The initial state of each context </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'initStates '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		internal int[] initStates;
 		
 		/// <summary> Instantiates a new MQ-decoder, with the specified number of contexts
@@ -176,10 +159,10 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// is low enough) and the A and C registers permit decoding several MPS
 		/// symbols without renormalization.
 		/// 
-		/// <P>Speedup mode should be used when decoding long runs of MPS with high
+		/// Speedup mode should be used when decoding long runs of MPS with high
 		/// probability with the same context.
 		/// 
-		/// <P>This methiod will return the decoded symbols differently if speedup 
+		/// This methiod will return the decoded symbols differently if speedup 
 		/// mode was used or not. If true is returned, then speedup mode was used
 		/// and the 'n' decoded symbols are all the same and it is returned ain
 		/// bits[0] only. If false is returned then speedup mode was not used, the
@@ -348,7 +331,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// an array in which to put the decoded symbols and an array of contexts 
 		/// with which to decode them. 
 		/// 
-		/// <P>Each context has a current MPS and an index describing what the
+		/// Each context has a current MPS and an index describing what the
 		/// current probability is for the LPS. Each bit is decoded and if the
 		/// probability of the LPS exceeds .5, the MPS and LPS are switched.
 		/// 
@@ -479,7 +462,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <summary> Arithmetically decodes one symbol from the bit stream with the given
 		/// context and returns its decoded value.
 		/// 
-		/// <P>Each context has a current MPS and an index describing what the
+		/// Each context has a current MPS and an index describing what the
 		/// current probability is for the LPS. Each bit is encoded and if the
 		/// probability of the LPS exceeds .5, the MPS and LPS are switched.
 		/// 
@@ -786,7 +769,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// context states. It sets the registers (A,C,B) and the "marker found"
 		/// state to the initial state, to start the decoding of a new segment.
 		/// 
-		/// <P>To have a complete reset of the MQ (as if a new MQDecoder object was
+		/// To have a complete reset of the MQ (as if a new MQDecoder object was
 		/// created) 'resetCtxts()' should be called after this method.
 		/// 
 		/// </summary>

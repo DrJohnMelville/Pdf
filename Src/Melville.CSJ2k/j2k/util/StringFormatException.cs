@@ -44,15 +44,15 @@
 * 
 * 
 */
-
-namespace Melville.CSJ2K.j2k.util
+using System;
+namespace CoreJ2K.j2k.util
 {
 	
 	/// <summary> Thrown to indicate that the application has attempted to parse a
 	/// badly formatted string.
 	/// 
 	/// </summary>
-	internal class StringFormatException:System.ArgumentException
+	public class StringFormatException:ArgumentException
 	{
 		
 		/// <summary> Creates the exception with an empty messgage.
@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.util
 		/// 
 		/// 
 		/// </summary>
-		public StringFormatException():base()
+		public StringFormatException()
 		{
 		}
 		
@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k.util
 		/// 
 		/// 
 		/// </param>
-		public StringFormatException(System.String s):base(s)
+		public StringFormatException(string s):base(s)
 		{
 		}
 	}

@@ -41,16 +41,16 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.io;
-namespace Melville.CSJ2K.j2k.codestream.reader
+using CoreJ2K.j2k.io;
+
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class provides a bit based reading facility from a byte based one,
 	/// applying the bit unstuffing procedure as required by the packet headers.
 	/// 
 	/// </summary>
-	//UPGRADE_NOTE: The access modifier for this class or class field has been changed in order to prevent compilation errors due to the visibility level. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1296'"
-	internal class PktHeaderBitReader
+	public class PktHeaderBitReader
 	{
 		
 		/// <summary>The byte based source of data </summary>
@@ -122,26 +122,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				if (bbuf != 0xFF)
 				{
 					// No bit stuffing
-					if (usebais)
-					{
-						bbuf = bais.ReadByte();
-					}
-					else
-					{
-						bbuf = in_Renamed.read();
-					}
+					bbuf = usebais ? bais.ReadByte() : in_Renamed.read();
 					bpos = 8;
 					if (bbuf == 0xFF)
 					{
 						// If new bit stuffing get next byte
-						if (usebais)
-						{
-							nextbbuf = bais.ReadByte();
-						}
-						else
-						{
-							nextbbuf = in_Renamed.read();
-						}
+						nextbbuf = usebais ? bais.ReadByte() : in_Renamed.read();
 					}
 				}
 				else
@@ -195,27 +181,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					if (bbuf != 0xFF)
 					{
 						// No bit stuffing
-						if (usebais)
-						{
-							bbuf = bais.ReadByte();
-						}
-						else
-						{
-							bbuf = in_Renamed.read();
-						}
+						bbuf = usebais ? bais.ReadByte() : in_Renamed.read();
 						
 						bpos = 8;
 						if (bbuf == 0xFF)
 						{
 							// If new bit stuffing get next byte
-							if (usebais)
-							{
-								nextbbuf = bais.ReadByte();
-							}
-							else
-							{
-								nextbbuf = in_Renamed.read();
-							}
+							nextbbuf = usebais ? bais.ReadByte() : in_Renamed.read();
 						}
 					}
 					else
@@ -238,10 +210,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// discards and buffered bits and gets ready to read bits from the current 
 		/// position in the underlying byte based input.
 		/// 
-		/// <p>This method should always be called when some data has been read
+		/// This method should always be called when some data has been read
 		/// directly from the underlying byte based input since the last call to
 		/// 'readBits()' or 'readBit()' before a new call to any of those
-		/// methods.</p>
+		/// methods.
 		/// 
 		/// </summary>
 		internal virtual void  sync()
@@ -254,8 +226,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// discards any currently buffered bits and gets ready to start reading
 		/// bits from 'in'.
 		/// 
-		/// <p>This method is equivalent to creating a new 'PktHeaderBitReader'
-		/// object.</p>
+		/// This method is equivalent to creating a new 'PktHeaderBitReader'
+		/// object.
 		/// 
 		/// </summary>
 		/// <param name="in">The source of byte data
@@ -272,8 +244,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// discards any currently buffered bits and gets ready to start reading
 		/// bits from 'in'.
 		/// 
-		/// <p>This method is equivalent to creating a new 'PktHeaderBitReader'
-		/// object.</p>
+		/// This method is equivalent to creating a new 'PktHeaderBitReader'
+		/// object.
 		/// 
 		/// </summary>
 		/// <param name="bais">The source of byte data

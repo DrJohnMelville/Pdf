@@ -43,21 +43,21 @@
 * 
 * 
 */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k
+namespace CoreJ2K.j2k
 {
 	
 	/// <summary> This class handles exceptions. It should be used in places where it
 	/// is not known how to handle the exception, and the exception can not
 	/// be thrown higher in the stack.
 	/// 
-	/// <P>Different options can be registered for each Thread and
+	/// Different options can be registered for each Thread and
 	/// ThreadGroup. <i>This feature is not implemented yet</i>
 	/// 
 	/// </summary>
-	internal class JJ2KExceptionHandler
+	public class JJ2KExceptionHandler
 	{
 		
 		/// <summary> Handles the exception. If no special action is registered for
@@ -65,7 +65,7 @@ namespace Melville.CSJ2K.j2k
 		/// descriptive message are printed to standard error and the
 		/// current thread is stopped.
 		/// 
-		/// <P><i>Registration of special actions is not implemented yet.</i>
+		/// <i>Registration of special actions is not implemented yet.</i>
 		/// 
 		/// </summary>
 		/// <param name="e">The exception to handle
@@ -73,8 +73,7 @@ namespace Melville.CSJ2K.j2k
 		/// 
 		/// 
 		/// </param>
-		//UPGRADE_NOTE: Exception 'java.lang.Throwable' was converted to 'System.Exception' which has different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1100'"
-		public static void  handleException(System.Exception e)
+		public static void  handleException(Exception e)
 		{
 			// Test if there is an special action (not implemented yet)
 			
@@ -86,11 +85,11 @@ namespace Melville.CSJ2K.j2k
 			//e.fillInStackTrace();
 			SupportClass.WriteStackTrace(e);
 			// Print an explicative message
-			FacilityManager.getMsgLogger().println("The Thread is being terminated bacause an " + "Exception (shown above)\n" + "has been thrown and no special action was " + "defined for this Thread.", 0, 0);
+			FacilityManager.getMsgLogger().println("The Thread is being terminated bacause an Exception (shown above)\nhas been thrown and no special action was defined for this Thread.", 0, 0);
 			// Stop the thread (do not use stop, since it's deprecated in
 			// Java 1.2)
 			//UPGRADE_NOTE: Exception 'java.lang.ThreadDeath' was converted to 'System.InvalidOperationException' which has different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1100'"
-			throw new System.InvalidOperationException();
+			throw new InvalidOperationException();
 		}
 	}
 }

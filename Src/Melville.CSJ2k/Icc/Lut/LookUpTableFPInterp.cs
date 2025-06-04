@@ -6,9 +6,11 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using ICCCurveType = CoreJ2K.Icc.Tags.ICCCurveType;
+using Tags_ICCCurveType = CoreJ2K.Icc.Tags.ICCCurveType;
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-namespace Melville.CSJ2K.Icc.Lut
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> An interpolated floating point lut
@@ -18,22 +20,23 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A.Kern
 	/// </author>
-	internal class LookUpTableFPInterp:LookUpTableFP
+	public class LookUpTableFPInterp:LookUpTableFP
 	{
 		
 		/// <summary> Create an abbreviated string representation of a 16 bit lut.</summary>
 		/// <returns> the lut as a String
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[LookUpTable32 ").Append(" nentries= " + lut.Length);
+			var rep = new System.Text.StringBuilder("[LookUpTable32 ").Append(
+				$" nentries= {lut.Length}");
 			return rep.Append("]").ToString();
 		}
 		
 		/// <summary> Construct the lut from the curve data</summary>
 		/// <oaram>   curve the data </oaram>
 		/// <oaram>   dwNumInput the lut size </oaram>
-		public LookUpTableFPInterp(ICCCurveType curve, int dwNumInput):base(curve, dwNumInput)
+		public LookUpTableFPInterp(Tags_ICCCurveType curve, int dwNumInput):base(curve, dwNumInput)
 		{
 			
 			int dwLowIndex, dwHighIndex; // Indices of interpolation points
@@ -42,21 +45,21 @@ namespace Melville.CSJ2K.Icc.Lut
 			double dfRatio; // Ratio of LUT input points to curve values
 			double dfLow, dfHigh; // Interpolation values
 			
-			dfRatio = (double) (curve.nEntries - 1) / (double) (dwNumInput - 1);
+			dfRatio = (curve.nEntries - 1) / (double) (dwNumInput - 1);
 			
-			for (int i = 0; i < dwNumInput; i++)
+			for (var i = 0; i < dwNumInput; i++)
 			{
-				dfTargetIndex = (double) i * dfRatio;
-				dfLowIndex = System.Math.Floor(dfTargetIndex);
+				dfTargetIndex = i * dfRatio;
+				dfLowIndex = Math.Floor(dfTargetIndex);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
 				dwLowIndex = (int) dfLowIndex;
-				dfHighIndex = System.Math.Ceiling(dfTargetIndex);
+				dfHighIndex = Math.Ceiling(dfTargetIndex);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
 				dwHighIndex = (int) dfHighIndex;
 				if (dwLowIndex == dwHighIndex)
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					lut[i] = (float) ICCCurveType.CurveToDouble(curve.entry(dwLowIndex));
+					lut[i] = (float) Tags_ICCCurveType.CurveToDouble(curve.entry(dwLowIndex));
 				}
 				else
 				{

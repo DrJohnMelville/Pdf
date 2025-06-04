@@ -45,8 +45,9 @@
 * 
 */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This extends the synthesis wavelet filter general definitions of
@@ -54,17 +55,15 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// specifically. Implementations that work on float data should inherit
 	/// from this class.
 	/// 
-	/// <P>See the SynWTFilter class for details such as
+	/// See the SynWTFilter class for details such as
 	/// normalization, how to split odd-length signals, etc.
 	/// 
-	/// <P>The advantage of using the specialized method is that no casts
+	/// The advantage of using the specialized method is that no casts
 	/// are performed.
 	/// 
 	/// </summary>
-	/// <seealso cref="SynWTFilter">
-	/// 
-	/// </seealso>
-	internal abstract class SynWTFilterFloat:SynWTFilter
+	/// <seealso cref="SynWTFilter" />
+	public abstract class SynWTFilterFloat:SynWTFilter
 	{
 		/// <summary> Returns the type of data on which this filter works, as defined
 		/// in the DataBlk interface, which is always TYPE_FLOAT for this
@@ -74,20 +73,13 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The type of data as defined in the DataBlk interface.
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
+		/// <seealso cref="j2k.image.DataBlk">
 		/// 
 		/// 
 		/// 
 		/// </seealso>
-		override public int DataType
-		{
-			get
-			{
-				return DataBlk.TYPE_FLOAT;
-			}
-			
-		}
-		
+		public override int DataType => DataBlk.TYPE_FLOAT;
+
 		/// <summary> A specific version of the synthetize_lpf() method that works on float
 		/// data. See the general description of the synthetize_lpf() method in the 
 		/// SynWTFilter class for more details.
@@ -203,7 +195,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// 
 		/// 
 		/// </seealso>
-		public override void  synthetize_lpf(System.Object lowSig, int lowOff, int lowLen, int lowStep, System.Object highSig, int highOff, int highLen, int highStep, System.Object outSig, int outOff, int outStep)
+		public override void  synthetize_lpf(object lowSig, int lowOff, int lowLen, int lowStep, object highSig, int highOff, int highLen, int highStep, object outSig, int outOff, int outStep)
 		{
 			
 			synthetize_lpf((float[]) lowSig, lowOff, lowLen, lowStep, (float[]) highSig, highOff, highLen, highStep, (float[]) outSig, outOff, outStep);
@@ -324,7 +316,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// 
 		/// 
 		/// </seealso>
-		public override void  synthetize_hpf(System.Object lowSig, int lowOff, int lowLen, int lowStep, System.Object highSig, int highOff, int highLen, int highStep, System.Object outSig, int outOff, int outStep)
+		public override void  synthetize_hpf(object lowSig, int lowOff, int lowLen, int lowStep, object highSig, int highOff, int highLen, int highStep, object outSig, int outOff, int outStep)
 		{
 			
 			synthetize_hpf((float[]) lowSig, lowOff, lowLen, lowStep, (float[]) highSig, highOff, highLen, highStep, (float[]) outSig, outOff, outStep);

@@ -43,7 +43,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This class holds information about each layer that is to be, or has already
@@ -51,9 +51,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// necessary layer information. It is used by EBCOTRateAllocator.
 	/// 
 	/// </summary>
-	/// <seealso cref="EBCOTRateAllocator">
-	/// 
-	/// </seealso>
+	/// <seealso cref="EBCOTRateAllocator" />
 	class EBCOTLayer
 	{
 		/// <summary> This is the maximum number of bytes that should be allocated for this

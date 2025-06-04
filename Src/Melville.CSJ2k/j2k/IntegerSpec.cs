@@ -40,20 +40,18 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k
+namespace CoreJ2K.j2k
 {
 	
 	/// <summary> This class extends ModuleSpec and is responsible of Integer specifications
 	/// for each tile-component.
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class IntegerSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public sealed class IntegerSpec:ModuleSpec
 	{
 		/// <summary> Gets the maximum value of all tile-components.
 		/// 
@@ -61,18 +59,18 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The maximum value
 		/// 
 		/// </returns>
-		virtual public int Max
+		public int Max
 		{
 			get
 			{
-				int max = ((System.Int32) def);
+				var max = ((int) def);
 				int tmp;
 				
-				for (int t = 0; t < nTiles; t++)
+				for (var t = 0; t < nTiles; t++)
 				{
-					for (int c = 0; c < nComp; c++)
+					for (var c = 0; c < nComp; c++)
 					{
-						tmp = ((System.Int32) getSpec(t, c));
+						tmp = ((int) getSpec(t, c));
 						if (max < tmp)
 							max = tmp;
 					}
@@ -88,18 +86,18 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The minimum value
 		/// 
 		/// </returns>
-		virtual public int Min
+		public int Min
 		{
 			get
 			{
-				int min = ((System.Int32) def);
+				var min = ((int) def);
 				int tmp;
 				
-				for (int t = 0; t < nTiles; t++)
+				for (var t = 0; t < nTiles; t++)
 				{
-					for (int c = 0; c < nComp; c++)
+					for (var c = 0; c < nComp; c++)
 					{
-						tmp = ((System.Int32) getSpec(t, c));
+						tmp = ((int) getSpec(t, c));
 						if (min > tmp)
 							min = tmp;
 					}
@@ -112,7 +110,7 @@ namespace Melville.CSJ2K.j2k
 		
 		
 		/// <summary>The largest value of type int </summary>
-		protected internal static int MAX_INT = System.Int32.MaxValue;
+		internal static int MAX_INT = int.MaxValue;
 		
 		/// <summary> Constructs a new 'IntegerSpec' for the specified number of tiles and
 		/// components and with allowed type of specifications. This constructor is
@@ -153,11 +151,11 @@ namespace Melville.CSJ2K.j2k
 		/// <param name="optName">The name of the option to process
 		/// 
 		/// </param>
-		public IntegerSpec(int nt, int nc, byte type, ParameterList pl, System.String optName):base(nt, nc, type)
+		public IntegerSpec(int nt, int nc, byte type, ParameterList pl, string optName):base(nt, nc, type)
 		{
 			
-			System.Int32 value_Renamed;
-			System.String param = pl.getParameter(optName);
+			int value_Renamed;
+			var param = pl.getParameter(optName);
 			
 			if (param == null)
 			{
@@ -165,19 +163,19 @@ namespace Melville.CSJ2K.j2k
 				param = pl.DefaultParameterList.getParameter(optName);
 				try
 				{
-					setDefault((System.Object) System.Int32.Parse(param));
+					setDefault(int.Parse(param));
 				}
-				catch (System.FormatException)
+				catch (FormatException)
 				{
-					throw new System.ArgumentException("Non recognized value" + " for option -" + optName + ": " + param);
+					throw new ArgumentException($"Non recognized value for option -{optName}: {param}");
 				}
 				return ;
 			}
 			
 			// Parse argument
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			System.String word; // current word
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			string word; // current word
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
 			bool[] compSpec = null; // Components concerned by the specification
@@ -191,67 +189,53 @@ namespace Melville.CSJ2K.j2k
 					
 					case 't':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_TILE_DEF;
-						}
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					case 'c':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_COMP_DEF;
-						}
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					default: 
 						try
 						{
-							value_Renamed = System.Int32.Parse(word);
+							value_Renamed = int.Parse(word);
 						}
-						catch (System.FormatException)
+						catch (FormatException)
 						{
-							throw new System.ArgumentException("Non recognized value" + " for option -" + optName + ": " + word);
+							throw new ArgumentException($"Non recognized value for option -{optName}: {word}");
 						}
 						
 						if (curSpecType == SPEC_DEF)
 						{
-							setDefault((System.Object) value_Renamed);
+							setDefault(value_Renamed);
 						}
 						else if (curSpecType == SPEC_TILE_DEF)
 						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							for (var i = tileSpec.Length - 1; i >= 0; i--)
 								if (tileSpec[i])
 								{
-									setTileDef(i, (System.Object) value_Renamed);
+									setTileDef(i, value_Renamed);
 								}
 						}
 						else if (curSpecType == SPEC_COMP_DEF)
 						{
-							for (int i = compSpec.Length - 1; i >= 0; i--)
+							for (var i = compSpec.Length - 1; i >= 0; i--)
 								if (compSpec[i])
 								{
-									setCompDef(i, (System.Object) value_Renamed);
+									setCompDef(i, value_Renamed);
 								}
 						}
 						else
 						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							for (var i = tileSpec.Length - 1; i >= 0; i--)
 							{
-								for (int j = compSpec.Length - 1; j >= 0; j--)
+								for (var j = compSpec.Length - 1; j >= 0; j--)
 								{
 									if (tileSpec[i] && compSpec[j])
 									{
-										setTileCompVal(i, j, (System.Object) value_Renamed);
+										setTileCompVal(i, j, value_Renamed);
 									}
 								}
 							}
@@ -269,10 +253,10 @@ namespace Melville.CSJ2K.j2k
 			// Check that default value has been specified
 			if (getDefault() == null)
 			{
-				int ndefspec = 0;
-				for (int t = nt - 1; t >= 0; t--)
+				var ndefspec = 0;
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						if (specValType[t][c] == SPEC_DEF)
 						{
@@ -288,11 +272,11 @@ namespace Melville.CSJ2K.j2k
 					param = pl.DefaultParameterList.getParameter(optName);
 					try
 					{
-						setDefault((System.Object) System.Int32.Parse(param));
+						setDefault(int.Parse(param));
 					}
-					catch (System.FormatException)
+					catch (FormatException)
 					{
-						throw new System.ArgumentException("Non recognized value" + " for option -" + optName + ": " + param);
+						throw new ArgumentException($"Non recognized value for option -{optName}: {param}");
 					}
 				}
 				else
@@ -304,7 +288,7 @@ namespace Melville.CSJ2K.j2k
 					{
 						
 						case SPEC_TILE_DEF: 
-							for (int c = nc - 1; c >= 0; c--)
+							for (var c = nc - 1; c >= 0; c--)
 							{
 								if (specValType[0][c] == SPEC_TILE_DEF)
 									specValType[0][c] = SPEC_DEF;
@@ -313,7 +297,7 @@ namespace Melville.CSJ2K.j2k
 							break;
 						
 						case SPEC_COMP_DEF: 
-							for (int t = nt - 1; t >= 0; t--)
+							for (var t = nt - 1; t >= 0; t--)
 							{
 								if (specValType[t][0] == SPEC_COMP_DEF)
 									specValType[t][0] = SPEC_DEF;
@@ -339,14 +323,14 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The maximum value
 		/// 
 		/// </returns>
-		public virtual int getMaxInComp(int c)
+		public int getMaxInComp(int c)
 		{
-			int max = 0;
+			var max = 0;
 			int tmp;
 			
-			for (int t = 0; t < nTiles; t++)
+			for (var t = 0; t < nTiles; t++)
 			{
-				tmp = ((System.Int32) getSpec(t, c));
+				tmp = ((int) getSpec(t, c));
 				if (max < tmp)
 					max = tmp;
 			}
@@ -363,14 +347,14 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The minimum value
 		/// 
 		/// </returns>
-		public virtual int getMinInComp(int c)
+		public int getMinInComp(int c)
 		{
-			int min = MAX_INT; // Big value
+			var min = MAX_INT; // Big value
 			int tmp;
 			
-			for (int t = 0; t < nTiles; t++)
+			for (var t = 0; t < nTiles; t++)
 			{
-				tmp = ((System.Int32) getSpec(t, c));
+				tmp = ((int) getSpec(t, c));
 				if (min > tmp)
 					min = tmp;
 			}
@@ -387,14 +371,14 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The maximum value
 		/// 
 		/// </returns>
-		public virtual int getMaxInTile(int t)
+		public int getMaxInTile(int t)
 		{
-			int max = 0;
+			var max = 0;
 			int tmp;
 			
-			for (int c = 0; c < nComp; c++)
+			for (var c = 0; c < nComp; c++)
 			{
-				tmp = ((System.Int32) getSpec(t, c));
+				tmp = ((int) getSpec(t, c));
 				if (max < tmp)
 					max = tmp;
 			}
@@ -411,14 +395,14 @@ namespace Melville.CSJ2K.j2k
 		/// <returns> The minimum value
 		/// 
 		/// </returns>
-		public virtual int getMinInTile(int t)
+		public int getMinInTile(int t)
 		{
-			int min = MAX_INT; // Big value
+			var min = MAX_INT; // Big value
 			int tmp;
 			
-			for (int c = 0; c < nComp; c++)
+			for (var c = 0; c < nComp; c++)
 			{
-				tmp = ((System.Int32) getSpec(t, c));
+				tmp = ((int) getSpec(t, c));
 				if (min > tmp)
 					min = tmp;
 			}

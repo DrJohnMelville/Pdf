@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This class inherits from the analysis wavelet filter definition
@@ -50,17 +50,14 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// specifically for the 9x7 filter. The implementation is based on
 	/// the lifting scheme.
 	/// 
-	/// <P>See the AnWTFilter class for details such as
+	/// See the AnWTFilter class for details such as
 	/// normalization, how to split odd-length signals, etc. In particular,
 	/// this method assumes that the low-pass coefficient is computed first.
 	/// 
 	/// </summary>
-	/// <seealso cref="AnWTFilter">
-	/// </seealso>
-	/// <seealso cref="AnWTFilterFloat">
-	/// 
-	/// </seealso>
-	internal class AnWTFilterFloatLift9x7:AnWTFilterFloat
+	/// <seealso cref="AnWTFilter" />
+	/// <seealso cref="AnWTFilterFloat" />
+	public class AnWTFilterFloatLift9x7:AnWTFilterFloat
 	{
 		/// <summary> Returns the negative support of the low-pass analysis
 		/// filter. That is the number of taps of the filter in the
@@ -70,14 +67,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> 2
 		/// 
 		/// </returns>
-		override public int AnLowNegSupport
-		{
-			get
-			{
-				return 4;
-			}
-			
-		}
+		public override int AnLowNegSupport => 4;
+
 		/// <summary> Returns the positive support of the low-pass analysis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
@@ -87,14 +78,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// the positive direction
 		/// 
 		/// </returns>
-		override public int AnLowPosSupport
-		{
-			get
-			{
-				return 4;
-			}
-			
-		}
+		public override int AnLowPosSupport => 4;
+
 		/// <summary> Returns the negative support of the high-pass analysis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
@@ -104,14 +89,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// the negative direction
 		/// 
 		/// </returns>
-		override public int AnHighNegSupport
-		{
-			get
-			{
-				return 3;
-			}
-			
-		}
+		public override int AnHighNegSupport => 3;
+
 		/// <summary> Returns the positive support of the high-pass analysis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
@@ -121,90 +100,60 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// the positive direction
 		/// 
 		/// </returns>
-		override public int AnHighPosSupport
-		{
-			get
-			{
-				return 3;
-			}
-			
-		}
+		public override int AnHighPosSupport => 3;
+
 		/// <summary> Returns the negative support of the low-pass synthesis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
 		/// 
-		/// <P>A MORE PRECISE DEFINITION IS NEEDED
+		/// A MORE PRECISE DEFINITION IS NEEDED
 		/// 
 		/// </summary>
 		/// <returns> The number of taps of the low-pass synthesis filter in
 		/// the negative direction
 		/// 
 		/// </returns>
-		override public int SynLowNegSupport
-		{
-			get
-			{
-				return 3;
-			}
-			
-		}
+		public override int SynLowNegSupport => 3;
+
 		/// <summary> Returns the positive support of the low-pass synthesis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
 		/// 
-		/// <P>A MORE PRECISE DEFINITION IS NEEDED
+		/// A MORE PRECISE DEFINITION IS NEEDED
 		/// 
 		/// </summary>
 		/// <returns> The number of taps of the low-pass synthesis filter in
 		/// the positive direction
 		/// 
 		/// </returns>
-		override public int SynLowPosSupport
-		{
-			get
-			{
-				return 3;
-			}
-			
-		}
+		public override int SynLowPosSupport => 3;
+
 		/// <summary> Returns the negative support of the high-pass synthesis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
 		/// 
-		/// <P>A MORE PRECISE DEFINITION IS NEEDED
+		/// A MORE PRECISE DEFINITION IS NEEDED
 		/// 
 		/// </summary>
 		/// <returns> The number of taps of the high-pass synthesis filter in
 		/// the negative direction
 		/// 
 		/// </returns>
-		override public int SynHighNegSupport
-		{
-			get
-			{
-				return 4;
-			}
-			
-		}
+		public override int SynHighNegSupport => 4;
+
 		/// <summary> Returns the positive support of the high-pass synthesis
 		/// filter. That is the number of taps of the filter in the
 		/// negative direction.
 		/// 
-		/// <P>A MORE PRECISE DEFINITION IS NEEDED
+		/// A MORE PRECISE DEFINITION IS NEEDED
 		/// 
 		/// </summary>
 		/// <returns> The number of taps of the high-pass synthesis filter in
 		/// the positive direction
 		/// 
 		/// </returns>
-		override public int SynHighPosSupport
-		{
-			get
-			{
-				return 4;
-			}
-			
-		}
+		public override int SynHighPosSupport => 4;
+
 		/// <summary> Returns the implementation type of this filter, as defined in
 		/// this class, such as WT_FILTER_INT_LIFT, WT_FILTER_FLOAT_LIFT,
 		/// WT_FILTER_FLOAT_CONVOL.
@@ -213,14 +162,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> WT_FILTER_INT_LIFT.
 		/// 
 		/// </returns>
-		override public int ImplType
-		{
-			get
-			{
-				return Melville.CSJ2K.j2k.wavelet.WaveletFilter_Fields.WT_FILTER_FLOAT_LIFT;
-			}
-			
-		}
+		public override int ImplType => WaveletFilter_Fields.WT_FILTER_FLOAT_LIFT;
+
 		/// <summary> Returns the reversibility of the filter. A filter is considered
 		/// reversible if it is suitable for lossless coding.
 		/// 
@@ -229,40 +172,25 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// rounding is performed.
 		/// 
 		/// </returns>
-		override public bool Reversible
-		{
-			get
-			{
-				return false;
-			}
-			
-		}
+		public override bool Reversible => false;
+
 		/// <summary> Returns the type of filter used according to the FilterTypes
 		/// interface(W9x7).
 		/// 
 		/// </summary>
-		/// <seealso cref="FilterTypes">
-		/// 
-		/// </seealso>
+		/// <seealso cref="FilterTypes" />
 		/// <returns> The filter type.
 		/// 
 		/// </returns>
-		override public int FilterType
-		{
-			get
-			{
-				return Melville.CSJ2K.j2k.wavelet.FilterTypes_Fields.W9X7;
-			}
-			
-		}
-		
+		public override int FilterType => FilterTypes_Fields.W9X7;
+
 		/// <summary>The low-pass synthesis filter of the 9x7 wavelet transform </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'LPSynthesisFilter'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly float[] LPSynthesisFilter = new float[]{- 0.091272f, - 0.057544f, 0.591272f, 1.115087f, 0.591272f, - 0.057544f, - 0.091272f};
+		private static readonly float[] LPSynthesisFilter = {- 0.091272f, - 0.057544f, 0.591272f, 1.115087f, 0.591272f, - 0.057544f, - 0.091272f};
 		
 		/// <summary>The high-pass synthesis filter of the 9x7 wavelet transform </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'HPSynthesisFilter'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly float[] HPSynthesisFilter = new float[]{0.026749f, 0.016864f, - 0.078223f, - 0.266864f, 0.602949f, - 0.266864f, - 0.078223f, 0.016864f, 0.026749f};
+		private static readonly float[] HPSynthesisFilter = {0.026749f, 0.016864f, - 0.078223f, - 0.266864f, 0.602949f, - 0.266864f, - 0.078223f, 0.016864f, 0.026749f};
 		
 		/// <summary>The value of the first lifting step coefficient </summary>
 		public const float ALPHA = - 1.586134342f;
@@ -287,15 +215,15 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// lifting scheme. See the general description of the analyze_lpf() 
 		/// method in the AnWTFilter class for more details.
 		/// 
-		/// <P>The coefficients of the first lifting step are [ALPHA 1 ALPHA]. 
+		/// The coefficients of the first lifting step are [ALPHA 1 ALPHA]. 
 		/// 
-		/// <P>The coefficients of the second lifting step are [BETA 1 BETA].
+		/// The coefficients of the second lifting step are [BETA 1 BETA].
 		/// 
-		/// <P>The coefficients of the third lifting step are [GAMMA 1 GAMMA]. 
+		/// The coefficients of the third lifting step are [GAMMA 1 GAMMA]. 
 		/// 
-		/// <P>The coefficients of the fourth lifting step are [DELTA 1 DELTA].
+		/// The coefficients of the fourth lifting step are [DELTA 1 DELTA].
 		/// 
-		/// <P>The low-pass and high-pass subbands are normalized by respectively
+		/// The low-pass and high-pass subbands are normalized by respectively
 		/// a factor of KL and a factor of KH   
 		/// 
 		/// </summary>
@@ -342,7 +270,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		public override void  analyze_lpf(float[] inSig, int inOff, int inLen, int inStep, float[] lowSig, int lowOff, int lowStep, float[] highSig, int highOff, int highStep)
 		{
 			int i, maxi;
-			int iStep = 2 * inStep; //Subsampling in inSig
+			var iStep = 2 * inStep; //Subsampling in inSig
 			int ik; //Indexing inSig
 			int lk; //Indexing lowSig
 			int hk; //Indexing highSig
@@ -484,15 +412,15 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// lifting scheme. See the general description of the analyze_hpf() method 
 		/// in the AnWTFilter class for more details.
 		/// 
-		/// <P>The coefficients of the first lifting step are [ALPHA 1 ALPHA]. 
+		/// The coefficients of the first lifting step are [ALPHA 1 ALPHA]. 
 		/// 
-		/// <P>The coefficients of the second lifting step are [BETA 1 BETA].
+		/// The coefficients of the second lifting step are [BETA 1 BETA].
 		/// 
-		/// <P>The coefficients of the third lifting step are [GAMMA 1 GAMMA]. 
+		/// The coefficients of the third lifting step are [GAMMA 1 GAMMA]. 
 		/// 
-		/// <P>The coefficients of the fourth lifting step are [DELTA 1 DELTA].
+		/// The coefficients of the fourth lifting step are [DELTA 1 DELTA].
 		/// 
-		/// <P>The low-pass and high-pass subbands are normalized by respectively
+		/// The low-pass and high-pass subbands are normalized by respectively
 		/// a factor of KL and a factor of KH   
 		/// 
 		/// </summary>
@@ -536,14 +464,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// high-pass output samples in the highSig array.
 		/// 
 		/// </param>
-		/// <seealso cref="AnWTFilter.analyze_hpf">
-		/// 
-		/// </seealso>
+		/// <seealso cref="AnWTFilter.analyze_hpf" />
 		public override void  analyze_hpf(float[] inSig, int inOff, int inLen, int inStep, float[] lowSig, int lowOff, int lowStep, float[] highSig, int highOff, int highStep)
 		{
 			
 			int i; // maxi removed
-			int iStep = 2 * inStep; //Subsampling in inSig
+			var iStep = 2 * inStep; //Subsampling in inSig
 			int ik; //Indexing inSig
 			int lk; //Indexing lowSig
 			int hk; //Indexing highSig
@@ -684,7 +610,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// to calculate the L2-norm of the synthesis basis functions for a
 		/// particular subband (also called energy weight).
 		/// 
-		/// <P>The returned array may not be modified (i.e. a reference to
+		/// The returned array may not be modified (i.e. a reference to
 		/// the internal array may be returned by the implementation of
 		/// this method).
 		/// 
@@ -705,7 +631,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// basis functions for a particular subband (also called energy
 		/// weight).
 		/// 
-		/// <P>The returned array may not be modified (i.e. a reference to
+		/// The returned array may not be modified (i.e. a reference to
 		/// the internal array may be returned by the implementation of
 		/// this method).
 		/// 
@@ -727,7 +653,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// are not affected by image boundaries processings such as symmetric
 		/// extension, since there is not reference method for this.
 		/// 
-		/// <P>The result depends on the length of the allowed overlap when
+		/// The result depends on the length of the allowed overlap when
 		/// compared to the overlap required by the wavelet filter. It also
 		/// depends on how overlap processing is implemented in the wavelet
 		/// filter.
@@ -758,18 +684,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			//If the input signal has even length.
 			if (inLen % 2 == 0)
 			{
-				if (tailOvrlp >= 4 && headOvrlp >= 3)
-					return true;
-				else
-					return false;
+				return tailOvrlp >= 4 && headOvrlp >= 3;
 			}
 			//Else if the input signal has odd length.
 			else
 			{
-				if (tailOvrlp >= 4 && headOvrlp >= 4)
-					return true;
-				else
-					return false;
+				return tailOvrlp >= 4 && headOvrlp >= 4;
 			}
 		}
 		
@@ -777,21 +697,21 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// are the same if the same filter code should be output for both filters
 		/// by the encodeFilterCode() method.
 		/// 
-		/// <P>Currently the implementation of this method only tests if 'obj' is
+		/// Currently the implementation of this method only tests if 'obj' is
 		/// also of the class AnWTFilterFloatLift9x7
 		/// 
 		/// </summary>
 		/// <param name="The">object against which to test inequality.
 		/// 
 		/// </param>
-		public  override bool Equals(System.Object obj)
+		public  override bool Equals(object obj)
 		{
 			// To spped up test, first test for reference equality
 			return obj == this || obj is AnWTFilterFloatLift9x7;
 		}
 		
 		/// <summary>Debugging method </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			return "w9x7";
 		}

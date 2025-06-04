@@ -1,10 +1,10 @@
-using Melville.CSJ2K.Icc.Types;
+using CoreJ2K.Icc.Types;
 
-namespace Melville.CSJ2K.Icc.Tags
+namespace CoreJ2K.Icc.Tags
 {
-    internal class ICCViewType : ICCTag
+    public class ICCViewType : ICCTag
     {
-        new public int type;
+        public new int type;
         public int reserved;
         public XYZNumber CIEilluminant;
         public XYZNumber CIEsurround;

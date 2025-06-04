@@ -41,12 +41,12 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.encoder;
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.encoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.analysis;
 
-namespace Melville.CSJ2K.j2k.quantization.quantizer
+namespace CoreJ2K.j2k.quantization.quantizer
 {
 	
 	/// <summary> This abstract class provides the general interface for quantizers. The
@@ -54,68 +54,54 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 	/// the quantizer is the set of quantized wavelet coefficients represented in
 	/// sign-magnitude notation (see below).
 	/// 
-	/// <p>This class provides default implementation for most of the methods
+	/// This class provides default implementation for most of the methods
 	/// (wherever it makes sense), under the assumption that the image, component
 	/// dimensions, and the tiles, are not modifed by the quantizer. If it is not
 	/// the case for a particular implementation, then the methods should be
-	/// overriden.</p>
+	/// overriden.
 	/// 
-	/// <p>Sign magnitude representation is used (instead of two's complement) for
+	/// Sign magnitude representation is used (instead of two's complement) for
 	/// the output data. The most significant bit is used for the sign (0 if
 	/// positive, 1 if negative). Then the magnitude of the quantized coefficient
 	/// is stored in the next M most significat bits. The rest of the bits (least
 	/// significant bits) can contain a fractional value of the quantized
 	/// coefficient. This fractional value is not to be coded by the entropy
 	/// coder. However, it can be used to compute rate-distortion measures with
-	/// greater precision.</p>
+	/// greater precision.
 	/// 
-	/// <p>The value of M is determined for each subband as the sum of the number
+	/// The value of M is determined for each subband as the sum of the number
 	/// of guard bits G and the nominal range of quantized wavelet coefficients in
-	/// the corresponding subband (Rq), minus 1:</p>
+	/// the corresponding subband (Rq), minus 1:
 	/// 
-	/// <p>M = G + Rq -1</p>
+	/// M = G + Rq -1
 	/// 
-	/// <p>The value of G should be the same for all subbands. The value of Rq
+	/// The value of G should be the same for all subbands. The value of Rq
 	/// depends on the quantization step size, the nominal range of the component
 	/// before the wavelet transform and the analysis gain of the subband (see
-	/// Subband).</p>
+	/// Subband).
 	/// 
-	/// <p>The blocks of data that are requested should not cross subband
-	/// boundaries.</p>
+	/// The blocks of data that are requested should not cross subband
+	/// boundaries.
 	/// 
-	/// <p>NOTE: At the moment only quantizers that implement the
-	/// 'CBlkQuantDataSrcEnc' interface are supported.</p>
+	/// NOTE: At the moment only quantizers that implement the
+	/// 'CBlkQuantDataSrcEnc' interface are supported.
 	/// 
 	/// </summary>
-	/// <seealso cref="Subband">
-	/// 
-	/// </seealso>
-	internal abstract class Quantizer:ImgDataAdapter, CBlkQuantDataSrcEnc
+	/// <seealso cref="Subband" />
+	public abstract class Quantizer:ImgDataAdapter, CBlkQuantDataSrcEnc
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULX
-		{
-			get
-			{
-				return src.CbULX;
-			}
-			
-		}
+		public virtual int CbULX => src.CbULX;
+
 		/// <summary> Returns the vertical offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULY
-		{
-			get
-			{
-				return src.CbULY;
-			}
-			
-		}
+		public virtual int CbULY => src.CbULY;
+
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a
 		/// different option, and they have 3 elements. The first element is the
@@ -130,15 +116,8 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// or null if no options are supported.
 		/// 
 		/// </returns>
-		public static System.String[][] ParameterInfo
-		{
-			get
-			{
-				return pinfo;
-			}
-			
-		}
-		
+		public static string[][] ParameterInfo => pinfo;
+
 		/// <summary>The prefix for quantizer options: 'Q' </summary>
 		public const char OPT_PREFIX = 'Q';
 		
@@ -146,7 +125,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// for quantization start with 'Q'. 
 		/// </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String[][] pinfo = new System.String[][]{new System.String[]{"Qtype", "[<tile-component idx>] <id> " + "[ [<tile-component idx>] <id> ...]", "Specifies which quantization type to use for specified " + "tile-component. The default type is either 'reversible' or " + "'expounded' depending on whether or not the '-lossless' option " + " is specified.\n" + "<tile-component idx> : see general note.\n" + "<id>: Supported quantization types specification are : " + "'reversible' " + "(no quantization), 'derived' (derived quantization step size) and " + "'expounded'.\n" + "Example: -Qtype reversible or -Qtype t2,4-8 c2 reversible t9 " + "derived.", null}, new System.String[]{"Qstep", "[<tile-component idx>] <bnss> " + "[ [<tile-component idx>] <bnss> ...]", "This option specifies the base normalized quantization step " + "size (bnss) for tile-components. It is normalized to a " + "dynamic range of 1 in the image domain. This parameter is " + "ignored in reversible coding. The default value is '1/128'" + " (i.e. 0.0078125).", "0.0078125"}, new System.String[]{"Qguard_bits", "[<tile-component idx>] <gb> " + "[ [<tile-component idx>] <gb> ...]", "The number of bits used for each tile-component in the quantizer" + " to avoid overflow (gb).", "2"}};
+		private static readonly string[][] pinfo = {new string[]{"Qtype", "[<tile-component idx>] <id> " + "[ [<tile-component idx>] <id> ...]", "Specifies which quantization type to use for specified " + "tile-component. The default type is either 'reversible' or " + "'expounded' depending on whether or not the '-lossless' option " + " is specified.\n" + "<tile-component idx> : see general note.\n" + "<id>: Supported quantization types specification are : " + "'reversible' " + "(no quantization), 'derived' (derived quantization step size) and " + "'expounded'.\n" + "Example: -Qtype reversible or -Qtype t2,4-8 c2 reversible t9 " + "derived.", null}, new string[]{"Qstep", "[<tile-component idx>] <bnss> " + "[ [<tile-component idx>] <bnss> ...]", "This option specifies the base normalized quantization step " + "size (bnss) for tile-components. It is normalized to a " + "dynamic range of 1 in the image domain. This parameter is " + "ignored in reversible coding. The default value is '1/128'" + " (i.e. 0.0078125).", "0.0078125"}, new string[]{"Qguard_bits", "[<tile-component idx>] <gb> " + "[ [<tile-component idx>] <gb> ...]", "The number of bits used for each tile-component in the quantizer" + " to avoid overflow (gb).", "2"}};
 		
 		/// <summary>The source of wavelet transform coefficients </summary>
 		protected internal CBlkWTDataSrc src;
@@ -204,15 +183,13 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// <param name="n">The component index.
 		/// 
 		/// </param>
-		/// <seealso cref="SubbandAn.stepWMSE">
-		/// 
-		/// </seealso>
+		/// <seealso cref="SubbandAn.stepWMSE" />
 		protected internal abstract void  calcSbParams(SubbandAn sb, int n);
 		
 		/// <summary> Returns a reference to the subband tree structure representing the
 		/// subband decomposition for the specified tile-component.
 		/// 
-		/// <P>This method gets the subband tree from the source and then
+		/// This method gets the subband tree from the source and then
 		/// calculates the magnitude bits for each leaf using the method
 		/// calcSbParams().
 		/// 
@@ -226,15 +203,9 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// <returns> The subband tree structure, see SubbandAn.
 		/// 
 		/// </returns>
-		/// <seealso cref="SubbandAn">
-		/// 
-		/// </seealso>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
-		/// <seealso cref="calcSbParams">
-		/// 
-		/// </seealso>
+		/// <seealso cref="SubbandAn" />
+		/// <seealso cref="Subband" />
+		/// <seealso cref="calcSbParams" />
 		public virtual SubbandAn getAnSubbandTree(int t, int c)
 		{
 			SubbandAn sbba;
@@ -283,8 +254,8 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 		/// 
 		/// </returns>
 		public abstract int getMaxMagBits(int c);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData getNextInternCodeBlock(int param1, Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData param2);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData getNextCodeBlock(int param1, Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData param2);
+		public abstract CBlkWTData getNextInternCodeBlock(int param1, CBlkWTData param2);
+		public abstract CBlkWTData getNextCodeBlock(int param1, CBlkWTData param2);
 		public abstract bool isReversible(int param1, int param2);
 	}
 }

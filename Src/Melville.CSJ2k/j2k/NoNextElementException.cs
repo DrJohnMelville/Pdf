@@ -44,15 +44,15 @@
 * 
 * 
 */
-
-namespace Melville.CSJ2K.j2k
+using System;
+namespace CoreJ2K.j2k
 {
 	
 	/// <summary> This exception is thrown whenever a next???? method is called and
 	/// there is no next element to return.
 	/// 
 	/// </summary>
-	internal class NoNextElementException:System.InvalidOperationException
+	public class NoNextElementException:InvalidOperationException
 	{
 		
 		/// <summary> Constructs a new <tt>NoNextElementException</tt> exception with no
@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k
 		/// 
 		/// 
 		/// </summary>
-		public NoNextElementException():base()
+		public NoNextElementException()
 		{
 		}
 		
@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k
 		/// 
 		/// 
 		/// </param>
-		public NoNextElementException(System.String s):base(s)
+		public NoNextElementException(string s):base(s)
 		{
 		}
 	}

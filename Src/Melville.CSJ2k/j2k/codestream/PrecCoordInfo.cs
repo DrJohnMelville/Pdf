@@ -39,13 +39,13 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> This class is used to store the coordinates of precincts.
 	/// 
 	/// </summary>
-	internal class PrecCoordInfo:CoordInfo
+	public class PrecCoordInfo:CoordInfo
 	{
 		
 		/// <summary>Horizontal upper left coordinate in the reference grid </summary>
@@ -84,7 +84,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <summary> Empty Constructor. Creates an empty PrecCoordInfo object.
 		/// 
 		/// </summary>
-		public PrecCoordInfo():base()
+		public PrecCoordInfo()
 		{
 		}
 		
@@ -94,9 +94,9 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <returns> String with precinct's information
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return base.ToString() + ", xref=" + xref + ", yref=" + yref;
+			return $"{base.ToString()}, xref={xref}, yref={yref}";
 		}
 	}
 }

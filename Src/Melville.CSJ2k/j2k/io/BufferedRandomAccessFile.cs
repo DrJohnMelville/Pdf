@@ -40,19 +40,21 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-namespace Melville.CSJ2K.j2k.io
+namespace CoreJ2K.j2k.io
 {
 	using System;
 	using System.IO;
 
-    /// <summary> This class defines a Buffered Random Access File.  It implements the
+	using Util;
+
+	/// <summary> This class defines a Buffered Random Access File.  It implements the
 	/// <tt>BinaryDataInput</tt> and <tt>BinaryDataOutput</tt> interfaces so that
 	/// binary data input/output can be performed. This class is abstract since no
 	/// assumption is done about the byte ordering type (little Endian, big
 	/// Endian). So subclasses will have to implement methods like
 	/// <tt>readShort()</tt>, <tt>writeShort()</tt>, <tt>readFloat()</tt>, ...
 	/// 
-	/// <P><tt>BufferedRandomAccessFile</tt> (BRAF for short) is a
+	/// <tt>BufferedRandomAccessFile</tt> (BRAF for short) is a
 	/// <tt>RandomAccessFile</tt> containing an extra buffer. When the BRAF is
 	/// accessed, it checks if the requested part of the file is in the buffer or
 	/// not. If that is the case, the read/write is done on the buffer. If not, the
@@ -60,28 +62,17 @@ namespace Melville.CSJ2K.j2k.io
 	/// is then accessed for a new buffer containing the requested byte/bit.
 	/// 
 	/// </summary>
-	/// <seealso cref="RandomAccessIO">
-	/// </seealso>
-	/// <seealso cref="BinaryDataOutput">
-	/// </seealso>
-	/// <seealso cref="BinaryDataInput">
-	/// </seealso>
-	/// <seealso cref="BEBufferedRandomAccessFile">
-	/// 
-	/// </seealso>
-	internal abstract class BufferedRandomAccessFile : RandomAccessIO, EndianType
+	/// <seealso cref="RandomAccessIO" />
+	/// <seealso cref="BinaryDataOutput" />
+	/// <seealso cref="BinaryDataInput" />
+	/// <seealso cref="BEBufferedRandomAccessFile" />
+	public abstract class BufferedRandomAccessFile : RandomAccessIO, EndianType
 	{
 		/// <summary> Returns the current offset in the file
 		/// 
 		/// </summary>
-		virtual public int Pos
-		{
-			get
-			{
-				return (offset + position);
-			}
-			
-		}
+		public virtual int Pos => (offset + position);
+
 		/// <summary> Returns the endianess (i.e., byte ordering) of the implementing
 		/// class. Note that an implementing class may implement only one
 		/// type of endianness or both, which would be decided at creation
@@ -92,20 +83,11 @@ namespace Melville.CSJ2K.j2k.io
 		/// <tt>EndianType.LITTLE_ENDIAN</tt>
 		/// 
 		/// </returns>
-		/// <seealso cref="EndianType">
-		/// 
-		/// </seealso>
-		virtual public int ByteOrdering
-		{
-			get
-			{
-				return byte_Ordering;
-			}
-			
-		}
-		
+		/// <seealso cref="EndianType" />
+		public virtual int ByteOrdering => byte_Ordering;
+
 		/// <summary>The name of the current file </summary>
-		private System.String fileName;
+		private string fileName;
 		
 		/// <summary> Whether the opened file is read only or not (defined by the constructor
 		/// arguments)
@@ -117,7 +99,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// 
 		/// </summary>
 		//UPGRADE_TODO: Class 'java.io.RandomAccessFile' was converted to 'System.IO.FileStream' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioRandomAccessFile'"
-		private System.IO.Stream theFile;
+		private Stream theFile;
 		
 		/// <summary> Buffer of bytes containing the part of the file that is currently being
 		/// accessed
@@ -170,7 +152,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// </exception>
 		protected internal BufferedRandomAccessFile(Stream stream, bool isReadOnly, int bufferSize)
 		{
-			fileName = String.Empty;
+			fileName = string.Empty;
 			theFile = stream;
 			this.isReadOnly = isReadOnly;
 			byteBuffer = new byte[bufferSize];
@@ -211,7 +193,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		protected internal BufferedRandomAccessFile(FileInfo file, System.String mode, int bufferSize)
+		protected internal BufferedRandomAccessFile(IFileInfo file, string mode, int bufferSize)
 		{
 			
 			fileName = file.Name;
@@ -221,9 +203,9 @@ namespace Melville.CSJ2K.j2k.io
 				isReadOnly = false;
 				if (mode.Equals("rw"))
 				{
-					if (file.Exists)
+					if (file.Exists && !file.Delete())
 					{
-						file.Delete();
+						throw new IOException("Could not delete existing file");
 					}
 				}
 				mode = "rw";
@@ -232,7 +214,27 @@ namespace Melville.CSJ2K.j2k.io
 			byteBuffer = new byte[bufferSize];
 			readNewBuffer(0);
 		}
-
+		
+		/// <summary> Constructor. Uses the default value for the byte-buffer 
+		/// size (512 bytes).
+		/// 
+		/// </summary>
+		/// <param name="file">The file associated with the buffer
+		/// 
+		/// </param>
+		/// <param name="mode">"r" for read, "rw" or "rw+" for read and write mode
+		/// ("rw+" opens the file for update whereas "rw" removes 
+		/// it before. So the 2 modes are different only if the 
+		/// file already exists).
+		/// 
+		/// </param>
+		/// <exception cref="IOException">If an I/O error ocurred.
+		/// 
+		/// </exception>
+		protected internal BufferedRandomAccessFile(IFileInfo file, string mode):this(file, mode, 512)
+		{
+		}
+		
 		/// <summary> Constructor. Always needs a size for the buffer.
 		/// 
 		/// </summary>
@@ -251,8 +253,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		protected internal BufferedRandomAccessFile(System.String name, System.String mode, int bufferSize):
-			this(new FileInfo(name), mode, bufferSize)
+		protected internal BufferedRandomAccessFile(string name, string mode, int bufferSize):this(FileInfoFactory.New(name), mode, bufferSize)
 		{
 		}
 		
@@ -272,7 +273,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		protected internal BufferedRandomAccessFile(System.String name, System.String mode):this(name, mode, 512)
+		protected internal BufferedRandomAccessFile(string name, string mode):this(name, mode, 512)
 		{
 		}
 		
@@ -300,12 +301,12 @@ namespace Melville.CSJ2K.j2k.io
 			// Don't allow to seek beyond end of file if reading only
 			if (isReadOnly && off >= theFile.Length)
 			{
-				throw new System.IO.EndOfStreamException();
+				throw new EndOfStreamException();
 			}
 			// Set new offset
 			offset = off;
 			
-			theFile.Seek(offset, System.IO.SeekOrigin.Begin);
+			theFile.Seek(offset, SeekOrigin.Begin);
 			
 			maxByte = theFile.Read(byteBuffer, 0, byteBuffer.Length);
 			position = 0;
@@ -392,7 +393,7 @@ namespace Melville.CSJ2K.j2k.io
 				if (isReadOnly && isEOFInBuffer && off > offset + maxByte)
 				{
 					// We are seeking beyond EOF in read-only mode!
-					throw new System.IO.EndOfStreamException();
+					throw new EndOfStreamException();
 				}
 				position = off - offset;
 			}
@@ -429,7 +430,7 @@ namespace Melville.CSJ2K.j2k.io
 			{
 				// EOF is reached
 				position = maxByte + 1; // Set position to EOF
-				throw new System.IO.EndOfStreamException();
+				throw new EndOfStreamException();
 			}
 			else
 			{
@@ -482,7 +483,7 @@ namespace Melville.CSJ2K.j2k.io
 				else if (isEOFInBuffer)
 				{
 					position = maxByte + 1; // Set position to EOF
-					throw new System.IO.EndOfStreamException();
+					throw new EndOfStreamException();
 				}
 				else
 				{
@@ -511,7 +512,7 @@ namespace Melville.CSJ2K.j2k.io
 			if (position < byteBuffer.Length)
 			{
 				if (isReadOnly)
-					throw new System.IO.IOException("File is read only");
+					throw new IOException("File is read only");
 				byteBuffer[position] = (byte) b;
 				if (position >= maxByte)
 				{
@@ -545,7 +546,7 @@ namespace Melville.CSJ2K.j2k.io
 			if (position < byteBuffer.Length)
 			{
 				if (isReadOnly)
-					throw new System.IO.IOException("File is read only");
+					throw new IOException("File is read only");
 				byteBuffer[position] = b;
 				if (position >= maxByte)
 				{
@@ -582,7 +583,7 @@ namespace Melville.CSJ2K.j2k.io
 			int i, stop;
 			stop = offset + length;
 			if (stop > b.Length)
-				throw new System. IndexOutOfRangeException("Index of bound " + b.Length);
+				throw new IndexOutOfRangeException($"Index of bound {b.Length}");
 			for (i = offset; i < stop; i++)
 			{
 				write(b[i]);
@@ -593,7 +594,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// significant bits) to the output. Prior to writing, the output
 		/// should be realigned at the byte level.
 		/// 
-		/// <P>Signed or unsigned data can be written. To write a signed
+		/// Signed or unsigned data can be written. To write a signed
 		/// value just pass the <tt>byte</tt> value as an argument. To
 		/// write unsigned data pass the <tt>int</tt> value as an argument
 		/// (it will be automatically casted, and only the 8 least
@@ -623,7 +624,7 @@ namespace Melville.CSJ2K.j2k.io
 		{
 			if (byteBufferChanged)
 			{
-				theFile.Seek(offset, System.IO.SeekOrigin.Begin);
+				theFile.Seek(offset, SeekOrigin.Begin);
 				theFile.Write(byteBuffer, 0, maxByte);
 				byteBufferChanged = false;
 			}
@@ -705,7 +706,7 @@ namespace Melville.CSJ2K.j2k.io
 		public virtual int skipBytes(int n)
 		{
 			if (n < 0)
-				throw new System.ArgumentException("Can not skip negative number " + "of bytes");
+				throw new ArgumentException("Can not skip negative number of bytes");
 			if (n <= (maxByte - position))
 			{
 				position += n;
@@ -721,9 +722,9 @@ namespace Melville.CSJ2K.j2k.io
 		/// <summary> Returns a string of information about the file
 		/// 
 		/// </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "BufferedRandomAccessFile: " + fileName + " (" + ((isReadOnly)?"read only":"read/write") + ")";
+			return $"BufferedRandomAccessFile: {fileName} ({((isReadOnly) ? "read only" : "read/write")})";
 		}
 		public abstract int readUnsignedShort();
 		public abstract void  writeLong(long param1);

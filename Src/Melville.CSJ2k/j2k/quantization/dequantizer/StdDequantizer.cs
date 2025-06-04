@@ -44,12 +44,12 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
-
-namespace Melville.CSJ2K.j2k.quantization.dequantizer
+namespace CoreJ2K.j2k.quantization.dequantizer
 {
 	
 	/// <summary> This class implements a scalar dequantizer with deadzone. The output can be
@@ -57,29 +57,29 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// step sizes and other parameters are taken from a StdDequantizerParams
 	/// class, which inherits from DequantizerParams.
 	/// 
-	/// <p>Sign magnitude representation is used (instead of two's complement) for
+	/// Sign magnitude representation is used (instead of two's complement) for
 	/// the input data. The most significant bit is used for the sign (0 if
 	/// positive, 1 if negative). Then the magnitude of the quantized coefficient
 	/// is stored in the next most significat bits. The most significant magnitude
-	/// bit corresponds to the most significant bit-plane and so on.</p>
+	/// bit corresponds to the most significant bit-plane and so on.
 	/// 
-	/// <p>When reversible quantization is used, this class only converts between
+	/// When reversible quantization is used, this class only converts between
 	/// the sign-magnitude representation and the integer (or eventually
-	/// fixed-point) output, since there is no true quantization.</p>
+	/// fixed-point) output, since there is no true quantization.
 	/// 
-	/// <p>The output data is fixed-point two's complement for 'int' output and
+	/// The output data is fixed-point two's complement for 'int' output and
 	/// floating-point for 'float' output. The type of output and the number number
 	/// of fractional bits for 'int' output are defined at the constructor. Each
-	/// component may have a different number of fractional bits.</p>
+	/// component may have a different number of fractional bits.
 	/// 
-	/// <p>The reconstruction levels used by the dequantizer are exactly what is
+	/// The reconstruction levels used by the dequantizer are exactly what is
 	/// received from the entropy decoder. It is assumed that the entropy decoder
 	/// always returns codewords that are midways in the decoded intervals. In this
 	/// way the dequantized values will always lie midways in the quantization
-	/// intervals.</p>
+	/// intervals.
 	/// 
 	/// </summary>
-	internal class StdDequantizer:Dequantizer
+	public class StdDequantizer:Dequantizer
 	{
 		
 		/// <summary>The quantizer type spec </summary>
@@ -120,9 +120,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// <param name="qsss">The dequantizer step sizes spec
 		/// 
 		/// </param>
-		/// <seealso cref="Dequantizer.getNomRangeBits">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Dequantizer.getNomRangeBits" />
 		/// <exception cref="IllegalArgumentException">Thrown if 'outdt' is neither
 		/// TYPE_FLOAT nor TYPE_INT, or if 'param' specify reversible quantization
 		/// and 'outdt' is not TYPE_INT or 'fp' has non-zero values, or if 'outdt'
@@ -134,11 +132,11 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 			
 			if (utrb.Length != src.NumComps)
 			{
-				throw new System.ArgumentException("Invalid rb argument");
+				throw new ArgumentException("Invalid rb argument");
 			}
-			this.qsss = decSpec.qsss;
-			this.qts = decSpec.qts;
-			this.gbs = decSpec.gbs;
+			qsss = decSpec.qsss;
+			qts = decSpec.qts;
+			gbs = decSpec.gbs;
 		}
 		
 		/// <summary> Returns the position of the fixed point in the output data for the
@@ -150,7 +148,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// least significant bit in the data. If the output data is 'float' then 0
 		/// is always returned.
 		/// 
-		/// <p><u>Note:</u> Fractional bits are no more supported by JJ2000.</p>
+		/// <u>Note:</u> Fractional bits are no more supported by JJ2000.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component.
@@ -168,20 +166,20 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component, as a copy (see below).
 		/// 
-		/// <p>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk' object. If a
 		/// code-block is progressive it means that in a later request to this
 		/// method for the same code-block it is possible to retrieve data which is
 		/// a better approximation, since meanwhile more data to decode for the
 		/// code-block could have been received. If the code-block is not
 		/// progressive then later calls to this method for the same code-block
-		/// will return the exact same data values.</p>
+		/// will return the exact same data values.
 		/// 
-		/// <p>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
 		/// any problems after being returned. The 'offset' of the returned data is 
 		/// 0, and the 'scanw' is the same as the code-block width. See the
-		/// 'DataBlk' class.</p>
+		/// 'DataBlk' class.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -208,9 +206,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		public override DataBlk getCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk)
 		{
 			return getInternCodeBlock(c, m, n, sb, cblk);
@@ -219,19 +215,19 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component (as a reference or copy).
 		/// 
-		/// <p>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk'
 		/// object. If a code-block is progressive it means that in a later request
 		/// to this method for the same code-block it is possible to retrieve data
 		/// which is a better approximation, since meanwhile more data to decode
 		/// for the code-block could have been received. If the code-block is not
 		/// progressive then later calls to this method for the same code-block
-		/// will return the exact same data values.</p>
+		/// will return the exact same data values.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
-		/// arbitrary. See the 'DataBlk' class.</p>
+		/// arbitrary. See the 'DataBlk' class.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -258,9 +254,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		public override DataBlk getInternCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk)
 		{
 			// This method is declared final since getNextCodeBlock() relies on
@@ -273,16 +267,16 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 			int[] outiarr, inarr;
 			float[] outfarr;
 			int w, h;
-			bool reversible = qts.isReversible(tIdx, c);
-			bool derived = qts.isDerived(tIdx, c);
-			StdDequantizerParams params_Renamed = (StdDequantizerParams) qsss.getTileCompVal(tIdx, c);
-			int G = ((System.Int32) gbs.getTileCompVal(tIdx, c));
+			var reversible = qts.isReversible(tIdx, c);
+			var derived = qts.isDerived(tIdx, c);
+			var params_Renamed = (StdDequantizerParams) qsss.getTileCompVal(tIdx, c);
+			var G = ((int) gbs.getTileCompVal(tIdx, c));
 			
 			outdtype = cblk.DataType;
 			
 			if (reversible && outdtype != DataBlk.TYPE_INT)
 			{
-				throw new System.ArgumentException("Reversible quantizations " + "must use int data");
+				throw new ArgumentException("Reversible quantizations " + "must use int data");
 			}
 			
 			// To get compiler happy
@@ -353,7 +347,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 				if (derived)
 				{
 					// Max resolution level
-					int mrl = src.getSynSubbandTree(TileIdx, c).resLvl;
+					var mrl = src.getSynSubbandTree(TileIdx, c).resLvl;
 					step = params_Renamed.nStep[0][0] * (1L << (rb[c] + sb.anGainExp + mrl - sb.level));
 				}
 				else
@@ -376,7 +370,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 						{
 							temp = outiarr[j]; // input array is same as output one
 							//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-							outiarr[j] = (int) (((float) ((temp >= 0)?temp:- (temp & 0x7FFFFFFF))) * step);
+							outiarr[j] = (int) (((temp >= 0)?temp:- (temp & 0x7FFFFFFF)) * step);
 						}
 						break;
 					
@@ -391,7 +385,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 							{
 								temp = inarr[k];
 								//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-								outfarr[j] = ((float) ((temp >= 0)?temp:- (temp & 0x7FFFFFFF))) * step;
+								outfarr[j] = ((temp >= 0)?temp:- (temp & 0x7FFFFFFF)) * step;
 							}
 							// Jump to beggining of previous line in input
 							k -= (inblk.scanw - w);

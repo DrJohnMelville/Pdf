@@ -41,17 +41,15 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream.reader
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class defines an object used to countain informations about a packet
 	/// to which the current code-block belongs.
 	/// 
 	/// </summary>
-	/// <seealso cref="CBlkInfo">
-	/// 
-	/// </seealso>
-	internal class PktInfo
+	/// <seealso cref="CBlkInfo" />
+	public class PktInfo
 	{
 		
 		/// <summary>Index of the packet </summary>
@@ -102,9 +100,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> Object information
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "packet " + packetIdx + " (lay:" + layerIdx + ", off:" + cbOff + ", len:" + cbLength + ", numTruncPnts:" + numTruncPnts + ")\n";
+			return $"packet {packetIdx} (lay:{layerIdx}, off:{cbOff}, len:{cbLength}, numTruncPnts:{numTruncPnts})\n";
 		}
 	}
 }

@@ -7,27 +7,26 @@
 /// ***************************************************************************
 /// </summary>
 
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> This exception is thrown when the content of an an icc profile 
 	/// is in someway incorrect.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.ICCProfile" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	internal class ICCProfileInvalidException:ICCProfileException
+	public class ICCProfileInvalidException:ICCProfileException
 	{
 		
 		/// <summary> Contruct with message</summary>
 		/// <param name="msg">returned by getMessage()
 		/// </param>
-		internal ICCProfileInvalidException(System.String msg):base(msg)
+		internal ICCProfileInvalidException(string msg):base(msg)
 		{
 		}
 		

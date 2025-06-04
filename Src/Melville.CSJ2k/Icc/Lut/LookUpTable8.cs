@@ -6,9 +6,10 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using Tags_ICCCurveType = CoreJ2K.Icc.Tags.ICCCurveType;
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-namespace Melville.CSJ2K.Icc.Lut
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> Toplevel class for a byte [] lut.
@@ -18,38 +19,36 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal abstract class LookUpTable8:LookUpTable
+	public abstract class LookUpTable8:LookUpTable
 	{
 		
 		/// <summary>Maximum output value of the LUT </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'dwMaxOutput '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		protected internal byte dwMaxOutput;
 		/// <summary>The lut values.                 </summary>
 		// Maximum output value of the LUT
-		//UPGRADE_NOTE: Final was removed from the declaration of 'lut '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		protected internal byte[] lut;
 		
 		
 		/// <summary> Create an abbreviated string representation of a 16 bit lut.</summary>
 		/// <returns> the lut as a String
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[LookUpTable8 ");
+			var rep = new System.Text.StringBuilder("[LookUpTable8 ");
 			//int row, col;
-			rep.Append("max= " + dwMaxOutput);
-			rep.Append(", nentries= " + dwMaxOutput);
+			rep.Append($"max= {dwMaxOutput}");
+			rep.Append($", nentries= {dwMaxOutput}");
 			return rep.Append("]").ToString();
 		}
 		
 		
 		
-		public virtual System.String toStringWholeLut()
+		public virtual string toStringWholeLut()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("LookUpTable8" + eol);
-			rep.Append("maxOutput = " + dwMaxOutput + eol);
-			for (int i = 0; i < dwNumInput; ++i)
-				rep.Append("lut[" + i + "] = " + lut[i] + eol);
+			var rep = new System.Text.StringBuilder($"LookUpTable8{Environment.NewLine}");
+			rep.Append($"maxOutput = {dwMaxOutput}{Environment.NewLine}");
+			for (var i = 0; i < dwNumInput; ++i)
+				rep.Append($"lut[{i}] = {lut[i]}{Environment.NewLine}");
 			return rep.Append("]").ToString();
 		}
 		
@@ -63,7 +62,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// <summary> Create the string representation of a 16 bit lut.</summary>
 		/// <returns> the lut as a String
 		/// </returns>
-		protected internal LookUpTable8(ICCCurveType curve, int dwNumInput, byte dwMaxOutput):base(curve, dwNumInput)
+		protected internal LookUpTable8(Tags_ICCCurveType curve, int dwNumInput, byte dwMaxOutput):base(curve, dwNumInput)
 		{
 			this.dwMaxOutput = dwMaxOutput;
 			lut = new byte[dwNumInput];

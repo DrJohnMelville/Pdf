@@ -40,30 +40,30 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.entropy.decoder
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This class implements the JPEG 2000 entropy decoder, which codes stripes in
 	/// code-blocks. This entropy decoding engine decodes one code-block at a time.
 	/// 
-	/// <p>The code-blocks are rectangular and their dimensions must be powers of
+	/// The code-blocks are rectangular and their dimensions must be powers of
 	/// 2. Each dimension cannot be smaller than 4 and larger than 256. The product
-	/// of the two dimensions (i.e. area of the code-block) cannot exceed 4096.</p>
+	/// of the two dimensions (i.e. area of the code-block) cannot exceed 4096.
 	/// 
-	/// <p>Context 0 of the MQ-coder is used as the uniform one (uniform,
+	/// Context 0 of the MQ-coder is used as the uniform one (uniform,
 	/// non-adaptive probability distribution). Context 1 is used for RLC
 	/// coding. Contexts 2-10 are used for zero-coding (ZC), contexts 11-15 are
 	/// used for sign-coding (SC) and contexts 16-18 are used for
-	/// magnitude-refinement (MR).</p>
+	/// magnitude-refinement (MR).
 	/// 
-	/// <p>This implementation also provides some timing features. They can be
+	/// This implementation also provides some timing features. They can be
 	/// enabled by setting the 'DO_TIMING' constant of this class to true and
 	/// recompiling. The timing uses the 'System.currentTimeMillis()' Java API
 	/// call, which returns wall clock time, not the actual CPU time used. The
@@ -72,10 +72,10 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// to find the total used time (i.e. some time might be counted in several
 	/// places). When timing is disabled ('DO_TIMING' is false) there is no penalty
 	/// if the compiler performs some basic optimizations. Even if not the penalty
-	/// should be negligeable.</p>
+	/// should be negligeable.
 	/// 
 	/// </summary>
-	internal class StdEntropyDecoder:EntropyDecoder
+	public class StdEntropyDecoder:EntropyDecoder
 	{
 		
 		/// <summary>Whether to collect timing information or not: false. Used as a compile 
@@ -105,43 +105,36 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// interface
 		/// 
 		/// </summary>
-		/// <seealso cref="StdEntropyCoderOptions">
-		/// 
-		/// </seealso>
+		/// <seealso cref="StdEntropyCoderOptions" />
 		private int options;
 		
 		/// <summary>Flag to indicate if we should try to detect errors or just ignore any
 		/// error resilient information 
 		/// </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'doer '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private bool doer;
 		
 		/// <summary>Flag to indicate if we should be verbose about bit stream errors
 		/// detected with the error resilience options 
 		/// </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'verber '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private bool verber;
 		
 		/// <summary>Number of bits used for the Zero Coding lookup table </summary>
 		private const int ZC_LUT_BITS = 8;
 		
 		/// <summary>Zero Coding context lookup tables for the LH global orientation </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'ZC_LUT_LH '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private static readonly int[] ZC_LUT_LH = new int[1 << ZC_LUT_BITS];
 		
 		/// <summary>Zero Coding context lookup tables for the HL global orientation </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'ZC_LUT_HL '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private static readonly int[] ZC_LUT_HL = new int[1 << ZC_LUT_BITS];
 		
 		/// <summary>Zero Coding context lookup tables for the HH global orientation </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'ZC_LUT_HH '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private static readonly int[] ZC_LUT_HH = new int[1 << ZC_LUT_BITS];
 		
 		/// <summary>Number of bits used for the Sign Coding lookup table </summary>
 		private const int SC_LUT_BITS = 9;
 		
 		/// <summary>Sign Coding context lookup table. The index into the table is a 9 bit
-		/// index, which correspond the the value in the 'state' array shifted by
+		/// index, which correspond to the value in the 'state' array shifted by
 		/// 'SC_SHIFT'. Bits 8-5 are the signs of the horizontal-left,
 		/// horizontal-right, vertical-up and vertical-down neighbors,
 		/// respectively. Bit 4 is not used (0 or 1 makes no difference). Bits 3-0
@@ -184,7 +177,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		
 		/// <summary>The initial states for the MQ coder </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'MQ_INIT'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly int[] MQ_INIT = new int[]{46, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		private static readonly int[] MQ_INIT = {46, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		
 		/// <summary>The 4 bits of the error resilience segmentation symbol (decimal 10,
 		/// which is binary sequence 1010) 
@@ -201,7 +194,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// size of the state array is increased by 1 on each side (top, bottom,
 		/// left, right) to handle boundary conditions without any special logic.
 		/// 
-		/// <P>The state of a coefficient is stored in the following way in the
+		/// The state of a coefficient is stored in the following way in the
 		/// lower 16 bits, where bit 0 is the least significant bit. Bit 15 is the
 		/// significance of a coefficient (0 if non-significant, 1 otherwise). Bit
 		/// 14 is the visited state (i.e. if a coefficient has been coded in the
@@ -217,10 +210,10 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// up-right, down-left and down-right; 1 for significant, 0 for non
 		/// significant).
 		/// 
-		/// <P>The upper 16 bits the state is stored as in the lower 16 bits, but
+		/// The upper 16 bits the state is stored as in the lower 16 bits, but
 		/// with the bits shifted up by 16.
 		/// 
-		/// <P>The lower 16 bits are referred to as "row 1" ("R1") while the upper
+		/// The lower 16 bits are referred to as "row 1" ("R1") while the upper
 		/// 16 bits are referred to as "row 2" ("R2").
 		/// 
 		/// </summary>
@@ -521,7 +514,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
                 sb.Append(time[c]);
                 sb.Append(" ms");
             }
-            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, sb.ToString());
+            FacilityManager.getMsgLogger().printmsg(CoreJ2K.j2k.util.MsgLogger_Fields.INFO, sb.ToString());
 
             //UPGRADE_NOTE: Call to 'super.finalize()' was removed. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1124'"
         }
@@ -530,7 +523,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component, as a copy (see below).
 		/// 
-		/// <P>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk' object. If a
 		/// code-block is progressive it means that in a later request to this
 		/// method for the same code-block it is possible to retrieve data which is
@@ -539,13 +532,13 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// progressive then later calls to this method for the same code-block
 		/// will return the exact same data values.
 		/// 
-		/// <P>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
 		/// any problems after being returned. The 'offset' of the returned data is
 		/// 0, and the 'scanw' is the same as the code-block width. See the
 		/// 'DataBlk' class.
 		/// 
-		/// <P>The 'ulx' and 'uly' members of the returned 'DataBlk' object
+		/// The 'ulx' and 'uly' members of the returned 'DataBlk' object
 		/// contain the coordinates of the top-left corner of the block, with
 		/// respect to the tile, not the subband.
 		/// 
@@ -574,9 +567,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		public override DataBlk getCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk)
 		{
 			//long stime = 0L; // Start time for timed sections
@@ -599,7 +590,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 #endif
 
 			// Retrieve options from decSpec
-			options = ((System.Int32) decSpec.ecopts.getTileCompVal(tIdx, c));
+			options = ((int) decSpec.ecopts.getTileCompVal(tIdx, c));
 			
 			// Reset state
 			ArrayUtil.intArraySet(state, 0);
@@ -651,7 +642,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			}
 			error = false;
 			
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0)
 			{
 				if (bin == null)
 				{
@@ -679,7 +670,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 					break;
 				
 				default: 
-					throw new System.InvalidOperationException("JJ2000 internal error");
+					throw new InvalidOperationException("JJ2000 internal error");
 				
 			}
 			
@@ -705,7 +696,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// First bit-plane has only the cleanup pass
 			if (curbp >= 0 && npasses > 0)
 			{
-				isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP) >= curbp);
+				isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP) >= curbp);
 				error = cleanuppass(cblk, mq, curbp, state, zc_lut, isterm);
 				npasses--;
 				if (!error || !doer)
@@ -718,47 +709,47 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 				while (curbp >= 0 && npasses > 0)
 				{
 					
-					if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (curbp < 31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP))
+					if ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (curbp < 31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP))
 					{
 						// Use bypass decoding mode (only all bit-planes
 						// after the first 4 bit-planes).
 						
 						// Here starts a new raw segment
 						bin.setByteArray(null, - 1, srcblk.tsLengths[++tsidx]);
-						isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0;
+						isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0;
 						error = rawSigProgPass(cblk, bin, curbp, state, isterm);
 						npasses--;
 						if (npasses <= 0 || (error && doer))
 							break;
 						
-						if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
+						if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
 						{
 							// Start a new raw segment
 							bin.setByteArray(null, - 1, srcblk.tsLengths[++tsidx]);
 						}
-						isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP > curbp));
+						isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP > curbp));
 						error = rawMagRefPass(cblk, bin, curbp, state, isterm);
 					}
 					else
 					{
 						// Do not use bypass decoding mode
-						if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
+						if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
 						{
 							// Here starts a new MQ segment
 							mq.nextSegment(null, - 1, srcblk.tsLengths[++tsidx]);
 						}
-						isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0;
+						isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0;
 						error = sigProgPass(cblk, mq, curbp, state, zc_lut, isterm);
 						npasses--;
 						if (npasses <= 0 || (error && doer))
 							break;
 						
-						if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
+						if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
 						{
 							// Here starts a new MQ segment
 							mq.nextSegment(null, - 1, srcblk.tsLengths[++tsidx]);
 						}
-						isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP > curbp));
+						isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP > curbp));
 						error = magRefPass(cblk, mq, curbp, state, isterm);
 					}
 					
@@ -766,12 +757,12 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 					if (npasses <= 0 || (error && doer))
 						break;
 					
-					if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (curbp < 31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP)))
+					if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (curbp < 31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP)))
 					{
 						// Here starts a new MQ segment
 						mq.nextSegment(null, - 1, srcblk.tsLengths[++tsidx]);
 					}
-					isterm = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP) >= curbp);
+					isterm = (options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0 || ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0 && (31 - StdEntropyCoderOptions.NUM_NON_BYPASS_MS_BP - srcblk.skipMSBP) >= curbp);
 					error = cleanuppass(cblk, mq, curbp, state, zc_lut, isterm);
 					npasses--;
 					if (error && doer)
@@ -786,7 +777,8 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			{
 				if (verber)
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Error detected at bit-plane " + curbp + " in code-block (" + m + "," + n + "), sb_idx " + sb.sbandIdx + ", res. level " + sb.resLvl + ". Concealing...");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+						$"Error detected at bit-plane {curbp} in code-block ({m},{n}), sb_idx {sb.sbandIdx}, res. level {sb.resLvl}. Concealing...");
 				}
 				conceal(cblk, curbp);
 			}
@@ -802,23 +794,23 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <summary> Returns the specified code-block in the current tile for the specified
 		/// component (as a reference or copy).
 		/// 
-		/// <p>The returned code-block may be progressive, which is indicated by
+		/// The returned code-block may be progressive, which is indicated by
 		/// the 'progressive' variable of the returned 'DataBlk' object. If a
 		/// code-block is progressive it means that in a later request to this
 		/// method for the same code-block it is possible to retrieve data which is
 		/// a better approximation, since meanwhile more data to decode for the
 		/// code-block could have been received. If the code-block is not
 		/// progressive then later calls to this method for the same code-block
-		/// will return the exact same data values.</p>
+		/// will return the exact same data values.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
-		/// arbitrary. See the 'DataBlk' class.</p>
+		/// arbitrary. See the 'DataBlk' class.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'DataBlk' object contain
+		/// The 'ulx' and 'uly' members of the returned 'DataBlk' object contain
 		/// the coordinates of the top-left corner of the block, with respect to
-		/// the tile, not the subband.</p>
+		/// the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -845,9 +837,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="DataBlk" />
 		public override DataBlk getInternCodeBlock(int c, int m, int n, SubbandSyn sb, DataBlk cblk)
 		{
 			return getCodeBlock(c, m, n, sb, cblk);
@@ -859,14 +849,14 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// and SC primitives as needed. It toggles the "visited" state bit to 1
 		/// for all those samples.
 		/// 
-		/// <p>This method also checks for segmentation markers if those are
+		/// This method also checks for segmentation markers if those are
 		/// present and returns true if an error is detected, or false
 		/// otherwise. If an error is detected it means that the bit stream
 		/// contains some erroneous bit that have led to the decoding of incorrect
 		/// data. This data affects the whole last decoded bit-plane
 		/// (i.e. 'bp'). If 'true' is returned the 'conceal' method should be
 		/// called and no more passes should be decoded for this code-block's bit
-		/// stream.</p>
+		/// stream.
 		/// 
 		/// </summary>
 		/// <param name="cblk">The code-block data to decode
@@ -918,12 +908,12 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// Initialize local variables
 			dscanw = cblk.scanw;
 			sscanw = cblk.w + 2;
-			jstep = sscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
-			kstep = dscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
-			setmask = (3 << bp) >> 1;
+			jstep = sscanw * StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
+			kstep = dscanw * StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
+			setmask = (int)(((long)3<<bp)>>1);
 			data = (int[]) cblk.Data;
-			nstripes = (cblk.h + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
-			causal = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
+			nstripes = (cblk.h + StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / StdEntropyCoderOptions.STRIPE_HEIGHT;
+			causal = (options & StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
 			
 			// Pre-calculate offsets in 'state' for diagonal neighbors
 			off_ul = - sscanw - 1; // up-left
@@ -936,7 +926,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			sj = sscanw + 1;
 			for (s = nstripes - 1; s >= 0; s--, sk += kstep, sj += jstep)
 			{
-				sheight = (s != 0)?Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+				sheight = (s != 0)?StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * StdEntropyCoderOptions.STRIPE_HEIGHT;
 				stopsk = sk + cblk.w;
 				// Scan by set of 1 stripe column at a time
 				for (; sk < stopsk; sk++, sj++)
@@ -1154,13 +1144,13 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			error = false;
 			
 			// Check the error resilience termination
-			if (isterm && (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
+			if (isterm && (options & StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
 			{
 				error = mq.checkPredTerm();
 			}
 			
 			// Reset the MQ context states if we need to
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
 			{
 				mq.resetCtxts();
 			}
@@ -1175,16 +1165,16 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// and SC primitives as needed. It toggles the "visited" state bit to 1
 		/// for all those samples.
 		/// 
-		/// <p>This method bypasses the arithmetic coder and reads "raw" symbols
-		/// from the bit stream.</p>
+		/// This method bypasses the arithmetic coder and reads "raw" symbols
+		/// from the bit stream.
 		/// 
-		/// <p>This method also checks for segmentation markers if those are
+		/// This method also checks for segmentation markers if those are
 		/// present and returns true if an error is detected, or false
 		/// otherwise. If an error is detected it measn that the bit stream contains
 		/// some erroneous bit that have led to the decoding of incorrect
 		/// data. This data affects the whole last decoded bit-plane (i.e. 'bp'). If
 		/// 'true' is returned the 'conceal' method should be called and no more
-		/// passes should be decoded for this code-block's bit stream.</p>
+		/// passes should be decoded for this code-block's bit stream.
 		/// 
 		/// </summary>
 		/// <param name="cblk">The code-block data to decode
@@ -1232,12 +1222,12 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// Initialize local variables
 			dscanw = cblk.scanw;
 			sscanw = cblk.w + 2;
-			jstep = sscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
-			kstep = dscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
-			setmask = (3 << bp) >> 1;
+			jstep = sscanw * StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
+			kstep = dscanw * StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
+			setmask = (int)(((long)3<<bp)>>1);
 			data = (int[]) cblk.Data;
-			nstripes = (cblk.h + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
-			causal = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
+			nstripes = (cblk.h + StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / StdEntropyCoderOptions.STRIPE_HEIGHT;
+			causal = (options & StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
 			
 			// Pre-calculate offsets in 'state' for diagonal neighbors
 			off_ul = - sscanw - 1; // up-left
@@ -1250,7 +1240,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			sj = sscanw + 1;
 			for (s = nstripes - 1; s >= 0; s--, sk += kstep, sj += jstep)
 			{
-				sheight = (s != 0)?Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+				sheight = (s != 0)?StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * StdEntropyCoderOptions.STRIPE_HEIGHT;
 				stopsk = sk + cblk.w;
 				// Scan by set of 1 stripe column at a time
 				for (; sk < stopsk; sk++, sj++)
@@ -1464,7 +1454,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			
 			// Check the byte padding if the pass is terminated and if the error
 			// resilience predictable termination is signaled in COx marker.
-			if (isterm && (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
+			if (isterm && (options & StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
 			{
 				error = bin.checkBytePadding();
 			}
@@ -1478,7 +1468,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// have the "visited" state bit turned on, using the MR primitive. The
 		/// "visited" state bit is not mofified for any samples.
 		/// 
-		/// <P>This method also checks for segmentation markers if those are
+		/// This method also checks for segmentation markers if those are
 		/// present and returns true if an error is detected, or false
 		/// otherwise. If an error is detected it means that the bit stream contains
 		/// some erroneous bit that have led to the decoding of incorrect
@@ -1529,19 +1519,19 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// Initialize local variables
 			dscanw = cblk.scanw;
 			sscanw = cblk.w + 2;
-			jstep = sscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
-			kstep = dscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
+			jstep = sscanw * StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
+			kstep = dscanw * StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
 			setmask = (1 << bp) >> 1;
 			resetmask = (- 1) << (bp + 1);
 			data = (int[]) cblk.Data;
-			nstripes = (cblk.h + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+			nstripes = (cblk.h + StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / StdEntropyCoderOptions.STRIPE_HEIGHT;
 			
 			// Decode stripe by stripe
 			sk = cblk.offset;
 			sj = sscanw + 1;
 			for (s = nstripes - 1; s >= 0; s--, sk += kstep, sj += jstep)
 			{
-				sheight = (s != 0)?Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+				sheight = (s != 0)?StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * StdEntropyCoderOptions.STRIPE_HEIGHT;
 				stopsk = sk + cblk.w;
 				// Scan by set of 1 stripe column at a time
 				for (; sk < stopsk; sk++, sj++)
@@ -1630,13 +1620,13 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			error = false;
 			
 			// Check the error resilient termination
-			if (isterm && (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
+			if (isterm && (options & StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
 			{
 				error = mq.checkPredTerm();
 			}
 			
 			// Reset the MQ context states if we need to
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
 			{
 				mq.resetCtxts();
 			}
@@ -1650,10 +1640,10 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// not have the "visited" state bit turned on, using the MR primitive. The
 		/// "visited" state bit is not mofified for any samples.
 		/// 
-		/// <P>This method bypasses the arithmetic coder and reads "raw" symbols
+		/// This method bypasses the arithmetic coder and reads "raw" symbols
 		/// from the bit stream.
 		/// 
-		/// <P>This method also checks for segmentation markers if those are
+		/// This method also checks for segmentation markers if those are
 		/// present and returns true if an error is detected, or false
 		/// otherwise. If an error is detected it measn that the bit stream
 		/// contains some erroneous bit that have led to the decoding of incorrect
@@ -1705,19 +1695,19 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// Initialize local variables
 			dscanw = cblk.scanw;
 			sscanw = cblk.w + 2;
-			jstep = sscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
-			kstep = dscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
+			jstep = sscanw * StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
+			kstep = dscanw * StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
 			setmask = (1 << bp) >> 1;
 			resetmask = (- 1) << (bp + 1);
 			data = (int[]) cblk.Data;
-			nstripes = (cblk.h + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+			nstripes = (cblk.h + StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / StdEntropyCoderOptions.STRIPE_HEIGHT;
 			
 			// Decode stripe by stripe
 			sk = cblk.offset;
 			sj = sscanw + 1;
 			for (s = nstripes - 1; s >= 0; s--, sk += kstep, sj += jstep)
 			{
-				sheight = (s != 0)?Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+				sheight = (s != 0)?StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * StdEntropyCoderOptions.STRIPE_HEIGHT;
 				stopsk = sk + cblk.w;
 				// Scan by set of 1 stripe column at a time
 				for (; sk < stopsk; sk++, sj++)
@@ -1799,7 +1789,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			
 			//  Check the byte padding if the pass is terminated and the
 			// predictable termination is signaled in COx marker.
-			if (isterm && (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
+			if (isterm && (options & StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
 			{
 				error = bin.checkBytePadding();
 			}
@@ -1813,7 +1803,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// off, using the ZC, SC, and RLC primitives. It toggles the "visited"
 		/// state bit to 0 (off) for all samples in the code-block.
 		/// 
-		/// <P>This method also checks for segmentation markers if those are
+		/// This method also checks for segmentation markers if those are
 		/// present and returns true if an error is detected, or false
 		/// otherwise. If an error is detected it measn that the bit stream
 		/// contains some erroneous bit that have led to the decoding of incorrect
@@ -1873,12 +1863,12 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			// Initialize local variables
 			dscanw = cblk.scanw;
 			sscanw = cblk.w + 2;
-			jstep = sscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
-			kstep = dscanw * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
-			setmask = (3 << bp) >> 1;
+			jstep = sscanw * StdEntropyCoderOptions.STRIPE_HEIGHT / 2 - cblk.w;
+			kstep = dscanw * StdEntropyCoderOptions.STRIPE_HEIGHT - cblk.w;
+			setmask = (int)(((long)3<<bp)>>1);
 			data = (int[]) cblk.Data;
-			nstripes = (cblk.h + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
-			causal = (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
+			nstripes = (cblk.h + StdEntropyCoderOptions.STRIPE_HEIGHT - 1) / StdEntropyCoderOptions.STRIPE_HEIGHT;
+			causal = (options & StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL) != 0;
 			
 			// Pre-calculate offsets in 'state' for diagonal neighbors
 			off_ul = - sscanw - 1; // up-left
@@ -1891,7 +1881,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			sj = sscanw + 1;
 			for (s = nstripes - 1; s >= 0; s--, sk += kstep, sj += jstep)
 			{
-				sheight = (s != 0)?Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT;
+				sheight = (s != 0)?StdEntropyCoderOptions.STRIPE_HEIGHT:cblk.h - (nstripes - 1) * StdEntropyCoderOptions.STRIPE_HEIGHT;
 				stopsk = sk + cblk.w;
 				// Scan by set of 1 stripe column at a time
 				for (; sk < stopsk; sk++, sj++)
@@ -1903,7 +1893,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 						// Check for RLC: if all samples are not significant, not
 						// visited and do not have a non-zero context, and column
 						// is full height, we do RLC.
-						if (csj == 0 && state[j + sscanw] == 0 && sheight == Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.STRIPE_HEIGHT)
+						if (csj == 0 && state[j + sscanw] == 0 && sheight == StdEntropyCoderOptions.STRIPE_HEIGHT)
 						{
 							if (mq.decodeSymbol(RLC_CTXT) != 0)
 							{
@@ -2231,7 +2221,7 @@ top_half_brk: ;
 			}
 			
 			// Decode segment symbol if we need to
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_SEG_SYMBOLS) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_SEG_SYMBOLS) != 0)
 			{
 				sym = mq.decodeSymbol(UNIF_CTXT) << 3;
 				sym |= mq.decodeSymbol(UNIF_CTXT) << 2;
@@ -2247,13 +2237,13 @@ top_half_brk: ;
 			}
 			
 			// Check the error resilience termination
-			if (isterm && (options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
+			if (isterm && (options & StdEntropyCoderOptions.OPT_PRED_TERM) != 0)
 			{
 				error = mq.checkPredTerm();
 			}
 			
 			// Reset the MQ context states if we need to
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_RESET_MQ) != 0)
 			{
 				mq.resetCtxts();
 			}
@@ -2433,17 +2423,17 @@ top_half_brk: ;
 				}
 				
 				// HH
-				int[] twoBits = new int[]{3, 5, 6, 9, 10, 12}; // Figures (between 0 and 15)
+				var twoBits = new int[]{3, 5, 6, 9, 10, 12}; // Figures (between 0 and 15)
 				// countaning 2 and only 2 bits on in its binary representation.
 				
-				int[] oneBit = new int[]{1, 2, 4, 8}; // Figures (between 0 and 15)
+				var oneBit = new int[]{1, 2, 4, 8}; // Figures (between 0 and 15)
 				// countaning 1 and only 1 bit on in its binary representation.
 				
-				int[] twoLeast = new int[]{3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15}; // Figures
+				var twoLeast = new int[]{3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15}; // Figures
 				// (between 0 and 15) countaining, at least, 2 bits on in its
 				// binary representation. 
 				
-				int[] threeLeast = new int[]{7, 11, 13, 14, 15}; // Figures
+				var threeLeast = new int[]{7, 11, 13, 14, 15}; // Figures
 				// (between 0 and 15) countaining, at least, 3 bits on in its
 				// binary representation.
 				

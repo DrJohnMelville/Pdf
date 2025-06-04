@@ -6,9 +6,10 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using CoreJ2K.j2k.image;
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.Color
+namespace CoreJ2K.Color
 {
 	
 	/// <summary> This class resamples the components of an image so that
@@ -16,25 +17,18 @@ namespace Melville.CSJ2K.Color
 	/// only handles the case of 2:1 upsampling.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.colorspace.ColorSpace">
-	/// </seealso>
+	/// <seealso cref="j2k.colorspace.ColorSpace" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class Resampler:ColorSpaceMapper
+	public class Resampler:ColorSpaceMapper
 	{
-		//UPGRADE_NOTE: Final was removed from the declaration of 'minCompSubsX '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int minCompSubsX;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'minCompSubsY '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int minCompSubsY;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'maxCompSubsX '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int maxCompSubsX;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'maxCompSubsY '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int maxCompSubsY;
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'wspan '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: Final was removed from the declaration of 'hspan '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		internal int wspan = 0;
 		internal int hspan = 0;
 		
@@ -45,7 +39,7 @@ namespace Melville.CSJ2K.Color
 		/// </param>
 		/// <returns> Resampler instance
 		/// </returns>
-		public static new BlkImgDataSrc createInstance(BlkImgDataSrc src, ColorSpace csMap)
+		public new static BlkImgDataSrc createInstance(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return new Resampler(src, csMap);
 		}
@@ -69,17 +63,17 @@ namespace Melville.CSJ2K.Color
 			// Calculate the minimum and maximum subsampling factor
 			// across all channels.
 			
-			int minX = src.getCompSubsX(0);
-			int minY = src.getCompSubsY(0);
-			int maxX = minX;
-			int maxY = minY;
+			var minX = src.getCompSubsX(0);
+			var minY = src.getCompSubsY(0);
+			var maxX = minX;
+			var maxY = minY;
 			
 			for (c = 1; c < ncomps; ++c)
 			{
-				minX = System.Math.Min(minX, src.getCompSubsX(c));
-				minY = System.Math.Min(minY, src.getCompSubsY(c));
-				maxX = System.Math.Max(maxX, src.getCompSubsX(c));
-				maxY = System.Math.Max(maxY, src.getCompSubsY(c));
+				minX = Math.Min(minX, src.getCompSubsX(c));
+				minY = Math.Min(minY, src.getCompSubsY(c));
+				maxX = Math.Max(maxX, src.getCompSubsX(c));
+				maxY = Math.Max(maxY, src.getCompSubsY(c));
 			}
 			
 			// Throw an exception for other than 2:1 sampling.
@@ -105,18 +99,18 @@ namespace Melville.CSJ2K.Color
 		/// returned, as a copy of the internal data, therefore the returned data
 		/// can be modified "in place".
 		/// 
-		/// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+		/// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
 		/// and 'h' members of the 'blk' argument, relative to the current
 		/// tile. These members are not modified by this method. The 'offset' of
 		/// the returned data is 0, and the 'scanw' is the same as the block's
 		/// width. See the 'DataBlk' class.
 		/// 
-		/// <P>If the data array in 'blk' is 'null', then a new one is created. If
+		/// If the data array in 'blk' is 'null', then a new one is created. If
 		/// the data array is not 'null' then it is reused, and it must be large
 		/// enough to contain the block's data. Otherwise an 'ArrayStoreException'
 		/// or an 'IndexOutOfBoundsException' is thrown by the Java system.
 		/// 
-		/// <P>The returned data has its 'progressive' attribute set to that of the
+		/// The returned data has its 'progressive' attribute set to that of the
 		/// input data.
 		/// 
 		/// </summary>
@@ -126,34 +120,34 @@ namespace Melville.CSJ2K.Color
 		/// created. The fields in this object are modified to return the data.
 		/// 
 		/// </param>
-		/// <param name="c">The index of the component from which to get the data. Only 0
+		/// <param name="compIndex">The index of the component from which to get the data. Only 0
 		/// and 3 are valid.
 		/// 
 		/// </param>
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getCompData">
+		/// <seealso cref="GetCompData">
 		/// </seealso>
-		public override DataBlk getInternCompData(DataBlk outblk, int c)
+		public override DataBlk GetInternCompData(DataBlk outblk, int compIndex)
 		{
 			
 			// If the scaling factor of this channel is 1 in both
 			// directions, simply return the source DataBlk.
 			
-			if (src.getCompSubsX(c) == 1 && src.getCompSubsY(c) == 1)
-				return src.getInternCompData(outblk, c);
+			if (src.getCompSubsX(compIndex) == 1 && src.getCompSubsY(compIndex) == 1)
+				return src.GetInternCompData(outblk, compIndex);
 			
-			int wfactor = src.getCompSubsX(c);
-			int hfactor = src.getCompSubsY(c);
+			var wfactor = src.getCompSubsX(compIndex);
+			var hfactor = src.getCompSubsY(compIndex);
 			if ((wfactor != 2 && wfactor != 1) || (hfactor != 2 && hfactor != 1))
-				throw new System.ArgumentException("Upsampling by other than 2:1" + " not supported");
+				throw new ArgumentException("Upsampling by other than 2:1" + " not supported");
 			
-			int leftedgeOut = - 1; // offset to the start of the output scanline
-			int rightedgeOut = - 1; // offset to the end of the output
+			var leftedgeOut = - 1; // offset to the start of the output scanline
+			var rightedgeOut = - 1; // offset to the end of the output
 			// scanline + 1
-			int leftedgeIn = - 1; // offset to the start of the input scanline  
-			int rightedgeIn = - 1; // offset to the end of the input scanline + 1
+			var leftedgeIn = - 1; // offset to the start of the input scanline  
+			var rightedgeIn = - 1; // offset to the end of the input scanline + 1
 			
 			
 			int y0In, y1In, y0Out, y1Out;
@@ -174,12 +168,12 @@ namespace Melville.CSJ2K.Color
 			
 			// Calculate the requested height and width, requesting an extra
 			// row and or for upsampled channels.
-			int reqW = x1In - x0In + 1;
-			int reqH = y1In - y0In + 1;
+			var reqW = x1In - x0In + 1;
+			var reqH = y1In - y0In + 1;
 			
 			// Initialize general input and output indexes
-			int kOut = - 1;
-			int kIn = - 1;
+			var kOut = - 1;
+			var kIn = - 1;
 			int yIn;
 			
 			switch (outblk.DataType)
@@ -188,12 +182,12 @@ namespace Melville.CSJ2K.Color
 				
 				case DataBlk.TYPE_INT: 
 					
-					DataBlkInt inblkInt = new DataBlkInt(x0In, y0In, reqW, reqH);
-					inblkInt = (DataBlkInt) src.getInternCompData(inblkInt, c);
-					dataInt[c] = inblkInt.DataInt;
+					var inblkInt = new DataBlkInt(x0In, y0In, reqW, reqH);
+					inblkInt = (DataBlkInt) src.GetInternCompData(inblkInt, compIndex);
+					dataInt[compIndex] = inblkInt.DataInt;
 					
 					// Reference the working array   
-					int[] outdataInt = (int[]) outblk.Data;
+					var outdataInt = (int[]) outblk.Data;
 					
 					// Create data array if necessary
 					if (outdataInt == null || outdataInt.Length != outblk.w * outblk.h)
@@ -204,7 +198,7 @@ namespace Melville.CSJ2K.Color
 					
 					// The nitty-gritty.
 					
-					for (int yOut = y0Out; yOut <= y1Out; ++yOut)
+					for (var yOut = y0Out; yOut <= y1Out; ++yOut)
 					{
 						
 						yIn = yOut / hfactor;
@@ -221,7 +215,7 @@ namespace Melville.CSJ2K.Color
 						if ((x0Out & 0x1) == 1)
 						{
 							// first is odd do the pixel once.
-							outdataInt[kOut++] = dataInt[c][kIn++];
+							outdataInt[kOut++] = dataInt[compIndex][kIn++];
 						}
 						
 						if ((x1Out & 0x1) == 0)
@@ -232,14 +226,14 @@ namespace Melville.CSJ2K.Color
 						
 						while (kOut < rightedgeOut)
 						{
-							outdataInt[kOut++] = dataInt[c][kIn];
-							outdataInt[kOut++] = dataInt[c][kIn++];
+							outdataInt[kOut++] = dataInt[compIndex][kIn];
+							outdataInt[kOut++] = dataInt[compIndex][kIn++];
 						}
 						
 						if ((x1Out & 0x1) == 0)
 						{
 							// last is even do the pixel once.
-							outdataInt[kOut++] = dataInt[c][kIn];
+							outdataInt[kOut++] = dataInt[compIndex][kIn];
 						}
 					}
 					
@@ -249,12 +243,12 @@ namespace Melville.CSJ2K.Color
 				
 				case DataBlk.TYPE_FLOAT: 
 					
-					DataBlkFloat inblkFloat = new DataBlkFloat(x0In, y0In, reqW, reqH);
-					inblkFloat = (DataBlkFloat) src.getInternCompData(inblkFloat, c);
-					dataFloat[c] = inblkFloat.DataFloat;
+					var inblkFloat = new DataBlkFloat(x0In, y0In, reqW, reqH);
+					inblkFloat = (DataBlkFloat) src.GetInternCompData(inblkFloat, compIndex);
+					dataFloat[compIndex] = inblkFloat.DataFloat;
 					
 					// Reference the working array   
-					float[] outdataFloat = (float[]) outblk.Data;
+					var outdataFloat = (float[]) outblk.Data;
 					
 					// Create data array if necessary
 					if (outdataFloat == null || outdataFloat.Length != outblk.w * outblk.h)
@@ -265,7 +259,7 @@ namespace Melville.CSJ2K.Color
 					
 					// The nitty-gritty.
 					
-					for (int yOut = y0Out; yOut <= y1Out; ++yOut)
+					for (var yOut = y0Out; yOut <= y1Out; ++yOut)
 					{
 						
 						yIn = yOut / hfactor;
@@ -282,7 +276,7 @@ namespace Melville.CSJ2K.Color
 						if ((x0Out & 0x1) == 1)
 						{
 							// first is odd do the pixel once.
-							outdataFloat[kOut++] = dataFloat[c][kIn++];
+							outdataFloat[kOut++] = dataFloat[compIndex][kIn++];
 						}
 						
 						if ((x1Out & 0x1) == 0)
@@ -293,14 +287,14 @@ namespace Melville.CSJ2K.Color
 						
 						while (kOut < rightedgeOut)
 						{
-							outdataFloat[kOut++] = dataFloat[c][kIn];
-							outdataFloat[kOut++] = dataFloat[c][kIn++];
+							outdataFloat[kOut++] = dataFloat[compIndex][kIn];
+							outdataFloat[kOut++] = dataFloat[compIndex][kIn++];
 						}
 						
 						if ((x1Out & 0x1) == 0)
 						{
 							// last is even do the pixel once.
-							outdataFloat[kOut++] = dataFloat[c][kIn];
+							outdataFloat[kOut++] = dataFloat[compIndex][kIn];
 						}
 					}
 					
@@ -312,7 +306,7 @@ namespace Melville.CSJ2K.Color
 				case DataBlk.TYPE_BYTE: 
 				default: 
 					// Unsupported output type. 
-					throw new System.ArgumentException("invalid source datablock " + "type");
+					throw new ArgumentException("invalid source datablock " + "type");
 				}
 			
 			return outblk;
@@ -320,13 +314,13 @@ namespace Melville.CSJ2K.Color
 		
 		
 		/// <summary> Return an appropriate String representation of this Resampler instance.</summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[Resampler: ncomps= " + ncomps);
-			System.Text.StringBuilder body = new System.Text.StringBuilder("  ");
-			for (int i = 0; i < ncomps; ++i)
+			var rep = new System.Text.StringBuilder($"[Resampler: ncomps= {ncomps}");
+			var body = new System.Text.StringBuilder("  ");
+			for (var i = 0; i < ncomps; ++i)
 			{
-				body.Append(eol);
+				body.Append(Environment.NewLine);
 				body.Append("comp[");
 				body.Append(i);
 				body.Append("] xscale= ");
@@ -346,18 +340,18 @@ namespace Melville.CSJ2K.Color
 		/// returned, as a copy of the internal data, therefore the returned data
 		/// can be modified "in place".
 		/// 
-		/// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+		/// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
 		/// and 'h' members of the 'blk' argument, relative to the current
 		/// tile. These members are not modified by this method. The 'offset' of
 		/// the returned data is 0, and the 'scanw' is the same as the block's
 		/// width. See the 'DataBlk' class.
 		/// 
-		/// <P>If the data array in 'blk' is 'null', then a new one is created. If
+		/// If the data array in 'blk' is 'null', then a new one is created. If
 		/// the data array is not 'null' then it is reused, and it must be large
 		/// enough to contain the block's data. Otherwise an 'ArrayStoreException'
 		/// or an 'IndexOutOfBoundsException' is thrown by the Java system.
 		/// 
-		/// <P>The returned data has its 'progressive' attribute set to that of the
+		/// The returned data has its 'progressive' attribute set to that of the
 		/// input data.
 		/// 
 		/// </summary>
@@ -374,12 +368,10 @@ namespace Melville.CSJ2K.Color
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getInternCompData">
-		/// 
-		/// </seealso>
-		public override DataBlk getCompData(DataBlk outblk, int c)
+		/// <seealso cref="GetInternCompData" />
+		public override DataBlk GetCompData(DataBlk outblk, int c)
 		{
-			return getInternCompData(outblk, c);
+			return GetInternCompData(outblk, c);
 		}
 		
 		

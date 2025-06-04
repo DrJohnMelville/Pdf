@@ -1,12 +1,12 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
     /// <summary>
     /// Interface for default classification of manager types.
     /// </summary>
-    internal interface IDefaultable
+    public interface IDefaultable
     {
         /// <summary>
         /// Gets whether or not this type is classified as a default manager.

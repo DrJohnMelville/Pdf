@@ -6,12 +6,13 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using CoreJ2K.Color;
+using CoreJ2K.Icc.Lut;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.Color;
-using Melville.CSJ2K.Icc.Lut;
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> This class provides ICC Profiling API for the jj2000.j2k imaging chain
@@ -19,23 +20,22 @@ namespace Melville.CSJ2K.Icc
 	/// and getInternCompData methods.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.ICCProfile" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class ICCProfiler:ColorSpaceMapper
+	public class ICCProfiler:ColorSpaceMapper
 	{
 		
 		/// <summary>The prefix for ICC Profiler options </summary>
-		new public const char OPT_PREFIX = 'I';
+		public new const char OPT_PREFIX = 'I';
 		
-		
-		private static readonly int GRAY = RestrictedICCProfile.GRAY;
-		private static readonly int RED = RestrictedICCProfile.RED;
-		private static readonly int GREEN = RestrictedICCProfile.GREEN;
-		private static readonly int BLUE = RestrictedICCProfile.BLUE;
+		// Renamed for convenience:
+		private static readonly int GRAY;
+		private static readonly int RED;
+		private static readonly int GREEN;
+		private static readonly int BLUE;
 		
 		// ICCProfiles.
 		internal RestrictedICCProfile ricc = null;
@@ -45,7 +45,7 @@ namespace Melville.CSJ2K.Icc
 		private DataBlkInt[] tempInt; // Holds the results of the transform.
 		private DataBlkFloat[] tempFloat; // Holds the results of the transform.
 		
-		private System.Object xform = null;
+		private object xform = null;
 		
 		/// <summary>The image's ICC profile. </summary>
 		private RestrictedICCProfile iccp = null;
@@ -61,7 +61,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="ICCProfileException">profile content exception
 		/// </exception>
-		public static new BlkImgDataSrc createInstance(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap)
+		public new static BlkImgDataSrc createInstance(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return new ICCProfiler(src, csMap);
 		}
@@ -81,7 +81,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="IllegalArgumentException">
 		/// </exception>
-		protected internal ICCProfiler(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap):base(src, csMap)
+		protected internal ICCProfiler(BlkImgDataSrc src, ColorSpace csMap):base(src, csMap)
 		{
 			initialize();
 			
@@ -109,7 +109,7 @@ namespace Melville.CSJ2K.Icc
 			* to the pixel data and set up working and temporary DataBlks
 			* for both integer and float output.
 			*/
-			for (int i = 0; i < ncomps; ++i)
+			for (var i = 0; i < ncomps; ++i)
 			{
 				tempInt[i] = new DataBlkInt();
 				tempFloat[i] = new DataBlkFloat();
@@ -129,7 +129,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="IllegalArgumentException">
 		/// </exception>
-		private RestrictedICCProfile getICCProfile(Melville.CSJ2K.Color.ColorSpace csm)
+		private RestrictedICCProfile getICCProfile(ColorSpace csm)
 		{
 			
 			switch (ncomps)
@@ -139,18 +139,18 @@ namespace Melville.CSJ2K.Icc
 					icc = ICCMonochromeInputProfile.createInstance(csm);
 					ricc = icc.parse();
 					if (ricc.Type != RestrictedICCProfile.kMonochromeInput)
-						throw new System.ArgumentException("wrong ICCProfile type" + " for image");
+						throw new ArgumentException("wrong ICCProfile type" + " for image");
 					break;
 				
 				case 3: 
 					icc = ICCMatrixBasedInputProfile.createInstance(csm);
 					ricc = icc.parse();
 					if (ricc.Type != RestrictedICCProfile.kThreeCompInput)
-						throw new System.ArgumentException("wrong ICCProfile type" + " for image");
+						throw new ArgumentException("wrong ICCProfile type" + " for image");
 					break;
 				
 				default: 
-					throw new System.ArgumentException("illegal number of " + "components (" + ncomps + ") in image");
+					throw new ArgumentException($"illegal number of components ({ncomps}) in image");
 				
 			}
 			return ricc;
@@ -161,18 +161,18 @@ namespace Melville.CSJ2K.Icc
 		/// returned, as a copy of the internal data, therefore the returned data
 		/// can be modified "in place".
 		/// 
-		/// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+		/// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
 		/// and 'h' members of the 'blk' argument, relative to the current
 		/// tile. These members are not modified by this method. The 'offset' of
 		/// the returned data is 0, and the 'scanw' is the same as the block's
 		/// width. See the 'DataBlk' class.
 		/// 
-		/// <P>If the data array in 'blk' is 'null', then a new one is created. If
+		/// If the data array in 'blk' is 'null', then a new one is created. If
 		/// the data array is not 'null' then it is reused, and it must be large
 		/// enough to contain the block's data. Otherwise an 'ArrayStoreException'
 		/// or an 'IndexOutOfBoundsException' is thrown by the Java system.
 		/// 
-		/// <P>The returned data has its 'progressive' attribute set to that of the
+		/// The returned data has its 'progressive' attribute set to that of the
 		/// input data.
 		/// 
 		/// </summary>
@@ -189,41 +189,39 @@ namespace Melville.CSJ2K.Icc
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getInternCompData">
-		/// 
-		/// </seealso>
-		public override DataBlk getCompData(DataBlk outblk, int c)
+		/// <seealso cref="GetInternCompData" />
+		public override DataBlk GetCompData(DataBlk outblk, int c)
 		{
 			
 			try
 			{
 				if (ncomps != 1 && ncomps != 3)
 				{
-					System.String msg = "ICCProfiler: icc profile _not_ applied to " + ncomps + " component image";
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, msg);
-					return src.getCompData(outblk, c);
+					var msg = $"ICCProfiler: icc profile _not_ applied to {ncomps} component image";
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, msg);
+					return src.GetCompData(outblk, c);
 				}
 				
-				int type = outblk.DataType;
+				var type = outblk.DataType;
 				
-				int leftedgeOut = - 1; // offset to the start of the output scanline
-				int rightedgeOut = - 1; // offset to the end of the output
+				var leftedgeOut = - 1; // offset to the start of the output scanline
+				var rightedgeOut = - 1; // offset to the end of the output
 				// scanline + 1
-				int leftedgeIn = - 1; // offset to the start of the input scanline  
-				int rightedgeIn = - 1; // offset to the end of the input
+				var leftedgeIn = - 1; // offset to the start of the input scanline  
+				var rightedgeIn = - 1; // offset to the end of the input
 				// scanline + 1
 				
 				// Calculate all components:
-				for (int i = 0; i < ncomps; ++i)
+				for (var i = 0; i < ncomps; ++i)
 				{
 					
-					int fixedPtBits = src.getFixedPoint(i);
-					int shiftVal = shiftValueArray[i];
-					int maxVal = maxValueArray[i];
+					var fixedPtBits = src.GetFixedPoint(i);
+					var shiftVal = shiftValueArray[i];
+					var maxVal = maxValueArray[i];
 					
 					// Initialize general input and output indexes
-					int kOut = - 1;
-					int kIn = - 1;
+					var kOut = - 1;
+					var kIn = - 1;
 					
 					switch (type)
 					{
@@ -241,12 +239,12 @@ namespace Melville.CSJ2K.Icc
 							workDataInt[i] = (int[]) workInt[i].Data;
 							
 							// Request data from the source.    
-							inInt[i] = (DataBlkInt) src.getInternCompData(inInt[i], i);
+							inInt[i] = (DataBlkInt) src.GetInternCompData(inInt[i], i);
 							dataInt[i] = inInt[i].DataInt;
 							
 							// The nitty-gritty.
 							
-							for (int row = 0; row < outblk.h; ++row)
+							for (var row = 0; row < outblk.h; ++row)
 							{
 								leftedgeIn = inInt[i].offset + row * inInt[i].scanw;
 								rightedgeIn = leftedgeIn + inInt[i].w;
@@ -255,7 +253,7 @@ namespace Melville.CSJ2K.Icc
 								
 								for (kOut = leftedgeOut, kIn = leftedgeIn; kIn < rightedgeIn; ++kIn, ++kOut)
 								{
-									int tmpInt = (dataInt[i][kIn] >> fixedPtBits) + shiftVal;
+									var tmpInt = (dataInt[i][kIn] >> fixedPtBits) + shiftVal;
 									workDataInt[i][kOut] = ((tmpInt < 0)?0:((tmpInt > maxVal)?maxVal:tmpInt));
 								}
 							}
@@ -274,12 +272,12 @@ namespace Melville.CSJ2K.Icc
 							workDataFloat[i] = (float[]) workFloat[i].Data;
 							
 							// Request data from the source.    
-							inFloat[i] = (DataBlkFloat) src.getInternCompData(inFloat[i], i);
+							inFloat[i] = (DataBlkFloat) src.GetInternCompData(inFloat[i], i);
 							dataFloat[i] = inFloat[i].DataFloat;
 							
 							// The nitty-gritty.
 							
-							for (int row = 0; row < outblk.h; ++row)
+							for (var row = 0; row < outblk.h; ++row)
 							{
 								leftedgeIn = inFloat[i].offset + row * inFloat[i].scanw;
 								rightedgeIn = leftedgeIn + inFloat[i].w;
@@ -288,7 +286,7 @@ namespace Melville.CSJ2K.Icc
 								
 								for (kOut = leftedgeOut, kIn = leftedgeIn; kIn < rightedgeIn; ++kIn, ++kOut)
 								{
-									float tmpFloat = dataFloat[i][kIn] / (1 << fixedPtBits) + shiftVal;
+									var tmpFloat = dataFloat[i][kIn] / (1 << fixedPtBits) + shiftVal;
 									workDataFloat[i][kOut] = ((tmpFloat < 0)?0:((tmpFloat > maxVal)?maxVal:tmpFloat));
 								}
 							}
@@ -299,7 +297,7 @@ namespace Melville.CSJ2K.Icc
 						case DataBlk.TYPE_BYTE: 
 						default: 
 							// Unsupported output type. 
-							throw new System.ArgumentException("Invalid source " + "datablock type");
+							throw new ArgumentException("Invalid source " + "datablock type");
 						}
 				}
 				
@@ -345,7 +343,7 @@ namespace Melville.CSJ2K.Icc
 					case DataBlk.TYPE_BYTE: 
 					default: 
 						// Unsupported output type. 
-						throw new System.ArgumentException("invalid source datablock" + " type");
+						throw new ArgumentException("invalid source datablock" + " type");
 					}
 				
 				// Initialize the output block geometry and set the profiled
@@ -356,28 +354,30 @@ namespace Melville.CSJ2K.Icc
 			catch (MatrixBasedTransformException e)
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.getMessage' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.ERROR, "matrix transform problem:\n" + e.Message);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.ERROR,
+					$"matrix transform problem:\n{e.Message}");
 				if (pl.getParameter("debug").Equals("on"))
 				{
 					SupportClass.WriteStackTrace(e);
 				}
 				else
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.ERROR, "Use '-debug' option for more details");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.ERROR, "Use '-debug' option for more details");
 				}
 				return null;
 			}
 			catch (MonochromeTransformException e)
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.getMessage' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.ERROR, "monochrome transform problem:\n" + e.Message);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.ERROR,
+					$"monochrome transform problem:\n{e.Message}");
 				if (pl.getParameter("debug").Equals("on"))
 				{
 					SupportClass.WriteStackTrace(e);
 				}
 				else
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.ERROR, "Use '-debug' option for more details");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.ERROR, "Use '-debug' option for more details");
 				}
 				return null;
 			}
@@ -390,23 +390,23 @@ namespace Melville.CSJ2K.Icc
 		/// returned, as a reference to the internal data, if any, instead of as a
 		/// copy, therefore the returned data should not be modified.
 		/// 
-		/// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+		/// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
 		/// and 'h' members of the 'blk' argument, relative to the current
 		/// tile. These members are not modified by this method. The 'offset' and
 		/// 'scanw' of the returned data can be arbitrary. See the 'DataBlk' class.
 		/// 
-		/// <P>This method, in general, is more efficient than the 'getCompData()'
+		/// This method, in general, is more efficient than the 'getCompData()'
 		/// method since it may not copy the data. However if the array of returned
 		/// data is to be modified by the caller then the other method is probably
 		/// preferable.
 		/// 
-		/// <P>If possible, the data in the returned 'DataBlk' should be the
+		/// If possible, the data in the returned 'DataBlk' should be the
 		/// internal data itself, instead of a copy, in order to increase the data
 		/// transfer efficiency. However, this depends on the particular
 		/// implementation (it may be more convenient to just return a copy of the
 		/// data). This is the reason why the returned data should not be modified.
 		/// 
-		/// <P>If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
+		/// If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
 		/// is created if necessary. The implementation of this interface may
 		/// choose to return the same array or a new one, depending on what is more
 		/// efficient. Therefore, the data array in <tt>blk</tt> prior to the
@@ -414,7 +414,7 @@ namespace Melville.CSJ2K.Icc
 		/// new array may have been created. Instead, get the array from
 		/// <tt>blk</tt> after the method has returned.
 		/// 
-		/// <P>The returned data may have its 'progressive' attribute set. In this
+		/// The returned data may have its 'progressive' attribute set. In this
 		/// case the returned data is only an approximation of the "final" data.
 		/// 
 		/// </summary>
@@ -423,19 +423,43 @@ namespace Melville.CSJ2K.Icc
 		/// to return the data.
 		/// 
 		/// </param>
-		/// <param name="c">The index of the component from which to get the data.
+		/// <param name="compIndex">The index of the component from which to get the data.
 		/// 
 		/// </param>
 		/// <returns> The requested DataBlk
 		/// 
 		/// </returns>
-		/// <seealso cref="getCompData">
-		/// 
-		/// </seealso>
-		public override DataBlk getInternCompData(DataBlk out_Renamed, int c)
+		/// <seealso cref="GetCompData" />
+		public override DataBlk GetInternCompData(DataBlk out_Renamed, int compIndex)
 		{
-			return getCompData(out_Renamed, c);
+			return GetCompData(out_Renamed, compIndex);
 		}
 		
+		/// <summary>Return a suitable String representation of the class instance. </summary>
+		public override string ToString()
+		{
+			var rep = new System.Text.StringBuilder("[ICCProfiler:");
+			var body = new System.Text.StringBuilder();
+			if (icc != null)
+			{
+				body.Append(Environment.NewLine).Append(ColorSpace.indent("  ", icc.ToString()));
+			}
+			if (xform != null)
+			{
+				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
+				body.Append(Environment.NewLine).Append(ColorSpace.indent("  ", xform.ToString()));
+			}
+			rep.Append(ColorSpace.indent("  ", body));
+			return rep.Append("]").ToString();
+		}
+		
+		/* end class ICCProfiler */
+		static ICCProfiler()
+		{
+			GRAY = RestrictedICCProfile.GRAY;
+			RED = RestrictedICCProfile.RED;
+			GREEN = RestrictedICCProfile.GREEN;
+			BLUE = RestrictedICCProfile.BLUE;
+		}
 	}
 }

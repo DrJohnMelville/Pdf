@@ -1,12 +1,13 @@
-﻿// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+﻿// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
-    using Melville.CSJ2K.j2k.image;
+    using j2k.image;
 
-    internal interface IImageCreator : IDefaultable
+    public interface IImageCreator : IDefaultable
     {
+        IImage Create(int width, int height, int numComponents, byte[] bytes);
 
         BlkImgDataSrc ToPortableImageSource(object imageObject);
     }

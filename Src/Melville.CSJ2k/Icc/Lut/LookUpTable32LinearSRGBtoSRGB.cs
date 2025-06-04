@@ -6,8 +6,9 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
 
-namespace Melville.CSJ2K.Icc.Lut
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> A Linear 32 bit SRGB to SRGB lut
@@ -17,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class LookUpTable32LinearSRGBtoSRGB:LookUpTable32
+	public class LookUpTable32LinearSRGBtoSRGB:LookUpTable32
 	{
 		
 		/// <summary> Factory method for creating the lut.</summary>
@@ -56,26 +57,26 @@ namespace Melville.CSJ2K.Icc.Lut
 		protected internal LookUpTable32LinearSRGBtoSRGB(int inMax, int outMax, double shadowCutoff, double shadowSlope, double scaleAfterExp, double exponent, double reduceAfterExp):base(inMax + 1, outMax)
 		{
 			
-			int i = - 1;
+			var i = - 1;
 			// Normalization factor for i.
-			double normalize = 1.0 / (double) inMax;
+			var normalize = 1.0 / inMax;
 			
 			// Generate the final linear-sRGB to non-linear sRGB LUT    
 			
 			// calculate where shadow portion of lut ends.
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			int cutOff = (int) System.Math.Floor(shadowCutoff * inMax);
+			var cutOff = (int) Math.Floor(shadowCutoff * inMax);
 			
 			// Scale to account for output
 			shadowSlope *= outMax;
 			
 			// Our output needs to be centered on zero so we shift it down.
-			int shift = (outMax + 1) / 2;
+			var shift = (outMax + 1) / 2;
 			
 			for (i = 0; i <= cutOff; i++)
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (int) (System.Math.Floor(shadowSlope * (i * normalize) + 0.5) - shift);
+				lut[i] = (int) (Math.Floor(shadowSlope * (i * normalize) + 0.5) - shift);
 			}
 			
 			// Scale values for output.
@@ -86,13 +87,13 @@ namespace Melville.CSJ2K.Icc.Lut
 			for (; i <= inMax; i++)
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (int) (System.Math.Floor(scaleAfterExp * System.Math.Pow(i * normalize, exponent) - reduceAfterExp + 0.5) - shift);
+				lut[i] = (int) (Math.Floor(scaleAfterExp * Math.Pow(i * normalize, exponent) - reduceAfterExp + 0.5) - shift);
 			}
 		}
 		
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[LookUpTable32LinearSRGBtoSRGB:");
+			var rep = new System.Text.StringBuilder("[LookUpTable32LinearSRGBtoSRGB:");
 			return rep.Append("]").ToString();
 		}
 		

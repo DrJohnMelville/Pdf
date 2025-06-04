@@ -42,31 +42,31 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.image;
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 
     /// <summary> This abstract class extends the WaveletTransform one with the specifics of
     /// inverse wavelet transforms.
     /// 
-    /// <p>The image can be reconstructed at different resolution levels. This is
+    /// The image can be reconstructed at different resolution levels. This is
     /// controlled by the setResLevel() method. All the image, tile and component
     /// dimensions are relative the the resolution level being used. The number of
     /// resolution levels indicates the number of wavelet recompositions that will
     /// be used, if it is equal as the number of decomposition levels then the full
-    /// resolution image is reconstructed.</p>
+    /// resolution image is reconstructed.
     /// 
-    /// <p>It is assumed in this class that all tiles and components the same
+    /// It is assumed in this class that all tiles and components the same
     /// reconstruction resolution level. If that where not the case the
     /// implementing class should have additional data structures to store those
     /// values for each tile. However, the 'recResLvl' member variable always
     /// contain the values applicable to the current tile, since many methods
-    /// implemented here rely on them.</p>
+    /// implemented here rely on them.
     /// 
     /// </summary>
-    internal abstract class InverseWT : InvWTAdapter, BlkImgDataSrc
+    public abstract class InverseWT : InvWTAdapter, BlkImgDataSrc
     {
 
         /// <summary> Initializes this object with the given source of wavelet
@@ -74,9 +74,9 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
         /// reconstruction (i.e. the maximum resolution available from the 'src'
         /// source).
         /// 
-        /// <p>It is assumed here that all tiles and components have the same
+        /// It is assumed here that all tiles and components have the same
         /// reconstruction resolution level. If that was not the case it should be
-        /// the value for the current tile of the source.</p>
+        /// the value for the current tile of the source.
         /// 
         /// </summary>
         /// <param name="src">from where the wavelet coefficinets should be obtained.
@@ -111,11 +111,11 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
             return new InvWTFull(src, decSpec);
         }
 
-        public abstract int getFixedPoint(int c);
+        public abstract int GetFixedPoint(int compIndex);
 
-        public abstract DataBlk getInternCompData(DataBlk blk, int c);
+        public abstract DataBlk GetInternCompData(DataBlk blk, int compIndex);
 
-        public abstract DataBlk getCompData(DataBlk blk, int c);
+        public abstract DataBlk GetCompData(DataBlk blk, int c);
 
         /// <summary> Closes the underlying file or network connection from where the
         /// image data is being read.
@@ -123,7 +123,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
         /// </summary>
         /// <exception cref="IOException">If an I/O error occurs.
         /// </exception>
-        public void close()
+        public void Close()
         {
             // Do nothing.
         }
@@ -132,13 +132,13 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
         /// component, false if not.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
+        /// <param name="compIndex">The index of the component, from 0 to C-1.
         /// 
         /// </param>
         /// <returns> true if the data was originally signed, false if not.
         /// 
         /// </returns>
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }

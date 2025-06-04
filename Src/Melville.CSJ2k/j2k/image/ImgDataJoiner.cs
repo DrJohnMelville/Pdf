@@ -41,11 +41,11 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
     using System.Collections.Generic;
 
-    using Melville.CSJ2K.j2k.image.input;
+    using input;
 
     /// <summary> This class implements the ImgData interface and allows to obtain data from
     /// different sources. Here, one source is represented by an ImgData and a
@@ -53,13 +53,13 @@ namespace Melville.CSJ2K.j2k.image
     /// different components (Red, Green, Blue, alpha, ...) from different input
     /// files (i.e. from different ImgReader objects).
     /// 
-    /// <p>All input ImgData must not be tiled (i.e. must have only 1 tile) and the
+    /// All input ImgData must not be tiled (i.e. must have only 1 tile) and the
     /// image origin must be the canvas origin. The different inputs can have
     /// different dimensions though (this will lead to different subsampling
-    /// factors for each component).</p>
+    /// factors for each component).
     /// 
-    /// <p>The input ImgData and component index list must be defined when
-    /// constructing this class and can not be modified later.</p>
+    /// The input ImgData and component index list must be defined when
+    /// constructing this class and can not be modified later.
     /// 
     /// </summary>
     /// <seealso cref="ImgData">
@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.image
     /// <seealso cref="ImgReader">
     /// 
     /// </seealso>
-    internal class ImgDataJoiner : BlkImgDataSrc
+    public class ImgDataJoiner : BlkImgDataSrc
     {
         /// <summary> Returns the overall width of the current tile in pixels. This is the
         /// tile's width without accounting for any component subsampling.
@@ -76,14 +76,8 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total current tile's width in pixels.
         /// 
         /// </returns>
-        virtual public int TileWidth
-        {
-            get
-            {
-                return w;
-            }
-            
-        }
+        public virtual int TileWidth => w;
+
         /// <summary> Returns the overall height of the current tile in pixels. This is the
         /// tile's height without accounting for any component subsampling.
         /// 
@@ -91,32 +85,14 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total current tile's height in pixels.
         /// 
         /// </returns>
-        virtual public int TileHeight
-        {
-            get
-            {
-                return h;
-            }
-            
-        }
+        public virtual int TileHeight => h;
+
         /// <summary>Returns the nominal tiles width </summary>
-        virtual public int NomTileWidth
-        {
-            get
-            {
-                return w;
-            }
-            
-        }
+        public virtual int NomTileWidth => w;
+
         /// <summary>Returns the nominal tiles height </summary>
-        virtual public int NomTileHeight
-        {
-            get
-            {
-                return h;
-            }
-            
-        }
+        public virtual int NomTileHeight => h;
+
         /// <summary> Returns the overall width of the image in pixels. This is the image's
         /// width without accounting for any component subsampling or tiling.
         /// 
@@ -124,14 +100,8 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total image's width in pixels.
         /// 
         /// </returns>
-        virtual public int ImgWidth
-        {
-            get
-            {
-                return w;
-            }
-            
-        }
+        public virtual int ImgWidth => w;
+
         /// <summary> Returns the overall height of the image in pixels. This is the image's
         /// height without accounting for any component subsampling or tiling.
         /// 
@@ -139,28 +109,16 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total image's height in pixels.
         /// 
         /// </returns>
-        virtual public int ImgHeight
-        {
-            get
-            {
-                return h;
-            }
-            
-        }
+        public virtual int ImgHeight => h;
+
         /// <summary> Returns the number of components in the image.
         /// 
         /// </summary>
         /// <returns> The number of components in the image.
         /// 
         /// </returns>
-        virtual public int NumComps
-        {
-            get
-            {
-                return nc;
-            }
-            
-        }
+        public virtual int NumComps => nc;
+
         /// <summary> Returns the index of the current tile, relative to a standard scan-line
         /// order. This default implementations assumes no tiling, so 0 is always
         /// returned.
@@ -169,32 +127,14 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The current tile's index (starts at 0).
         /// 
         /// </returns>
-        virtual public int TileIdx
-        {
-            get
-            {
-                return 0;
-            }
-            
-        }
+        public virtual int TileIdx => 0;
+
         /// <summary>Returns the horizontal tile partition offset in the reference grid </summary>
-        virtual public int TilePartULX
-        {
-            get
-            {
-                return 0;
-            }
-            
-        }
+        public virtual int TilePartULX => 0;
+
         /// <summary>Returns the vertical tile partition offset in the reference grid </summary>
-        virtual public int TilePartULY
-        {
-            get
-            {
-                return 0;
-            }
-            
-        }
+        public virtual int TilePartULY => 0;
+
         /// <summary> Returns the horizontal coordinate of the image origin, the top-left
         /// corner, in the canvas system, on the reference grid.
         /// 
@@ -203,14 +143,8 @@ namespace Melville.CSJ2K.j2k.image
         /// system, on the reference grid.
         /// 
         /// </returns>
-        virtual public int ImgULX
-        {
-            get
-            {
-                return 0;
-            }
-            
-        }
+        public virtual int ImgULX => 0;
+
         /// <summary> Returns the vertical coordinate of the image origin, the top-left
         /// corner, in the canvas system, on the reference grid.
         /// 
@@ -219,15 +153,8 @@ namespace Melville.CSJ2K.j2k.image
         /// system, on the reference grid.
         /// 
         /// </returns>
-        virtual public int ImgULY
-        {
-            get
-            {
-                return 0;
-            }
-            
-        }
-        
+        public virtual int ImgULY => 0;
+
         /// <summary>The width of the image </summary>
         private readonly int w;
         
@@ -268,7 +195,7 @@ namespace Melville.CSJ2K.j2k.image
         /// ImgDataJoiner idj = new ImgDataJoiner(idList, compIdx);
         /// </tt>
         /// 
-        /// <p>Of course, the 2 arrays must have the same length (This length is
+        /// Of course, the 2 arrays must have the same length (This length is
         /// the number of output components). The image width and height are
         /// definded to be the maximum values of all the input ImgData.
         /// 
@@ -288,7 +215,7 @@ namespace Melville.CSJ2K.j2k.image
             imageData = imD;
             compIdx = cIdx;
             if (imageData.Count != compIdx.Count)
-                throw new System.ArgumentException("imD and cIdx must have the" + " same length");
+                throw new System.ArgumentException("imD and cIdx must have the same length");
             
             nc = imD.Count;
             
@@ -301,7 +228,7 @@ namespace Melville.CSJ2K.j2k.image
             {
                 if (imD[i].getNumTiles() != 1 || imD[i].getCompULX(cIdx[i]) != 0 || imD[i].getCompULY(cIdx[i]) != 0)
                 {
-                    throw new System.ArgumentException("All input components must, " + "not use tiles and must " + "have " + "the origin at the canvas " + "origin");
+                    throw new System.ArgumentException("All input components must, not use tiles and must have the origin at the canvas origin");
                 }
             }
             
@@ -339,7 +266,7 @@ namespace Melville.CSJ2K.j2k.image
                 subsY[i] = (maxH + imD[i].getCompImgHeight(cIdx[i]) - 1) / imD[i].getCompImgHeight(cIdx[i]);
                 if ((maxW + subsX[i] - 1) / subsX[i] != imD[i].getCompImgWidth(cIdx[i]) || (maxH + subsY[i] - 1) / subsY[i] != imD[i].getCompImgHeight(cIdx[i]))
                 {
-                    throw new System.InvalidOperationException("Can not compute component subsampling " + "factors: strange subsampling.");
+                    throw new System.InvalidOperationException("Can not compute component subsampling factors: strange subsampling.");
                 }
             }
         }
@@ -462,7 +389,7 @@ namespace Melville.CSJ2K.j2k.image
         /// applicable.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The number of bits corresponding to the nominal range of the
@@ -470,9 +397,9 @@ namespace Melville.CSJ2K.j2k.image
         /// return value is undefined.
         /// 
         /// </returns>
-        public virtual int getNomRangeBits(int c)
+        public virtual int getNomRangeBits(int compIndex)
         {
-            return imageData[c].getNomRangeBits(compIdx[c]);
+            return imageData[compIndex].getNomRangeBits(compIdx[compIndex]);
         }
         
         /// <summary> Returns the position of the fixed point in the specified
@@ -484,16 +411,16 @@ namespace Melville.CSJ2K.j2k.image
         /// significant bit in the data.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The position of the fixed-point, which is the same as the
         /// number of fractional bits. For floating-point data 0 is returned.
         /// 
         /// </returns>
-        public virtual int getFixedPoint(int c)
+        public virtual int GetFixedPoint(int compIndex)
         {
-            return imageData[c].getFixedPoint(compIdx[c]);
+            return imageData[compIndex].GetFixedPoint(compIdx[compIndex]);
         }
         
         /// <summary> Returns, in the blk argument, a block of image data containing the
@@ -501,17 +428,17 @@ namespace Melville.CSJ2K.j2k.image
         /// returned, as a reference to the internal data, if any, instead of as a
         /// copy, therefore the returned data should not be modified.
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' and
         /// 'scanw' of the returned data can be arbitrary. See the 'DataBlk' class.
         /// 
-        /// <P>This method, in general, is more efficient than the 'getCompData()'
+        /// This method, in general, is more efficient than the 'getCompData()'
         /// method since it may not copy the data. However if the array of returned
         /// data is to be modified by the caller then the other method is probably
         /// preferable.
         /// 
-        /// <P>If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
+        /// If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
         /// is created if necessary. The implementation of this interface may
         /// choose to return the same array or a new one, depending on what is more
         /// efficient. Therefore, the data array in <tt>blk</tt> prior to the
@@ -519,7 +446,7 @@ namespace Melville.CSJ2K.j2k.image
         /// new array may have been created. Instead, get the array from
         /// <tt>blk</tt> after the method has returned.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -528,18 +455,18 @@ namespace Melville.CSJ2K.j2k.image
         /// to return the data.
         /// 
         /// </param>
-        /// <param name="c">The index of the component from which to get the data.
+        /// <param name="compIndex">The index of the component from which to get the data.
         /// 
         /// </param>
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        /// <seealso cref="getCompData">
+        /// <seealso cref="GetCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getInternCompData(DataBlk blk, int c)
+        public virtual DataBlk GetInternCompData(DataBlk blk, int compIndex)
         {
-            return imageData[c].getInternCompData(blk, compIdx[c]);
+            return imageData[compIndex].GetInternCompData(blk, compIdx[compIndex]);
         }
         
         /// <summary> Returns, in the blk argument, a block of image data containing the
@@ -547,23 +474,23 @@ namespace Melville.CSJ2K.j2k.image
         /// returned, as a copy of the internal data, therefore the returned data
         /// can be modified "in place".
         /// 
-        /// <P>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' of
         /// the returned data is 0, and the 'scanw' is the same as the block's
         /// width. See the 'DataBlk' class.
         /// 
-        /// <P>This method, in general, is less efficient than the
+        /// This method, in general, is less efficient than the
         /// 'getInternCompData()' method since, in general, it copies the
         /// data. However if the array of returned data is to be modified by the
         /// caller then this method is preferable.
         /// 
-        /// <P>If the data array in 'blk' is 'null', then a new one is created. If
+        /// If the data array in 'blk' is 'null', then a new one is created. If
         /// the data array is not 'null' then it is reused, and it must be large
         /// enough to contain the block's data. Otherwise an 'ArrayStoreException'
         /// or an 'IndexOutOfBoundsException' is thrown by the Java system.
         /// 
-        /// <P>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final" data.
         /// 
         /// </summary>
@@ -580,12 +507,12 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        /// <seealso cref="getInternCompData">
+        /// <seealso cref="GetInternCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getCompData(DataBlk blk, int c)
+        public virtual DataBlk GetCompData(DataBlk blk, int c)
         {
-            return imageData[c].getCompData(blk, compIdx[c]);
+            return imageData[c].GetCompData(blk, compIdx[c]);
         }
 
         /// <summary> Closes the underlying file or network connection from where the
@@ -594,11 +521,11 @@ namespace Melville.CSJ2K.j2k.image
         /// </summary>
         /// <exception cref="IOException">If an I/O error occurs.
         /// </exception>
-        public void close()
+        public void Close()
         {
             foreach (var reader in imageData)
             {
-                reader.close();
+                reader.Close();
             }
         }
 
@@ -606,13 +533,13 @@ namespace Melville.CSJ2K.j2k.image
         /// component, false if not.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
+        /// <param name="compIndex">The index of the component, from 0 to C-1.
         /// 
         /// </param>
         /// <returns> true if the data was originally signed, false if not.
         /// 
         /// </returns>
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }
@@ -743,13 +670,12 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> A string of information about the object.
         /// 
         /// </returns>
-        public override System.String ToString()
+        public override string ToString()
         {
-            System.String string_Renamed = "ImgDataJoiner: WxH = " + w + "x" + h;
-            for (int i = 0; i < nc; i++)
+            var string_Renamed = $"ImgDataJoiner: WxH = {w}x{h}";
+            for (var i = 0; i < nc; i++)
             {
-                //UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-                string_Renamed += ("\n- Component " + i + " " + imageData[i]);
+                string_Renamed += ($"\n- Component {i} {imageData[i]}");
             }
             return string_Renamed;
         }

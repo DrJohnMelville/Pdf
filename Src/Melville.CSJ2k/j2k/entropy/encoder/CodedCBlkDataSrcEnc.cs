@@ -43,9 +43,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.wavelet.analysis;
+using CoreJ2K.j2k.wavelet.analysis;
 
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This interface defines a source of entropy coded data and methods to
@@ -53,21 +53,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// 'getNextCodeBlock()' a new coded code-block is returned. The code-block are
 	/// retruned in no specific-order.
 	/// 
-	/// <p>This interface is the source of data for the rate allocator. See the
-	/// 'PostCompRateAllocator' class.</p>
+	/// This interface is the source of data for the rate allocator. See the
+	/// 'PostCompRateAllocator' class.
 	/// 
-	/// <p>For each coded-code-block the entropy-coded data is returned along with
-	/// the rate-distortion statistics in a 'CBlkRateDistStats' object.</p>
+	/// For each coded-code-block the entropy-coded data is returned along with
+	/// the rate-distortion statistics in a 'CBlkRateDistStats' object.
 	/// 
 	/// </summary>
-	/// <seealso cref="PostCompRateAllocator">
-	/// </seealso>
-	/// <seealso cref="CBlkRateDistStats">
-	/// </seealso>
-	/// <seealso cref="EntropyCoder">
-	/// 
-	/// </seealso>
-	internal interface CodedCBlkDataSrcEnc:ForwWTDataProps
+	/// <seealso cref="PostCompRateAllocator" />
+	/// <seealso cref="CBlkRateDistStats" />
+	/// <seealso cref="EntropyCoder" />
+	public interface CodedCBlkDataSrcEnc:ForwWTDataProps
 	{
 		
 		/// <summary> Returns the next coded code-block in the current tile for the specified
@@ -78,13 +74,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// the code-blocks have been returned for the current tile calls to this
 		/// method will return 'null'.
 		/// 
-		/// <p>When changing the current tile (through 'setTile()' or 'nextTile()')
+		/// When changing the current tile (through 'setTile()' or 'nextTile()')
 		/// this method will always return the first code-block, as if this method
-		/// was never called before for the new current tile.</p>
+		/// was never called before for the new current tile.
 		/// 
-		/// <p>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
-		/// any problems after being returned.</p>
+		/// any problems after being returned.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -101,9 +97,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="CBlkRateDistStats">
-		/// 
-		/// </seealso>
+		/// <seealso cref="CBlkRateDistStats" />
 		CBlkRateDistStats getNextCodeBlock(int c, CBlkRateDistStats ccb);
 		
 		/// <summary> Returns the width of a packet for the specified tile-component and

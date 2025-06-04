@@ -7,19 +7,42 @@
 /// ***************************************************************************
 /// </summary>
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-using ICCXYZType = Melville.CSJ2K.Icc.Tags.ICCXYZType;
-
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
-	
+	using ICCCurveType = Tags.ICCCurveType;
+	using ICCXYZType = Tags.ICCXYZType;
+
 	/// <summary> This profile is constructed by parsing an ICCProfile and
 	/// is the profile actually applied to the image.
-	internal abstract class RestrictedICCProfile
+	/// 
+	/// </summary>
+	/// <seealso cref="j2k.icc.ICCProfile" />
+	/// <version> 	1.0
+	/// </version>
+	/// <author> 	Bruce A. Kern
+	/// </author>
+	public abstract class RestrictedICCProfile
 	{
 		/// <summary>Returns the appropriate input type enum. </summary>
 		public abstract int Type{get;}
 		
+		/// <summary> Factory method for creating a RestrictedICCProfile from 
+		/// 3 component curve and colorant data.
+		/// </summary>
+		/// <param name="rcurve">red curve
+		/// </param>
+		/// <param name="gcurve">green curve
+		/// </param>
+		/// <param name="bcurve">blue curve
+		/// </param>
+		/// <param name="rcolorant">red colorant
+		/// </param>
+		/// <param name="gcolorant">green colorant
+		/// </param>
+		/// <param name="bcolorant">blue colorant
+		/// </param>
+		/// <returns> MatrixBasedRestrictedProfile
+		/// </returns>
 		public static RestrictedICCProfile createInstance(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant)
 		{
 			
@@ -39,20 +62,12 @@ namespace Melville.CSJ2K.Icc
 		}
 		
 		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GRAY '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GRAY' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
 		protected internal static readonly int GRAY;
 		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'RED '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'RED' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
 		protected internal static readonly int RED;
 		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GREEN '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GREEN' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
 		protected internal static readonly int GREEN;
 		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'BLUE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'BLUE' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
 		protected internal static readonly int BLUE;
 		/// <summary>input type enumerator </summary>
 		public const int kMonochromeInput = 0;

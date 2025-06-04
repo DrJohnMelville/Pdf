@@ -6,11 +6,11 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using CoreJ2K.j2k.io;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.io;
-
-namespace Melville.CSJ2K.Color.Boxes
+namespace CoreJ2K.Color.Boxes
 {
 	
 	/// <summary> This class models the Color Specification Box in a JP2 image.
@@ -20,66 +20,23 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal sealed class ColorSpecificationBox:JP2Box
+	public sealed class ColorSpecificationBox:JP2Box
 	{
         
-		public ColorSpace.MethodEnum Method
-		{
-			// Return an enumeration for the colorspace method. 
-			
-			get
-			{
-				return method;
-			}
-			
-		}
-		public ColorSpace.CSEnum ColorSpace
-		{
-			// Return an enumeration for the colorspace. 
-			
-			get
-			{
-				return colorSpace;
-			}
-			
-		}
-        
-		public System.String ColorSpaceString
-		{
+		public ColorSpace.MethodEnum Method { get; private set; }
+
+		public ColorSpace.CSEnum ColorSpace { get; private set; }
+
+		public string ColorSpaceString =>
 			// Return a String representation of the colorspace. 
-			
-			get
-			{
-				return colorSpace.ToString();
-			}
-			
-		}
-		public System.String MethodString
-		{
+			ColorSpace.ToString();
+
+		public string MethodString =>
 			// Return a String representation of the colorspace method. 
-			
-			get
-			{
-				return method.ToString();
-			}
-			
-		}
-        
-		public byte[] ICCProfile
-		{
-			/* Retrieve the ICC Profile from the image as a byte []. */
-			
-			get
-			{
-				return iccProfile;
-			}
-			
-		}
-		
-		private ColorSpace.MethodEnum method;
-		private ColorSpace.CSEnum colorSpace;
-		private byte[] iccProfile = null;
-		
+			Method.ToString();
+
+		public byte[] ICCProfile { get; private set; } = null;
+
 		/// <summary> Construct a ColorSpecificationBox from an input image.</summary>
 		/// <param name="in">RandomAccessIO jp2 image
 		/// </param>
@@ -96,115 +53,116 @@ namespace Melville.CSJ2K.Color.Boxes
 		/// <summary>Analyze the box content. </summary>
 		private void  readBox()
 		{
-			byte[] boxHeader = new byte[256];
+			var boxHeader = new byte[256];
 			in_Renamed.seek(dataStart);
 			in_Renamed.readFully(boxHeader, 0, 11);
 			switch (boxHeader[0])
 			{
 				
 				case 1: 
-					method = Melville.CSJ2K.Color.ColorSpace.MethodEnum.ENUMERATED;
-                    int cs = Melville.CSJ2K.Icc.ICCProfile.getInt(boxHeader, 3);
+					Method = Color.ColorSpace.MethodEnum.ENUMERATED;
+                    var cs = Icc.ICCProfile.getInt(boxHeader, 3);
 					switch (cs)
 					{
 						case 16: 
-							colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.sRGB;
+							ColorSpace = Color.ColorSpace.CSEnum.sRGB;
 							break; // from switch (cs)...
 						
 						case 17: 
-							colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.GreyScale;
+							ColorSpace = Color.ColorSpace.CSEnum.GreyScale;
 							break; // from switch (cs)...
 						
 						case 18: 
-							colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.sYCC;
+							ColorSpace = Color.ColorSpace.CSEnum.sYCC;
 							break; // from switch (cs)...
                         case 20:
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.esRGB;
+                            ColorSpace = Color.ColorSpace.CSEnum.esRGB;
                             break;
 
                         #region Known but unsupported colorspaces
                         case 3:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCbCr(2) in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCbCr(2) in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 4:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCbCr(3) in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCbCr(3) in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 9:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace PhotoYCC in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace PhotoYCC in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 11:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CMY in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CMY in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 12:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CMYK in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CMYK in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 13:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCCK in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YCCK in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 14:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CIELab in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CIELab in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 15:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace Bi-Level(2) in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace Bi-Level(2) in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 19:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CIEJab in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace CIEJab in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 21:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace ROMM-RGB in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace ROMM-RGB in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 22:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YPbPr(1125/60) in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YPbPr(1125/60) in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 23:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YPbPr(1250/50) in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace YPbPr(1250/50) in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         case 24:
-                            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace e-sYCC in color specification box");
-                            colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+                            FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Unsupported enumerated colorspace e-sYCC in color specification box");
+                            ColorSpace = Color.ColorSpace.CSEnum.Unknown;
                             break;
                         #endregion
 
                         default: 
-							FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unknown enumerated colorspace (" + cs + ") in color specification box");
-							colorSpace = Melville.CSJ2K.Color.ColorSpace.CSEnum.Unknown;
+							FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+								$"Unknown enumerated colorspace ({cs}) in color specification box");
+							ColorSpace = Color.ColorSpace.CSEnum.Unknown;
 							break;
 						
 					}
 					break; // from switch (boxHeader[0])...
 				
 				case 2: 
-					method = Melville.CSJ2K.Color.ColorSpace.MethodEnum.ICC_PROFILED;
-                    int size = Melville.CSJ2K.Icc.ICCProfile.getInt(boxHeader, 3);
-					iccProfile = new byte[size];
+					Method = Color.ColorSpace.MethodEnum.ICC_PROFILED;
+                    var size = Icc.ICCProfile.getInt(boxHeader, 3);
+					ICCProfile = new byte[size];
 					in_Renamed.seek(dataStart + 3);
-					in_Renamed.readFully(iccProfile, 0, size);
+					in_Renamed.readFully(ICCProfile, 0, size);
 					break; // from switch (boxHeader[0])...
 				
 				default: 
-					throw new ColorSpaceException("Bad specification method (" + boxHeader[0] + ") in " + this);
+					throw new ColorSpaceException($"Bad specification method ({boxHeader[0]}) in {this}");
            			
 			}
 		}
 		
 		/// <summary>Return a suitable String representation of the class instance. </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[ColorSpecificationBox ");
-			rep.Append("method= ").Append(System.Convert.ToString(method)).Append(", ");
-			rep.Append("colorspace= ").Append(System.Convert.ToString(colorSpace)).Append("]");
+			var rep = new System.Text.StringBuilder("[ColorSpecificationBox ");
+			rep.Append("method= ").Append(Convert.ToString(Method)).Append(", ");
+			rep.Append("colorspace= ").Append(Convert.ToString(ColorSpace)).Append("]");
 			return rep.ToString();
 		}
 		

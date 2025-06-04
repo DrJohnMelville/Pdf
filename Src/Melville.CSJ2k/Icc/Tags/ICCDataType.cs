@@ -1,8 +1,8 @@
-namespace Melville.CSJ2K.Icc.Tags
+namespace CoreJ2K.Icc.Tags
 {
-    internal class ICCDataType : ICCTag
+    public class ICCDataType : ICCTag
     {
-        new public int type;
+        public new int type;
         public int reserved;
         public int dataFlag;
         //byte[] Data;

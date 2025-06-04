@@ -41,12 +41,12 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.encoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.encoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This abstract class represents the forward wavelet transform functional
@@ -55,13 +55,13 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// returned as the functional block that performs the forward wavelet
 	/// transform.
 	/// 
-	/// <p>This class assumes that data is transferred in code-blocks, as defined
+	/// This class assumes that data is transferred in code-blocks, as defined
 	/// by the 'CBlkWTDataSrc' interface. The internal calculation of the wavelet
 	/// transform may be done differently but a buffering class should convert to
-	/// that type of transfer.</p>
+	/// that type of transfer.
 	/// 
 	/// </summary>
-	internal abstract class ForwardWT:ImgDataAdapter, ForwWT, CBlkWTDataSrc
+	public abstract class ForwardWT:ImgDataAdapter, ForwWT, CBlkWTDataSrc
 	{
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a
@@ -77,14 +77,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// if no options are supported.
 		/// 
 		/// </returns>
-		public static System.String[][] ParameterInfo
-		{
-			get
-			{
-				return pinfo;
-			}
-			
-		}
+		public static string[][] ParameterInfo => pinfo;
+
 		public abstract int CbULY{get;}
 		public abstract int CbULX{get;}
 		
@@ -101,7 +95,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// for the wavelet transform start with 'W'. 
 		/// </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String[][] pinfo = new System.String[][]{new System.String[]{"Wlev", "<number of decomposition levels>", "Specifies the number of wavelet decomposition levels to apply to " + "the image. If 0 no wavelet transform is performed. All components " + "and all tiles have the same number of decomposition levels.", "5"}, new System.String[]{"Wwt", "[full]", "Specifies the wavelet transform to be used. Possible value is: " + "'full' (full page). The value 'full' performs a normal DWT.", "full"}, new System.String[]{"Wcboff", "<x y>", "Code-blocks partition offset in the reference grid. Allowed for " + "<x> and <y> are 0 and 1.\n" + "Note: This option is defined in JPEG 2000 part 2 and may not" + " be supported by all JPEG 2000 decoders.", "0 0"}};
+		private static readonly string[][] pinfo = {new string[]{"Wlev", "<number of decomposition levels>", "Specifies the number of wavelet decomposition levels to apply to " + "the image. If 0 no wavelet transform is performed. All components " + "and all tiles have the same number of decomposition levels.", "5"}, new string[]{"Wwt", "[full]", "Specifies the wavelet transform to be used. Possible value is: " + "'full' (full page). The value 'full' performs a normal DWT.", "full"}, new string[]{"Wcboff", "<x y>", "Code-blocks partition offset in the reference grid. Allowed for " + "<x> and <y> are 0 and 1.\n" + "Note: This option is defined in JPEG 2000 part 2 and may not" + " be supported by all JPEG 2000 decoders.", "0 0"}};
 		
 		/// <summary> Initializes this object for the specified number of tiles 'nt' and
 		/// components 'nc'.
@@ -146,64 +140,64 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			//int prefx, prefy; // Partitioning reference point coordinates
 			
 			// Check parameters
-			pl.checkList(OPT_PREFIX, Melville.CSJ2K.j2k.util.ParameterList.toNameArray(pinfo));
+			pl.checkList(OPT_PREFIX, ParameterList.toNameArray(pinfo));
 			
-			deflev = ((System.Int32) encSpec.dls.getDefault());
+			deflev = ((int) encSpec.dls.getDefault());
 			
 			// Code-block partition origin
-			System.String str = "";
+			var str = "";
 			if (pl.getParameter("Wcboff") == null)
 			{
-				throw new System.InvalidOperationException("You must specify an argument to the '-Wcboff' " + "option. See usage with the '-u' option");
+				throw new InvalidOperationException("You must specify an argument to the '-Wcboff' " + "option. See usage with the '-u' option");
 			}
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(pl.getParameter("Wcboff"));
+			var stk = new SupportClass.Tokenizer(pl.getParameter("Wcboff"));
 			if (stk.Count != 2)
 			{
-				throw new System.ArgumentException("'-Wcboff' option needs two" + " arguments. See usage with " + "the '-u' option.");
+				throw new ArgumentException("'-Wcboff' option needs two" + " arguments. See usage with " + "the '-u' option.");
 			}
-			int cb0x = 0;
+			var cb0x = 0;
 			str = stk.NextToken();
 			try
 			{
-				cb0x = (System.Int32.Parse(str));
+				cb0x = (int.Parse(str));
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.ArgumentException("Bad first parameter for the " + "'-Wcboff' option: " + str);
+				throw new ArgumentException($"Bad first parameter for the '-Wcboff' option: {str}");
 			}
 			if (cb0x < 0 || cb0x > 1)
 			{
-				throw new System.ArgumentException("Invalid horizontal " + "code-block partition origin.");
+				throw new ArgumentException("Invalid horizontal " + "code-block partition origin.");
 			}
-			int cb0y = 0;
+			var cb0y = 0;
 			str = stk.NextToken();
 			try
 			{
-				cb0y = (System.Int32.Parse(str));
+				cb0y = (int.Parse(str));
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.ArgumentException("Bad second parameter for the " + "'-Wcboff' option: " + str);
+				throw new ArgumentException($"Bad second parameter for the '-Wcboff' option: {str}");
 			}
 			if (cb0y < 0 || cb0y > 1)
 			{
-				throw new System.ArgumentException("Invalid vertical " + "code-block partition origin.");
+				throw new ArgumentException("Invalid vertical " + "code-block partition origin.");
 			}
 			if (cb0x != 0 || cb0y != 0)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Code-blocks partition origin is " + "different from (0,0). This is defined in JPEG 2000" + " part 2 and may be not supported by all JPEG 2000 " + "decoders.");
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Code-blocks partition origin is " + "different from (0,0). This is defined in JPEG 2000" + " part 2 and may be not supported by all JPEG 2000 " + "decoders.");
 			}
 			
 			return new ForwWTFull(src, encSpec, cb0x, cb0y);
 		}
 		public abstract bool isReversible(int param1, int param2);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData getNextInternCodeBlock(int param1, Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData param2);
+		public abstract CBlkWTData getNextInternCodeBlock(int param1, CBlkWTData param2);
 		public abstract int getFixedPoint(int param1);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.AnWTFilter[] getHorAnWaveletFilters(int param1, int param2);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.AnWTFilter[] getVertAnWaveletFilters(int param1, int param2);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.SubbandAn getAnSubbandTree(int param1, int param2);
+		public abstract WaveletFilter[] getHorAnWaveletFilters(int param1, int param2);
+		public abstract WaveletFilter[] getVertAnWaveletFilters(int param1, int param2);
+		public abstract SubbandAn getAnSubbandTree(int param1, int param2);
 		public abstract int getDecompLevels(int param1, int param2);
-		public abstract Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData getNextCodeBlock(int param1, Melville.CSJ2K.j2k.wavelet.analysis.CBlkWTData param2);
+		public abstract CBlkWTData getNextCodeBlock(int param1, CBlkWTData param2);
 		public abstract int getImplementationType(int param1);
 		public abstract int getDataType(int param1, int param2);
 		public abstract int getDecomp(int param1, int param2);

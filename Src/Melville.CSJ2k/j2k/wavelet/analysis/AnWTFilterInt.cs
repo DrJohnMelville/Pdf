@@ -45,8 +45,9 @@
 * 
 */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This extends the analysis wavelet filter general definitions of
@@ -54,17 +55,15 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// specifically. Implementations that work on int data should inherit
 	/// from this class.
 	/// 
-	/// <P>See the AnWTFilter class for details such as
+	/// See the AnWTFilter class for details such as
 	/// normalization, how to split odd-length signals, etc.
 	/// 
-	/// <P>The advantage of using the specialized method is that no casts
+	/// The advantage of using the specialized method is that no casts
 	/// are performed.
 	/// 
 	/// </summary>
-	/// <seealso cref="AnWTFilter">
-	/// 
-	/// </seealso>
-	internal abstract class AnWTFilterInt:AnWTFilter
+	/// <seealso cref="AnWTFilter" />
+	public abstract class AnWTFilterInt:AnWTFilter
 	{
 		/// <summary> Returns the type of data on which this filter works, as defined
 		/// in the DataBlk interface, which is always TYPE_INT for this
@@ -74,20 +73,13 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The type of data as defined in the DataBlk interface.
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
+		/// <seealso cref="j2k.image.DataBlk">
 		/// 
 		/// 
 		/// 
 		/// </seealso>
-		override public int DataType
-		{
-			get
-			{
-				return DataBlk.TYPE_INT;
-			}
-			
-		}
-		
+		public override int DataType => DataBlk.TYPE_INT;
+
 		/// <summary> A specific version of the analyze_lpf() method that works on int
 		/// data. See the general description of the analyze_lpf() method in
 		/// the AnWTFilter class for more details.
@@ -195,7 +187,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// 
 		/// </seealso>
 		
-		public override void  analyze_lpf(System.Object inSig, int inOff, int inLen, int inStep, System.Object lowSig, int lowOff, int lowStep, System.Object highSig, int highOff, int highStep)
+		public override void  analyze_lpf(object inSig, int inOff, int inLen, int inStep, object lowSig, int lowOff, int lowStep, object highSig, int highOff, int highStep)
 		{
 			
 			analyze_lpf((int[]) inSig, inOff, inLen, inStep, (int[]) lowSig, lowOff, lowStep, (int[]) highSig, highOff, highStep);
@@ -307,7 +299,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// 
 		/// </seealso>
 		
-		public override void  analyze_hpf(System.Object inSig, int inOff, int inLen, int inStep, System.Object lowSig, int lowOff, int lowStep, System.Object highSig, int highOff, int highStep)
+		public override void  analyze_hpf(object inSig, int inOff, int inLen, int inStep, object lowSig, int lowOff, int lowStep, object highSig, int highOff, int highStep)
 		{
 			
 			analyze_hpf((int[]) inSig, inOff, inLen, inStep, (int[]) lowSig, lowOff, lowStep, (int[]) highSig, highOff, highStep);

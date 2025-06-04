@@ -45,26 +45,26 @@
 */
 using System;
 
-namespace Melville.CSJ2K.j2k.wavelet
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This class holds the decomposition type to be used in each part of the
 	/// image; the default one, the component specific ones, the tile default ones 
 	/// and the component-tile specific ones.
 	/// 
-	/// <P>The decomposition type identifiers values are the same as in the
+	/// The decomposition type identifiers values are the same as in the
 	/// codestream.
 	/// 
-	/// <P>The hierarchy is:<br>
+	/// The hierarchy is:<br>
 	/// - Tile and component specific decomposition<br>
 	/// - Tile specific default decomposition<br>
 	/// - Component main default decomposition<br>
 	/// - Main default decomposition<br>
 	/// 
-	/// <P>At the moment tiles are not supported by this class.
+	/// At the moment tiles are not supported by this class.
 	/// 
 	/// </summary>
-	internal class WTDecompSpec
+	public class WTDecompSpec
 	{
 		/// <summary> Returns the main default decomposition type.
 		/// 
@@ -74,14 +74,8 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// 
 		/// 
 		/// </returns>
-		virtual public int MainDefDecompType
-		{
-			get
-			{
-				return mainDefDecompType;
-			}
-			
-		}
+		public virtual int MainDefDecompType => mainDefDecompType;
+
 		/// <summary> Returns the main default decomposition number of levels.
 		/// 
 		/// </summary>
@@ -90,14 +84,8 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// 
 		/// 
 		/// </returns>
-		virtual public int MainDefLevels
-		{
-			get
-			{
-				return mainDefLevels;
-			}
-			
-		}
+		public virtual int MainDefLevels => mainDefLevels;
+
 		/// <summary> ID for the dyadic wavelet tree decomposition (also called
 		/// "Mallat" in JPEG 2000): 0x00.
 		/// </summary>
@@ -152,7 +140,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// and tiles, with the given main default decomposition type and number of 
 		/// levels.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="nc">The number of components
@@ -198,7 +186,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		{
 			if (dec < 0 && lev < 0)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			// Set spec type and decomp
 			specValType[n] = DEC_SPEC_COMP_DEF;
@@ -211,7 +199,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 			compMainDefLevels[n] = (lev >= 0)?lev:mainDefLevels;
 			// For the moment disable it since other parts of JJ2000 do not
 			// support this
-			throw new NotImplementedException("Currently, in JJ2000, all components " + "and tiles must have the same " + "decomposition type and number of " + "levels");
+			throw new NotImplementedException("Currently, in JJ2000, all components and tiles must have the same decomposition type and number of levels");
 		}
 		
 		/// <summary> Returns the type of specification for the decomposition in the
@@ -219,7 +207,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// 'DEC_SPEC_MAIN_DEF', 'DEC_SPEC_COMP_DEF', 'DEC_SPEC_TILE_DEF',
 		/// 'DEC_SPEC_TILE_COMP'.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="n">The component index
@@ -241,7 +229,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <summary> Returns the decomposition type to be used in component 'n' and tile
 		/// 't'.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="n">The component index.
@@ -273,7 +261,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 					throw new NotImplementedException();
 				
 				default: 
-					throw new System.InvalidOperationException("Internal JJ2000 error");
+					throw new InvalidOperationException("Internal JJ2000 error");
 				
 			}
 		}
@@ -281,7 +269,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <summary> Returns the decomposition number of levels in component 'n' and tile
 		/// 't'.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="n">The component index.
@@ -313,7 +301,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 					throw new NotImplementedException();
 				
 				default: 
-					throw new System.InvalidOperationException("Internal JJ2000 error");
+					throw new InvalidOperationException("Internal JJ2000 error");
 				
 			}
 		}

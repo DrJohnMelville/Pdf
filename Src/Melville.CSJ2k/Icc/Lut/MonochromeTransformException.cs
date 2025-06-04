@@ -6,27 +6,26 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-
-namespace Melville.CSJ2K.Icc.Lut
+using System;
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> Exception thrown by MonochromeTransformTosRGB.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.lut.MonochromeTransformTosRGB">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.lut.MonochromeTransformTosRGB" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	internal class MonochromeTransformException:System.Exception
+	public class MonochromeTransformException:Exception
 	{
 		
 		/// <summary> Contruct with message</summary>
 		/// <param name="msg">returned by getMessage()
 		/// </param>
-		internal MonochromeTransformException(System.String msg):base(msg)
+		internal MonochromeTransformException(string msg):base(msg)
 		{
 		}
 		

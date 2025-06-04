@@ -1,12 +1,12 @@
-﻿// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+﻿// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
     using System;
     using System.IO;
 
-    internal class FileStreamFactory
+    public class FileStreamFactory
     {
         #region FIELDS
 
@@ -18,6 +18,7 @@ namespace Melville.CSJ2K.Util
 
         static FileStreamFactory()
         {
+            _creator = J2kSetup.GetSinglePlatformInstance<IFileStreamCreator>();
         }
 
         #endregion
@@ -32,8 +33,8 @@ namespace Melville.CSJ2K.Util
         internal static Stream New(string path, string mode)
         {
             if (_creator == null) throw new InvalidOperationException("No file stream creator is registered.");
-            if (path == null) throw new ArgumentNullException("path");
-            if (mode == null) throw new ArgumentNullException("mode");
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (mode == null) throw new ArgumentNullException(nameof(mode));
 
             return _creator.Create(path, mode);
         }

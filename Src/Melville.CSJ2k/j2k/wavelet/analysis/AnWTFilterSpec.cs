@@ -40,28 +40,26 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.quantization;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.quantization;
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This class extends ModuleSpec class for analysis filters specification
 	/// holding purpose.
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class AnWTFilterSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public sealed class AnWTFilterSpec:ModuleSpec
 	{
 		
 		/// <summary>The reversible default filter </summary>
-		private const System.String REV_FILTER_STR = "w5x3";
+		private const string REV_FILTER_STR = "w5x3";
 		
 		/// <summary>The non-reversible default filter </summary>
-		private const System.String NON_REV_FILTER_STR = "w9x7";
+		private const string NON_REV_FILTER_STR = "w9x7";
 		
 		/// <summary> Constructs a new 'AnWTFilterSpec' for the specified number of
 		/// components and tiles.
@@ -87,10 +85,10 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		{
 			
 			// Check parameters
-			pl.checkList(AnWTFilter.OPT_PREFIX, Melville.CSJ2K.j2k.util.ParameterList.toNameArray(AnWTFilter.ParameterInfo));
+			pl.checkList(AnWTFilter.OPT_PREFIX, ParameterList.toNameArray(AnWTFilter.ParameterInfo));
 			
-			System.String param = pl.getParameter("Ffilters");
-			bool isFilterSpecified = true;
+			var param = pl.getParameter("Ffilters");
+			var isFilterSpecified = true;
 			
 			// No parameter specified
 			if (param == null)
@@ -108,9 +106,9 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 				// If no filter is specified through the command-line, use
 				// REV_FILTER_STR or NON_REV_FILTER_STR according to the
 				// quantization type
-				for (int t = nt - 1; t >= 0; t--)
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						switch (qts.getSpecValType(t, c))
 						{
@@ -120,14 +118,9 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 								{
 									if (pl.getBooleanParameter("lossless"))
 										setDefault(parseFilters(REV_FILTER_STR));
-									if (((System.String) qts.getDefault()).Equals("reversible"))
-									{
-										setDefault(parseFilters(REV_FILTER_STR));
-									}
-									else
-									{
-										setDefault(parseFilters(NON_REV_FILTER_STR));
-									}
+									setDefault(((string)qts.getDefault()).Equals("reversible")
+										? parseFilters(REV_FILTER_STR)
+										: parseFilters(NON_REV_FILTER_STR));
 								}
 								specValType[t][c] = SPEC_DEF;
 								break;
@@ -135,14 +128,10 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 							case SPEC_COMP_DEF: 
 								if (!isCompSpecified(c))
 								{
-									if (((System.String) qts.getCompDef(c)).Equals("reversible"))
-									{
-										setCompDef(c, parseFilters(REV_FILTER_STR));
-									}
-									else
-									{
-										setCompDef(c, parseFilters(NON_REV_FILTER_STR));
-									}
+									setCompDef(c,
+										((string)qts.getCompDef(c)).Equals("reversible")
+											? parseFilters(REV_FILTER_STR)
+											: parseFilters(NON_REV_FILTER_STR));
 								}
 								specValType[t][c] = SPEC_COMP_DEF;
 								break;
@@ -150,14 +139,10 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 							case SPEC_TILE_DEF: 
 								if (!isTileSpecified(t))
 								{
-									if (((System.String) qts.getTileDef(t)).Equals("reversible"))
-									{
-										setTileDef(t, parseFilters(REV_FILTER_STR));
-									}
-									else
-									{
-										setTileDef(t, parseFilters(NON_REV_FILTER_STR));
-									}
+									setTileDef(t,
+										((string)qts.getTileDef(t)).Equals("reversible")
+											? parseFilters(REV_FILTER_STR)
+											: parseFilters(NON_REV_FILTER_STR));
 								}
 								specValType[t][c] = SPEC_TILE_DEF;
 								break;
@@ -165,20 +150,16 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 							case SPEC_TILE_COMP: 
 								if (!isTileCompSpecified(t, c))
 								{
-									if (((System.String) qts.getTileCompVal(t, c)).Equals("reversible"))
-									{
-										setTileCompVal(t, c, parseFilters(REV_FILTER_STR));
-									}
-									else
-									{
-										setTileCompVal(t, c, parseFilters(NON_REV_FILTER_STR));
-									}
+									setTileCompVal(t, c,
+										((string)qts.getTileCompVal(t, c)).Equals("reversible")
+											? parseFilters(REV_FILTER_STR)
+											: parseFilters(NON_REV_FILTER_STR));
 								}
 								specValType[t][c] = SPEC_TILE_COMP;
 								break;
 							
 							default: 
-								throw new System.ArgumentException("Unsupported " + "specification " + "type");
+								throw new ArgumentException("Unsupported " + "specification " + "type");
 							
 						}
 					}
@@ -187,9 +168,9 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			}
 			
 			// Parse argument
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			System.String word; // current word
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			string word; // current word
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
 			bool[] compSpec = null; // Components concerned by the specification
@@ -206,20 +187,14 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					// Tiles specification
 					case 'T':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-							curSpecType = SPEC_TILE_COMP;
-						else
-							curSpecType = SPEC_TILE_DEF;
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					case 'c': 
 					// Components specification
 					case 'C':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-							curSpecType = SPEC_TILE_COMP;
-						else
-							curSpecType = SPEC_COMP_DEF;
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					case 'w': 
@@ -227,41 +202,49 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					case 'W':  // WT filters specification
 						if (pl.getBooleanParameter("lossless") && word.ToUpper().Equals("w9x7".ToUpper()))
 						{
-							throw new System.ArgumentException("Cannot use non " + "reversible " + "wavelet transform with" + " '-lossless' option");
+							throw new ArgumentException("Cannot use non " + "reversible " + "wavelet transform with" + " '-lossless' option");
 						}
 						
 						filter = parseFilters(word);
-						if (curSpecType == SPEC_DEF)
+						switch (curSpecType)
 						{
-							setDefault(filter);
-						}
-						else if (curSpecType == SPEC_TILE_DEF)
-						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
-								if (tileSpec[i])
-								{
-									setTileDef(i, filter);
-								}
-						}
-						else if (curSpecType == SPEC_COMP_DEF)
-						{
-							for (int i = compSpec.Length - 1; i >= 0; i--)
-								if (compSpec[i])
-								{
-									setCompDef(i, filter);
-								}
-						}
-						else
-						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							case SPEC_DEF:
+								setDefault(filter);
+								break;
+							case SPEC_TILE_DEF:
 							{
-								for (int j = compSpec.Length - 1; j >= 0; j--)
-								{
-									if (tileSpec[i] && compSpec[j])
+								for (var i = tileSpec.Length - 1; i >= 0; i--)
+									if (tileSpec[i])
 									{
-										setTileCompVal(i, j, filter);
+										setTileDef(i, filter);
+									}
+
+								break;
+							}
+							case SPEC_COMP_DEF:
+							{
+								for (var i = compSpec.Length - 1; i >= 0; i--)
+									if (compSpec[i])
+									{
+										setCompDef(i, filter);
+									}
+
+								break;
+							}
+							default:
+							{
+								for (var i = tileSpec.Length - 1; i >= 0; i--)
+								{
+									for (var j = compSpec.Length - 1; j >= 0; j--)
+									{
+										if (tileSpec[i] && compSpec[j])
+										{
+											setTileCompVal(i, j, filter);
+										}
 									}
 								}
+
+								break;
 							}
 						}
 						
@@ -273,7 +256,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					
 					
 					default: 
-						throw new System.ArgumentException("Bad construction for " + "parameter: " + word);
+						throw new ArgumentException($"Bad construction for parameter: {word}");
 					
 				}
 			}
@@ -281,10 +264,10 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			// Check that default value has been specified
 			if (getDefault() == null)
 			{
-				int ndefspec = 0;
-				for (int t = nt - 1; t >= 0; t--)
+				var ndefspec = 0;
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						if (specValType[t][c] == SPEC_DEF)
 						{
@@ -297,10 +280,9 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 				// the default value defined in ParameterList
 				if (ndefspec != 0)
 				{
-					if (((System.String) qts.getDefault()).Equals("reversible"))
-						setDefault(parseFilters(REV_FILTER_STR));
-					else
-						setDefault(parseFilters(NON_REV_FILTER_STR));
+					setDefault(((string)qts.getDefault()).Equals("reversible")
+						? parseFilters(REV_FILTER_STR)
+						: parseFilters(NON_REV_FILTER_STR));
 				}
 				else
 				{
@@ -311,7 +293,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					{
 						
 						case SPEC_TILE_DEF: 
-							for (int c = nc - 1; c >= 0; c--)
+							for (var c = nc - 1; c >= 0; c--)
 							{
 								if (specValType[0][c] == SPEC_TILE_DEF)
 									specValType[0][c] = SPEC_DEF;
@@ -320,7 +302,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 							break;
 						
 						case SPEC_COMP_DEF: 
-							for (int t = nt - 1; t >= 0; t--)
+							for (var t = nt - 1; t >= 0; t--)
 							{
 								if (specValType[t][0] == SPEC_COMP_DEF)
 									specValType[t][0] = SPEC_DEF;
@@ -338,12 +320,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			
 			// Check consistency between filter and quantization type
 			// specification
-			for (int t = nt - 1; t >= 0; t--)
+			for (var t = nt - 1; t >= 0; t--)
 			{
-				for (int c = nc - 1; c >= 0; c--)
+				for (var c = nc - 1; c >= 0; c--)
 				{
 					// Reversible quantization
-					if (((System.String) qts.getTileCompVal(t, c)).Equals("reversible"))
+					if (((string) qts.getTileCompVal(t, c)).Equals("reversible"))
 					{
 						// If filter is reversible, it is OK
 						if (isReversible(t, c))
@@ -357,7 +339,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 						else
 						{
 							// Non reversible filter specified -> Error
-							throw new System.ArgumentException("Filter of " + "tile-component" + " (" + t + "," + c + ") does" + " not allow " + "reversible " + "quantization. " + "Specify '-Qtype " + "expounded' or " + "'-Qtype derived'" + "in " + "the command line.");
+							throw new ArgumentException(
+								$"Filter of tile-component ({t},{c}) does not allow reversible quantization. Specify '-Qtype expounded' or '-Qtype derived'in the command line.");
 						}
 					}
 					else
@@ -376,7 +359,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 						else
 						{
 							// Reversible filter specified -> Error
-							throw new System.ArgumentException("Filter of " + "tile-component" + " (" + t + "," + c + ") does" + " not allow " + "non-reversible " + "quantization. " + "Specify '-Qtype " + "reversible' in " + "the command line");
+							throw new ArgumentException(
+								$"Filter of tile-component ({t},{c}) does not allow non-reversible quantization. Specify '-Qtype reversible' in the command line");
 						}
 					}
 				}
@@ -392,10 +376,10 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> Analysis wavelet filter (first dimension: by direction,
 		/// second dimension: by decomposition levels)
 		/// </returns>
-		private AnWTFilter[][] parseFilters(System.String word)
+		private AnWTFilter[][] parseFilters(string word)
 		{
-			AnWTFilter[][] filt = new AnWTFilter[2][];
-			for (int i = 0; i < 2; i++)
+			var filt = new AnWTFilter[2][];
+			for (var i = 0; i < 2; i++)
 			{
 				filt[i] = new AnWTFilter[1];
 			}
@@ -413,7 +397,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			}
 			else
 			{
-				throw new System.ArgumentException("Non JPEG 2000 part I filter: " + word);
+				throw new ArgumentException($"Non JPEG 2000 part I filter: {word}");
 			}
 		}
 		
@@ -430,19 +414,17 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The data type of the filters in this object
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
-		/// 
-		/// </seealso>
-		public virtual int getWTDataType(int t, int c)
+		/// <seealso cref="j2k.image.DataBlk" />
+		public int getWTDataType(int t, int c)
 		{
-			AnWTFilter[][] an = (AnWTFilter[][]) getSpec(t, c);
+			var an = (AnWTFilter[][]) getSpec(t, c);
 			return an[0][0].DataType;
 		}
 		
 		/// <summary> Returns the horizontal analysis filters to be used in component 'n' and 
 		/// tile 't'.
 		/// 
-		/// <P>The horizontal analysis filters are returned in an array of
+		/// The horizontal analysis filters are returned in an array of
 		/// AnWTFilter. Each element contains the horizontal filter for each
 		/// resolution level starting with resolution level 1 (i.e. the analysis
 		/// filter to go from resolution level 1 to resolution level 0). If there
@@ -460,16 +442,16 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// tile 't'.
 		/// 
 		/// </returns>
-		public virtual AnWTFilter[] getHFilters(int t, int c)
+		public AnWTFilter[] getHFilters(int t, int c)
 		{
-			AnWTFilter[][] an = (AnWTFilter[][]) getSpec(t, c);
+			var an = (AnWTFilter[][]) getSpec(t, c);
 			return an[0];
 		}
 		
 		/// <summary> Returns the vertical analysis filters to be used in component 'n' and 
 		/// tile 't'.
 		/// 
-		/// <P>The vertical analysis filters are returned in an array of
+		/// The vertical analysis filters are returned in an array of
 		/// AnWTFilter. Each element contains the vertical filter for each
 		/// resolution level starting with resolution level 1 (i.e. the analysis
 		/// filter to go from resolution level 1 to resolution level 0). If there
@@ -487,41 +469,39 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// tile 't'.
 		/// 
 		/// </returns>
-		public virtual AnWTFilter[] getVFilters(int t, int c)
+		public AnWTFilter[] getVFilters(int t, int c)
 		{
-			AnWTFilter[][] an = (AnWTFilter[][]) getSpec(t, c);
+			var an = (AnWTFilter[][]) getSpec(t, c);
 			return an[1];
 		}
 		
 		/// <summary>Debugging method </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String str = "";
+			var str = "";
 			AnWTFilter[][] an;
 			
-			str += ("nTiles=" + nTiles + "\nnComp=" + nComp + "\n\n");
+			str += $"nTiles={nTiles}\nnComp={nComp}\n\n";
 			
-			for (int t = 0; t < nTiles; t++)
+			for (var t = 0; t < nTiles; t++)
 			{
-				for (int c = 0; c < nComp; c++)
+				for (var c = 0; c < nComp; c++)
 				{
 					an = (AnWTFilter[][]) getSpec(t, c);
 					
-					str += ("(t:" + t + ",c:" + c + ")\n");
+					str += $"(t:{t},c:{c})\n";
 					
 					// Horizontal filters
 					str += "\tH:";
-					for (int i = 0; i < an[0].Length; i++)
+					for (var i = 0; i < an[0].Length; i++)
 					{
-						//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-						str += (" " + an[0][i]);
+						str += $" {an[0][i]}";
 					}
 					// Horizontal filters
 					str += "\n\tV:";
-					for (int i = 0; i < an[1].Length; i++)
+					for (var i = 0; i < an[1].Length; i++)
 					{
-						//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-						str += (" " + an[1][i]);
+						str += $" {an[1][i]}";
 					}
 					str += "\n";
 				}
@@ -540,14 +520,14 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <param name="c">The index of the component
 		/// 
 		/// </param>
-		public virtual bool isReversible(int t, int c)
+		public bool isReversible(int t, int c)
 		{
 			// Note: no need to buffer the result since this method is
 			// normally called once per tile-component.
 			AnWTFilter[] hfilter = getHFilters(t, c), vfilter = getVFilters(t, c);
 			
 			// As soon as a filter is not reversible, false can be returned
-			for (int i = hfilter.Length - 1; i >= 0; i--)
+			for (var i = hfilter.Length - 1; i >= 0; i--)
 				if (!hfilter[i].Reversible || !vfilter[i].Reversible)
 					return false;
 			return true;

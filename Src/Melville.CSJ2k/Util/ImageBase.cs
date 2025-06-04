@@ -1,25 +1,21 @@
-﻿// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+﻿// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
     using System;
+    using System.Reflection;
 
 
-    internal abstract class ImageBase<TBase> 
+    public abstract class ImageBase<TBase> : IImage
     {
-        #region FIELDS
-
-        protected const int SizeOfArgb = 4;
-
-        #endregion
-
         #region CONSTRUCTORS
 
-        protected ImageBase(int width, int height, byte[] bytes)
+        protected ImageBase(int width, int height, int numComponents, byte[] bytes)
         {
             Width = width;
             Height = height;
+            NumComponents = numComponents;
             Bytes = bytes;
         }
 
@@ -31,6 +27,8 @@ namespace Melville.CSJ2K.Util
 
         protected int Height { get; }
 
+        protected int NumComponents { get; }
+
         protected byte[] Bytes { get; }
 
         #endregion
@@ -39,11 +37,7 @@ namespace Melville.CSJ2K.Util
 
         public virtual T As<T>()
         {
-#if NETFX_CORE || NETSTANDARD
             if (!typeof(TBase).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo()))
-#else
-            if (!typeof(TBase).IsAssignableFrom(typeof(T)))
-#endif
             {
                 throw new InvalidCastException(
                     $"Cannot cast to '{typeof(T).Name}'; type must be assignable from '{typeof(TBase).Name}'");

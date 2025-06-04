@@ -41,9 +41,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 */
 
-using Melville.CSJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet;
 
-namespace Melville.CSJ2K.j2k.quantization.dequantizer
+namespace CoreJ2K.j2k.quantization.dequantizer
 {
 	
 	/// <summary> This class holds the parameters for the scalar deadzone dequantizer
@@ -51,10 +51,8 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// parameters from the main header and tile headers.
 	/// 
 	/// </summary>
-	/// <seealso cref="StdDequantizer">
-	/// 
-	/// </seealso>
-	internal class StdDequantizerParams:DequantizerParams
+	/// <seealso cref="StdDequantizer" />
+	public class StdDequantizerParams:DequantizerParams
 	{
 		/// <summary> Returns the type of the dequantizer for which the parameters are. The
 		/// types are defined in the Dequantizer class.
@@ -64,44 +62,33 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// are. Always Q_TYPE_SCALAR_DZ.
 		/// 
 		/// </returns>
-		/// <seealso cref="Dequantizer">
-		/// 
-		/// </seealso>
-		override public int DequantizerType
-		{
-			get
-			{
-				return Melville.CSJ2K.j2k.quantization.QuantizationType_Fields.Q_TYPE_SCALAR_DZ;
-			}
-			
-		}
-		
+		/// <seealso cref="Dequantizer" />
+		public override int DequantizerType => QuantizationType_Fields.Q_TYPE_SCALAR_DZ;
+
 		/// <summary> The quantization step "exponent" value, for each resolution level and
 		/// subband, as it appears in the codestream. The first index is the
 		/// resolution level, and the second the subband index (within the
 		/// resolution level), as specified in the Subband class. When in derived
 		/// quantization mode only the first resolution level (level 0) appears.
 		/// 
-		/// <P>For non-reversible systems this value corresponds to ceil(log2(D')),
+		/// For non-reversible systems this value corresponds to ceil(log2(D')),
 		/// where D' is the quantization step size normalized to data of a dynamic
 		/// range of 1. The true quantization step size is (2^R)*D', where R is
 		/// ceil(log2(dr)), where 'dr' is the dynamic range of the subband samples,
 		/// in the corresponding subband.
 		/// 
-		/// <P>For reversible systems the exponent value in 'exp' is used to
+		/// For reversible systems the exponent value in 'exp' is used to
 		/// determine the number of magnitude bits in the quantized
 		/// coefficients. It is, in fact, the dynamic range of the subband data.
 		/// 
-		/// <P>In general the index of the first subband in a resolution level is
+		/// In general the index of the first subband in a resolution level is
 		/// not 0. The exponents appear, within each resolution level, at their
 		/// subband index, and not in the subband order starting from 0. For
 		/// instance, resolution level 3, the first subband has the index 16, then
 		/// the exponent of the subband is exp[3][16], not exp[3][0].
 		/// 
 		/// </summary>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband" />
 		public int[][] exp;
 		
 		/// <summary> The quantization step for non-reversible systems, normalized to a
@@ -112,23 +99,21 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// derived quantization mode only the first resolution level (level 0)
 		/// appears.
 		/// 
-		/// <P>The true step size D is obtained as follows: D=(2^R)*D', where
+		/// The true step size D is obtained as follows: D=(2^R)*D', where
 		/// 'R=ceil(log2(dr))' and 'dr' is the dynamic range of the subband
 		/// samples, in the corresponding subband.
 		/// 
-		/// <P>This value is 'null' for reversible systems (i.e. there is no true
+		/// This value is 'null' for reversible systems (i.e. there is no true
 		/// quantization, 'D' is always 1).
 		/// 
-		/// <P>In general the index of the first subband in a resolution level is
+		/// In general the index of the first subband in a resolution level is
 		/// not 0. The steps appear, within each resolution level, at their subband
 		/// index, and not in the subband order starting from 0. For instance, if
 		/// resolution level 3, the first subband has the index 16, then the step
 		/// of the subband is nStep[3][16], not nStep[3][0].
 		/// 
 		/// </summary>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband" />
 		public float[][] nStep;
 	}
 }

@@ -40,18 +40,18 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-namespace Melville.CSJ2K.j2k.util
+namespace CoreJ2K.j2k.util
 {
 	using System.Collections.Generic;
 	using System.IO;
 
-	using Melville.CSJ2K.j2k.io;
+	using io;
 
 	/// <summary> This class takes a legal JPEG 2000 codestream and performs some
 	/// manipulation on it. Currently the manipulations supported are: Tile-parts
 	/// 
 	/// </summary>
-	internal class CodestreamManipulator
+	public class CodestreamManipulator
 	{
 		private void  InitBlock()
 		{
@@ -101,7 +101,7 @@ namespace Melville.CSJ2K.j2k.util
 		private int[] ppt;
 		
 		/// <summary>The positions of the SOT, SOP and EPH markers </summary>
-		private System.Int32[] positions;
+		private int[] positions;
 		
 		/// <summary>The main header </summary>
 		private byte[] mainHeader;
@@ -152,8 +152,8 @@ namespace Melville.CSJ2K.j2k.util
 			this.stream = stream;
 			this.nt = nt;
 			this.pptp = pptp;
-			this.ppmUsed = ppm;
-			this.pptUsed = ppt;
+			ppmUsed = ppm;
+			pptUsed = ppt;
 			this.tempSop = tempSop;
 			this.tempEph = tempEph;
 		}
@@ -171,7 +171,7 @@ namespace Melville.CSJ2K.j2k.util
 		public virtual int doCodestreamManipulation()
 		{
 			BEBufferedRandomAccessFile fi;
-			int addedHeaderBytes = 0;
+			var addedHeaderBytes = 0;
 			ppt = new int[nt];
 			tileParts = new byte[nt][][];
 			tileHeaders = new byte[nt][];
@@ -227,19 +227,19 @@ namespace Melville.CSJ2K.j2k.util
 			short marker;
 			int halfMarker;
 			int tileEnd;
-			System.Collections.Generic.List<System.Int32> markPos = new List<int>(10);
+			var markPos = new List<int>(10);
 			
 			// Find position of first SOT marker
 			marker = (short) fi.readUnsignedShort(); // read SOC marker
 			marker = (short) fi.readUnsignedShort();
-			while (marker != Melville.CSJ2K.j2k.codestream.Markers.SOT)
+			while (marker != codestream.Markers.SOT)
 			{
 				pos = fi.Pos;
 				length = fi.readUnsignedShort();
 				
 				// If SOP and EPH markers were only used for parsing in this
 				// class remove SOP and EPH markers from Scod field
-				if (marker == Melville.CSJ2K.j2k.codestream.Markers.COD)
+				if (marker == codestream.Markers.COD)
 				{
 					int scod = fi.readUnsignedByte();
 					if (tempSop)
@@ -262,7 +262,7 @@ namespace Melville.CSJ2K.j2k.util
 				// Read SOT marker
 				fi.readUnsignedShort(); // Skip SOT
 				pos = fi.Pos;
-				markPos.Add((System.Int32) fi.Pos);
+				markPos.Add(fi.Pos);
 				fi.readInt(); // Skip Lsot and Isot
 				length = fi.readInt(); // Read Psot
 				fi.readUnsignedShort(); // Skip TPsot & TNsot
@@ -270,14 +270,14 @@ namespace Melville.CSJ2K.j2k.util
 				
 				// Find position of SOD marker
 				marker = (short) fi.readUnsignedShort();
-				while (marker != Melville.CSJ2K.j2k.codestream.Markers.SOD)
+				while (marker != codestream.Markers.SOD)
 				{
 					pos = fi.Pos;
 					length = fi.readUnsignedShort();
 					
 					// If SOP and EPH markers were only used for parsing in this
 					// class remove SOP and EPH markers from Scod field
-					if (marker == Melville.CSJ2K.j2k.codestream.Markers.COD)
+					if (marker == codestream.Markers.COD)
 					{
 						int scod = fi.readUnsignedByte();
 						if (tempSop)
@@ -298,31 +298,31 @@ namespace Melville.CSJ2K.j2k.util
 				i = fi.Pos;
 				while (i < tileEnd)
 				{
-					halfMarker = (short) fi.readUnsignedByte();
-					if (halfMarker == (short) 0xff)
+					halfMarker = fi.readUnsignedByte();
+					if (halfMarker == 0xff)
 					{
 						marker = (short) ((halfMarker << 8) + fi.readUnsignedByte());
 						i++;
-						if (marker == Melville.CSJ2K.j2k.codestream.Markers.SOP)
+						if (marker == codestream.Markers.SOP)
 						{
-							markPos.Add((System.Int32) fi.Pos);
+							markPos.Add(fi.Pos);
 							ppt[t]++;
 							sop++;
 							fi.skipBytes(4);
 							i += 4;
 						}
 						
-						if (marker == Melville.CSJ2K.j2k.codestream.Markers.EPH)
+						if (marker == codestream.Markers.EPH)
 						{
-							markPos.Add((System.Int32) fi.Pos);
+							markPos.Add(fi.Pos);
 							eph++;
 						}
 					}
 					i++;
 				}
 			}
-			markPos.Add((System.Int32) (fi.Pos + 2));
-			positions = new System.Int32[markPos.Count];
+			markPos.Add(fi.Pos + 2);
+			positions = new int[markPos.Count];
 			markPos.CopyTo(positions);
 		}
 		
@@ -342,7 +342,7 @@ namespace Melville.CSJ2K.j2k.util
 			
 			// Buffer main header
 			fi.seek(0);
-			length = ((System.Int32) positions[0]) - 2;
+			length = positions[0] - 2;
 			mainHeader = new byte[length];
 			fi.readFully(mainHeader, 0, length);
 			markIndex = 0;
@@ -369,21 +369,21 @@ namespace Melville.CSJ2K.j2k.util
 					if (tempSop)
 					{
 						// SOP marker is skipped
-						length -= Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH;
-						fi.skipBytes(Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH);
+						length -= codestream.Markers.SOP_LENGTH;
+						fi.skipBytes(codestream.Markers.SOP_LENGTH);
 					}
 					else
 					{
 						// SOP marker is read and buffered
-						length -= Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH;
-						sopMarkSeg[t][p] = new byte[Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH];
-						fi.readFully(sopMarkSeg[t][p], 0, Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH);
+						length -= codestream.Markers.SOP_LENGTH;
+						sopMarkSeg[t][p] = new byte[codestream.Markers.SOP_LENGTH];
+						fi.readFully(sopMarkSeg[t][p], 0, codestream.Markers.SOP_LENGTH);
 					}
 					
 					if (!tempEph)
 					{
 						// EPH marker is kept in header
-						length += Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH;
+						length += codestream.Markers.EPH_LENGTH;
 					}
 					packetHeaders[t][p] = new byte[length];
 					fi.readFully(packetHeaders[t][p], 0, length);
@@ -392,11 +392,11 @@ namespace Melville.CSJ2K.j2k.util
 					// Read packet data 
 					length = positions[markIndex + 1] - positions[markIndex];
 					
-					length -= Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH;
+					length -= codestream.Markers.EPH_LENGTH;
 					if (tempEph)
 					{
 						// EPH marker is used and is skipped
-						fi.skipBytes(Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH);
+						fi.skipBytes(codestream.Markers.EPH_LENGTH);
 					}
 					
 					packetData[t][p] = new byte[length];
@@ -422,7 +422,7 @@ namespace Melville.CSJ2K.j2k.util
 			int p, np, nomnp;
 			int numTileParts;
 			int numPackets;
-			System.IO.MemoryStream temp = new System.IO.MemoryStream();
+			var temp = new MemoryStream();
 			byte[] tempByteArr;
 			
 			// Create tile parts
@@ -470,8 +470,8 @@ namespace Melville.CSJ2K.j2k.util
 					// Write PPT marker segments if PPT used
 					if (pptUsed)
 					{
-						int pptLength = 3; // Zppt and Lppt
-						int pptIndex = 0;
+						var pptLength = 3; // Zppt and Lppt
+						var pptIndex = 0;
 						int phLength;
 						
 						p = pIndex;
@@ -481,14 +481,14 @@ namespace Melville.CSJ2K.j2k.util
 							
 							// If the total legth of the packet headers is greater
 							// than MAX_LPPT, several PPT markers are needed
-							if (pptLength + phLength > Melville.CSJ2K.j2k.codestream.Markers.MAX_LPPT)
+							if (pptLength + phLength > codestream.Markers.MAX_LPPT)
 							{
 								
-								temp.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.PPT, 8));
-								temp.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.PPT & 0x00FF));
-								temp.WriteByte((System.Byte) SupportClass.URShift(pptLength, 8));
-								temp.WriteByte((System.Byte) pptLength);
-								temp.WriteByte((System.Byte) pptIndex++);
+								temp.WriteByte((byte) SupportClass.URShift(codestream.Markers.PPT, 8));
+								temp.WriteByte(codestream.Markers.PPT & 0x00FF);
+								temp.WriteByte((byte) SupportClass.URShift(pptLength, 8));
+								temp.WriteByte((byte) pptLength);
+								temp.WriteByte((byte) pptIndex++);
 								for (i = pIndex; i < p; i++)
 								{
 									temp.Write(packetHeaders[t][i], 0, packetHeaders[t][i].Length);
@@ -501,11 +501,11 @@ namespace Melville.CSJ2K.j2k.util
 							np--;
 						}
 						// Write last PPT marker
-						temp.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.PPT, 8));
-						temp.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.PPT & 0x00FF));
-						temp.WriteByte((System.Byte) SupportClass.URShift(pptLength, 8));
-						temp.WriteByte((System.Byte) pptLength);
-						temp.WriteByte((System.Byte) pptIndex);
+						temp.WriteByte((byte) SupportClass.URShift(codestream.Markers.PPT, 8));
+						temp.WriteByte(codestream.Markers.PPT & 0x00FF);
+						temp.WriteByte((byte) SupportClass.URShift(pptLength, 8));
+						temp.WriteByte((byte) pptLength);
+						temp.WriteByte((byte) pptIndex);
 						for (i = pIndex; i < p; i++)
 						{
 							
@@ -516,15 +516,15 @@ namespace Melville.CSJ2K.j2k.util
 					np = nomnp;
 					
 					// Write SOD marker
-					temp.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.SOD, 8));
-					temp.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.SOD & 0x00FF));
+					temp.WriteByte((byte) SupportClass.URShift(codestream.Markers.SOD, 8));
+					temp.WriteByte(codestream.Markers.SOD & 0x00FF);
 					
 					// Write packet data and packet headers if PPT and PPM not used
 					for (p = tppStart; p < tppStart + np; p++)
 					{
 						if (!tempSop)
 						{
-							temp.Write(sopMarkSeg[t][p], 0, Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH);
+							temp.Write(sopMarkSeg[t][p], 0, codestream.Markers.SOP_LENGTH);
 						}
 						
 						if (!(ppmUsed || pptUsed))
@@ -554,8 +554,8 @@ namespace Melville.CSJ2K.j2k.util
 					else
 					{
 						// Edit tile part header
-						tempByteArr[0] = (byte) (SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.SOT, 8)); // SOT
-						tempByteArr[1] = (byte) (Melville.CSJ2K.j2k.codestream.Markers.SOT & 0x00FF);
+						tempByteArr[0] = (byte) (SupportClass.URShift(codestream.Markers.SOT, 8)); // SOT
+						tempByteArr[1] = codestream.Markers.SOT & 0x00FF;
 						tempByteArr[2] = (byte) SupportClass.Identity((0)); // Lsot
 						tempByteArr[3] = (byte) SupportClass.Identity((10));
 						tempByteArr[4] = (byte) (SupportClass.URShift(t, 8)); // Isot
@@ -588,9 +588,9 @@ namespace Melville.CSJ2K.j2k.util
 		private void  writeNewCodestream(BufferedRandomAccessFile fi)
 		{
 			int t, p, tp; // i removed
-			int numTiles = tileParts.Length;
-			int[][] packetHeaderLengths = new int[numTiles][];
-			for (int i2 = 0; i2 < numTiles; i2++)
+			var numTiles = tileParts.Length;
+			var packetHeaderLengths = new int[numTiles][];
+			for (var i2 = 0; i2 < numTiles; i2++)
 			{
 				packetHeaderLengths[i2] = new int[maxtp];
 			}
@@ -603,13 +603,13 @@ namespace Melville.CSJ2K.j2k.util
 			// If PPM used write all packet headers in PPM markers
 			if (ppmUsed)
 			{
-				System.IO.MemoryStream ppmMarkerSegment = new System.IO.MemoryStream();
+				var ppmMarkerSegment = new MemoryStream();
 				int numPackets;
 				int totNumPackets;
-				int ppmIndex = 0;
+				var ppmIndex = 0;
 				int ppmLength;
 				int pStart, pStop;
-				int[] prem = new int[numTiles];
+				var prem = new int[numTiles];
 				
 				// Set number of remaining packets 
 				for (t = 0; t < numTiles; t++)
@@ -642,11 +642,11 @@ namespace Melville.CSJ2K.j2k.util
 				}
 				
 				// Write first PPM marker
-				ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.PPM, 8));
-				ppmMarkerSegment.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.PPM & 0x00FF));
-				ppmMarkerSegment.WriteByte((System.Byte) 0); // Temporary Lppm value
-				ppmMarkerSegment.WriteByte((System.Byte) 0); // Temporary Lppm value
-				ppmMarkerSegment.WriteByte((System.Byte) 0); // zppm
+				ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(codestream.Markers.PPM, 8));
+				ppmMarkerSegment.WriteByte(codestream.Markers.PPM & 0x00FF);
+				ppmMarkerSegment.WriteByte(0); // Temporary Lppm value
+				ppmMarkerSegment.WriteByte(0); // Temporary Lppm value
+				ppmMarkerSegment.WriteByte(0); // zppm
 				ppmLength = 3;
 				ppmIndex++;
 				
@@ -672,7 +672,7 @@ namespace Melville.CSJ2K.j2k.util
 							
 							// If Nppm value wont fit in current PPM marker segment
 							// write current PPM marker segment and start new
-							if (ppmLength + 4 > Melville.CSJ2K.j2k.codestream.Markers.MAX_LPPM)
+							if (ppmLength + 4 > codestream.Markers.MAX_LPPM)
 							{
 								// Write current PPM marker
 								temp = ppmMarkerSegment.ToArray();
@@ -685,20 +685,20 @@ namespace Melville.CSJ2K.j2k.util
 								//UPGRADE_ISSUE: Method 'java.io.ByteArrayOutputStream.reset' was not converted. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioByteArrayOutputStreamreset'"
 								//ppmMarkerSegment.reset();
 								ppmMarkerSegment.SetLength(0);
-								ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.PPM, 8));
-								ppmMarkerSegment.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.PPM & 0x00FF));
-								ppmMarkerSegment.WriteByte((System.Byte) 0); // Temporary Lppm value
-								ppmMarkerSegment.WriteByte((System.Byte) 0); // Temporary Lppm value
-								ppmMarkerSegment.WriteByte((System.Byte) ppmIndex++); // zppm
+								ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(codestream.Markers.PPM, 8));
+								ppmMarkerSegment.WriteByte(codestream.Markers.PPM & 0x00FF);
+								ppmMarkerSegment.WriteByte(0); // Temporary Lppm value
+								ppmMarkerSegment.WriteByte(0); // Temporary Lppm value
+								ppmMarkerSegment.WriteByte((byte) ppmIndex++); // zppm
 								ppmLength = 3;
 							}
 							
 							// Write Nppm value
 							length = packetHeaderLengths[t][tp];
-							ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(length, 24));
-							ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(length, 16));
-							ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(length, 8));
-							ppmMarkerSegment.WriteByte((System.Byte) length);
+							ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(length, 24));
+							ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(length, 16));
+							ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(length, 8));
+							ppmMarkerSegment.WriteByte((byte) length);
 							ppmLength += 4;
 							
 							// Write packet headers
@@ -709,7 +709,7 @@ namespace Melville.CSJ2K.j2k.util
 								// If next packet header value wont fit in 
 								// current PPM marker segment write current PPM 
 								// marker segment and start new
-								if (ppmLength + length > Melville.CSJ2K.j2k.codestream.Markers.MAX_LPPM)
+								if (ppmLength + length > codestream.Markers.MAX_LPPM)
 								{
 									// Write current PPM marker
 									temp = ppmMarkerSegment.ToArray();
@@ -722,11 +722,11 @@ namespace Melville.CSJ2K.j2k.util
 									//UPGRADE_ISSUE: Method 'java.io.ByteArrayOutputStream.reset' was not converted. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioByteArrayOutputStreamreset'"
 									//ppmMarkerSegment.reset();
 									ppmMarkerSegment.SetLength(0);
-									ppmMarkerSegment.WriteByte((System.Byte) SupportClass.URShift(Melville.CSJ2K.j2k.codestream.Markers.PPM, 8));
-									ppmMarkerSegment.WriteByte((System.Byte) (Melville.CSJ2K.j2k.codestream.Markers.PPM & 0x00FF));
-									ppmMarkerSegment.WriteByte((System.Byte) 0); // Temp Lppm value
-									ppmMarkerSegment.WriteByte((System.Byte) 0); // Temp Lppm value
-									ppmMarkerSegment.WriteByte((System.Byte) ppmIndex++); // zppm
+									ppmMarkerSegment.WriteByte((byte) SupportClass.URShift(codestream.Markers.PPM, 8));
+									ppmMarkerSegment.WriteByte(codestream.Markers.PPM & 0x00FF);
+									ppmMarkerSegment.WriteByte(0); // Temp Lppm value
+									ppmMarkerSegment.WriteByte(0); // Temp Lppm value
+									ppmMarkerSegment.WriteByte((byte) ppmIndex++); // zppm
 									ppmLength = 3;
 								}
 								
@@ -759,7 +759,7 @@ namespace Melville.CSJ2K.j2k.util
 					}
 				}
 			}
-			fi.writeShort(Melville.CSJ2K.j2k.codestream.Markers.EOC);
+			fi.writeShort(codestream.Markers.EOC);
 		}
 	}
 }

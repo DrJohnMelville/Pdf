@@ -43,8 +43,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This interface defines how a forward or inverse wavelet transform should
@@ -52,27 +53,28 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// class inherits, all operations are confined to the current tile, and all
 	/// coordinates are relative to it.
 	/// 
-	/// <p>The definition of the methods in this interface allows for different
+	/// The definition of the methods in this interface allows for different
 	/// types of implementation, reversibility and levels of decompositions for
 	/// each component and each tile. An implementation of this interface does not
 	/// need to support all this flexibility (e.g., it may provide the same
 	/// implementation type and decomposition levels for all tiles and
-	/// components).</p>
+	/// components).
 	/// 
 	/// </summary>
-	internal struct WaveletTransform_Fields{
+	public struct WaveletTransform_Fields{
 		/// <summary> ID for line based implementations of wavelet transforms.
 		/// 
 		/// </summary>
-		public readonly static int WT_IMPL_LINE = 0;
+		public static readonly int WT_IMPL_LINE = 0;
+
 		/// <summary> ID for full-page based implementations of wavelet transforms. Full-page
 		/// based implementations should be avoided since they require large
 		/// amounts of memory.
 		/// 
 		/// </summary>
-		public readonly static int WT_IMPL_FULL = 2;
+		public const int WT_IMPL_FULL = 2;
 	}
-	internal interface WaveletTransform:ImgData
+	public interface WaveletTransform:ImgData
 	{
 		//UPGRADE_NOTE: Members of interface 'WaveletTransform' were extracted into structure 'WaveletTransform_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

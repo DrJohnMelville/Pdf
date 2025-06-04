@@ -41,7 +41,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This interface extends the MultiResImgData interface with the methods that
@@ -49,7 +49,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// inverse wavlet trasnform).
 	/// 
 	/// </summary>
-	internal interface InvWTData:MultiResImgData
+	public interface InvWTData:MultiResImgData
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

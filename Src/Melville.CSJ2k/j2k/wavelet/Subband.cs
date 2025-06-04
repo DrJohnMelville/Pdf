@@ -41,9 +41,10 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.image;
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This abstract class represents a subband in a bidirectional tree structure
@@ -51,22 +52,19 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// class is implemented by the SubbandAn and SubbandSyn classes, which are for
 	/// the analysis and synthesis sides respectively.
 	/// 
-	/// <p>The element can be either a node or a leaf of the tree. If it is a node,
+	/// The element can be either a node or a leaf of the tree. If it is a node,
 	/// it has 4 descendants (LL, HL, LH and HH). If it is a leaf, it has no
-	/// descendant.</p>
+	/// descendant.
 	/// 
-	/// <p>The tree is bidirectional. Each element in the tree structure has a
+	/// The tree is bidirectional. Each element in the tree structure has a
 	/// "parent", which is the subband from which the element was obtained by
 	/// decomposition. The only exception is the root element which, for obvious
-	/// reasons, has no parent (i.e. it is null).</p>
+	/// reasons, has no parent (i.e. it is null).
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.wavelet.analysis.SubbandAn">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.wavelet.synthesis.SubbandSyn">
-	/// 
-	/// </seealso>
-	internal abstract class Subband
+	/// <seealso cref="j2k.wavelet.analysis.SubbandAn" />
+	/// <seealso cref="j2k.wavelet.synthesis.SubbandSyn" />
+	public abstract class Subband
 	{
 		/// <summary> Returns the parent of this subband. The parent of a subband is the
 		/// subband from which this one was obtained by decomposition. The root
@@ -113,7 +111,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// null if there is no higher resolution level.
 		/// 
 		/// </returns>
-		virtual public Subband NextResLevel
+		public virtual Subband NextResLevel
 		{
 			get
 			{
@@ -209,15 +207,13 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// for a low-pass filter and the Nyquist gain for a high-pass filter. It
 		/// is 0 by default.
 		/// 
-		/// <p>Using the base 2 exponent of the value contrains the possible gains
+		/// Using the base 2 exponent of the value contrains the possible gains
 		/// to powers of 2. However this is perfectly compatible to the filter
 		/// normalization policy assumed here. See the split() method for more
-		/// details.</p>
+		/// details.
 		/// 
 		/// </summary>
-		/// <seealso cref="split">
-		/// 
-		/// </seealso>
+		/// <seealso cref="split" />
 		public int anGainExp;
 		
 		/// <summary> The subband index within its resolution level. This value uniquely
@@ -225,10 +221,10 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// level within it. Note that only leaf elements represent "real"
 		/// subbands, while node elements represent only intermediate stages.
 		/// 
-		/// <p>It is defined recursively. The root node gets a value of 0. For a
+		/// It is defined recursively. The root node gets a value of 0. For a
 		/// given node, with a subband index 'b', its LL descendant gets 4*b, its
 		/// HL descendant 4*b+1, its LH descendant 4*b+2, and its HH descendant
-		/// 4*b+3, for their subband indexes.</p>
+		/// 4*b+3, for their subband indexes.
 		/// 
 		/// </summary>
 		public int sbandIdx = 0;
@@ -292,17 +288,17 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// of the child subbands are calculated by taking into account the
 		/// position of the subband in the canvas.
 		/// 
-		/// <p>For the analysis subband gain calculation it is assumed that
+		/// For the analysis subband gain calculation it is assumed that
 		/// analysis filters are normalized with a DC gain of 1 and a Nyquist gain
-		/// of 2.</p>
+		/// of 2.
 		/// 
 		/// </summary>
 		protected internal virtual void  initChilds()
 		{
-			Subband subb_LL = LL;
-			Subband subb_HL = HL;
-			Subband subb_LH = LH;
-			Subband subb_HH = HH;
+			var subb_LL = LL;
+			var subb_HL = HL;
+			var subb_LH = LH;
+			var subb_HH = HH;
 			
 			// LL subband
 			subb_LL.level = level + 1;
@@ -368,13 +364,13 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// top-level dimensions, the number of decompositions, and the
 		/// decomposition tree as specified.
 		/// 
-		/// <p>For the analysis subband gain calculation it is assumed that
+		/// For the analysis subband gain calculation it is assumed that
 		/// analysis filters are normalized with a DC gain of 1 and a Nyquist gain
-		/// of 2.</p>
+		/// of 2.
 		/// 
-		/// <p>This constructor does not initialize the value of the magBits member
+		/// This constructor does not initialize the value of the magBits member
 		/// variable. This variable is normally initialized by the quantizer, on
-		/// the encoder side, or the bit stream reader, on the decoder side.</p>
+		/// the encoder side, or the bit stream reader, on the decoder side.
 		/// 
 		/// </summary>
 		/// <param name="w">The top-level width
@@ -406,9 +402,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// element is used for the remaining resolution levels.
 		/// 
 		/// </param>
-		/// <seealso cref="WaveletTransform">
-		/// 
-		/// </seealso>
+		/// <seealso cref="WaveletTransform" />
 		public Subband(int w, int h, int ulcx, int ulcy, int lvls, WaveletFilter[] hfilters, WaveletFilter[] vfilters)
 		{
 			int i, hi, vi;
@@ -419,7 +413,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 			this.h = h;
 			this.ulcx = ulcx;
 			this.ulcy = ulcy;
-			this.resLvl = lvls;
+			resLvl = lvls;
 			// First create dyadic decomposition.
 			cur = this;
 			for (i = 0; i < lvls; i++)
@@ -446,7 +440,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 			
 			if (isNode)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			switch (orientation)
@@ -503,7 +497,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 							break;
 						
 						default: 
-							throw new System.InvalidOperationException("You have found a bug in JJ2000");
+							throw new InvalidOperationException("You have found a bug in JJ2000");
 						
 					}
 					while (sb.isNode)
@@ -513,7 +507,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 					return sb;
 				
 				default: 
-					throw new System.InvalidOperationException("You have found a bug in JJ2000");
+					throw new InvalidOperationException("You have found a bug in JJ2000");
 				
 			}
 		}
@@ -530,12 +524,12 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// </param>
 		public virtual Subband getSubbandByIdx(int rl, int sbi)
 		{
-			Subband sb = this;
+			var sb = this;
 			
 			// Find the root subband for the resolution level
 			if (rl > sb.resLvl || rl < 0)
 			{
-				throw new System.ArgumentException("Resolution level index " + "out of range");
+				throw new ArgumentException("Resolution level index out of range");
 			}
 			
 			// Returns directly if it is itself
@@ -586,7 +580,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 			// Check that we are inside this subband
 			if (x < ulx || y < uly || x >= ulx + w || y >= uly + h)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			cur = this;
@@ -597,30 +591,12 @@ namespace Melville.CSJ2K.j2k.wavelet
 				if (x < hhs.ulx)
 				{
 					// Is the result of horizontal low-pass
-					if (y < hhs.uly)
-					{
-						// Vertical low-pass
-						cur = cur.LL;
-					}
-					else
-					{
-						// Vertical high-pass
-						cur = cur.LH;
-					}
+					cur = y < hhs.uly ? cur.LL : cur.LH;
 				}
 				else
 				{
 					// Is the result of horizontal high-pass
-					if (y < hhs.uly)
-					{
-						// Vertical low-pass
-						cur = cur.HL;
-					}
-					else
-					{
-						// Vertical high-pass
-						cur = cur.HH;
-					}
+					cur = y < hhs.uly ? cur.HL : cur.HH;
 				}
 			}
 			
@@ -633,9 +609,10 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <returns> Subband informations
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String string_Renamed = "w=" + w + ",h=" + h + ",ulx=" + ulx + ",uly=" + uly + ",ulcx=" + ulcx + ",ulcy=" + ulcy + ",idx=" + sbandIdx + ",orient=" + orientation + ",node=" + isNode + ",level=" + level + ",resLvl=" + resLvl + ",nomCBlkW=" + nomCBlkW + ",nomCBlkH=" + nomCBlkH + ",numCb=" + numCb;
+			var string_Renamed =
+				$"w={w},h={h},ulx={ulx},uly={uly},ulcx={ulcx},ulcy={ulcy},idx={sbandIdx},orient={orientation},node={isNode},level={level},resLvl={resLvl},nomCBlkW={nomCBlkW},nomCBlkH={nomCBlkH},numCb={numCb}";
 			
 			return string_Renamed;
 		}

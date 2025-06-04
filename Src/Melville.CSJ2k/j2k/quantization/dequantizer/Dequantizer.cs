@@ -40,66 +40,54 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.image.invcomptransf;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-using Melville.CSJ2K.j2k.image.invcomptransf;
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.image;
-
-namespace Melville.CSJ2K.j2k.quantization.dequantizer
+namespace CoreJ2K.j2k.quantization.dequantizer
 {
 	
 	/// <summary> This is the abstract class from which all dequantizers must inherit. This
 	/// class has the concept of a current tile and all operations are performed on
 	/// the current tile.
 	/// 
-	/// <p>This class provides default implemenations for most of the methods
+	/// This class provides default implemenations for most of the methods
 	/// (wherever it makes sense), under the assumption that the image and
 	/// component dimensions, and the tiles, are not modifed by the dequantizer. If
 	/// that is not the case for a particular implementation then the methods
-	/// should be overriden.</p>
+	/// should be overriden.
 	/// 
-	/// <p>Sign magnitude representation is used (instead of two's complement) for
+	/// Sign magnitude representation is used (instead of two's complement) for
 	/// the input data. The most significant bit is used for the sign (0 if
 	/// positive, 1 if negative). Then the magnitude of the quantized coefficient
 	/// is stored in the next most significat bits. The most significant magnitude
-	/// bit corresponds to the most significant bit-plane and so on.</p>
+	/// bit corresponds to the most significant bit-plane and so on.
 	/// 
-	/// <p>The output data is either in floating-point, or in fixed-point two's
+	/// The output data is either in floating-point, or in fixed-point two's
 	/// complement. In case of floating-point data the the value returned by
 	/// getFixedPoint() must be 0. If the case of fixed-point data the number of
 	/// fractional bits must be defined at the constructor of the implementing
 	/// class and all operations must be performed accordingly. Each component may
-	/// have a different number of fractional bits.</p>
+	/// have a different number of fractional bits.
 	/// 
 	/// </summary>
-	internal abstract class Dequantizer:MultiResImgDataAdapter, CBlkWTDataSrcDec
+	public abstract class Dequantizer:MultiResImgDataAdapter, CBlkWTDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULX
-		{
-			get
-			{
-				return src.CbULX;
-			}
-			
-		}
+		public virtual int CbULX => src.CbULX;
+
 		/// <summary> Returns the vertical code-block partition origin. Allowable values are
 		/// 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULY
-		{
-			get
-			{
-				return src.CbULY;
-			}
-			
-		}
+		public virtual int CbULY => src.CbULY;
+
 		/// <summary> Returns the parameters that are used in this class and
 		/// implementing classes. It returns a 2D String array. Each of the
 		/// 1D arrays is for a different option, and they have 3
@@ -115,15 +103,8 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// or null if no options are supported.
 		/// 
 		/// </returns>
-		public static System.String[][] ParameterInfo
-		{
-			get
-			{
-				return pinfo;
-			}
-			
-		}
-		
+		public static string[][] ParameterInfo => pinfo;
+
 		/// <summary>The prefix for dequantizer options: 'Q' </summary>
 		public const char OPT_PREFIX = 'Q';
 		
@@ -131,7 +112,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// readers. They start with 'Q' 
 		/// </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String[][] pinfo = null;
+		private static readonly string[][] pinfo = null;
 		
 		/// <summary>The entropy decoder from where to get the quantized data (the
 		/// source). 
@@ -161,36 +142,34 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// "range bits" see the getNomRangeBits() method.
 		/// 
 		/// </param>
-		/// <seealso cref="getNomRangeBits">
-		/// 
-		/// </seealso>
+		/// <seealso cref="getNomRangeBits" />
 		public Dequantizer(CBlkQuantDataSrcDec src, int[] utrb, DecoderSpecs decSpec):base(src)
 		{
 			if (utrb.Length != src.NumComps)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			this.src = src;
 			this.utrb = utrb;
-			this.cts = decSpec.cts;
-			this.wfs = decSpec.wfs;
+			cts = decSpec.cts;
+			wfs = decSpec.wfs;
 		}
 		
 		/// <summary> Returns the number of bits, referred to as the "range bits",
 		/// corresponding to the nominal range of the data in the specified
 		/// component.
 		/// 
-		/// <p>The returned value corresponds to the nominal dynamic range of the
+		/// The returned value corresponds to the nominal dynamic range of the
 		/// reconstructed image data, not of the wavelet coefficients
 		/// themselves. This is because different subbands have different gains and
 		/// thus different nominal ranges. To have an idea of the nominal range in
 		/// each subband the subband analysis gain value from the subband tree
 		/// structure, returned by the getSynSubbandTree() method, can be used. See
-		/// the Subband class for more details.</p>
+		/// the Subband class for more details.
 		/// 
-		/// <p>If this number is <i>b</b> then for unsigned data the nominal range
+		/// If this number is <i>b</b> then for unsigned data the nominal range
 		/// is between 0 and 2^b-1, and for signed data it is between -2^(b-1) and
-		/// 2^(b-1)-1.</p>
+		/// 2^(b-1)-1.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component
@@ -200,9 +179,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// data.
 		/// 
 		/// </returns>
-		/// <seealso cref="Subband">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband" />
 		public virtual int getNomRangeBits(int c)
 		{
 			return rb[c];
@@ -212,7 +189,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// returns the root element of the subband tree structure, see Subband and
 		/// SubbandSyn. The tree comprises all the available resolution levels.
 		/// 
-		/// <P>The number of magnitude bits ('magBits' member variable) for each
+		/// The number of magnitude bits ('magBits' member variable) for each
 		/// subband may have not been not initialized (it depends on the actual
 		/// dequantizer and its implementation). However, they are not necessary
 		/// for the subsequent steps in the decoder chain.
@@ -236,7 +213,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// IllegalArgumentException is thrown if the indexes do not
 		/// correspond to a valid tile.
 		/// 
-		/// <P>This default implementation changes the tile in the source
+		/// This default implementation changes the tile in the source
 		/// and re-initializes properly component transformation variables..
 		/// 
 		/// </summary>
@@ -252,14 +229,14 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 			tIdx = TileIdx; // index of the current tile
 			
 			// initializations
-			int cttype = 0;
-			if (((System.Int32) cts.getTileDef(tIdx)) == InvCompTransf.NONE)
+			var cttype = 0;
+			if (((int) cts.getTileDef(tIdx)) == InvCompTransf.NONE)
 				cttype = InvCompTransf.NONE;
 			else
 			{
-				int nc = src.NumComps > 3?3:src.NumComps;
-				int rev = 0;
-				for (int c = 0; c < nc; c++)
+				var nc = src.NumComps > 3?3:src.NumComps;
+				var rev = 0;
+				for (var c = 0; c < nc; c++)
 					rev += (wfs.isReversible(tIdx, c)?1:0);
 				if (rev == 3)
 				{
@@ -274,7 +251,8 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 				else
 				{
 					// Error
-					throw new System.ArgumentException("Wavelet transformation " + "and " + "component transformation" + " not coherent in tile" + tIdx);
+					throw new ArgumentException(
+						$"Wavelet transformation and component transformation not coherent in tile{tIdx}");
 				}
 			}
 			
@@ -294,7 +272,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 					break;
 				
 				default: 
-					throw new System.ArgumentException("Non JPEG 2000 part I " + "component" + " transformation for tile: " + tIdx);
+					throw new ArgumentException($"Non JPEG 2000 part I component transformation for tile: {tIdx}");
 				
 			}
 		}
@@ -303,7 +281,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// columns). An NoNextElementException is thrown if the current tile is
 		/// the last one (i.e. there is no next tile).
 		/// 
-		/// <P>This default implementation just advances to the next tile in the
+		/// This default implementation just advances to the next tile in the
 		/// source and re-initializes properly component transformation variables.
 		/// 
 		/// </summary>
@@ -313,7 +291,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 			tIdx = TileIdx; // index of the current tile
 			
 			// initializations
-			int cttype = ((System.Int32) cts.getTileDef(tIdx));
+			var cttype = ((int) cts.getTileDef(tIdx));
 			switch (cttype)
 			{
 				
@@ -330,12 +308,12 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 					break;
 				
 				default: 
-					throw new System.ArgumentException("Non JPEG 2000 part I " + "component" + " transformation for tile: " + tIdx);
+					throw new ArgumentException($"Non JPEG 2000 part I component transformation for tile: {tIdx}");
 				
 			}
 		}
-		public abstract Melville.CSJ2K.j2k.image.DataBlk getCodeBlock(int param1, int param2, int param3, Melville.CSJ2K.j2k.wavelet.synthesis.SubbandSyn param4, Melville.CSJ2K.j2k.image.DataBlk param5);
+		public abstract DataBlk getCodeBlock(int param1, int param2, int param3, SubbandSyn param4, DataBlk param5);
 		public abstract int getFixedPoint(int param1);
-		public abstract Melville.CSJ2K.j2k.image.DataBlk getInternCodeBlock(int param1, int param2, int param3, Melville.CSJ2K.j2k.wavelet.synthesis.SubbandSyn param4, Melville.CSJ2K.j2k.image.DataBlk param5);
+		public abstract DataBlk getInternCodeBlock(int param1, int param2, int param3, SubbandSyn param4, DataBlk param5);
 	}
 }

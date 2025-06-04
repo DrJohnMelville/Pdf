@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This abstract class defines methods to transfer wavelet data in a
@@ -50,24 +50,19 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// 'getNextInternCodeBlock()' a new code-block is returned. The code-blocks
 	/// are returned in no specific order.
 	/// 
-	/// <p>This class is the source of data for the quantizer. See the 'Quantizer'
-	/// class.</p>
+	/// This class is the source of data for the quantizer. See the 'Quantizer'
+	/// class.
 	/// 
-	/// <p>Note that no more of one object may request data, otherwise one object
+	/// Note that no more of one object may request data, otherwise one object
 	/// would get some of the data and another one another part, in no defined
-	/// manner.</p>
+	/// manner.
 	/// 
 	/// </summary>
-	/// <seealso cref="ForwWTDataProps">
-	/// </seealso>
-	/// <seealso cref="WaveletTransform">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.quantization.quantizer.CBlkQuantDataSrcEnc">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.quantization.quantizer.Quantizer">
-	/// 
-	/// </seealso>
-	internal interface CBlkWTDataSrc:ForwWTDataProps
+	/// <seealso cref="ForwWTDataProps" />
+	/// <seealso cref="WaveletTransform" />
+	/// <seealso cref="j2k.quantization.quantizer.CBlkQuantDataSrcEnc" />
+	/// <seealso cref="j2k.quantization.quantizer.Quantizer" />
+	public interface CBlkWTDataSrc:ForwWTDataProps
 	{
 		
 		/// <summary> Returns the position of the fixed point in the specified component, or
@@ -114,20 +109,20 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// the code-blocks have been returned for the current tile calls to this
 		/// method will return 'null'.
 		/// 
-		/// <p>When changing the current tile (through 'setTile()' or 'nextTile()')
+		/// When changing the current tile (through 'setTile()' or 'nextTile()')
 		/// this method will always return the first code-block, as if this method
-		/// was never called before for the new current tile.</p>
+		/// was never called before for the new current tile.
 		/// 
-		/// <p>The data returned by this method is always a copy of the internal
+		/// The data returned by this method is always a copy of the internal
 		/// data of this object, if any, and it can be modified "in place" without
 		/// any problems after being returned. The 'offset' of the returned data is
 		/// 0, and the 'scanw' is the same as the code-block width.  The 'magbits'
 		/// of the returned data is not set by this method and should be
-		/// ignored. See the 'CBlkWTData' class.</p>
+		/// ignored. See the 'CBlkWTData' class.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
+		/// The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -143,9 +138,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="CBlkWTData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="CBlkWTData" />
 		CBlkWTData getNextCodeBlock(int c, CBlkWTData cblk);
 		
 		/// <summary> Returns the next code-block in the current tile for the specified
@@ -156,19 +149,19 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// have been returned for the current tile calls to this method will
 		/// return 'null'.
 		/// 
-		/// <p>When changing the current tile (through 'setTile()' or 'nextTile()')
+		/// When changing the current tile (through 'setTile()' or 'nextTile()')
 		/// this method will always return the first code-block, as if this method
-		/// was never called before for the new current tile.</p>
+		/// was never called before for the new current tile.
 		/// 
-		/// <p>The data returned by this method can be the data in the internal
+		/// The data returned by this method can be the data in the internal
 		/// buffer of this object, if any, and thus can not be modified by the
 		/// caller. The 'offset' and 'scanw' of the returned data can be
 		/// arbitrary. The 'magbits' of the returned data is not set by this method
-		/// and should be ignored. See the 'CBlkWTData' class.</p>
+		/// and should be ignored. See the 'CBlkWTData' class.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
+		/// The 'ulx' and 'uly' members of the returned 'CBlkWTData' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The component for which to return the next code-block.
@@ -184,9 +177,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// null if all code-blocks for the current tile have been returned.
 		/// 
 		/// </returns>
-		/// <seealso cref="CBlkWTData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="CBlkWTData" />
 		CBlkWTData getNextInternCodeBlock(int c, CBlkWTData cblk);
 	}
 }

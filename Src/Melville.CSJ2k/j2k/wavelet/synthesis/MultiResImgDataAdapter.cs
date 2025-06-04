@@ -43,8 +43,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This class provides a default implementation for the methods of the
@@ -52,91 +53,52 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// returning the value of the source, where the source is another
 	/// 'MultiResImgData' object.
 	/// 
-	/// <p>This abstract class can be used to facilitate the development of other
+	/// This abstract class can be used to facilitate the development of other
 	/// classes that implement 'MultiResImgData'. For example a dequantizer can
 	/// inherit from this class and all the trivial methods do not have to be
-	/// reimplemented.</p>
+	/// reimplemented.
 	/// 
-	/// <p>If the default implementation of a method provided in this class does
+	/// If the default implementation of a method provided in this class does
 	/// not suit a particular implementation of the 'MultiResImgData' interface,
-	/// the method can be overriden to implement the proper behaviour.</p>
+	/// the method can be overriden to implement the proper behaviour.
 	/// 
 	/// </summary>
-	/// <seealso cref="MultiResImgData">
-	/// 
-	/// </seealso>
-	internal abstract class MultiResImgDataAdapter : MultiResImgData
+	/// <seealso cref="MultiResImgData" />
+	public abstract class MultiResImgDataAdapter : MultiResImgData
 	{
 		/// <summary>Returns the nominal tiles width </summary>
-		virtual public int NomTileWidth
-		{
-			get
-			{
-				return mressrc.NomTileWidth;
-			}
-			
-		}
+		public virtual int NomTileWidth => mressrc.NomTileWidth;
+
 		/// <summary>Returns the nominal tiles height </summary>
-		virtual public int NomTileHeight
-		{
-			get
-			{
-				return mressrc.NomTileHeight;
-			}
-			
-		}
+		public virtual int NomTileHeight => mressrc.NomTileHeight;
+
 		/// <summary> Returns the number of components in the image.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <returns> The number of components in the image.
 		/// 
 		/// </returns>
-		virtual public int NumComps
-		{
-			get
-			{
-				return mressrc.NumComps;
-			}
-			
-		}
+		public virtual int NumComps => mressrc.NumComps;
+
 		/// <summary> Returns the index of the current tile, relative to a standard scan-line
 		/// order.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <returns> The current tile's index (starts at 0).
 		/// 
 		/// </returns>
-		virtual public int TileIdx
-		{
-			get
-			{
-				return mressrc.TileIdx;
-			}
-			
-		}
+		public virtual int TileIdx => mressrc.TileIdx;
+
 		/// <summary>Returns the horizontal tile partition offset in the reference grid </summary>
-		virtual public int TilePartULX
-		{
-			get
-			{
-				return mressrc.TilePartULX;
-			}
-			
-		}
+		public virtual int TilePartULX => mressrc.TilePartULX;
+
 		/// <summary>Returns the vertical tile partition offset in the reference grid </summary>
-		virtual public int TilePartULY
-		{
-			get
-			{
-				return mressrc.TilePartULY;
-			}
-			
-		}
-		
+		public virtual int TilePartULY => mressrc.TilePartULY;
+
 		/// <summary>Index of the current tile </summary>
 		protected internal int tIdx = 0;
 		
@@ -159,7 +121,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// resolution level. This is the tile's width without accounting for any
 		/// component subsampling.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -177,7 +139,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// resolution level. This is the tile's height without accounting for any
 		/// component subsampling.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -195,7 +157,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// resolution level. This is the image's width without accounting for any
 		/// component subsampling or tiling.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -213,7 +175,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// resolution level. This is the image's height without accounting for any
 		/// component subsampling or tiling.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -232,7 +194,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// dimensions between the reference grid and the component itself, see the
 		/// 'ImgData' interface desription for details.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component (between 0 and N-1)
@@ -241,9 +203,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The horizontal subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		public virtual int getCompSubsX(int c)
 		{
 			return mressrc.getCompSubsX(c);
@@ -254,7 +214,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// dimensions between the reference grid and the component itself, see the
 		/// 'ImgData' interface desription for details.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component (between 0 and N-1)
@@ -263,9 +223,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The vertical subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		public virtual int getCompSubsY(int c)
 		{
 			return mressrc.getCompSubsY(c);
@@ -274,7 +232,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the width in pixels of the specified tile-component for the
 		/// given resolution level.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="t">Tile index.
@@ -298,7 +256,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the height in pixels of the specified tile-component for the
 		/// given resolution level.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="t">The tile index.
@@ -322,7 +280,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the width in pixels of the specified component in the overall
 		/// image, for the given resolution level.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.
@@ -343,7 +301,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the height in pixels of the specified component in the overall
 		/// image, for the given resolution level.
 		/// 
-		/// <P>This default implementation returns the value of the source.
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.
@@ -365,7 +323,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// IllegalArgumentException is thrown if the indexes do not correspond to
 		/// a valid tile.
 		/// 
-		/// <p>This default implementation just changes the tile in the source.</p>
+		/// This default implementation just changes the tile in the source.
 		/// 
 		/// </summary>
 		/// <param name="x">The horizontal indexes the tile.
@@ -384,7 +342,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// columns). An NoNextElementException is thrown if the current tile is
 		/// the last one (i.e. there is no next tile).
 		/// 
-		/// <p>This default implementation just changes the tile in the source.</p>
+		/// This default implementation just changes the tile in the source.
 		/// 
 		/// </summary>
 		public virtual void  nextTile()
@@ -396,7 +354,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the indexes of the current tile. These are the horizontal and
 		/// vertical indexes of the current tile.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="co">If not null this object is used to return the information. If
@@ -414,7 +372,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the horizontal coordinate of the upper-left corner of the
 		/// specified resolution level in the given component of the current tile. 
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The component index.
@@ -431,7 +389,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <summary> Returns the vertical coordinate of the upper-left corner of the
 		/// specified resolution in the given component of the current tile. 
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="c">The component index.
@@ -449,7 +407,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// corner, in the canvas system, on the reference grid at the specified
 		/// resolution level.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -468,7 +426,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// corner, in the canvas system, on the reference grid at the specified
 		/// resolution level.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -485,7 +443,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		
 		/// <summary> Returns the number of tiles in the horizontal and vertical directions.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <param name="co">If not null this object is used to return the information. If
@@ -503,7 +461,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		
 		/// <summary> Returns the total number of tiles in the image.
 		/// 
-		/// <p>This default implementation returns the value of the source.</p>
+		/// This default implementation returns the value of the source.
 		/// 
 		/// </summary>
 		/// <returns> The total number of tiles in the image.
@@ -513,6 +471,6 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		{
 			return mressrc.getNumTiles();
 		}
-		public abstract Melville.CSJ2K.j2k.wavelet.synthesis.SubbandSyn getSynSubbandTree(int param1, int param2);
+		public abstract SubbandSyn getSynSubbandTree(int param1, int param2);
 	}
 }

@@ -41,43 +41,32 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 */
 
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.wavelet;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.wavelet;
 
-namespace Melville.CSJ2K.j2k.roi.encoder
+namespace CoreJ2K.j2k.roi.encoder
 {
 	
 	/// <summary> This class generates the ROI masks for the ROIScaler.It gives the scaler
 	/// the ROI mask for the current code-block.
 	/// 
-	/// <P>The values are calculated from the scaling factors of the ROIs. The
+	/// The values are calculated from the scaling factors of the ROIs. The
 	/// values with which to scale are equal to u-umin where umin is the lowest
 	/// scaling factor within the block. The umin value is sent to the entropy
 	/// coder to be used for scaling the distortion values.
 	/// 
 	/// </summary>
-	/// <seealso cref="RectROIMaskGenerator">
-	/// 
-	/// </seealso>
-	/// <seealso cref="ArbROIMaskGenerator">
-	/// 
-	/// </seealso>
-	internal abstract class ROIMaskGenerator
+	/// <seealso cref="RectROIMaskGenerator" />
+	/// <seealso cref="ArbROIMaskGenerator" />
+	public abstract class ROIMaskGenerator
 	{
 		/// <summary> This function returns the ROIs in the image
 		/// 
 		/// </summary>
 		/// <returns> The ROIs in the image
 		/// </returns>
-		virtual public ROI[] ROIs
-		{
-			get
-			{
-				return roi_array;
-			}
-			
-		}
-		
+		public virtual ROI[] ROIs => roi_array;
+
 		/// <summary>Array containing the ROIs </summary>
 		protected internal ROI[] roi_array;
 		
@@ -100,7 +89,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </param>
 		public ROIMaskGenerator(ROI[] rois, int nrc)
 		{
-			this.roi_array = rois;
+			roi_array = rois;
 			this.nrc = nrc;
 			tileMaskMade = new bool[nrc];
 		}
@@ -147,7 +136,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </summary>
 		public virtual void  tileChanged()
 		{
-			for (int i = 0; i < nrc; i++)
+			for (var i = 0; i < nrc; i++)
 				tileMaskMade[i] = false;
 		}
 	}

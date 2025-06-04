@@ -7,8 +7,9 @@
 /// ***************************************************************************
 /// </summary>
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-namespace Melville.CSJ2K.Icc.Lut
+using Tags_ICCCurveType = CoreJ2K.Icc.Tags.ICCCurveType;
+
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> Toplevel class for a float [] lut.
@@ -18,11 +19,10 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal abstract class LookUpTableFP:LookUpTable
+	public abstract class LookUpTableFP:LookUpTable
 	{
 		
 		/// <summary>The lut values. </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'lut '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		public float[] lut;
 		
 		/// <summary> Factory method for getting a lut from a given curve.</summary>
@@ -33,7 +33,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// <returns> the lookup table
 		/// </returns>
 		
-		public static LookUpTableFP createInstance(ICCCurveType curve, int dwNumInput)
+		public static LookUpTableFP createInstance(Tags_ICCCurveType curve, int dwNumInput)
 		{
 			
 			if (curve.nEntries == 1)
@@ -47,7 +47,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <param name="dwMaxOutput">max output value of the lut
 		/// </param>
-		protected internal LookUpTableFP(ICCCurveType curve, int dwNumInput):base(curve, dwNumInput)
+		protected internal LookUpTableFP(Tags_ICCCurveType curve, int dwNumInput):base(curve, dwNumInput)
 		{
 			lut = new float[dwNumInput];
 		}

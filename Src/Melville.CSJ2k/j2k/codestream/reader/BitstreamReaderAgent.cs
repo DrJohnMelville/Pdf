@@ -41,17 +41,17 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.entropy.decoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.io;
+using CoreJ2K.j2k.quantization.dequantizer;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-using Melville.CSJ2K.j2k.quantization.dequantizer;
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.entropy.decoder;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.io;
-
-namespace Melville.CSJ2K.j2k.codestream.reader
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This is the generic interface for bit stream reader agents. A bit stream
@@ -59,58 +59,40 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// requesting compressed code-blocks. It can be a simple file reader, or a
 	/// network connection, or anything else.
 	/// 
-	/// <p>The bit stream reader agent allows to make request for compressed block
+	/// The bit stream reader agent allows to make request for compressed block
 	/// data in any order. The amount of data returned would normally depend on the
 	/// data available at the time of the request, be it from a file or from a
-	/// network connection.</p>
+	/// network connection.
 	/// 
-	/// <p>The bit stream reader agent has the notion of a current tile, and
-	/// coordinates are relative to the current tile, where applicable.</p>
+	/// The bit stream reader agent has the notion of a current tile, and
+	/// coordinates are relative to the current tile, where applicable.
 	/// 
-	/// <p>Resolution level 0 is the lowest resolution level, i.e. the LL subband
-	/// alone.</p>
+	/// Resolution level 0 is the lowest resolution level, i.e. the LL subband
+	/// alone.
 	/// 
 	/// </summary>
-	internal abstract class BitstreamReaderAgent : CodedCBlkDataSrcDec
+	public abstract class BitstreamReaderAgent : CodedCBlkDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULX
-		{
-			get
-			{
-				return hd.CbULX;
-			}
-			
-		}
+		public virtual int CbULX => hd.CbULX;
+
 		/// <summary> Returns the vertical code-block partition origin. Allowable values are
 		/// 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULY
-		{
-			get
-			{
-				return hd.CbULY;
-			}
-			
-		}
+		public virtual int CbULY => hd.CbULY;
+
 		/// <summary> Returns the number of components in the image.
 		/// 
 		/// </summary>
 		/// <returns> The number of components in the image.
 		/// 
 		/// </returns>
-		virtual public int NumComps
-		{
-			get
-			{
-				return nc;
-			}
-			
-		}
+		public virtual int NumComps => nc;
+
 		/// <summary> Returns the index of the current tile, relative to a standard scan-line
 		/// order.
 		/// 
@@ -118,14 +100,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The current tile's index (starts at 0).
 		/// 
 		/// </returns>
-		virtual public int TileIdx
-		{
-			get
-			{
-				return ctY * ntX + ctX;
-			}
-			
-		}
+		public virtual int TileIdx => ctY * ntX + ctX;
+
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a
 		/// different option, and they have 3 elements. The first element is the
@@ -140,14 +116,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// if no options are supported.
 		/// 
 		/// </returns>
-		public static System.String[][] ParameterInfo
-		{
-			get
-			{
-				return pinfo;
-			}
-			
-		}
+		public static string[][] ParameterInfo => pinfo;
+
 		/// <summary> Returns the image resolution level to reconstruct from the
 		/// codestream. This value cannot be computed before every main and tile
 		/// headers are read.
@@ -156,35 +126,23 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The image  resolution level
 		/// 
 		/// </returns>
-		virtual public int ImgRes
-		{
-			get
-			{
-				return targetRes;
-			}
-			
-		}
+		public virtual int ImgRes => targetRes;
+
 		/// <summary> Return the target decoding rate in bits per pixel.
 		/// 
 		/// </summary>
 		/// <returns> Target decoding rate in bpp.
 		/// 
 		/// </returns>
-		virtual public float TargetRate
-		{
-			get
-			{
-				return trate;
-			}
-			
-		}
+		public virtual float TargetRate => trate;
+
 		/// <summary> Return the actual decoding rate in bits per pixel.
 		/// 
 		/// </summary>
 		/// <returns> Actual decoding rate in bpp.
 		/// 
 		/// </returns>
-		virtual public float ActualRate
+		public virtual float ActualRate
 		{
 			get
 			{
@@ -199,65 +157,28 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> Target decoding rate in bytes.
 		/// 
 		/// </returns>
-		virtual public int TargetNbytes
-		{
-			get
-			{
-				return tnbytes;
-			}
-			
-		}
+		public virtual int TargetNbytes => tnbytes;
+
 		/// <summary> Return the actual number of read bytes.
 		/// 
 		/// </summary>
 		/// <returns> Actual decoding rate in bytes.
 		/// 
 		/// </returns>
-		virtual public int ActualNbytes
-		{
-			get
-			{
-				return anbytes;
-			}
-			
-		}
+		public virtual int ActualNbytes => anbytes;
+
 		/// <summary>Returns the horizontal offset of tile partition </summary>
-		virtual public int TilePartULX
-		{
-			get
-			{
-				return hd.getTilingOrigin(null).x;
-			}
-			
-		}
+		public virtual int TilePartULX => hd.getTilingOrigin(null).x;
+
 		/// <summary>Returns the vertical offset of tile partition </summary>
-		virtual public int TilePartULY
-		{
-			get
-			{
-				return hd.getTilingOrigin(null).y;
-			}
-			
-		}
+		public virtual int TilePartULY => hd.getTilingOrigin(null).y;
+
 		/// <summary>Returns the nominal tile width </summary>
-		virtual public int NomTileWidth
-		{
-			get
-			{
-				return hd.NomTileWidth;
-			}
-			
-		}
+		public virtual int NomTileWidth => hd.NomTileWidth;
+
 		/// <summary>Returns the nominal tile height </summary>
-		virtual public int NomTileHeight
-		{
-			get
-			{
-				return hd.NomTileHeight;
-			}
-			
-		}
-		
+		public virtual int NomTileHeight => hd.NomTileHeight;
+
 		/// <summary>The decoder specifications </summary>
 		protected internal DecoderSpecs decSpec;
 		
@@ -267,18 +188,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// FileBitstreamReaderAgent.
 		/// 
 		/// </summary>
-		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields">
-		/// 
-		/// </seealso>
+		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields" />
 		protected internal bool[] derived = null;
 		
 		/// <summary> Number of guard bits off all component in the current tile. This field
 		/// is actualized by the setTile method in FileBitstreamReaderAgent.
 		/// 
 		/// </summary>
-		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields">
-		/// 
-		/// </seealso>
+		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields" />
 		protected internal int[] gb = null;
 		
 		/// <summary> Dequantization parameters of all subbands and all components in the
@@ -286,9 +203,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// FileBitstreamReaderAgent.
 		/// 
 		/// </summary>
-		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields">
-		/// 
-		/// </seealso>
+		/// <seealso cref="FileBitstreamReaderAgent.initSubbandsFields" />
 		protected internal StdDequantizerParams[] params_Renamed = null;
 		
 		/// <summary>The prefix for bit stream reader options: 'B' </summary>
@@ -298,7 +213,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// readers. They start with 'B'. 
 		/// </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String[][] pinfo = null;
+		private static readonly string[][] pinfo = null;
 		
 		/// <summary> The maximum number of decompostion levels for each component of the
 		/// current tile. It means that component c has mdl[c]+1 resolution levels
@@ -481,9 +396,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The horizontal subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		public int getCompSubsX(int c)
 		{
 			return hd.getCompSubsX(c);
@@ -501,9 +414,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The vertical subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		public virtual int getCompSubsY(int c)
 		{
 			return hd.getCompSubsY(c);
@@ -513,16 +424,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// (tile) resolution level. This is the tile's width without accounting
 		/// for any component subsampling.
 		/// 
-		/// <p>Note: Tile resolution level indexes may be different from
+		/// Note: Tile resolution level indexes may be different from
 		/// tile-component resolution index. They are indeed indexed starting from
 		/// the lowest number of decomposition levels of each component of the
-		/// tile.</p>
+		/// tile.
 		/// 
-		/// <p>For an image (1 tile) with 2 components (component 0 having 2
+		/// For an image (1 tile) with 2 components (component 0 having 2
 		/// decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-)component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the tile has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The (tile) resolution level.
@@ -535,13 +446,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			// The minumum number of decomposition levels between all the
 			// components
-			int mindl = decSpec.dls.getMinInTile(TileIdx);
+			var mindl = decSpec.dls.getMinInTile(TileIdx);
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one component in " + "tile: " + ctX + "x" + ctY);
+				throw new ArgumentException(
+					$"Requested resolution level is not available for, at least, one component in tile: {ctX}x{ctY}");
 			}
 			int ctulx, ntulx;
-			int dl = mindl - rl; // Number of decomposition to obtain this
+			var dl = mindl - rl; // Number of decomposition to obtain this
 			// resolution
 			
 			// Calculate starting X of current tile at hi-res
@@ -557,16 +469,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// resolution level. This is the tile's height without accounting for any
 		/// component subsampling.
 		/// 
-		/// <p>Note: Tile resolution level indexes may be different from
+		/// Note: Tile resolution level indexes may be different from
 		/// tile-component resolution index. They are indeed indexed starting from
 		/// the lowest number of decomposition levels of each component of the
-		/// tile.</p>
+		/// tile.
 		/// 
-		/// <p>For an image (1 tile) with 2 components (component 0 having 2
+		/// For an image (1 tile) with 2 components (component 0 having 2
 		/// decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-)component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the tile has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The (tile) resolution level.
@@ -579,14 +491,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			// The minumum number of decomposition levels between all the
 			// components
-			int mindl = decSpec.dls.getMinInTile(TileIdx);
+			var mindl = decSpec.dls.getMinInTile(TileIdx);
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one component in" + " tile: " + ctX + "x" + ctY);
+				throw new ArgumentException(
+					$"Requested resolution level is not available for, at least, one component in tile: {ctX}x{ctY}");
 			}
 			
 			int ctuly, ntuly;
-			int dl = mindl - rl; // Number of decomposition to obtain this
+			var dl = mindl - rl; // Number of decomposition to obtain this
 			// resolution
 			
 			// Calculate starting Y of current tile at hi-res
@@ -601,15 +514,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// resolution level. This is the image's width without accounting for any
 		/// component subsampling or tiling.
 		/// 
-		/// <p>Note: Image resolution level indexes may differ from tile-component
+		/// Note: Image resolution level indexes may differ from tile-component
 		/// resolution index. They are indeed indexed starting from the lowest
-		/// number of decomposition levels of each component of each tile.</p>
+		/// number of decomposition levels of each component of each tile.
 		/// 
-		/// <p>Example: For an image (1 tile) with 2 components (component 0 having
+		/// Example: For an image (1 tile) with 2 components (component 0 having
 		/// 2 decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-) component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the image has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The image resolution level.
@@ -622,14 +535,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			// The minimum number of decomposition levels of each
 			// tile-component
-			int mindl = decSpec.dls.Min;
+			var mindl = decSpec.dls.Min;
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
+				throw new ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
 			}
 			// Retrieve number of decomposition levels corresponding to
 			// this resolution level
-			int dl = mindl - rl;
+			var dl = mindl - rl;
 			return (ax + imgW + (1 << dl) - 1) / (1 << dl) - (ax + (1 << dl) - 1) / (1 << dl);
 		}
 		
@@ -637,15 +550,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// resolution level. This is the image's height without accounting for any
 		/// component subsampling or tiling.
 		/// 
-		/// <p>Note: Image resolution level indexes may differ from tile-component
+		/// Note: Image resolution level indexes may differ from tile-component
 		/// resolution index. They are indeed indexed starting from the lowest
-		/// number of decomposition levels of each component of each tile.</p>
+		/// number of decomposition levels of each component of each tile.
 		/// 
-		/// <p>Example: For an image (1 tile) with 2 components (component 0 having
+		/// Example: For an image (1 tile) with 2 components (component 0 having
 		/// 2 decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-) component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the image has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The image resolution level, from 0 to L.
@@ -656,14 +569,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		public virtual int getImgHeight(int rl)
 		{
-			int mindl = decSpec.dls.Min;
+			var mindl = decSpec.dls.Min;
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
+				throw new ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
 			}
 			// Retrieve number of decomposition levels corresponding to this
 			// resolution level
-			int dl = mindl - rl;
+			var dl = mindl - rl;
 			return (ay + imgH + (1 << dl) - 1) / (1 << dl) - (ay + (1 << dl) - 1) / (1 << dl);
 		}
 		
@@ -671,15 +584,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// corner, in the canvas system, on the reference grid at the specified
 		/// resolution level.
 		/// 
-		/// <p>Note: Image resolution level indexes may differ from tile-component
+		/// Note: Image resolution level indexes may differ from tile-component
 		/// resolution index. They are indeed indexed starting from the lowest
-		/// number of decomposition levels of each component of each tile.</p>
+		/// number of decomposition levels of each component of each tile.
 		/// 
-		/// <p>Example: For an image (1 tile) with 2 components (component 0 having
+		/// Example: For an image (1 tile) with 2 components (component 0 having
 		/// 2 decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-) component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the image has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -691,14 +604,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		public virtual int getImgULX(int rl)
 		{
-			int mindl = decSpec.dls.Min;
+			var mindl = decSpec.dls.Min;
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
+				throw new ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
 			}
 			// Retrieve number of decomposition levels corresponding to this
 			// resolution level
-			int dl = mindl - rl;
+			var dl = mindl - rl;
 			return (ax + (1 << dl) - 1) / (1 << dl);
 		}
 		
@@ -706,15 +619,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// corner, in the canvas system, on the reference grid at the specified
 		/// resolution level.
 		/// 
-		/// <p>Note: Image resolution level indexes may differ from tile-component
+		/// Note: Image resolution level indexes may differ from tile-component
 		/// resolution index. They are indeed indexed starting from the lowest
-		/// number of decomposition levels of each component of each tile.</p>
+		/// number of decomposition levels of each component of each tile.
 		/// 
-		/// <p>Example: For an image (1 tile) with 2 components (component 0 having
+		/// Example: For an image (1 tile) with 2 components (component 0 having
 		/// 2 decomposition levels and component 1 having 3 decomposition levels),
 		/// the first (tile-) component has 3 resolution levels and the second one
 		/// has 4 resolution levels, whereas the image has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="rl">The resolution level, from 0 to L.
@@ -726,14 +639,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		public virtual int getImgULY(int rl)
 		{
-			int mindl = decSpec.dls.Min;
+			var mindl = decSpec.dls.Min;
 			if (rl > mindl)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
+				throw new ArgumentException("Requested resolution level" + " is not available for, at " + "least, one tile-component");
 			}
 			// Retrieve number of decomposition levels corresponding to this
 			// resolution level
-			int dl = mindl - rl;
+			var dl = mindl - rl;
 			return (ay + (1 << dl) - 1) / (1 << dl);
 		}
 		
@@ -756,13 +669,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		public int getTileCompWidth(int t, int c, int rl)
 		{
-			int tIdx = TileIdx;
+			var tIdx = TileIdx;
 			if (t != tIdx)
 			{
-				throw new System.InvalidOperationException("Asking the tile-component width of a tile " + "different  from the current one.");
+				throw new InvalidOperationException("Asking the tile-component width of a tile " + "different  from the current one.");
 			}
 			int ntulx;
-			int dl = mdl[c] - rl;
+			var dl = mdl[c] - rl;
 			// Calculate starting X of next tile X-wise at reference grid hi-res
 			ntulx = (ctX < ntX - 1)?px + (ctX + 1) * ntW:ax + imgW;
 			// Convert reference grid hi-res to component grid hi-res
@@ -791,13 +704,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		public int getTileCompHeight(int t, int c, int rl)
 		{
-			int tIdx = TileIdx;
+			var tIdx = TileIdx;
 			if (t != tIdx)
 			{
-				throw new System.InvalidOperationException("Asking the tile-component width of a tile " + "different  from the current one.");
+				throw new InvalidOperationException("Asking the tile-component width of a tile " + "different  from the current one.");
 			}
 			int ntuly;
-			int dl = mdl[c] - rl; // Revert level indexation (0 is hi-res)
+			var dl = mdl[c] - rl; // Revert level indexation (0 is hi-res)
 			// Calculate starting Y of next tile Y-wise at reference grid hi-res
 			ntuly = (ctY < ntY - 1)?py + (ctY + 1) * ntH:ay + imgH;
 			// Convert reference grid hi-res to component grid hi-res
@@ -810,16 +723,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <summary> Returns the width in pixels of the specified component in the overall
 		/// image, for the given (component) resolution level.
 		/// 
-		/// <p>Note: Component resolution level indexes may differ from
+		/// Note: Component resolution level indexes may differ from
 		/// tile-component resolution index. They are indeed indexed starting from
 		/// the lowest number of decomposition levels of same component of each
-		/// tile.</p>
+		/// tile.
 		/// 
-		/// <p>Example: For an image (2 tiles) with 1 component (tile 0 having 2
+		/// Example: For an image (2 tiles) with 1 component (tile 0 having 2
 		/// decomposition levels and tile 1 having 3 decomposition levels), the
 		/// first tile(-component) has 3 resolution levels and the second one has 4
 		/// resolution levels, whereas the component has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.
@@ -835,7 +748,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public int getCompImgWidth(int c, int rl)
 		{
 			int sx, ex;
-			int dl = decSpec.dls.getMinInComp(c) - rl;
+			var dl = decSpec.dls.getMinInComp(c) - rl;
 			// indexation (0 is hi-res)
 			// Calculate image starting x at component hi-res grid
 			sx = (ax + hd.getCompSubsX(c) - 1) / hd.getCompSubsX(c);
@@ -848,16 +761,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <summary> Returns the height in pixels of the specified component in the overall
 		/// image, for the given (component) resolution level.
 		/// 
-		/// <p>Note: Component resolution level indexes may differ from
+		/// Note: Component resolution level indexes may differ from
 		/// tile-component resolution index. They are indeed indexed starting from
 		/// the lowest number of decomposition levels of same component of each
-		/// tile.</p>
+		/// tile.
 		/// 
-		/// <p>Example: For an image (2 tiles) with 1 component (tile 0 having 2
+		/// Example: For an image (2 tiles) with 1 component (tile 0 having 2
 		/// decomposition levels and tile 1 having 3 decomposition levels), the
 		/// first tile(-component) has 3 resolution levels and the second one has 4
 		/// resolution levels, whereas the component has only 3 resolution levels
-		/// available.</p>
+		/// available.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.
@@ -873,7 +786,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public int getCompImgHeight(int c, int rl)
 		{
 			int sy, ey;
-			int dl = decSpec.dls.getMinInComp(c) - rl;
+			var dl = decSpec.dls.getMinInComp(c) - rl;
 			// indexation (0 is hi-res)
 			// Calculate image starting x at component hi-res grid
 			sy = (ay + hd.getCompSubsY(c) - 1) / hd.getCompSubsY(c);
@@ -940,16 +853,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </param>
 		public int getResULX(int c, int rl)
 		{
-			int dl = mdl[c] - rl;
+			var dl = mdl[c] - rl;
 			if (dl < 0)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one component in " + "tile: " + ctX + "x" + ctY);
+				throw new ArgumentException(
+					$"Requested resolution level is not available for, at least, one component in tile: {ctX}x{ctY}");
 			}
-			int tx0 = (int) System.Math.Max(px + ctX * ntW, ax);
+			var tx0 = Math.Max(px + ctX * ntW, ax);
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			int tcx0 = (int) System.Math.Ceiling(tx0 / (double) getCompSubsX(c));
+			var tcx0 = (int) Math.Ceiling(tx0 / (double) getCompSubsX(c));
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			return (int) System.Math.Ceiling(tcx0 / (double) (1 << dl));
+			return (int) Math.Ceiling(tcx0 / (double) (1 << dl));
 		}
 		
 		/// <summary> Returns the vertical coordinate of the upper-left corner of the
@@ -964,16 +878,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </param>
 		public int getResULY(int c, int rl)
 		{
-			int dl = mdl[c] - rl;
+			var dl = mdl[c] - rl;
 			if (dl < 0)
 			{
-				throw new System.ArgumentException("Requested resolution level" + " is not available for, at " + "least, one component in " + "tile: " + ctX + "x" + ctY);
+				throw new ArgumentException(
+					$"Requested resolution level is not available for, at least, one component in tile: {ctX}x{ctY}");
 			}
-			int ty0 = (int) System.Math.Max(py + ctY * ntH, ay);
+			var ty0 = Math.Max(py + ctY * ntH, ay);
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			int tcy0 = (int) System.Math.Ceiling(ty0 / (double) getCompSubsY(c));
+			var tcy0 = (int) Math.Ceiling(ty0 / (double) getCompSubsY(c));
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			return (int) System.Math.Ceiling(tcy0 / (double) (1 << dl));
+			return (int) Math.Ceiling(tcy0 / (double) (1 << dl));
 		}
 		
 		/// <summary> Returns the number of tiles in the horizontal and vertical directions.
@@ -1016,11 +931,11 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// returns the root element of the subband tree structure, see Subband and
 		/// SubbandSyn. The tree comprises all the available resolution levels.
 		/// 
-		/// <p>Note: this method is not able to return subband tree for a tile
-		/// different than the current one.</p>
+		/// Note: this method is not able to return subband tree for a tile
+		/// different than the current one.
 		/// 
-		/// <p>The number of magnitude bits ('magBits' member variable) for each
-		/// subband is not initialized.</p>
+		/// The number of magnitude bits ('magBits' member variable) for each
+		/// subband is not initialized.
 		/// 
 		/// </summary>
 		/// <param name="t">The tile index
@@ -1036,11 +951,11 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			if (t != TileIdx)
 			{
-				throw new System.ArgumentException("Can not request subband" + " tree of a different tile" + " than the current one");
+				throw new ArgumentException("Can not request subband" + " tree of a different tile" + " than the current one");
 			}
 			if (c < 0 || c >= nc)
 			{
-				throw new System.ArgumentException("Component index out of range");
+				throw new ArgumentException("Component index out of range");
 			}
 			return subbTrees[c];
 		}
@@ -1081,7 +996,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			
 			// Check parameters
-			pl.checkList(BitstreamReaderAgent.OPT_PREFIX, Melville.CSJ2K.j2k.util.ParameterList.toNameArray(BitstreamReaderAgent.ParameterInfo));
+			pl.checkList(OPT_PREFIX, ParameterList.toNameArray(ParameterInfo));
 			
 			return new FileBitstreamReaderAgent(hd, in_Renamed, decSpec, pl, cdstrInfo, hi);
 		}
@@ -1145,8 +1060,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </param>
 		protected internal virtual void  initSubbandsFields(int c, SubbandSyn sb)
 		{
-			int t = TileIdx;
-			int rl = sb.resLvl;
+			var t = TileIdx;
+			var rl = sb.resLvl;
 			int cbw, cbh;
 			
 			cbw = decSpec.cblks.getCBlkWidth(ModuleSpec.SPEC_TILE_COMP, t, c);
@@ -1198,8 +1113,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				}
 				else
 				{
-					int cb0x = CbULX;
-					int cb0y = CbULY;
+					var cb0x = CbULX;
+					var cb0y = CbULY;
 					int tmp;
 					
 					// Projects code-block partition origin to subband. Since the
@@ -1207,8 +1122,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					// (throught the ceil operator) as itself (i.e. no change) and
 					// to the high-pass side (through the floor operator) as 0,
 					// always.
-					int acb0x = cb0x;
-					int acb0y = cb0y;
+					var acb0x = cb0x;
+					var acb0y = cb0y;
 					
 					switch (sb.sbandIdx)
 					{
@@ -1231,12 +1146,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							break;
 						
 						default: 
-							throw new System.InvalidOperationException("Internal JJ2000 error");
+							throw new InvalidOperationException("Internal JJ2000 error");
 						
 					}
 					if (sb.ulcx - acb0x < 0 || sb.ulcy - acb0y < 0)
 					{
-						throw new System.ArgumentException("Invalid code-blocks " + "partition origin or " + "image offset in the " + "reference grid.");
+						throw new ArgumentException("Invalid code-blocks " + "partition origin or " + "image offset in the " + "reference grid.");
 					}
 					
 					// NOTE: when calculating "floor()" by integer division the
@@ -1269,6 +1184,6 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				initSubbandsFields(c, (SubbandSyn) sb.HH);
 			}
 		}
-		public abstract Melville.CSJ2K.j2k.entropy.decoder.DecLyrdCBlk getCodeBlock(int param1, int param2, int param3, Melville.CSJ2K.j2k.wavelet.synthesis.SubbandSyn param4, int param5, int param6, Melville.CSJ2K.j2k.entropy.decoder.DecLyrdCBlk param7);
+		public abstract DecLyrdCBlk getCodeBlock(int param1, int param2, int param3, SubbandSyn param4, int param5, int param6, DecLyrdCBlk param7);
 	}
 }

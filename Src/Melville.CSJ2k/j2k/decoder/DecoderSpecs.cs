@@ -40,14 +40,14 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.entropy;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.quantization;
+using CoreJ2K.j2k.roi;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.quantization;
-using Melville.CSJ2K.j2k.entropy;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.roi;
-
-namespace Melville.CSJ2K.j2k.decoder
+namespace CoreJ2K.j2k.decoder
 {
 	
 	/// <summary> This class holds references to each module specifications used in the
@@ -56,27 +56,24 @@ namespace Melville.CSJ2K.j2k.decoder
 	/// members must be instance of ModuleSpec class (or its children).
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class DecoderSpecs
+	/// <seealso cref="ModuleSpec" />
+	public class DecoderSpecs
 	{
 		/// <summary> Returns a copy of the current object.
 		/// 
 		/// </summary>
-		virtual public DecoderSpecs Copy
+		public virtual DecoderSpecs Copy
 		{
 			get
 			{
 				DecoderSpecs decSpec2;
 				try
 				{
-					decSpec2 = (DecoderSpecs) this.Clone();
+					decSpec2 = (DecoderSpecs) Clone();
 				}
-				//UPGRADE_NOTE: Exception 'java.lang.CloneNotSupportedException' was converted to 'System.Exception' which has different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1100'"
-				catch (System.Exception )
+				catch (Exception)
 				{
-					throw new System.InvalidOperationException("Cannot clone the DecoderSpecs instance");
+					throw new InvalidOperationException("Cannot clone the DecoderSpecs instance");
 				}
 				// Quantization
 				decSpec2.qts = (QuantTypeSpec) qts.Copy;
@@ -192,10 +189,10 @@ namespace Melville.CSJ2K.j2k.decoder
 			ephs = new ModuleSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE);
 			pphs = new ModuleSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE);
 			iccs = new ModuleSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE);
-			pphs.setDefault((System.Object) false);
+			pphs.setDefault(false);
 		}
 		//UPGRADE_TODO: The following method was automatically generated and it must be implemented in order to preserve the class logic. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1232'"
-		virtual public System.Object Clone()
+		public virtual object Clone()
 		{
 			return null;
 		}

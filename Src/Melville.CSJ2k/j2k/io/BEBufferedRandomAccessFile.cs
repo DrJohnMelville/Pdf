@@ -42,7 +42,7 @@
 * */
 using System;
 
-namespace Melville.CSJ2K.j2k.io
+namespace CoreJ2K.j2k.io
 {
 	using System.IO;
 
@@ -51,16 +51,11 @@ namespace Melville.CSJ2K.j2k.io
 	/// <tt>BufferedRandomAccessFile</tt> class.
 	/// 
 	/// </summary>
-	/// <seealso cref="RandomAccessIO">
-	/// </seealso>
-	/// <seealso cref="BinaryDataOutput">
-	/// </seealso>
-	/// <seealso cref="BinaryDataInput">
-	/// </seealso>
-	/// <seealso cref="BufferedRandomAccessFile">
-	/// 
-	/// </seealso>
-	internal class BEBufferedRandomAccessFile:BufferedRandomAccessFile, RandomAccessIO, EndianType
+	/// <seealso cref="RandomAccessIO" />
+	/// <seealso cref="BinaryDataOutput" />
+	/// <seealso cref="BinaryDataInput" />
+	/// <seealso cref="BufferedRandomAccessFile" />
+	public class BEBufferedRandomAccessFile:BufferedRandomAccessFile, RandomAccessIO, EndianType
 	{
 		/// <summary> Constructor. Always needs a size for the buffer.
 		/// 
@@ -74,7 +69,7 @@ namespace Melville.CSJ2K.j2k.io
 		public BEBufferedRandomAccessFile(Stream stream, bool isReadOnly, int bufferSize)
 			: base(stream, isReadOnly, bufferSize)
 		{
-			byte_Ordering = Melville.CSJ2K.j2k.io.EndianType_Fields.BIG_ENDIAN;
+			byte_Ordering = EndianType_Fields.BIG_ENDIAN;
 		}
 
 		/// <summary> Constructor. Uses the default value for the byte-buffer size (512
@@ -86,7 +81,7 @@ namespace Melville.CSJ2K.j2k.io
 		public BEBufferedRandomAccessFile(Stream stream, bool isReadOnly)
 			: base(stream, isReadOnly)
 		{
-			byte_Ordering = Melville.CSJ2K.j2k.io.EndianType_Fields.BIG_ENDIAN;
+			byte_Ordering = EndianType_Fields.BIG_ENDIAN;
 		}
 
 		/// <summary> Constructor. Always needs a size for the buffer.
@@ -107,9 +102,9 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="java.io.IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		public BEBufferedRandomAccessFile(System.String name, System.String mode, int bufferSize):base(name, mode, bufferSize)
+		public BEBufferedRandomAccessFile(string name, string mode, int bufferSize):base(name, mode, bufferSize)
 		{
-			byte_Ordering = Melville.CSJ2K.j2k.io.EndianType_Fields.BIG_ENDIAN;
+			byte_Ordering = EndianType_Fields.BIG_ENDIAN;
 		}
 		
 		/// <summary> Constructor. Uses the default value for the byte-buffer size (512
@@ -128,19 +123,19 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="java.io.IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		public BEBufferedRandomAccessFile(System.String name, System.String mode):base(name, mode)
+		public BEBufferedRandomAccessFile(string name, string mode):base(name, mode)
 		{
-			byte_Ordering = Melville.CSJ2K.j2k.io.EndianType_Fields.BIG_ENDIAN;
+			byte_Ordering = EndianType_Fields.BIG_ENDIAN;
 		}
 		
 		/// <summary> Writes the short value of <tt>v</tt> (i.e., 16 least significant bits)
 		/// to the output. Prior to writing, the output should be realigned at the
 		/// byte level.
 		/// 
-		/// <p>Signed or unsigned data can be written. To write a signed value just
+		/// Signed or unsigned data can be written. To write a signed value just
 		/// pass the <tt>short</tt> value as an argument. To write unsigned data
 		/// pass the <tt>int</tt> value as an argument (it will be automatically
-		/// casted, and only the 16 least significant bits will be written).</p>
+		/// casted, and only the 16 least significant bits will be written).
 		/// 
 		/// </summary>
 		/// <param name="v">The value to write to the output
@@ -216,7 +211,7 @@ namespace Melville.CSJ2K.j2k.io
 
 			//UPGRADE_ISSUE: Method 'java.lang.Float.floatToIntBits' was not converted. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javalangFloatfloatToIntBits_float'"
 			//int intV = Float.floatToIntBits(v);
-			int intV = BitConverter.ToInt32(BitConverter.GetBytes(v), 0);
+			var intV = BitConverter.ToInt32(BitConverter.GetBytes(v), 0);
 			write(SupportClass.URShift(intV, 24));
 			write(SupportClass.URShift(intV, 16));
 			write(SupportClass.URShift(intV, 8));
@@ -241,7 +236,7 @@ namespace Melville.CSJ2K.j2k.io
 		   
 			//UPGRADE_ISSUE: Method 'java.lang.Double.doubleToLongBits' was not converted. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javalangDoubledoubleToLongBits_double'"
 			//long longV = Double.doubleToLongBits(v);
-			long longV = BitConverter.ToInt64(BitConverter.GetBytes(v), 0);
+			var longV = BitConverter.ToInt64(BitConverter.GetBytes(v), 0);
 			write((int) (SupportClass.URShift(longV, 56)));
 			write((int) (SupportClass.URShift(longV, 48)));
 			write((int) (SupportClass.URShift(longV, 40)));
@@ -331,7 +326,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// </exception>
 		public override long readUnsignedInt()
 		{
-			return (long) ((read() << 24) | (read() << 16) | (read() << 8) | read());
+			return (read() << 24) | (read() << 16) | (read() << 8) | read();
 		}
 		
 		/// <summary> Reads a signed long (i.e., 64 bit) from the input. Prior to reading,
@@ -353,7 +348,7 @@ namespace Melville.CSJ2K.j2k.io
 			//byte[] longbytes = new byte[8];
 			//for (int i = longbytes.Length-1; i >= 0; i--) longbytes[i] = read();
 			//return BitConverter.ToInt64(longbytes, 0);
-			return ((long)(((ulong) read() << 56) | ((ulong) read() << 48) | ((ulong) read() << 40) | ((ulong) read() << 32) | ((ulong) read() << 24) | ((ulong) read() << 16) | ((ulong) read() << 8) | ((ulong) read())));
+			return ((long)(((ulong) read() << 56) | ((ulong) read() << 48) | ((ulong) read() << 40) | ((ulong) read() << 32) | ((ulong) read() << 24) | ((ulong) read() << 16) | ((ulong) read() << 8) | read()));
 		}
 		
 		/// <summary> Reads an IEEE single precision (i.e., 32 bit) floating-point number
@@ -409,16 +404,16 @@ namespace Melville.CSJ2K.j2k.io
 			//UPGRADE_ISSUE: Method 'java.lang.Double.longBitsToDouble' was not converted. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javalangDoublelongBitsToDouble_long'"
 			//return Double.longBitsToDouble(((long) read() << 56) | ((long) read() << 48) | ((long) read() << 40) | ((long) read() << 32) | ((long) read() << 24) | ((long) read() << 16) | ((long) read() << 8) | ((long) read()));
 			
-			return BitConverter.ToDouble(BitConverter.GetBytes(((long) read() << 56) | ((long) read() << 48) | ((long) read() << 40) | ((long) read() << 32) | ((long) read() << 24) | ((long) read() << 16) | ((long) read() << 8) | ((long) read())), 0);
+			return BitConverter.ToDouble(BitConverter.GetBytes(((long) read() << 56) | ((long) read() << 48) | ((long) read() << 40) | ((long) read() << 32) | ((long) read() << 24) | ((long) read() << 16) | ((long) read() << 8) | read()), 0);
 
 		}
 		
 		/// <summary> Returns a string of information about the file and the endianess 
 		/// 
 		/// </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return base.ToString() + "\nBig-Endian ordering";
+			return $"{base.ToString()}\nBig-Endian ordering";
 		}
 	}
 }

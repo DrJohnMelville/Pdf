@@ -44,9 +44,10 @@
 * 
 * 
 */
+using System;
+using CoreJ2K.j2k.codestream;
 
-using Melville.CSJ2K.j2k.codestream;
-namespace Melville.CSJ2K.j2k.entropy
+namespace CoreJ2K.j2k.entropy
 {
 	
 	/// <summary> This class holds one of the different progression orders defined in
@@ -57,10 +58,8 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// defined, there is only Progression instance. 
 	/// 
 	/// </summary>
-	/// <seealso cref="ProgressionType">
-	/// 
-	/// </seealso>
-	internal class Progression
+	/// <seealso cref="ProgressionType" />
+	public class Progression
 	{
 		
 		/// <summary>Progression type as defined in ProgressionType interface </summary>
@@ -115,34 +114,34 @@ namespace Melville.CSJ2K.j2k.entropy
 			this.lye = lye;
 		}
 		
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String str = "type= ";
+			var str = "type= ";
 			switch (type)
 			{
 				
-				case Melville.CSJ2K.j2k.codestream.ProgressionType.LY_RES_COMP_POS_PROG: 
+				case ProgressionType.LY_RES_COMP_POS_PROG: 
 					str += "layer, ";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_LY_COMP_POS_PROG: 
+				case ProgressionType.RES_LY_COMP_POS_PROG: 
 					str += "res, ";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_POS_COMP_LY_PROG: 
+				case ProgressionType.RES_POS_COMP_LY_PROG: 
 					str += "res-pos, ";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.ProgressionType.POS_COMP_RES_LY_PROG: 
+				case ProgressionType.POS_COMP_RES_LY_PROG: 
 					str += "pos-comp, ";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.ProgressionType.COMP_POS_RES_LY_PROG: 
+				case ProgressionType.COMP_POS_RES_LY_PROG: 
 					str += "pos-comp, ";
 					break;
 				
 				default: 
-					throw new System.InvalidOperationException("Unknown progression type");
+					throw new InvalidOperationException("Unknown progression type");
 				
 			}
 			str += ("comp.: " + cs + "-" + ce + ", ");

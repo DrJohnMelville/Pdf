@@ -1,31 +1,56 @@
-﻿// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+﻿// Copyright (c) 2007-2016 CSJ2K contributors.
+// Copyright (c) 2025 Sjofn LLC.
 // Licensed under the BSD 3-Clause License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Melville.CSJ2K.Util
+namespace CoreJ2K.Util
 {
-    public sealed class PortableImage 
+    public sealed class PortableImage : IImage
     {
+        #region FIELDS
 
-        private const int SizeOfArgb = 4;
-        public double[] ByteScaling { get; }
+        private readonly double[] byteScaling;
 
-        public PortableImage(int width, int height, int numberOfComponents, int[] bitsUsed)
+        #endregion
+
+        #region CONSTRUCTORS
+
+        internal PortableImage(int width, int height, int numberOfComponents, IEnumerable<int> bitsUsed)
         {
             Width = width;
             Height = height;
             NumberOfComponents = numberOfComponents;
-            ByteScaling = bitsUsed.Select(b => 255.0 / (1 << b)).ToArray();
+            byteScaling = bitsUsed.Select(b => 255.0 / (1 << b)).ToArray();
+
             Data = new int[numberOfComponents * width * height];
         }
-        
+
+        #endregion
+
+        #region PROPERTIES
+
         public int Width { get; }
+
         public int Height { get; }
+
         public int NumberOfComponents { get; }
-        public int[] Data { get; }
-        
+
+        internal int[] Data { get; }
+
+        #endregion
+
+        #region METHODS
+
+        public T As<T>()
+        {
+            var image = ImageFactory.New(Width, Height, NumberOfComponents, 
+                ToBytes(Width, Height, NumberOfComponents, byteScaling, Data));
+            return image.As<T>();
+        }
+
         public int[] GetComponent(int number)
         {
             if (number < 0 || number >= NumberOfComponents)
@@ -44,7 +69,7 @@ namespace Melville.CSJ2K.Util
             return component;
         }
 
-        public void FillRow(int rowIndex, int lineIndex, int rowWidth, int[] rowValues)
+        internal void FillRow(int rowIndex, int lineIndex, int rowWidth, int[] rowValues)
         {
             Array.Copy(
                 rowValues,
@@ -54,58 +79,24 @@ namespace Melville.CSJ2K.Util
                 rowValues.Length);
         }
 
-        private static byte[] ToBytes(int width, int height, int numberOfComponents, double[] byteScaling, int[] data)
+        private static byte[] ToBytes(int width, int height, int numberOfComponents, 
+            IReadOnlyList<double> byteScaling, IReadOnlyList<int> data)
         {
             var count = numberOfComponents * width * height;
-            var bytes = new byte[SizeOfArgb * width * height];
+            var bytes = new byte[count];
 
-            switch (numberOfComponents)
+            for (var component = 0; component < numberOfComponents; ++component)
             {
-                case 1:
-                    var scale = byteScaling[0];
-                    for (int i = 0, j = 0; i < count; ++i)
-                    {
-                        var b = (byte)(scale * data[i]);
-                        bytes[j++] = b;
-                        bytes[j++] = b;
-                        bytes[j++] = b;
-                        bytes[j++] = 0xff;
-                    }
-                    break;
-                case 3:
-                    {
-                        var scale0 = byteScaling[0];
-                        var scale1 = byteScaling[1];
-                        var scale2 = byteScaling[2];
-                        for (int i = 0, j = 0; i < count;)
-                        {
-                            bytes[j++] = (byte)(scale0 * data[i++]);
-                            bytes[j++] = (byte)(scale1 * data[i++]);
-                            bytes[j++] = (byte)(scale2 * data[i++]);
-                            bytes[j++] = 0xff;
-                        }
-                    }
-                    break;
-                case 4:
-                    {
-                        var scale0 = byteScaling[0];
-                        var scale1 = byteScaling[1];
-                        var scale2 = byteScaling[2];
-                        var scale3 = byteScaling[3];
-                        for (int i = 0, j = 0; i < count;)
-                        {
-                            bytes[j++] = (byte)(scale0 * data[i++]);
-                            bytes[j++] = (byte)(scale1 * data[i++]);
-                            bytes[j++] = (byte)(scale2 * data[i++]);
-                            bytes[j++] = (byte)(scale3 * data[i++]);
-                        }
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(numberOfComponents), $"Invalid number of components: {numberOfComponents}");
+                for (int i = 0, j = 0; i < count; ++i)
+                {
+                    var b = (byte)(byteScaling[component] * data[i]);
+                    bytes[j++] = b;
+                }
             }
 
             return bytes;
         }
+
+        #endregion
     }
 }

@@ -41,20 +41,18 @@
 * 
 * 
 */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.quantization
+namespace CoreJ2K.j2k.quantization
 {
 	
 	/// <summary> This class extends ModuleSpec class in order to hold specifications about
 	/// number of guard bits in each tile-component.
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class GuardBitsSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public sealed class GuardBitsSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs an empty 'GuardBitsSpec' with specified number of tile and
@@ -95,20 +93,20 @@ namespace Melville.CSJ2K.j2k.quantization
 		public GuardBitsSpec(int nt, int nc, byte type, ParameterList pl):base(nt, nc, type)
 		{
 			
-			System.String param = pl.getParameter("Qguard_bits");
+			var param = pl.getParameter("Qguard_bits");
 			if (param == null)
 			{
-				throw new System.ArgumentException("Qguard_bits option not " + "specified");
+				throw new ArgumentException("Qguard_bits option not specified");
 			}
 			
 			// Parse argument
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			System.String word; // current word
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			string word; // current word
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
 			bool[] compSpec = null; // Components concerned by the specification
-			System.Int32 value_Renamed; // value of the guard bits
+			int value_Renamed; // value of the guard bits
 			
 			while (stk.HasMoreTokens())
 			{
@@ -119,65 +117,59 @@ namespace Melville.CSJ2K.j2k.quantization
 					
 					case 't':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-							curSpecType = SPEC_TILE_COMP;
-						else
-							curSpecType = SPEC_TILE_DEF;
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					case 'c':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-							curSpecType = SPEC_TILE_COMP;
-						else
-							curSpecType = SPEC_COMP_DEF;
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					default:  // Step size value
 						try
 						{
-							value_Renamed = System.Int32.Parse(word);
+							value_Renamed = int.Parse(word);
 						}
-						catch (System.FormatException)
+						catch (FormatException)
 						{
-							throw new System.ArgumentException("Bad parameter for " + "-Qguard_bits option" + " : " + word);
+							throw new ArgumentException($"Bad parameter for -Qguard_bits option : {word}");
 						}
 						
-						if ((float) value_Renamed <= 0.0f)
+						if (value_Renamed <= 0.0f)
 						{
-							throw new System.ArgumentException("Guard bits value " + "must be positive : " + value_Renamed);
+							throw new ArgumentException($"Guard bits value must be positive : {value_Renamed}");
 						}
 						
 						
 						if (curSpecType == SPEC_DEF)
 						{
-							setDefault((System.Object) value_Renamed);
+							setDefault(value_Renamed);
 						}
 						else if (curSpecType == SPEC_TILE_DEF)
 						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							for (var i = tileSpec.Length - 1; i >= 0; i--)
 								if (tileSpec[i])
 								{
-									setTileDef(i, (System.Object) value_Renamed);
+									setTileDef(i, value_Renamed);
 								}
 						}
 						else if (curSpecType == SPEC_COMP_DEF)
 						{
-							for (int i = compSpec.Length - 1; i >= 0; i--)
+							for (var i = compSpec.Length - 1; i >= 0; i--)
 								if (compSpec[i])
 								{
-									setCompDef(i, (System.Object) value_Renamed);
+									setCompDef(i, value_Renamed);
 								}
 						}
 						else
 						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							for (var i = tileSpec.Length - 1; i >= 0; i--)
 							{
-								for (int j = compSpec.Length - 1; j >= 0; j--)
+								for (var j = compSpec.Length - 1; j >= 0; j--)
 								{
 									if (tileSpec[i] && compSpec[j])
 									{
-										setTileCompVal(i, j, (System.Object) value_Renamed);
+										setTileCompVal(i, j, value_Renamed);
 									}
 								}
 							}
@@ -195,10 +187,10 @@ namespace Melville.CSJ2K.j2k.quantization
 			// Check that default value has been specified
 			if (getDefault() == null)
 			{
-				int ndefspec = 0;
-				for (int t = nt - 1; t >= 0; t--)
+				var ndefspec = 0;
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						if (specValType[t][c] == SPEC_DEF)
 						{
@@ -211,7 +203,7 @@ namespace Melville.CSJ2K.j2k.quantization
 				// the default value defined in ParameterList
 				if (ndefspec != 0)
 				{
-					setDefault((System.Object) System.Int32.Parse(pl.DefaultParameterList.getParameter("Qguard_bits")));
+					setDefault(int.Parse(pl.DefaultParameterList.getParameter("Qguard_bits")));
 				}
 				else
 				{
@@ -222,7 +214,7 @@ namespace Melville.CSJ2K.j2k.quantization
 					{
 						
 						case SPEC_TILE_DEF: 
-							for (int c = nc - 1; c >= 0; c--)
+							for (var c = nc - 1; c >= 0; c--)
 							{
 								if (specValType[0][c] == SPEC_TILE_DEF)
 									specValType[0][c] = SPEC_DEF;
@@ -231,7 +223,7 @@ namespace Melville.CSJ2K.j2k.quantization
 							break;
 						
 						case SPEC_COMP_DEF: 
-							for (int t = nt - 1; t >= 0; t--)
+							for (var t = nt - 1; t >= 0; t--)
 							{
 								if (specValType[t][0] == SPEC_COMP_DEF)
 									specValType[t][0] = SPEC_DEF;

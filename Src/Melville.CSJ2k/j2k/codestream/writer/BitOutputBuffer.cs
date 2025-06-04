@@ -41,8 +41,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.j2k.util;
-namespace Melville.CSJ2K.j2k.codestream.writer
+using CoreJ2K.j2k.util;
+
+namespace CoreJ2K.j2k.codestream.writer
 {
 	
 	/// <summary> This class implements a buffer for writing bits, with the required bit
@@ -51,22 +52,22 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// reallocated and enlarged whenever necessary. A BitOutputBuffer object may
 	/// be reused by calling its 'reset()' method.
 	/// 
-	/// <P>NOTE: The methods implemented in this class are intended to be used only
+	/// NOTE: The methods implemented in this class are intended to be used only
 	/// in writing packet heads, since a special bit stuffing procedure is used, as
 	/// required for the packet heads.
 	/// 
 	/// </summary>
-	internal class BitOutputBuffer
+	public class BitOutputBuffer
 	{
 		/// <summary> Returns the current length of the buffer, in bytes.
 		/// 
-		/// <P>This method is declared final to increase performance.
+		/// This method is declared final to increase performance.
 		/// 
 		/// </summary>
 		/// <returns> The currebt length of the buffer in bytes.
 		/// 
 		/// </returns>
-		virtual public int Length
+		public virtual int Length
 		{
 			get
 			{
@@ -87,21 +88,14 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// not be modified. Only the first N elements have valid data, where N is
 		/// the value returned by 'getLength()'
 		/// 
-		/// <P>This method is declared final to increase performance.
+		/// This method is declared final to increase performance.
 		/// 
 		/// </summary>
 		/// <returns> The internal byte buffer.
 		/// 
 		/// </returns>
-		virtual public byte[] Buffer
-		{
-			get
-			{
-				return buf;
-			}
-			
-		}
-		
+		public virtual byte[] Buffer => buf;
+
 		/// <summary>The buffer where we store the data </summary>
 		internal byte[] buf;
 		
@@ -142,7 +136,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			// Reinit pointers
 			curbyte = 0;
 			avbits = 8;
-			ArrayUtil.byteArraySet(buf, (byte) 0);
+			ArrayUtil.byteArraySet(buf, 0);
 		}
 		
 		/// <summary> Writes a bit to the buffer at the current position. The value 'bit'
@@ -150,7 +144,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// already written. The buffer is enlarged, by 'SZ_INCR' bytes, if
 		/// necessary.
 		/// 
-		/// <P>This method is declared final to increase performance.
+		/// This method is declared final to increase performance.
 		/// 
 		/// </summary>
 		/// <param name="bit">The bit to write, 0 or 1.
@@ -167,21 +161,15 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			else
 			{
 				// End of current byte => goto next
-				if (buf[curbyte] != (byte) SupportClass.Identity(0xFF))
-				{
-					// We don't need bit stuffing
-					avbits = 8;
-				}
-				else
-				{
+				// We don't need bit stuffing
+				avbits = buf[curbyte] != (byte) SupportClass.Identity(0xFF) ? 8 :
 					// We need to stuff a bit (next MSBit is 0)
-					avbits = 7;
-				}
+					7;
 				curbyte++;
 				if (curbyte == buf.Length)
 				{
 					// We are at end of 'buf' => extend it
-					byte[] oldbuf = buf;
+					var oldbuf = buf;
 					buf = new byte[oldbuf.Length + SZ_INCR];
 					Array.Copy(oldbuf, 0, buf, 0, oldbuf.Length);
 				}
@@ -194,7 +182,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// buffer will result. The buffer is enlarged, by 'SZ_INCR' bytes, if
 		/// necessary.
 		/// 
-		/// <P>This method is declared final to increase performance.
+		/// This method is declared final to increase performance.
 		/// 
 		/// </summary>
 		/// <param name="bits">The bits to write.
@@ -211,7 +199,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			if (((buf.Length - curbyte) << 3) - 8 + avbits <= n + 2)
 			{
 				// Not enough place, extend it
-				byte[] oldbuf = buf;
+				var oldbuf = buf;
 				buf = new byte[oldbuf.Length + SZ_INCR];
 				Array.Copy(oldbuf, 0, buf, 0, oldbuf.Length);
 				// SZ_INCR is always 6 or more, so it is enough to hold all the
@@ -223,16 +211,10 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 				// Complete the current byte
 				n -= avbits;
 				buf[curbyte] |= (byte) (bits >> n);
-				if (buf[curbyte] != (byte) SupportClass.Identity(0xFF))
-				{
-					// We don't need bit stuffing
-					avbits = 8;
-				}
-				else
-				{
+				// We don't need bit stuffing
+				avbits = buf[curbyte] != (byte) SupportClass.Identity(0xFF) ? 8 :
 					// We need to stuff a bit (next MSBit is 0)
-					avbits = 7;
-				}
+					7;
 				curbyte++;
 				// Write whole bytes
 				while (n >= avbits)
@@ -240,17 +222,11 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 					n -= avbits;
                     // CONVERSION PROBLEM?
 					buf[curbyte] |= (byte)((bits >> n) & (~ (1 << avbits)));
-					if (buf[curbyte] != (byte) SupportClass.Identity(0xFF))
-					{
-						// We don't need bit
-						// stuffing
-						avbits = 8;
-					}
-					else
-					{
+					// We don't need bit
+					// stuffing
+					avbits = buf[curbyte] != (byte) SupportClass.Identity(0xFF) ? 8 :
 						// We need to stuff a bit (next MSBit is 0)
-						avbits = 7;
-					}
+						7;
 					curbyte++;
 				}
 			}
@@ -263,16 +239,10 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 			if (avbits == 0)
 			{
 				// Last byte is full
-				if (buf[curbyte] != (byte) SupportClass.Identity(0xFF))
-				{
-					// We don't need bit stuffing
-					avbits = 8;
-				}
-				else
-				{
+				// We don't need bit stuffing
+				avbits = buf[curbyte] != (byte) SupportClass.Identity(0xFF) ? 8 :
 					// We need to stuff a bit (next MSBit is 0)
-					avbits = 7;
-				}
+					7;
 				curbyte++; // We already ensured that we have enough place
 			}
 		}
@@ -307,9 +277,9 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// <returns> Information about the object.
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "bits written = " + (curbyte * 8 + (8 - avbits)) + ", curbyte = " + curbyte + ", avbits = " + avbits;
+			return $"bits written = {(curbyte * 8 + (8 - avbits))}, curbyte = {curbyte}, avbits = {avbits}";
 		}
 	}
 }

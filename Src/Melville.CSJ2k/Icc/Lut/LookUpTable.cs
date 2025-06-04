@@ -7,8 +7,9 @@
 /// ***************************************************************************
 /// </summary>
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-namespace Melville.CSJ2K.Icc.Lut
+using Tags_ICCCurveType = CoreJ2K.Icc.Tags.ICCCurveType;
+
+namespace CoreJ2K.Icc.Lut
 {
 	
 	
@@ -20,14 +21,10 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal abstract class LookUpTable
+	public abstract class LookUpTable
 	{
-		
-		/// <summary>End of line string.             </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		protected internal static readonly System.String eol = System.Environment.NewLine;
 		/// <summary>The curve data                  </summary>
-		protected internal ICCCurveType curve = null;
+		protected internal Tags_ICCCurveType curve = null;
 		/// <summary>Number of values in created lut </summary>
 		protected internal int dwNumInput = 0;
 		
@@ -37,7 +34,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <param name="dwNumInput">Number of values in created lut
 		/// </param>
-		protected internal LookUpTable(ICCCurveType curve, int dwNumInput)
+		protected internal LookUpTable(Tags_ICCCurveType curve, int dwNumInput)
 		{
 			this.curve = curve;
 			this.dwNumInput = dwNumInput;

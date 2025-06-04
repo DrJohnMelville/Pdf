@@ -6,8 +6,9 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
 
-namespace Melville.CSJ2K.Icc.Tags
+namespace CoreJ2K.Icc.Tags
 {
 	
 	/// <summary> The ICCCurveReverse tag
@@ -17,33 +18,26 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class ICCCurveTypeReverse:ICCTag
+	public class ICCCurveTypeReverse:ICCTag
 	{
-		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String eol = System.Environment.NewLine;
 		/// <summary>Tag fields </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'type '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		new public int type;
+		public new int type;
 		/// <summary>Tag fields </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'reserved '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		public int reserved;
 		/// <summary>Tag fields </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'nEntries '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		public int nEntries;
 		/// <summary>Tag fields </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'entry '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		public int[] entry_Renamed_Field;
 		
 		
 		/// <summary>Return the string rep of this tag. </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[").Append(base.ToString()).Append(eol);
-			rep.Append("num entries = " + System.Convert.ToString(nEntries) + eol);
-			rep.Append("data length = " + System.Convert.ToString(entry_Renamed_Field.Length) + eol);
-			for (int i = 0; i < nEntries; ++i)
-				rep.Append(ICCProfile.toHexString(entry_Renamed_Field[i]) + eol);
+			var rep = new System.Text.StringBuilder("[").Append(base.ToString()).Append(Environment.NewLine);
+			rep.Append($"num entries = {Convert.ToString(nEntries)}{Environment.NewLine}");
+			rep.Append($"data length = {Convert.ToString(entry_Renamed_Field.Length)}{Environment.NewLine}");
+			for (var i = 0; i < nEntries; ++i)
+				rep.Append(ICCProfile.toHexString(entry_Renamed_Field[i]) + Environment.NewLine);
 			return rep.Append("]").ToString();
 		}
 		
@@ -81,7 +75,7 @@ namespace Melville.CSJ2K.Icc.Tags
             reserved = ICCProfile.getInt(data, offset + ICCProfile.int_size);
             nEntries = ICCProfile.getInt(data, offset + 2 * ICCProfile.int_size);
 			entry_Renamed_Field = new int[nEntries];
-			for (int i = 0; i < nEntries; ++i)
+			for (var i = 0; i < nEntries; ++i)
 			// Reverse the storage order.
                 entry_Renamed_Field[nEntries - 1 + i] = ICCProfile.getShort(data, offset + 3 * ICCProfile.int_size + i * ICCProfile.short_size) & 0xFFFF;
 		}

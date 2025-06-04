@@ -7,10 +7,10 @@
 /// ***************************************************************************
 /// </summary>
 
-using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
-using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
+using Color_ColorSpace = CoreJ2K.Color.ColorSpace;
+using ColorSpaceException = CoreJ2K.Color.ColorSpaceException;
 
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> This class enables an application to construct an 3 component ICCProfile
@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Icc
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	internal class ICCMatrixBasedInputProfile:ICCProfile
+	public class ICCMatrixBasedInputProfile:ICCProfile
 	{
 		
 		/// <summary> Factory method to create ICCMatrixBasedInputProfile based on a
@@ -35,7 +35,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="ColorSpaceException">
 		/// </exception>
-		public static ICCMatrixBasedInputProfile createInstance(ColorSpace csm)
+		public static ICCMatrixBasedInputProfile createInstance(Color_ColorSpace csm)
 		{
 			return new ICCMatrixBasedInputProfile(csm);
 		}
@@ -49,7 +49,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="ICCProfileInvalidException">
 		/// </exception>
-		protected internal ICCMatrixBasedInputProfile(ColorSpace csm):base(csm)
+		protected internal ICCMatrixBasedInputProfile(Color_ColorSpace csm):base(csm)
 		{
 		}
 		

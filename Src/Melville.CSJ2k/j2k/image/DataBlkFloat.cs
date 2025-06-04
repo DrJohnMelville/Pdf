@@ -41,20 +41,18 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 	
 	/// <summary> This is an implementation of the <tt>DataBlk</tt> interface for 32 bit
 	/// floating point data (float).
 	/// 
-	/// <p>The methods in this class are declared final, so that they can be
-	/// inlined by inlining compilers.</p>
+	/// The methods in this class are declared final, so that they can be
+	/// inlined by inlining compilers.
 	/// 
 	/// </summary>
-	/// <seealso cref="DataBlk">
-	/// 
-	/// </seealso>
-	internal class DataBlkFloat:DataBlk
+	/// <seealso cref="DataBlk" />
+	public class DataBlkFloat:DataBlk
 	{
 		/// <summary> Returns the identifier of this data type, <tt>TYPE_FLOAT</tt>, as
 		/// defined in <tt>DataBlk</tt>.
@@ -63,17 +61,9 @@ namespace Melville.CSJ2K.j2k.image
 		/// <returns> The type of data stored. Always <tt>DataBlk.TYPE_FLOAT</tt>
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk.TYPE_FLOAT">
-		/// 
-		/// </seealso>
-		override public int DataType
-		{
-			get
-			{
-				return TYPE_FLOAT;
-			}
-			
-		}
+		/// <seealso cref="DataBlk.TYPE_FLOAT" />
+		public override int DataType => TYPE_FLOAT;
+
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
 		/// array. The returned array is a float array.
@@ -90,18 +80,11 @@ namespace Melville.CSJ2K.j2k.image
 		/// <param name="arr">The data array to use. Must be a float array.
 		/// 
 		/// </param>
-		override public System.Object Data
+		public override object Data
 		{
-			get
-			{
-				return data;
-			}
-			
-			set
-			{
-				data = (float[]) value;
-			}
-			
+			get => data;
+
+			set => data = (float[]) value;
 		}
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
@@ -118,18 +101,11 @@ namespace Melville.CSJ2K.j2k.image
 		/// <param name="arr">The data array to use.
 		/// 
 		/// </param>
-		virtual public float[] DataFloat
+		public virtual float[] DataFloat
 		{
-			get
-			{
-				return data;
-			}
-			
-			set
-			{
-				data = value;
-			}
-			
+			get => data;
+
+			set => data = value;
 		}
 		/// <summary>The array where the data is stored </summary>
 		private float[] data;
@@ -180,26 +156,26 @@ namespace Melville.CSJ2K.j2k.image
 		/// </param>
 		public DataBlkFloat(DataBlkFloat src)
 		{
-			this.ulx = src.ulx;
-			this.uly = src.uly;
-			this.w = src.w;
-			this.h = src.h;
-			this.offset = 0;
-			this.scanw = this.w;
-			this.data = new float[this.w * this.h];
-			for (int i = 0; i < this.h; i++)
-				Array.Copy(src.data, i * src.scanw, this.data, i * this.scanw, this.w);
+			ulx = src.ulx;
+			uly = src.uly;
+			w = src.w;
+			h = src.h;
+			offset = 0;
+			scanw = w;
+			data = new float[w * h];
+			for (var i = 0; i < h; i++)
+				Array.Copy(src.data, i * src.scanw, data, i * scanw, w);
 		}
 		
 		/// <summary> Returns a string of informations about the DataBlkInt.
 		/// 
 		/// </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String str = base.ToString();
+			var str = base.ToString();
 			if (data != null)
 			{
-				str += (",data=" + data.Length + " bytes");
+				str += $",data={data.Length} bytes";
 			}
 			return str;
 		}

@@ -40,28 +40,29 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-
+using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
+using CoreJ2K.j2k.codestream;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
 
-namespace Melville.CSJ2K.j2k.entropy
+namespace CoreJ2K.j2k.entropy
 {
 	
 	/// <summary> This class extends ModuleSpec class for precinct partition sizes holding
 	/// purposes.
 	/// 
-	/// <p>It stores the size a of precinct when precinct partition is used or not.
+	/// It stores the size a of precinct when precinct partition is used or not.
 	/// If precinct partition is used, we can have several packets for a given
 	/// resolution level whereas there is only one packet per resolution level if
 	/// no precinct partition is used.
 	/// 
 	/// </summary>
-	internal class PrecinctSizeSpec:ModuleSpec
+	public sealed class PrecinctSizeSpec:ModuleSpec
 	{
 		
 		/// <summary>Name of the option </summary>
-		private const System.String optName = "Cpp";
+		private const string optName = "Cpp";
 		
 		/// <summary>Reference to wavelet number of decomposition levels for each
 		/// tile-component.  
@@ -130,17 +131,15 @@ namespace Melville.CSJ2K.j2k.entropy
 			
 			// Boolean used to know if we were previously reading a precinct's 
 			// size or if we were reading something else.
-			bool wasReadingPrecinctSize = false;
+			var wasReadingPrecinctSize = false;
 			
-			System.String param = pl.getParameter(optName);
+			var param = pl.getParameter(optName);
 			
 			// Set precinct sizes to default i.e. 2^15 =
 			// Markers.PRECINCT_PARTITION_DEF_SIZE
-			System.Collections.Generic.List<System.Int32>[] tmpv = new List<int>[2];
-			tmpv[0] = new List<int>(10); // ppx
-			tmpv[0].Add((System.Int32) Melville.CSJ2K.j2k.codestream.Markers.PRECINCT_PARTITION_DEF_SIZE);
-			tmpv[1] = new List<int>(10); // ppy
-			tmpv[1].Add((System.Int32) Melville.CSJ2K.j2k.codestream.Markers.PRECINCT_PARTITION_DEF_SIZE);
+			var tmpv = new List<int>[2];
+			tmpv[0] = new List<int>(10) { Markers.PRECINCT_PARTITION_DEF_SIZE }; // ppx
+			tmpv[1] = new List<int>(10) { Markers.PRECINCT_PARTITION_DEF_SIZE }; // ppy
 			setDefault(tmpv);
 			
 			if (param == null)
@@ -151,22 +150,22 @@ namespace Melville.CSJ2K.j2k.entropy
 			}
 			
 			// Precinct partition is used : parse arguments
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the specification
 			bool[] compSpec = null; // Components concerned by the specification
             int ci, ti; //i, xIdx removed
 			
-			bool endOfParamList = false;
-			System.String word = null; // current word
-			System.Int32 w, h;
-			System.String errMsg = null;
+			var endOfParamList = false;
+			string word = null; // current word
+			int w, h;
+			string errMsg = null;
 			
 			while ((stk.HasMoreTokens() || wasReadingPrecinctSize) && !endOfParamList)
 			{
 				
-				System.Collections.Generic.List<System.Int32>[] v = new List<int>[2]; // v[0] : ppx, v[1] : ppy
+				var v = new List<int>[2]; // v[0] : ppx, v[1] : ppy
 				
 				// We do not read the next token if we were reading a precinct's
 				// size argument as we have already read the next token into word.
@@ -183,35 +182,21 @@ namespace Melville.CSJ2K.j2k.entropy
 					
 					case 't':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_TILE_DEF;
-						}
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					
 					case 'c':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_COMP_DEF;
-						}
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					
 					default: 
-						if (!System.Char.IsDigit(word[0]))
+						if (!char.IsDigit(word[0]))
 						{
-							errMsg = "Bad construction for parameter: " + word;
-							throw new System.ArgumentException(errMsg);
+							errMsg = $"Bad construction for parameter: {word}";
+							throw new ArgumentException(errMsg);
 						}
 						
 						// Initialises Vector objects
@@ -225,30 +210,30 @@ namespace Melville.CSJ2K.j2k.entropy
 							try
 							{
 								// Get precinct width
-								w = System.Int32.Parse(word);
+								w = int.Parse(word);
 								
 								// Get next word in argument list
 								try
 								{
 									word = stk.NextToken();
 								}
-								catch (System.ArgumentOutOfRangeException)
+								catch (ArgumentOutOfRangeException)
 								{
-									errMsg = "'" + optName + "' option : could not " + "parse the precinct's width";
-									throw new System.ArgumentException(errMsg);
+									errMsg = $"'{optName}' option : could not parse the precinct's width";
+									throw new ArgumentException(errMsg);
 								}
 								// Get precinct height
-								h = System.Int32.Parse(word);
+								h = int.Parse(word);
 								if (w != (1 << MathUtil.log2(w)) || h != (1 << MathUtil.log2(h)))
 								{
 									errMsg = "Precinct dimensions must be powers of 2";
-									throw new System.ArgumentException(errMsg);
+									throw new ArgumentException(errMsg);
 								}
 							}
-							catch (System.FormatException)
+							catch (FormatException)
 							{
-								errMsg = "'" + optName + "' option : the argument '" + word + "' could not be parsed.";
-								throw new System.ArgumentException(errMsg);
+								errMsg = $"'{optName}' option : the argument '{word}' could not be parsed.";
+								throw new ArgumentException(errMsg);
 							}
 							// Store packet's dimensions in Vector arrays
 							v[0].Add(w);
@@ -258,7 +243,7 @@ namespace Melville.CSJ2K.j2k.entropy
 							if (stk.HasMoreTokens())
 							{
 								word = stk.NextToken();
-								if (!System.Char.IsDigit(word[0]))
+								if (!char.IsDigit(word[0]))
 								{
 									// The next token does not start with a digit so
 									// it is not a precinct's size argument. We set
@@ -389,45 +374,38 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// resolution level 'rl'.
 		/// 
 		/// </returns>
-		public virtual int getPPX(int t, int c, int rl)
+		public int getPPX(int t, int c, int rl)
 		{
 			int mrl, idx;
-			System.Collections.Generic.List<System.Int32>[] v = null;
-			bool tileSpecified = (t != - 1?true:false);
-			bool compSpecified = (c != - 1?true:false);
+			List<int>[] v = null;
+			var tileSpecified = t != - 1;
+			var compSpecified = c != - 1;
 			
 			// Get the maximum number of decomposition levels and the object
 			// (Vector array) containing the precinct dimensions (width and
 			// height) for the specified (or not) tile/component
 			if (tileSpecified && compSpecified)
 			{
-				mrl = ((System.Int32) dls.getTileCompVal(t, c));
-				v = (System.Collections.Generic.List<System.Int32>[])getTileCompVal(t, c);
+				mrl = ((int) dls.getTileCompVal(t, c));
+				v = (List<int>[])getTileCompVal(t, c);
 			}
 			else if (tileSpecified && !compSpecified)
 			{
-				mrl = ((System.Int32) dls.getTileDef(t));
-				v = (System.Collections.Generic.List<System.Int32>[])getTileDef(t);
+				mrl = ((int) dls.getTileDef(t));
+				v = (List<int>[])getTileDef(t);
 			}
 			else if (!tileSpecified && compSpecified)
 			{
-				mrl = ((System.Int32) dls.getCompDef(c));
-				v = (System.Collections.Generic.List<System.Int32>[])getCompDef(c);
+				mrl = ((int) dls.getCompDef(c));
+				v = (List<int>[])getCompDef(c);
 			}
 			else
 			{
-				mrl = ((System.Int32) dls.getDefault());
-				v = (System.Collections.Generic.List<System.Int32>[])getDefault();
+				mrl = ((int) dls.getDefault());
+				v = (List<int>[])getDefault();
 			}
 			idx = mrl - rl;
-			if (v[0].Count > idx)
-			{
-				return ((System.Int32) v[0][idx]);
-			}
-			else
-			{
-				return ((System.Int32) v[0][v[0].Count - 1]);
-			}
+			return v[0].Count > idx ? v[0][idx] : v[0][v[0].Count - 1];
 		}
 		
 		/// <summary> Returns the precinct partition height in component 'n' and tile 't' at
@@ -451,45 +429,38 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// resolution level 'rl'.
 		/// 
 		/// </returns>
-		public virtual int getPPY(int t, int c, int rl)
+		public int getPPY(int t, int c, int rl)
 		{
 			int mrl, idx;
-			System.Collections.Generic.List<System.Int32>[] v = null;
-			bool tileSpecified = (t != - 1?true:false);
-			bool compSpecified = (c != - 1?true:false);
+			List<int>[] v = null;
+			var tileSpecified = t != - 1;
+			var compSpecified = c != - 1;
 			
 			// Get the maximum number of decomposition levels and the object
 			// (Vector array) containing the precinct dimensions (width and
 			// height) for the specified (or not) tile/component
 			if (tileSpecified && compSpecified)
 			{
-				mrl = ((System.Int32) dls.getTileCompVal(t, c));
-				v = (System.Collections.Generic.List<System.Int32>[]) getTileCompVal(t, c);
+				mrl = ((int) dls.getTileCompVal(t, c));
+				v = (List<int>[]) getTileCompVal(t, c);
 			}
 			else if (tileSpecified && !compSpecified)
 			{
-				mrl = ((System.Int32) dls.getTileDef(t));
-				v = (System.Collections.Generic.List<System.Int32>[]) getTileDef(t);
+				mrl = ((int) dls.getTileDef(t));
+				v = (List<int>[]) getTileDef(t);
 			}
 			else if (!tileSpecified && compSpecified)
 			{
-				mrl = ((System.Int32) dls.getCompDef(c));
-				v = (System.Collections.Generic.List<System.Int32>[]) getCompDef(c);
+				mrl = ((int) dls.getCompDef(c));
+				v = (List<int>[]) getCompDef(c);
 			}
 			else
 			{
-				mrl = ((System.Int32) dls.getDefault());
-				v = (System.Collections.Generic.List<System.Int32>[]) getDefault();
+				mrl = ((int) dls.getDefault());
+				v = (List<int>[]) getDefault();
 			}
 			idx = mrl - rl;
-			if (v[1].Count > idx)
-			{
-				return ((System.Int32) v[1][idx]);
-			}
-			else
-			{
-				return ((System.Int32) v[1][v[1].Count - 1]);
-			}
+			return v[1].Count > idx ? v[1][idx] : v[1][v[1].Count - 1];
 		}
 	}
 }

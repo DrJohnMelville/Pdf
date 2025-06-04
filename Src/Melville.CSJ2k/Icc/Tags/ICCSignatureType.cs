@@ -1,10 +1,10 @@
-namespace Melville.CSJ2K.Icc.Tags
+namespace CoreJ2K.Icc.Tags
 {
-    internal class ICCSignatureType : ICCTag
+    public class ICCSignatureType : ICCTag
     {
-        new public int type;
+        public new int type;
         public int reserved;
-        new public int signature;
+        public new int signature;
 
         /// <summary> Construct this tag from its constituant parts</summary>
         /// <param name="signature">tag id</param>

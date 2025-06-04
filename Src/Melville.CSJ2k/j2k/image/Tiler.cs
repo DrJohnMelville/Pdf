@@ -41,10 +41,10 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 
     /// <summary> This class places an image in the canvas coordinate system, tiles it, if so
@@ -55,14 +55,14 @@ namespace Melville.CSJ2K.j2k.image
     /// the 'BlkImgDataSrc' interface. See the 'ImgData' interface for a
     /// description of the canvas and tiling.
     /// 
-    /// <p>All tiles produced are rectangular, non-overlapping and their union
+    /// All tiles produced are rectangular, non-overlapping and their union
     /// covers all the image. However, the tiling may not be uniform, depending on
     /// the nominal tile size, tiling origin, component subsampling and other
     /// factors. Therefore it might not be assumed that all tiles are of the same
-    /// width and height.</p>
+    /// width and height.
     /// 
-    /// <p>The nominal dimension of the tiles is the maximal one, in the reference
-    /// grid. All the components of the image have the same number of tiles.</p>
+    /// The nominal dimension of the tiles is the maximal one, in the reference
+    /// grid. All the components of the image have the same number of tiles.
     /// 
     /// </summary>
     /// <seealso cref="ImgData">
@@ -70,7 +70,7 @@ namespace Melville.CSJ2K.j2k.image
     /// <seealso cref="BlkImgDataSrc">
     /// 
     /// </seealso>
-    internal class Tiler : ImgDataAdapter, BlkImgDataSrc
+    public class Tiler : ImgDataAdapter, BlkImgDataSrc
     {
         /// <summary> Returns the overall width of the current tile in pixels. This is the
         /// tile's width without accounting for any component subsampling.
@@ -79,14 +79,7 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total current tile width in pixels.
         /// 
         /// </returns>
-        public override int TileWidth
-        {
-            get
-            {
-                return tileW;
-            }
-
-        }
+        public override int TileWidth => tileW;
 
         /// <summary> Returns the overall height of the current tile in pixels. This is the
         /// tile's width without accounting for any component subsampling.
@@ -95,14 +88,7 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The total current tile height in pixels.
         /// 
         /// </returns>
-        public override int TileHeight
-        {
-            get
-            {
-                return tileH;
-            }
-
-        }
+        public override int TileHeight => tileH;
 
         /// <summary> Returns the index of the current tile, relative to a standard scan-line
         /// order.
@@ -111,34 +97,13 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The current tile's index (starts at 0).
         /// 
         /// </returns>
-        public override int TileIdx
-        {
-            get
-            {
-                return ty * ntX + tx;
-            }
-
-        }
+        public override int TileIdx => ty * ntX + tx;
 
         /// <summary>Returns the horizontal tile partition offset in the reference grid </summary>
-        public override int TilePartULX
-        {
-            get
-            {
-                return xt0siz;
-            }
-
-        }
+        public override int TilePartULX => xt0siz;
 
         /// <summary>Returns the vertical tile partition offset in the reference grid </summary>
-        public override int TilePartULY
-        {
-            get
-            {
-                return yt0siz;
-            }
-
-        }
+        public override int TilePartULY => yt0siz;
 
         /// <summary> Returns the horizontal coordinate of the image origin, the top-left
         /// corner, in the canvas system, on the reference grid.
@@ -148,14 +113,7 @@ namespace Melville.CSJ2K.j2k.image
         /// system, on the reference grid.
         /// 
         /// </returns>
-        public override int ImgULX
-        {
-            get
-            {
-                return x0siz;
-            }
-
-        }
+        public override int ImgULX => x0siz;
 
         /// <summary> Returns the vertical coordinate of the image origin, the top-left
         /// corner, in the canvas system, on the reference grid.
@@ -165,14 +123,7 @@ namespace Melville.CSJ2K.j2k.image
         /// system, on the reference grid.
         /// 
         /// </returns>
-        public override int ImgULY
-        {
-            get
-            {
-                return y0siz;
-            }
-
-        }
+        public override int ImgULY => y0siz;
 
         /// <summary> Returns the nominal width of the tiles in the reference grid.
         /// 
@@ -180,14 +131,7 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The nominal tile width, in the reference grid.
         /// 
         /// </returns>
-        public override int NomTileWidth
-        {
-            get
-            {
-                return xtsiz;
-            }
-
-        }
+        public override int NomTileWidth => xtsiz;
 
         /// <summary> Returns the nominal width of the tiles in the reference grid.
         /// 
@@ -195,14 +139,7 @@ namespace Melville.CSJ2K.j2k.image
         /// <returns> The nominal tile width, in the reference grid.
         /// 
         /// </returns>
-        public override int NomTileHeight
-        {
-            get
-            {
-                return ytsiz;
-            }
-
-        }
+        public override int NomTileHeight => ytsiz;
 
         /// <summary>The source of image data </summary>
         private BlkImgDataSrc src = null;
@@ -312,28 +249,28 @@ namespace Melville.CSJ2K.j2k.image
 
             // Initialize
             this.src = src;
-            this.x0siz = ax;
-            this.y0siz = ay;
-            this.xt0siz = px;
-            this.yt0siz = py;
-            this.xtsiz = nw;
-            this.ytsiz = nh;
+            x0siz = ax;
+            y0siz = ay;
+            xt0siz = px;
+            yt0siz = py;
+            xtsiz = nw;
+            ytsiz = nh;
 
             // Verify that input is not tiled
             if (src.getNumTiles() != 1)
             {
-                throw new System.ArgumentException("Source is tiled");
+                throw new ArgumentException("Source is tiled");
             }
             // Verify that source is not "canvased"
             if (src.ImgULX != 0 || src.ImgULY != 0)
             {
-                throw new System.ArgumentException("Source is \"canvased\"");
+                throw new ArgumentException("Source is \"canvased\"");
             }
             // Verify that arguments satisfy trivial requirements
             if (x0siz < 0 || y0siz < 0 || xt0siz < 0 || yt0siz < 0 || xtsiz < 0 || ytsiz < 0 || xt0siz > x0siz
                 || yt0siz > y0siz)
             {
-                throw new System.ArgumentException("Invalid image origin, " + "tiling origin or nominal " + "tile size");
+                throw new ArgumentException("Invalid image origin, tiling origin or nominal tile size");
             }
 
             // If no tiling has been specified, creates a unique tile with maximum
@@ -355,16 +292,15 @@ namespace Melville.CSJ2K.j2k.image
             {
                 FacilityManager.getMsgLogger()
                     .printmsg(
-                        Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO,
-                        "Automatically adjusted tiling " + "origin to equivalent one (" + xt0siz + "," + yt0siz
-                        + ") so that " + "first tile overlaps the image");
+                        MsgLogger_Fields.INFO,
+                        $"Automatically adjusted tiling origin to equivalent one ({xt0siz},{yt0siz}) so that first tile overlaps the image");
             }
 
             // Calculate the number of tiles
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            ntX = (int)System.Math.Ceiling((x0siz + src.ImgWidth) / (double)xtsiz);
+            ntX = (int)Math.Ceiling((x0siz + src.ImgWidth) / (double)xtsiz);
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            ntY = (int)System.Math.Ceiling((y0siz + src.ImgHeight) / (double)ytsiz);
+            ntY = (int)Math.Ceiling((y0siz + src.ImgHeight) / (double)ytsiz);
         }
 
         /// <summary> Returns the width in pixels of the specified tile-component.
@@ -383,8 +319,8 @@ namespace Melville.CSJ2K.j2k.image
         {
             if (t != TileIdx)
             {
-                throw new System.InvalidOperationException(
-                    "Asking the width of a tile-component which is " + "not in the current tile (call setTile() or "
+                throw new InvalidOperationException(
+                    "Asking the width of a tile-component which is not in the current tile (call setTile() or "
                     + "nextTile() methods before).");
             }
             return compW[c];
@@ -406,8 +342,8 @@ namespace Melville.CSJ2K.j2k.image
         {
             if (t != TileIdx)
             {
-                throw new System.InvalidOperationException(
-                    "Asking the width of a tile-component which is " + "not in the current tile (call setTile() or "
+                throw new InvalidOperationException(
+                    "Asking the width of a tile-component which is not in the current tile (call setTile() or "
                     + "nextTile() methods before).");
             }
             return compH[c];
@@ -422,224 +358,198 @@ namespace Melville.CSJ2K.j2k.image
         /// significant bit in the data.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The position of the fixed-point, which is the same as the
         /// number of fractional bits. For floating-point data 0 is returned.
         /// 
         /// </returns>
-        public virtual int getFixedPoint(int c)
+        public virtual int GetFixedPoint(int compIndex)
         {
-            return src.getFixedPoint(c);
+            return src.GetFixedPoint(compIndex);
         }
 
-        /// <summary> Returns, in the blk argument, a block of image data containing the
-        /// specifed rectangular area, in the specified component. The data is
+        /// <summary>
+        /// Returns, in the blk argument, a block of image data containing the
+        /// specified rectangular area, in the specified component. The data is
         /// returned, as a reference to the internal data, if any, instead of as a
         /// copy, therefore the returned data should not be modified.
         /// 
-        /// <p>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' and
         /// 'scanw' of the returned data can be arbitrary. See the 'DataBlk'
-        /// class.</p>
+        /// class.
         /// 
-        /// <p>This method, in general, is more efficient than the 'getCompData()'
+        /// This method, in general, is more efficient than the 'getCompData()'
         /// method since it may not copy the data. However if the array of returned
         /// data is to be modified by the caller then the other method is probably
-        /// preferable.</p>
+        /// preferable.
         /// 
-        /// <p>If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
+        /// If the data array in <tt>blk</tt> is <tt>null</tt>, then a new one
         /// is created if necessary. The implementation of this interface may
         /// choose to return the same array or a new one, depending on what is more
         /// efficient. Therefore, the data array in <tt>blk</tt> prior to the
         /// method call should not be considered to contain the returned data, a
         /// new array may have been created. Instead, get the array from
-        /// <tt>blk</tt> after the method has returned.</p>
+        /// <tt>blk</tt> after the method has returned.
         /// 
-        /// <p>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final"
-        /// data.</p>
-        /// 
+        /// data.
         /// </summary>
         /// <param name="blk">Its coordinates and dimensions specify the area to return,
         /// relative to the current tile. Some fields in this object are modified
-        /// to return the data.
-        /// 
-        /// </param>
-        /// <param name="c">The index of the component from which to get the data.
-        /// 
-        /// </param>
-        /// <returns> The requested DataBlk
-        /// 
-        /// </returns>
-        /// <seealso cref="getCompData">
-        /// 
-        /// </seealso>
-        public DataBlk getInternCompData(DataBlk blk, int c)
+        /// to return the data.</param>
+        /// <param name="compIndex">The index of the component from which to get the data.</param>
+        /// <returns> The requested DataBlk</returns>
+        /// <seealso cref="GetCompData" />
+        public DataBlk GetInternCompData(DataBlk blk, int compIndex)
         {
             // Check that block is inside tile
-            if (blk.ulx < 0 || blk.uly < 0 || blk.w > compW[c] || blk.h > compH[c])
+            if (blk.ulx < 0 || blk.uly < 0 || blk.w > compW[compIndex] || blk.h > compH[compIndex])
             {
-                throw new System.ArgumentException("Block is outside the tile");
+                throw new ArgumentException("Block is outside the tile");
             }
             // Translate to the sources coordinates
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            int incx = (int)System.Math.Ceiling(x0siz / (double)src.getCompSubsX(c));
+            var incx = (int)Math.Ceiling(x0siz / (double)src.getCompSubsX(compIndex));
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            int incy = (int)System.Math.Ceiling(y0siz / (double)src.getCompSubsY(c));
+            var incy = (int)Math.Ceiling(y0siz / (double)src.getCompSubsY(compIndex));
             blk.ulx -= incx;
             blk.uly -= incy;
-            blk = src.getInternCompData(blk, c);
+            blk = src.GetInternCompData(blk, compIndex);
             // Translate back to the tiled coordinates
             blk.ulx += incx;
             blk.uly += incy;
             return blk;
         }
 
-        /// <summary> Returns, in the blk argument, a block of image data containing the
-        /// specifed rectangular area, in the specified component. The data is
+        /// <summary>
+        /// Returns, in the blk argument, a block of image data containing the
+        /// specified rectangular area, in the specified component. The data is
         /// returned, as a copy of the internal data, therefore the returned data
         /// can be modified "in place".
         /// 
-        /// <p>The rectangular area to return is specified by the 'ulx', 'uly', 'w'
+        /// The rectangular area to return is specified by the 'ulx', 'uly', 'w'
         /// and 'h' members of the 'blk' argument, relative to the current
         /// tile. These members are not modified by this method. The 'offset' of
         /// the returned data is 0, and the 'scanw' is the same as the block's
-        /// width. See the 'DataBlk' class.</p>
+        /// width. See the 'DataBlk' class.
         /// 
-        /// <p>This method, in general, is less efficient than the
+        /// This method, in general, is less efficient than the
         /// 'getInternCompData()' method since, in general, it copies the
         /// data. However if the array of returned data is to be modified by the
-        /// caller then this method is preferable.</p>
+        /// caller then this method is preferable.
         /// 
-        /// <p>If the data array in 'blk' is 'null', then a new one is created. If
+        /// If the data array in 'blk' is 'null', then a new one is created. If
         /// the data array is not 'null' then it is reused, and it must be large
         /// enough to contain the block's data. Otherwise an 'ArrayStoreException'
-        /// or an 'IndexOutOfBoundsException' is thrown by the Java system.</p>
+        /// or an 'IndexOutOfBoundsException' is thrown by the Java system.
         /// 
-        /// <p>The returned data may have its 'progressive' attribute set. In this
+        /// The returned data may have its 'progressive' attribute set. In this
         /// case the returned data is only an approximation of the "final"
-        /// data.</p>
-        /// 
+        /// data.
         /// </summary>
         /// <param name="blk">Its coordinates and dimensions specify the area to return,
         /// relative to the current tile. If it contains a non-null data array,
         /// then it must be large enough. If it contains a null data array a new
         /// one is created. Some fields in this object are modified to return the
-        /// data.
-        /// 
-        /// </param>
-        /// <param name="c">The index of the component from which to get the data.
-        /// 
-        /// </param>
-        /// <returns> The requested DataBlk
-        /// 
-        /// </returns>
-        /// <seealso cref="getInternCompData">
-        /// 
-        /// </seealso>
-        public DataBlk getCompData(DataBlk blk, int c)
+        /// data.</param>
+        /// <param name="c">The index of the component from which to get the data.</param>
+        /// <returns> The requested DataBlk</returns>
+        /// <seealso cref="GetInternCompData" />
+        public DataBlk GetCompData(DataBlk blk, int c)
         {
             // Check that block is inside tile
             if (blk.ulx < 0 || blk.uly < 0 || blk.w > compW[c] || blk.h > compH[c])
             {
-                throw new System.ArgumentException("Block is outside the tile");
+                throw new ArgumentException("Block is outside the tile");
             }
             // Translate to the source's coordinates
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            int incx = (int)System.Math.Ceiling(x0siz / (double)src.getCompSubsX(c));
+            var incx = (int)Math.Ceiling(x0siz / (double)src.getCompSubsX(c));
             //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-            int incy = (int)System.Math.Ceiling(y0siz / (double)src.getCompSubsY(c));
+            var incy = (int)Math.Ceiling(y0siz / (double)src.getCompSubsY(c));
             blk.ulx -= incx;
             blk.uly -= incy;
-            blk = src.getCompData(blk, c);
+            blk = src.GetCompData(blk, c);
             // Translate back to the tiled coordinates
             blk.ulx += incx;
             blk.uly += incy;
             return blk;
         }
 
-        /// <summary> Closes the underlying file or network connection from where the
+        /// <summary>
+        /// Closes the underlying file or network connection from where the
         /// image data is being read.
-        /// 
         /// </summary>
-        /// <exception cref="IOException">If an I/O error occurs.
-        /// </exception>
-        public void close()
+        /// <exception cref="IOException">If an I/O error occurs.</exception>
+        public void Close()
         {
             // Do nothing.
         }
 
-        /// <summary> Returns true if the data read was originally signed in the specified
-        /// component, false if not.
-        /// 
-        /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
-        /// 
-        /// </param>
-        /// <returns> true if the data was originally signed, false if not.
-        /// 
-        /// </returns>
-        public bool isOrigSigned(int c)
+        /// <summary>
+        /// Returns true if the data read was originally signed in the specified
+        /// component, false if not.</summary>
+        /// <param name="compIndex">The index of the component, from 0 to C-1.</param>
+        /// <returns> true if the data was originally signed, false if not.</returns>
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }
 
-        /// <summary> Changes the current tile, given the new tile indexes. An
+        /// <summary>
+        /// Changes the current tile, given the new tile indexes. An
         /// IllegalArgumentException is thrown if the coordinates do not correspond
         /// to a valid tile.
-        /// 
         /// </summary>
-        /// <param name="x">The horizontal index of the tile.
-        /// 
-        /// </param>
-        /// <param name="y">The vertical index of the new tile.
-        /// 
-        /// </param>
+        /// <param name="x">The horizontal index of the tile.</param>
+        /// <param name="y">The vertical index of the new tile.</param>
         public override void setTile(int x, int y)
         {
             // Check tile indexes
             if (x < 0 || y < 0 || x >= ntX || y >= ntY)
             {
-                throw new System.ArgumentException("Tile's indexes out of bounds");
+                throw new ArgumentException("Tile's indexes out of bounds");
             }
 
             // Set new current tile
             tx = x;
             ty = y;
             // Calculate tile origins
-            int tx0 = (x != 0) ? xt0siz + x * xtsiz : x0siz;
-            int ty0 = (y != 0) ? yt0siz + y * ytsiz : y0siz;
-            int tx1 = (x != ntX - 1) ? (xt0siz + (x + 1) * xtsiz) : (x0siz + src.ImgWidth);
-            int ty1 = (y != ntY - 1) ? (yt0siz + (y + 1) * ytsiz) : (y0siz + src.ImgHeight);
+            var tx0 = (x != 0) ? xt0siz + x * xtsiz : x0siz;
+            var ty0 = (y != 0) ? yt0siz + y * ytsiz : y0siz;
+            var tx1 = (x != ntX - 1) ? (xt0siz + (x + 1) * xtsiz) : (x0siz + src.ImgWidth);
+            var ty1 = (y != ntY - 1) ? (yt0siz + (y + 1) * ytsiz) : (y0siz + src.ImgHeight);
             // Set general variables
             tileW = tx1 - tx0;
             tileH = ty1 - ty0;
             // Set component specific variables
-            int nc = src.NumComps;
+            var nc = src.NumComps;
             if (compW == null) compW = new int[nc];
             if (compH == null) compH = new int[nc];
             if (tcx0 == null) tcx0 = new int[nc];
             if (tcy0 == null) tcy0 = new int[nc];
-            for (int i = 0; i < nc; i++)
+            for (var i = 0; i < nc; i++)
             {
                 //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                tcx0[i] = (int)System.Math.Ceiling(tx0 / (double)src.getCompSubsX(i));
+                tcx0[i] = (int)Math.Ceiling(tx0 / (double)src.getCompSubsX(i));
                 //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                tcy0[i] = (int)System.Math.Ceiling(ty0 / (double)src.getCompSubsY(i));
+                tcy0[i] = (int)Math.Ceiling(ty0 / (double)src.getCompSubsY(i));
                 //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                compW[i] = (int)System.Math.Ceiling(tx1 / (double)src.getCompSubsX(i)) - tcx0[i];
+                compW[i] = (int)Math.Ceiling(tx1 / (double)src.getCompSubsX(i)) - tcx0[i];
                 //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-                compH[i] = (int)System.Math.Ceiling(ty1 / (double)src.getCompSubsY(i)) - tcy0[i];
+                compH[i] = (int)Math.Ceiling(ty1 / (double)src.getCompSubsY(i)) - tcy0[i];
             }
         }
 
-        /// <summary> Advances to the next tile, in standard scan-line order (by rows then
+        /// <summary>
+        /// Advances to the next tile, in standard scan-line order (by rows then
         /// columns). An NoNextElementException is thrown if the current tile is
         /// the last one (i.e. there is no next tile).
-        /// 
         /// </summary>
         public override void nextTile()
         {
@@ -660,16 +570,10 @@ namespace Melville.CSJ2K.j2k.image
             }
         }
 
-        /// <summary> Returns the horizontal and vertical indexes of the current tile.
-        /// 
-        /// </summary>
+        /// <summary>Returns the horizontal and vertical indexes of the current tile.</summary>
         /// <param name="co">If not null this object is used to return the
-        /// information. If null a new one is created and returned.
-        /// 
-        /// </param>
-        /// <returns> The current tile's horizontal and vertical indexes..
-        /// 
-        /// </returns>
+        /// information. If null a new one is created and returned.</param>
+        /// <returns> The current tile's horizontal and vertical indexes.</returns>
         public override Coord getTile(Coord co)
         {
             if (co != null)
@@ -684,41 +588,31 @@ namespace Melville.CSJ2K.j2k.image
             }
         }
 
-        /// <summary> Returns the horizontal coordinate of the upper-left corner of the
+        /// <summary>
+        /// Returns the horizontal coordinate of the upper-left corner of the
         /// specified component in the current tile.
-        /// 
         /// </summary>
-        /// <param name="c">The component index.
-        /// 
-        /// </param>
+        /// <param name="c">The component index.</param>
         public override int getCompULX(int c)
         {
             return tcx0[c];
         }
 
-        /// <summary> Returns the vertical coordinate of the upper-left corner of the
+        /// <summary>
+        /// Returns the vertical coordinate of the upper-left corner of the
         /// specified component in the current tile.
-        /// 
         /// </summary>
-        /// <param name="c">The component index.
-        /// 
-        /// </param>
+        /// <param name="c">The component index.</param>
         public override int getCompULY(int c)
         {
             return tcy0[c];
         }
 
-        /// <summary> Returns the number of tiles in the horizontal and vertical directions.
-        /// 
-        /// </summary>
+        /// <summary>Returns the number of tiles in the horizontal and vertical directions.</summary>
         /// <param name="co">If not null this object is used to return the information. If
-        /// null a new one is created and returned.
-        /// 
-        /// </param>
+        /// null a new one is created and returned.</param>
         /// <returns> The number of tiles in the horizontal (Coord.x) and vertical
-        /// (Coord.y) directions.
-        /// 
-        /// </returns>
+        /// (Coord.y) directions.</returns>
         public override Coord getNumTiles(Coord co)
         {
             if (co != null)
@@ -733,32 +627,22 @@ namespace Melville.CSJ2K.j2k.image
             }
         }
 
-        /// <summary> Returns the total number of tiles in the image.
-        /// 
-        /// </summary>
-        /// <returns> The total number of tiles in the image.
-        /// 
-        /// </returns>
+        /// <summary>Returns the total number of tiles in the image.</summary>
+        /// <returns>The total number of tiles in the image.</returns>
         public override int getNumTiles()
         {
             return ntX * ntY;
         }
 
-        /// <summary> Returns the tiling origin, referred to as '(xt0siz,yt0siz)' in the
+        /// <summary>
+        /// Returns the tiling origin, referred to as '(xt0siz,yt0siz)' in the
         /// codestream header (SIZ marker segment).
-        /// 
         /// </summary>
         /// <param name="co">If not null this object is used to return the information. If
-        /// null a new one is created and returned.
-        /// 
-        /// </param>
+        /// null a new one is created and returned.</param>
         /// <returns> The coordinate of the tiling origin, in the canvas system, on
-        /// the reference grid.
-        /// 
-        /// </returns>
-        /// <seealso cref="ImgData">
-        /// 
-        /// </seealso>
+        /// the reference grid.</returns>
+        /// <seealso cref="ImgData" />
         public Coord getTilingOrigin(Coord co)
         {
             if (co != null)
@@ -773,17 +657,11 @@ namespace Melville.CSJ2K.j2k.image
             }
         }
 
-        /// <summary> Returns a String object representing Tiler's informations
-        /// 
-        /// </summary>
-        /// <returns> Tiler's infos in a string
-        /// 
-        /// </returns>
-        public override System.String ToString()
+        /// <summary>Returns a String object representing Tiler information</summary>
+        /// <returns>Tiler's info in as string</returns>
+        public override string ToString()
         {
-            //UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-            return "Tiler: source= " + src + "\n" + getNumTiles() + " tile(s), nominal width=" + xtsiz
-                   + ", nominal height=" + ytsiz;
+            return $"Tiler: source= {src}\n{getNumTiles()} tile(s), nominal width={xtsiz}, nominal height={ytsiz}";
         }
     }
 }

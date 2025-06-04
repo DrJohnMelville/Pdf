@@ -10,21 +10,8 @@
 //
 
 using System;
-using System.IO;
-using Melville.CSJ2K.j2k.util;
-
-/// <summary>
-	/// This interface should be implemented by any class whose instances are intended 
-	/// to be executed by a thread.
-	/// </summary>
-	internal interface IThreadRunnable
-	{
-		/// <summary>
-		/// This method has to be implemented in order that starting of the thread causes the object's 
-		/// run method to be called in that separately executing thread.
-		/// </summary>
-		void Run();
-	}
+using CoreJ2K.Util;
+using CoreJ2K.j2k.util;
 
 /// <summary>
 /// Contains conversion support elements such as classes, interfaces and static methods.
@@ -43,7 +30,7 @@ internal class SupportClass
 		if (sbyteArray != null)
 		{
 			byteArray = new byte[sbyteArray.Length];
-			for(int index=0; index < sbyteArray.Length; index++)
+			for(var index=0; index < sbyteArray.Length; index++)
 				byteArray[index] = (byte) sbyteArray[index];
 		}
 		return byteArray;
@@ -54,7 +41,7 @@ internal class SupportClass
 	/// </summary>
 	/// <param name="sourceString">The string to be converted</param>
 	/// <returns>The new array of bytes</returns>
-	public static byte[] ToByteArray(System.String sourceString)
+	public static byte[] ToByteArray(string sourceString)
 	{
 		return System.Text.Encoding.UTF8.GetBytes(sourceString);
 	}
@@ -64,13 +51,13 @@ internal class SupportClass
 	/// </summary>
 	/// <param name="tempObjectArray">Array to convert.</param>
 	/// <returns>An array of byte type elements.</returns>
-	public static byte[] ToByteArray(System.Object[] tempObjectArray)
+	public static byte[] ToByteArray(object[] tempObjectArray)
 	{
 		byte[] byteArray = null;
 		if (tempObjectArray != null)
 		{
 			byteArray = new byte[tempObjectArray.Length];
-			for (int index = 0; index < tempObjectArray.Length; index++)
+			for (var index = 0; index < tempObjectArray.Length; index++)
 				byteArray[index] = (byte)tempObjectArray[index];
 		}
 		return byteArray;
@@ -99,7 +86,7 @@ internal class SupportClass
 		if (byteArray != null)
 		{
 			sbyteArray = new sbyte[byteArray.Length];
-			for(int index=0; index < byteArray.Length; index++)
+			for(var index=0; index < byteArray.Length; index++)
 				sbyteArray[index] = (sbyte) byteArray[index];
 		}
 		return sbyteArray;
@@ -171,16 +158,17 @@ internal class SupportClass
 	/// <summary>
 	/// Provides support functions to create read-write random acces files and write functions
 	/// </summary>
-	internal class RandomAccessFileSupport
+	public class RandomAccessFileSupport
 	{
 		/// <summary>
 		/// Creates a new random acces stream with read-write or read rights
 		/// </summary>
 		/// <param name="fileName">A relative or absolute path for the file to open</param>
+		/// <param name="mode">Mode to open the file in</param>
 		/// <returns>The new System.IO.FileStream</returns>
-		public static System.IO.Stream CreateRandomAccessFile(System.String fileName)
+		public static System.IO.Stream CreateRandomAccessFile(string fileName, string mode)
 		{
-			return new FileStream(fileName, FileMode.Open, FileAccess.Read);
+			return FileStreamFactory.New(fileName, mode);
 		}
 
 		/// <summary>
@@ -189,9 +177,9 @@ internal class SupportClass
 		/// <param name="fileName">File infomation for the file to open</param>
 		/// <param name="mode">Mode to open the file in</param>
 		/// <returns>The new System.IO.FileStream</returns>
-		public static System.IO.Stream CreateRandomAccessFile(FileInfo fileName, System.String mode)
+		public static System.IO.Stream CreateRandomAccessFile(IFileInfo fileName, string mode)
 		{
-			return CreateRandomAccessFile(fileName.FullName);
+			return CreateRandomAccessFile(fileName.FullName, mode);
 		} 
 
 		/// <summary>
@@ -199,10 +187,10 @@ internal class SupportClass
 		/// </summary>
 		/// <param name="data">Data to write</param>
 		/// <param name="fileStream">File to write to</param>
-		public static void WriteBytes(System.String data,System.IO.Stream fileStream)
+		public static void WriteBytes(string data,System.IO.Stream fileStream)
 		{
-			int index = 0;
-			int length = data.Length;
+			var index = 0;
+			var length = data.Length;
 
 			while(index < length)
 				fileStream.WriteByte((byte)data[index++]);	
@@ -213,7 +201,7 @@ internal class SupportClass
 		/// </summary>
 		/// <param name="data">String of information to write</param>
 		/// <param name="fileStream">File to write to</param>
-		public static void WriteChars(System.String data,System.IO.Stream fileStream)
+		public static void WriteChars(string data,System.IO.Stream fileStream)
 		{
 			WriteBytes(data, fileStream);	
 		}
@@ -225,7 +213,7 @@ internal class SupportClass
 		/// <param name="fileStream">File to write to</param>
 		public static void WriteRandomFile(sbyte[] sByteArray,System.IO.Stream fileStream)
 		{
-			byte[] byteArray = ToByteArray(sByteArray);
+			var byteArray = ToByteArray(sByteArray);
 			fileStream.Write(byteArray, 0, byteArray.Length);
 		}
 	}
@@ -288,20 +276,20 @@ internal class SupportClass
 	/// <param name="start">The starting index of the target array.</param>
 	/// <param name="count">The maximum number of characters to read from the source Stream.</param>
 	/// <returns>The number of characters read. The number will be less than or equal to count depending on the data available in the source Stream. Returns -1 if the end of the stream is reached.</returns>
-	public static System.Int32 ReadInput(System.IO.Stream sourceStream, sbyte[] target, int start, int count)
+	public static int ReadInput(System.IO.Stream sourceStream, sbyte[] target, int start, int count)
 	{
 		// Returns 0 bytes if not enough space in target
 		if (target.Length == 0)
 			return 0;
 
-		byte[] receiver = new byte[target.Length];
-		int bytesRead   = sourceStream.Read(receiver, start, count);
+		var receiver = new byte[target.Length];
+		var bytesRead   = sourceStream.Read(receiver, start, count);
 
 		// Returns -1 if EOF
 		if (bytesRead == 0)	
 			return -1;
                 
-		for(int i = start; i < start + bytesRead; i++)
+		for(var i = start; i < start + bytesRead; i++)
 			target[i] = (sbyte)receiver[i];
                 
 		return bytesRead;
@@ -313,18 +301,18 @@ internal class SupportClass
 	/// <param name="start">The starting index of the target array.</param>
 	/// <param name="count">The maximum number of characters to read from the source TextReader.</param>
 	/// <returns>The number of characters read. The number will be less than or equal to count depending on the data available in the source TextReader. Returns -1 if the end of the stream is reached.</returns>
-	public static System.Int32 ReadInput(System.IO.TextReader sourceTextReader, sbyte[] target, int start, int count)
+	public static int ReadInput(System.IO.TextReader sourceTextReader, sbyte[] target, int start, int count)
 	{
 		// Returns 0 bytes if not enough space in target
 		if (target.Length == 0) return 0;
 
-		char[] charArray = new char[target.Length];
-		int bytesRead = sourceTextReader.Read(charArray, start, count);
+		var charArray = new char[target.Length];
+		var bytesRead = sourceTextReader.Read(charArray, start, count);
 
 		// Returns -1 if EOF
 		if (bytesRead == 0) return -1;
 
-		for(int index=start; index<start+bytesRead; index++)
+		for(var index=start; index<start+bytesRead; index++)
 			target[index] = (sbyte)charArray[index];
 
 		return bytesRead;
@@ -334,12 +322,12 @@ internal class SupportClass
 	/// <summary>
 	/// The class performs token processing in strings
 	/// </summary>
-	internal class Tokenizer: System.Collections.IEnumerator
+	public class Tokenizer: System.Collections.IEnumerator
 	{
 		/// Position over the string
 		private long currentPos = 0;
 
-		/// Include demiliters in the results.
+		/// Include delimiters in the results.
 		private bool includeDelims = false;
 
 		/// Char representation of the String to tokenize.
@@ -352,9 +340,9 @@ internal class SupportClass
 		/// Initializes a new class instance with a specified string to process
 		/// </summary>
 		/// <param name="source">String to tokenize</param>
-		public Tokenizer(System.String source)
+		public Tokenizer(string source)
 		{			
-			this.chars = source.ToCharArray();
+			chars = source.ToCharArray();
 		}
 
 		/// <summary>
@@ -363,7 +351,7 @@ internal class SupportClass
 		/// </summary>
 		/// <param name="source">String to tokenize</param>
 		/// <param name="delimiters">String containing the delimiters</param>
-		public Tokenizer(System.String source, System.String delimiters):this(source)
+		public Tokenizer(string source, string delimiters):this(source)
 		{			
 			this.delimiters = delimiters;
 		}
@@ -376,7 +364,7 @@ internal class SupportClass
 		/// <param name="source">String to tokenize</param>
 		/// <param name="delimiters">String containing the delimiters</param>
 		/// <param name="includeDelims">Determines if delimiters are included in the results.</param>
-		public Tokenizer(System.String source, System.String delimiters, bool includeDelims):this(source,delimiters)
+		public Tokenizer(string source, string delimiters, bool includeDelims):this(source,delimiters)
 		{
 			this.includeDelims = includeDelims;
 		}	
@@ -386,56 +374,56 @@ internal class SupportClass
 		/// Returns the next token from the token list
 		/// </summary>
 		/// <returns>The string value of the token</returns>
-		public System.String NextToken()
+		public string NextToken()
 		{				
-			return NextToken(this.delimiters);
+			return NextToken(delimiters);
 		}
 
 		/// <summary>
 		/// Returns the next token from the source string, using the provided
 		/// token delimiters
 		/// </summary>
-		/// <param name="delimiters">String containing the delimiters to use</param>
+		/// <param name="delimiter">String containing the delimiters to use</param>
 		/// <returns>The string value of the token</returns>
-		public System.String NextToken(System.String delimiters)
+		public string NextToken(string delimiter)
 		{
 			//According to documentation, the usage of the received delimiters should be temporary (only for this call).
 			//However, it seems it is not true, so the following line is necessary.
-			this.delimiters = delimiters;
+			this.delimiters = delimiter;
 
 			//at the end 
-			if (this.currentPos == this.chars.Length)
-				throw new System.ArgumentOutOfRangeException();
+			if (currentPos == chars.Length)
+				throw new ArgumentOutOfRangeException();
 			//if over a delimiter and delimiters must be returned
-			else if (   (System.Array.IndexOf(delimiters.ToCharArray(),chars[this.currentPos]) != -1)
-				     && this.includeDelims )                	
-				return "" + this.chars[this.currentPos++];
+			else if (   (Array.IndexOf(delimiters.ToCharArray(),chars[currentPos]) != -1)
+				     && includeDelims )                	
+				return $"{chars[currentPos++]}";
 			//need to get the token wo delimiters.
 			else
 				return nextToken(delimiters.ToCharArray());
 		}
 
 		//Returns the nextToken wo delimiters
-		private System.String nextToken(char[] delimiters)
+		private string nextToken(char[] delimiter)
 		{
-			string token="";
-			long pos = this.currentPos;
+			var token="";
+			var pos = currentPos;
 
 			//skip possible delimiters
-			while (System.Array.IndexOf(delimiters,this.chars[currentPos]) != -1)
+			while (Array.IndexOf(delimiter,chars[currentPos]) != -1)
 				//The last one is a delimiter (i.e there is no more tokens)
-				if (++this.currentPos == this.chars.Length)
+				if (++currentPos == chars.Length)
 				{
-					this.currentPos = pos;
-					throw new System.ArgumentOutOfRangeException();
+					currentPos = pos;
+					throw new ArgumentOutOfRangeException();
 				}
 			
 			//getting the token
-			while (System.Array.IndexOf(delimiters,this.chars[this.currentPos]) == -1)
+			while (Array.IndexOf(delimiter,chars[currentPos]) == -1)
 			{
-				token+=this.chars[this.currentPos];
+				token+=chars[currentPos];
 				//the last one is not a delimiter
-				if (++this.currentPos == this.chars.Length)
+				if (++currentPos == chars.Length)
 					break;
 			}
 			return token;
@@ -449,19 +437,19 @@ internal class SupportClass
 		public bool HasMoreTokens()
 		{
 			//keeping the current pos
-			long pos = this.currentPos;
+			var pos = currentPos;
 			
 			try
 			{
-				this.NextToken();
+				NextToken();
 			}
-			catch (System.ArgumentOutOfRangeException)
+			catch (ArgumentOutOfRangeException)
 			{				
 				return false;
 			}
 			finally
 			{
-				this.currentPos = pos;
+				currentPos = pos;
 			}
 			return true;
 		}
@@ -474,20 +462,20 @@ internal class SupportClass
 			get
 			{
 				//keeping the current pos
-				long pos = this.currentPos;
-				int i = 0;
+				var pos = currentPos;
+				var i = 0;
 			
 				try
 				{
 					while (true)
 					{
-						this.NextToken();
+						NextToken();
 						i++;
 					}
 				}
-				catch (System.ArgumentOutOfRangeException)
+				catch (ArgumentOutOfRangeException)
 				{				
-					this.currentPos = pos;
+					currentPos = pos;
 					return i;
 				}
 			}
@@ -496,21 +484,15 @@ internal class SupportClass
 		/// <summary>
 		///  Performs the same action as NextToken.
 		/// </summary>
-		public System.Object Current
-		{
-			get
-			{
-				return (Object) this.NextToken();
-			}		
-		}		
+		public object Current => NextToken();
 		
 		/// <summary>
-		//  Performs the same action as HasMoreTokens.
+		///  Performs the same action as HasMoreTokens.
 		/// </summary>
 		/// <returns>True or false, depending if there are more tokens</returns>
 		public bool MoveNext()
 		{
-			return this.HasMoreTokens();
+			return HasMoreTokens();
 		}
 		
 		/// <summary>
@@ -518,7 +500,7 @@ internal class SupportClass
 		/// </summary>
 		public void  Reset()
 		{
-			;
+			/* noop */
 		}			
 	}
 	/*******************************/
@@ -533,11 +515,10 @@ internal class SupportClass
 		/// <summary>
 		/// Constructor. Calls the base constructor.
 		/// </summary>
-		/// <param name="stringReader">The buffer from which chars will be read.</param>
-		/// <param name="size">The size of the Back buffer.</param>
-		public BackStringReader(String s) : base (s)
+		/// <param name="s">The buffer from which chars will be read.</param>
+		public BackStringReader(string s) : base (s)
 		{
-			this.buffer = new char[position];
+			buffer = new char[position];
 		}
 
 
@@ -547,8 +528,8 @@ internal class SupportClass
 		/// <returns>The character read.</returns>
 		public override int Read()
 		{
-			if (this.position >= 0 && this.position < this.buffer.Length)
-				return (int) this.buffer[this.position++];
+			if (position >= 0 && position < buffer.Length)
+				return buffer[position++];
 			return base.Read();
 		}
 
@@ -561,7 +542,7 @@ internal class SupportClass
 		/// <returns>The number of characters read.</returns>
 		public override int Read(char[] array, int index, int count)
 		{
-			int readLimit = this.buffer.Length - this.position;
+			var readLimit = buffer.Length - position;
 
 			if (count <= 0)
 				return 0;
@@ -570,10 +551,10 @@ internal class SupportClass
 			{
 				if (count < readLimit)
 					readLimit = count;
-				System.Array.Copy(this.buffer, this.position, array, index, readLimit);
+				Array.Copy(buffer, position, array, index, readLimit);
 				count -= readLimit;
 				index += readLimit;
-				this.position += readLimit;
+				position += readLimit;
 			}
 
 			if (count > 0)
@@ -596,8 +577,8 @@ internal class SupportClass
 		/// <param name="unReadChar">The character to be unread.</param>
 		public void UnRead(int unReadChar)
 		{
-			this.position--;
-			this.buffer[this.position] = (char) unReadChar;
+			position--;
+			buffer[position] = (char) unReadChar;
 		}
 
 		/// <summary>
@@ -608,7 +589,7 @@ internal class SupportClass
 		/// <param name="count">The number of characters to unread.</param>
 		public void UnRead(char[] array, int index, int count)
 		{
-			this.Move(array, index, count);
+			Move(array, index, count);
 		}
 
 		/// <summary>
@@ -617,7 +598,7 @@ internal class SupportClass
 		/// <param name="array">The character array to be unread.</param>
 		public void UnRead(char[] array)
 		{
-			this.Move(array, 0, array.Length - 1);
+			Move(array, 0, array.Length - 1);
 		}
 
 		/// <summary>
@@ -628,8 +609,8 @@ internal class SupportClass
 		/// <param name="count">Amount of characters to move.</param>
 		private void Move(char[] array, int index, int count)
 		{
-			for (int arrayPosition = index + count; arrayPosition >= index; arrayPosition--)
-				this.UnRead(array[arrayPosition]);
+			for (var arrayPosition = index + count; arrayPosition >= index; arrayPosition--)
+				UnRead(array[arrayPosition]);
 		}
 	}
 
@@ -639,22 +620,22 @@ internal class SupportClass
 	/// The StreamTokenizerSupport class takes an input stream and parses it into "tokens".
 	/// The stream tokenizer can recognize identifiers, numbers, quoted strings, and various comment styles. 
 	/// </summary>
-	internal class StreamTokenizerSupport
+	public class StreamTokenizerSupport
 	{
 
 		/// <summary>
 		/// Internal constants and fields
 		/// </summary>
 
-		private const System.String TOKEN	= "Token[";
-		private const System.String NOTHING	= "NOTHING";
-		private const System.String NUMBER	= "number=";
-		private const System.String EOF		= "EOF";
-		private const System.String EOL		= "EOL";
-		private const System.String QUOTED	= "quoted string=";
-		private const System.String LINE	= "], Line ";
-		private const System.String DASH	= "-.";
-		private const System.String DOT		= ".";
+		private const string TOKEN	= "Token[";
+		private const string NOTHING	= "NOTHING";
+		private const string NUMBER	= "number=";
+		private const string EOF		= "EOF";
+		private const string EOL		= "EOL";
+		private const string QUOTED	= "quoted string=";
+		private const string LINE	= "], Line ";
+		private const string DASH	= "-.";
+		private const string DOT		= ".";
 		
 		private const int TT_NOTHING		= - 4;
 		
@@ -727,7 +708,7 @@ internal class SupportClass
 		/// If the current token is a word token, this field contains a string giving the characters of the word 
 		/// token.
 		/// </summary>
-		public System.String sval;
+		public string sval;
 
 		/// <summary>
 		/// After a call to the nextToken method, this field contains the type of the token just read.
@@ -741,51 +722,51 @@ internal class SupportClass
 
 		private int read()
 		{
-			if (this.inReader != null)
-				return this.inReader.Read();
-			else if (this.inStream != null)
-				return this.inStream.Read();
+			if (inReader != null)
+				return inReader.Read();
+			else if (inStream != null)
+				return inStream.Read();
 			else
-				return this.inStringReader.Read();
+				return inStringReader.Read();
 		}
 		
 		private void unread(int ch)
 		{
-			if (this.inReader != null) 
-				this.inReader.UnRead(ch);
-			else if (this.inStream != null)
-				this.inStream.UnRead(ch);
+			if (inReader != null) 
+				inReader.UnRead(ch);
+			else if (inStream != null)
+				inStream.UnRead(ch);
 			else
-				this.inStringReader.UnRead(ch);
+				inStringReader.UnRead(ch);
 		}
 
 		private void init()
 		{
-			this.buf = new System.Text.StringBuilder();
-			this.ttype = StreamTokenizerSupport.TT_NOTHING;
+			buf = new System.Text.StringBuilder();
+			ttype = TT_NOTHING;
 			
-			this.WordChars('A', 'Z');
-			this.WordChars('a', 'z');
-			this.WordChars(160, 255);
-			this.WhitespaceChars(0x00, 0x20);
-			this.CommentChar('/');
-			this.QuoteChar('\'');
-			this.QuoteChar('\"');
-			this.ParseNumbers();
+			WordChars('A', 'Z');
+			WordChars('a', 'z');
+			WordChars(160, 255);
+			WhitespaceChars(0x00, 0x20);
+			CommentChar('/');
+			QuoteChar('\'');
+			QuoteChar('\"');
+			ParseNumbers();
 		}
 
 		private void setAttributes(int low, int hi, sbyte attrib)
 		{
-			int l = System.Math.Max(0, low);
-			int h = System.Math.Min(255, hi);
-			for (int i = l; i <= h; i++)
-				this.attribute[i] = attrib;
+			var l = Math.Max(0, low);
+			var h = Math.Min(255, hi);
+			for (var i = l; i <= h; i++)
+				attribute[i] = attrib;
 		}
 		
 		private bool isWordChar(int data)
 		{
-			char ch = (char) data;
-			return (data != - 1 && (ch > 255 || this.attribute[ch] == StreamTokenizerSupport.WORDCHAR || this.attribute[ch] == StreamTokenizerSupport.NUMBERCHAR));
+			var ch = (char) data;
+			return (data != - 1 && (ch > 255 || attribute[ch] == WORDCHAR || attribute[ch] == NUMBERCHAR));
 		}
 		
 		/// <summary>
@@ -794,14 +775,14 @@ internal class SupportClass
 		/// <param name="reader">The System.IO.StringReader that contains the String to be parsed.</param>
 		public StreamTokenizerSupport(System.IO.StringReader reader)
 		{
-			string s = "";
-			for (int i = reader.Read(); i != -1 ; i = reader.Read())
+			var s = "";
+			for (var i = reader.Read(); i != -1 ; i = reader.Read())
 			{
 				s += (char) i;
 			}
 			reader.Dispose();
-            		this.inStringReader = new BackStringReader(s);
-			this.init();
+            		inStringReader = new BackStringReader(s);
+			init();
 		}		
 
 		/// <summary>
@@ -810,8 +791,8 @@ internal class SupportClass
 		/// <param name="reader">Reader to be parsed.</param>
 		public StreamTokenizerSupport(System.IO.StreamReader reader)
 		{
-			this.inReader = new BackReader(new System.IO.StreamReader(reader.BaseStream, reader.CurrentEncoding).BaseStream, 2, reader.CurrentEncoding);
-			this.init();
+			inReader = new BackReader(new System.IO.StreamReader(reader.BaseStream, reader.CurrentEncoding).BaseStream, 2, reader.CurrentEncoding);
+			init();
 		}
 		
 		/// <summary>
@@ -820,8 +801,8 @@ internal class SupportClass
 		/// <param name="stream">Stream to be parsed.</param>
 		public StreamTokenizerSupport(System.IO.Stream stream)
 		{
-			this.inStream = new BackInputStream(stream, 2);
-			this.init();
+			inStream = new BackInputStream(stream, 2);
+			init();
 		}
 		
 		/// <summary>
@@ -831,7 +812,7 @@ internal class SupportClass
 		public virtual void CommentChar(int ch)
 		{
 			if (ch >= 0 && ch <= 255)
-				this.attribute[ch] = StreamTokenizerSupport.COMMENTCHAR;
+				attribute[ch] = COMMENTCHAR;
 		}
 		
 		/// <summary>
@@ -841,7 +822,7 @@ internal class SupportClass
 		/// that end-of-line characters are white space.</param>
 		public virtual void  EOLIsSignificant(bool flag)
 		{
-			this.eolIsSignificant = flag;
+			eolIsSignificant = flag;
 		}
 
 		/// <summary>
@@ -850,7 +831,7 @@ internal class SupportClass
 		/// <returns>Current line number</returns>
 		public virtual int Lineno()
 		{
-			return this.lineno;
+			return lineno;
 		}
 		
 		/// <summary>
@@ -859,7 +840,7 @@ internal class SupportClass
 		/// <param name="flag">True indicates that all word tokens should be lowercased.</param>
 		public virtual void LowerCaseMode(bool flag)
 		{
-			this.lowerCaseMode = flag;
+			lowerCaseMode = flag;
 		}
 		
 		/// <summary>
@@ -868,382 +849,381 @@ internal class SupportClass
 		/// <returns>The value of the ttype field.</returns>
 		public virtual int NextToken()
 		{
-			char prevChar = (char) (0);
-			char ch = (char) (0);
-			char qChar = (char) (0);
-			int octalNumber = 0;
+			var prevChar = (char) (0);
+			var ch = (char) (0);
+			var qChar = (char) (0);
+			var octalNumber = 0;
 			int state;
 
-			if (this.pushedback)
+			if (pushedback)
 			{
-				this.pushedback = false;
-				return this.ttype;
+				pushedback = false;
+				return ttype;
 			}
 			
-			this.ttype = StreamTokenizerSupport.TT_NOTHING;
-			state = StreamTokenizerSupport.STATE_NEUTRAL;
-			this.nval = 0.0;
-			this.sval = null;
-			this.buf.Length = 0;
+			ttype = TT_NOTHING;
+			state = STATE_NEUTRAL;
+			nval = 0.0;
+			sval = null;
+			buf.Length = 0;
 
 			do 
 			{
-				int data = this.read();
+				var data = read();
 				prevChar = ch;
 				ch = (char) data;
 				
 				switch (state)
 				{
-					case StreamTokenizerSupport.STATE_NEUTRAL:
+					case STATE_NEUTRAL:
 					{
 						if (data == - 1)
 						{
-							this.ttype = TT_EOF;
-							state = StreamTokenizerSupport.STATE_DONE;
+							ttype = TT_EOF;
+							state = STATE_DONE;
 						}
 						else if (ch > 255)
 						{
-							this.buf.Append(ch);
-							this.ttype = StreamTokenizerSupport.TT_WORD;
-							state = StreamTokenizerSupport.STATE_WORD;
+							buf.Append(ch);
+							ttype = TT_WORD;
+							state = STATE_WORD;
 						}
-						else if (this.attribute[ch] == StreamTokenizerSupport.COMMENTCHAR)
+						else if (attribute[ch] == COMMENTCHAR)
 						{
-							state = StreamTokenizerSupport.STATE_LINECOMMENT;
+							state = STATE_LINECOMMENT;
 						}
-						else if (this.attribute[ch] == StreamTokenizerSupport.WORDCHAR)
+						else if (attribute[ch] == WORDCHAR)
 						{
-							this.buf.Append(ch);
-							this.ttype = StreamTokenizerSupport.TT_WORD;
-							state = StreamTokenizerSupport.STATE_WORD;
+							buf.Append(ch);
+							ttype = TT_WORD;
+							state = STATE_WORD;
 						}
-						else if (this.attribute[ch] == StreamTokenizerSupport.NUMBERCHAR)
+						else if (attribute[ch] == NUMBERCHAR)
 						{
-							this.ttype = StreamTokenizerSupport.TT_NUMBER;
-							this.buf.Append(ch);
+							ttype = TT_NUMBER;
+							buf.Append(ch);
 							if (ch == '-')
-								state = StreamTokenizerSupport.STATE_NUMBER1;
+								state = STATE_NUMBER1;
 							else if (ch == '.')
-								state = StreamTokenizerSupport.STATE_NUMBER3;
+								state = STATE_NUMBER3;
 							else
-								state = StreamTokenizerSupport.STATE_NUMBER2;
+								state = STATE_NUMBER2;
 						}
-						else if (this.attribute[ch] == StreamTokenizerSupport.QUOTECHAR)
+						else if (attribute[ch] == QUOTECHAR)
 						{
 							qChar = ch;
-							this.ttype = ch;
-							state = StreamTokenizerSupport.STATE_STRING;
+							ttype = ch;
+							state = STATE_STRING;
 						}
-						else if ((this.slashSlashComments || this.slashStarComments) && ch == '/')
-							state = StreamTokenizerSupport.STATE_POSSIBLEC_COMMENT;
-						else if (this.attribute[ch] == StreamTokenizerSupport.ORDINARYCHAR)
+						else if ((slashSlashComments || slashStarComments) && ch == '/')
+							state = STATE_POSSIBLEC_COMMENT;
+						else if (attribute[ch] == ORDINARYCHAR)
 						{
-							this.ttype = ch;
-							state = StreamTokenizerSupport.STATE_DONE;
+							ttype = ch;
+							state = STATE_DONE;
 						}
 						else if (ch == '\n' || ch == '\r')
 						{
-							this.lineno++;
-							if (this.eolIsSignificant)
+							lineno++;
+							if (eolIsSignificant)
 							{
-								this.ttype = StreamTokenizerSupport.TT_EOL;
+								ttype = TT_EOL;
 								if (ch == '\n')
-									state = StreamTokenizerSupport.STATE_DONE;
+									state = STATE_DONE;
 								else if (ch == '\r')
-									state = StreamTokenizerSupport.STATE_DONE_ON_EOL;
+									state = STATE_DONE_ON_EOL;
 							}
 							else if (ch == '\r')
-								state = StreamTokenizerSupport.STATE_PROCEED_ON_EOL;
+								state = STATE_PROCEED_ON_EOL;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_WORD: 
+					case STATE_WORD: 
 					{
-						if (this.isWordChar(data))
-							this.buf.Append(ch);
+						if (isWordChar(data))
+							buf.Append(ch);
 						else
 						{
 							if (data != - 1)
-								this.unread(ch);
-							this.sval = this.buf.ToString();
-							state = StreamTokenizerSupport.STATE_DONE;
+								unread(ch);
+							sval = buf.ToString();
+							state = STATE_DONE;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_NUMBER1: 
+					case STATE_NUMBER1: 
 					{
-						if (data == - 1 || this.attribute[ch] != StreamTokenizerSupport.NUMBERCHAR || ch == '-')
+						if (data == - 1 || attribute[ch] != NUMBERCHAR || ch == '-')
 						{
-							if ( this.attribute[ch] == StreamTokenizerSupport.COMMENTCHAR && System.Char.IsNumber(ch) )
+							if ( attribute[ch] == COMMENTCHAR && char.IsNumber(ch) )
 							{
-								this.buf.Append(ch);
-								state = StreamTokenizerSupport.STATE_NUMBER2;
+								buf.Append(ch);
+								state = STATE_NUMBER2;
 							}
 							else
 							{
 								if (data != - 1)
-									this.unread(ch);
-								this.ttype = '-';
-								state = StreamTokenizerSupport.STATE_DONE;
+									unread(ch);
+								ttype = '-';
+								state = STATE_DONE;
 							}
 						}
 						else
 						{
-							this.buf.Append(ch);
-							if (ch == '.')
-								state = StreamTokenizerSupport.STATE_NUMBER3;
-							else
-								state = StreamTokenizerSupport.STATE_NUMBER2;
+							buf.Append(ch);
+							state = ch == '.' ? STATE_NUMBER3 : STATE_NUMBER2;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_NUMBER2: 
+					case STATE_NUMBER2: 
 					{
-						if (data == - 1 || this.attribute[ch] != StreamTokenizerSupport.NUMBERCHAR || ch == '-')
+						if (data == - 1 || attribute[ch] != NUMBERCHAR || ch == '-')
 						{
-							if (System.Char.IsNumber(ch) && this.attribute[ch] == StreamTokenizerSupport.WORDCHAR)
+							if (char.IsNumber(ch) && attribute[ch] == WORDCHAR)
 							{
-								this.buf.Append(ch);
+								buf.Append(ch);
 							}
-							else if (ch == '.' && this.attribute[ch] == StreamTokenizerSupport.WHITESPACECHAR)
+							else if (ch == '.' && attribute[ch] == WHITESPACECHAR)
 							{
-								this.buf.Append(ch);
+								buf.Append(ch);
 							}
 
-							else if ( (data != -1) && (this.attribute[ch] == StreamTokenizerSupport.COMMENTCHAR && System.Char.IsNumber(ch) ))
+							else if ( (data != -1) && (attribute[ch] == COMMENTCHAR && char.IsNumber(ch) ))
 							{
-								this.buf.Append(ch);
+								buf.Append(ch);
 							}
 							else
 							{
 								if (data != - 1)
-									this.unread(ch);
+									unread(ch);
 								try
 								{
-									this.nval = System.Double.Parse(this.buf.ToString());
+									nval = double.Parse(buf.ToString());
 								}
-								catch (System.FormatException) {}
-								state = StreamTokenizerSupport.STATE_DONE;
+								catch (FormatException) {}
+								state = STATE_DONE;
 							}
 						}
 						else
 						{
-							this.buf.Append(ch);
+							buf.Append(ch);
 							if (ch == '.')
-								state = StreamTokenizerSupport.STATE_NUMBER3;
+								state = STATE_NUMBER3;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_NUMBER3: 
+					case STATE_NUMBER3: 
 					{
-						if (data == - 1 || this.attribute[ch] != StreamTokenizerSupport.NUMBERCHAR || ch == '-' || ch == '.')
+						if (data == - 1 || attribute[ch] != NUMBERCHAR || ch == '-' || ch == '.')
 						{
-							if ( this.attribute[ch] == StreamTokenizerSupport.COMMENTCHAR && System.Char.IsNumber(ch))
+							if ( attribute[ch] == COMMENTCHAR && char.IsNumber(ch))
 							{
-								this.buf.Append(ch);
+								buf.Append(ch);
 							}
 							else 
 							{
 								if (data != - 1)
-									this.unread(ch);
-								System.String str = this.buf.ToString();
-								if (str.Equals(StreamTokenizerSupport.DASH))
+									unread(ch);
+								var str = buf.ToString();
+								if (str.Equals(DASH))
 								{
-									this.unread('.');
-									this.ttype = '-';
+									unread('.');
+									ttype = '-';
 								}
-								else if (str.Equals(StreamTokenizerSupport.DOT) && !(StreamTokenizerSupport.WORDCHAR != this.attribute[prevChar]))
-									this.ttype = '.';
+								else if (str.Equals(DOT) && !(WORDCHAR != attribute[prevChar]))
+									ttype = '.';
 								else
 								{
 									try
 									{
-										this.nval = System.Double.Parse(str);
+										nval = double.Parse(str);
 									}
-									catch (System.FormatException){}
+									catch (FormatException){}
 								}
-								state = StreamTokenizerSupport.STATE_DONE;
+								state = STATE_DONE;
 							}
 						}
 						else
 						{
-							this.buf.Append(ch);
-							state = StreamTokenizerSupport.STATE_NUMBER4;
+							buf.Append(ch);
+							state = STATE_NUMBER4;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_NUMBER4: 
+					case STATE_NUMBER4: 
 					{
-						if (data == - 1 || this.attribute[ch] != StreamTokenizerSupport.NUMBERCHAR || ch == '-' || ch == '.')
+						if (data == - 1 || attribute[ch] != NUMBERCHAR || ch == '-' || ch == '.')
 						{
 							if (data != - 1)
-								this.unread(ch);
+								unread(ch);
 							try
 							{
-								this.nval = System.Double.Parse(this.buf.ToString());
+								nval = double.Parse(buf.ToString());
 							}
-							catch (System.FormatException) {}
-							state = StreamTokenizerSupport.STATE_DONE;
+							catch (FormatException) {}
+							state = STATE_DONE;
 						}
 						else
-							this.buf.Append(ch);
+							buf.Append(ch);
 						break;
 					}
-					case StreamTokenizerSupport.STATE_LINECOMMENT: 
+					case STATE_LINECOMMENT: 
 					{
 						if (data == - 1)
 						{
-							this.ttype = StreamTokenizerSupport.TT_EOF;
-							state = StreamTokenizerSupport.STATE_DONE;
+							ttype = TT_EOF;
+							state = STATE_DONE;
 						}
 						else if (ch == '\n' || ch == '\r')
 						{
-							this.unread(ch);
-							state = StreamTokenizerSupport.STATE_NEUTRAL;
+							unread(ch);
+							state = STATE_NEUTRAL;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_DONE_ON_EOL: 
+					case STATE_DONE_ON_EOL: 
 					{
 						if (ch != '\n' && data != - 1)
-							this.unread(ch);
-						state = StreamTokenizerSupport.STATE_DONE;
+							unread(ch);
+						state = STATE_DONE;
 						break;
 					}
-					case StreamTokenizerSupport.STATE_PROCEED_ON_EOL: 
+					case STATE_PROCEED_ON_EOL: 
 					{
 						if (ch != '\n' && data != - 1)
-							this.unread(ch);
-						state = StreamTokenizerSupport.STATE_NEUTRAL;
+							unread(ch);
+						state = STATE_NEUTRAL;
 						break;
 					}
-					case StreamTokenizerSupport.STATE_STRING: 
+					case STATE_STRING: 
 					{
 						if (data == - 1 || ch == qChar || ch == '\r' || ch == '\n')
 						{
-							this.sval = this.buf.ToString();
+							sval = buf.ToString();
 							if (ch == '\r' || ch == '\n')
-								this.unread(ch);
-							state = StreamTokenizerSupport.STATE_DONE;
+								unread(ch);
+							state = STATE_DONE;
 						}
 						else if (ch == '\\')
-							state = StreamTokenizerSupport.STATE_STRING_ESCAPE_SEQ;
+							state = STATE_STRING_ESCAPE_SEQ;
 						else
-							this.buf.Append(ch);
+							buf.Append(ch);
 						break;
 					}
-					case StreamTokenizerSupport.STATE_STRING_ESCAPE_SEQ: 
+					case STATE_STRING_ESCAPE_SEQ: 
 					{
 						if (data == - 1)
 						{
-							this.sval = this.buf.ToString();
-							state = StreamTokenizerSupport.STATE_DONE;
+							sval = buf.ToString();
+							state = STATE_DONE;
 							break;
 						}
 						
-						state = StreamTokenizerSupport.STATE_STRING;
+						state = STATE_STRING;
 						if (ch == 'a')
-							this.buf.Append(0x7);
+							buf.Append(0x7);
 						else if (ch == 'b')
-							this.buf.Append('\b');
+							buf.Append('\b');
 						else if (ch == 'f')
-							this.buf.Append(0xC);
+							buf.Append(0xC);
 						else if (ch == 'n')
-							this.buf.Append('\n');
+							buf.Append('\n');
 						else if (ch == 'r')
-							this.buf.Append('\r');
+							buf.Append('\r');
 						else if (ch == 't')
-							this.buf.Append('\t');
+							buf.Append('\t');
 						else if (ch == 'v')
-							this.buf.Append(0xB);
+							buf.Append(0xB);
 						else if (ch >= '0' && ch <= '7')
 						{
 							octalNumber = ch - '0';
-							state = StreamTokenizerSupport.STATE_STRING_ESCAPE_SEQ_OCTAL;
+							state = STATE_STRING_ESCAPE_SEQ_OCTAL;
 						}
 						else
-							this.buf.Append(ch);
+							buf.Append(ch);
 						break;
 					}
-					case StreamTokenizerSupport.STATE_STRING_ESCAPE_SEQ_OCTAL: 
+					case STATE_STRING_ESCAPE_SEQ_OCTAL: 
 					{
 						if (data == - 1 || ch < '0' || ch > '7')
 						{
-							this.buf.Append((char) octalNumber);
+							buf.Append((char) octalNumber);
 							if (data == - 1)
 							{
-								this.sval = buf.ToString();
-								state = StreamTokenizerSupport.STATE_DONE;
+								sval = buf.ToString();
+								state = STATE_DONE;
 							}
 							else
 							{
-								this.unread(ch);
-								state = StreamTokenizerSupport.STATE_STRING;
+								unread(ch);
+								state = STATE_STRING;
 							}
 						}
 						else
 						{
-							int temp = octalNumber * 8 + (ch - '0');
+							var temp = octalNumber * 8 + (ch - '0');
 							if (temp < 256)
 								octalNumber = temp;
 							else
 							{
 								buf.Append((char) octalNumber);
 								buf.Append(ch);
-								state = StreamTokenizerSupport.STATE_STRING;
+								state = STATE_STRING;
 							}
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_POSSIBLEC_COMMENT: 
+					case STATE_POSSIBLEC_COMMENT: 
 					{
 						if (ch == '*')
-							state = StreamTokenizerSupport.STATE_C_COMMENT;
+							state = STATE_C_COMMENT;
 						else if (ch == '/')
-							state = StreamTokenizerSupport.STATE_LINECOMMENT;
+							state = STATE_LINECOMMENT;
 						else
 						{
 							if (data != - 1)
-								this.unread(ch);
-							this.ttype = '/';
-							state = StreamTokenizerSupport.STATE_DONE;
+								unread(ch);
+							ttype = '/';
+							state = STATE_DONE;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_C_COMMENT: 
+					case STATE_C_COMMENT: 
 					{
 						if (ch == '*')
-							state = StreamTokenizerSupport.STATE_POSSIBLEC_COMMENT_END;
+							state = STATE_POSSIBLEC_COMMENT_END;
 						if (ch == '\n')
-							this.lineno++;
+							lineno++;
 						else if (data == - 1)
 						{
-							this.ttype = StreamTokenizerSupport.TT_EOF;
-							state = StreamTokenizerSupport.STATE_DONE;
+							ttype = TT_EOF;
+							state = STATE_DONE;
 						}
 						break;
 					}
-					case StreamTokenizerSupport.STATE_POSSIBLEC_COMMENT_END: 
+					case STATE_POSSIBLEC_COMMENT_END: 
 					{
 						if (data == - 1)
 						{
-							this.ttype = StreamTokenizerSupport.TT_EOF;
-							state = StreamTokenizerSupport.STATE_DONE;
+							ttype = TT_EOF;
+							state = STATE_DONE;
 						}
 						else if (ch == '/')
-							state = StreamTokenizerSupport.STATE_NEUTRAL;
+							state = STATE_NEUTRAL;
 						else if (ch != '*')
-							state = StreamTokenizerSupport.STATE_C_COMMENT;
+							state = STATE_C_COMMENT;
 						break;
 					}
 				}
 			}
-			while (state != StreamTokenizerSupport.STATE_DONE);
+			while (state != STATE_DONE);
 			
-			if (this.ttype == StreamTokenizerSupport.TT_WORD && this.lowerCaseMode)
-				this.sval = this.sval.ToLower();
+			if (ttype == TT_WORD && lowerCaseMode)
+			{
+				sval = sval?.ToLower();
+			}
 
-			return this.ttype;
+			return ttype;
 		}
 
 		/// <summary>
@@ -1253,7 +1233,7 @@ internal class SupportClass
 		public virtual void OrdinaryChar(int ch)
 		{
 			if (ch >= 0 && ch <= 255)
-				this.attribute[ch] = StreamTokenizerSupport.ORDINARYCHAR;
+				attribute[ch] = ORDINARYCHAR;
 		}
 		
 		/// <summary>
@@ -1264,7 +1244,7 @@ internal class SupportClass
 		/// <param name="hi">High end of the range.</param>
 		public virtual void OrdinaryChars(int low, int hi)
 		{
-			this.setAttributes(low, hi, StreamTokenizerSupport.ORDINARYCHAR);
+			setAttributes(low, hi, ORDINARYCHAR);
 		}
 		
 		/// <summary>
@@ -1273,9 +1253,9 @@ internal class SupportClass
 		public virtual void ParseNumbers()
 		{
 			for (int i = '0'; i <= '9'; i++)
-				this.attribute[i] = StreamTokenizerSupport.NUMBERCHAR;
-			this.attribute['.'] = StreamTokenizerSupport.NUMBERCHAR;
-			this.attribute['-'] = StreamTokenizerSupport.NUMBERCHAR;
+				attribute[i] = NUMBERCHAR;
+			attribute['.'] = NUMBERCHAR;
+			attribute['-'] = NUMBERCHAR;
 		}
 		
 		/// <summary>
@@ -1284,8 +1264,8 @@ internal class SupportClass
 		/// </summary>
 		public virtual void PushBack()
 		{
-			if (this.ttype != StreamTokenizerSupport.TT_NOTHING)
-				this.pushedback = true;
+			if (ttype != TT_NOTHING)
+				pushedback = true;
 		}
 
 		/// <summary>
@@ -1295,7 +1275,7 @@ internal class SupportClass
 		public virtual void QuoteChar(int ch)
 		{
 			if (ch >= 0 && ch <= 255)
-				this.attribute[ch] = QUOTECHAR;
+				attribute[ch] = QUOTECHAR;
 		}
 		
 		/// <summary>
@@ -1304,7 +1284,7 @@ internal class SupportClass
 		/// </summary>
 		public virtual void ResetSyntax()
 		{
-			this.OrdinaryChars(0x00, 0xff);
+			OrdinaryChars(0x00, 0xff);
 		}
 		
 		/// <summary>
@@ -1313,7 +1293,7 @@ internal class SupportClass
 		/// <param name="flag">True indicates to recognize and ignore C++-style comments.</param>
 		public virtual void SlashSlashComments(bool flag)
 		{
-			this.slashSlashComments = flag;
+			slashSlashComments = flag;
 		}
 		
 		/// <summary>
@@ -1322,64 +1302,64 @@ internal class SupportClass
 		/// <param name="flag">True indicates to recognize and ignore C-style comments.</param>
 		public virtual void SlashStarComments(bool flag)
 		{
-			this.slashStarComments = flag;
+			slashStarComments = flag;
 		}
 		
 		/// <summary>
 		/// Returns the string representation of the current stream token.
 		/// </summary>
 		/// <returns>A String representation of the current stream token.</returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder buffer = new System.Text.StringBuilder(StreamTokenizerSupport.TOKEN);
+			var buffer = new System.Text.StringBuilder(TOKEN);
 			
-			switch (this.ttype)
+			switch (ttype)
 			{
-				case StreamTokenizerSupport.TT_NOTHING:
+				case TT_NOTHING:
 				{
-					buffer.Append(StreamTokenizerSupport.NOTHING);
+					buffer.Append(NOTHING);
 					break;
 				}
-				case StreamTokenizerSupport.TT_WORD: 
+				case TT_WORD: 
 				{
-					buffer.Append(this.sval);
+					buffer.Append(sval);
 					break;
 				}
-				case StreamTokenizerSupport.TT_NUMBER: 
+				case TT_NUMBER: 
 				{
-					buffer.Append(StreamTokenizerSupport.NUMBER);
-					buffer.Append(this.nval);
+					buffer.Append(NUMBER);
+					buffer.Append(nval);
 					break;
 				}
-				case StreamTokenizerSupport.TT_EOF: 
+				case TT_EOF: 
 				{
-					buffer.Append(StreamTokenizerSupport.EOF);
+					buffer.Append(EOF);
 					break;
 				}
-				case StreamTokenizerSupport.TT_EOL: 
+				case TT_EOL: 
 				{
-					buffer.Append(StreamTokenizerSupport.EOL);
+					buffer.Append(EOL);
 					break;
 				}
 			}
 
-			if (this.ttype > 0)
+			if (ttype > 0)
 			{
-				if (this.attribute[this.ttype] == StreamTokenizerSupport.QUOTECHAR)
+				if (attribute[ttype] == QUOTECHAR)
 				{
-					buffer.Append(StreamTokenizerSupport.QUOTED);
-					buffer.Append(this.sval);
+					buffer.Append(QUOTED);
+					buffer.Append(sval);
 				}
 				else
 				{
 					buffer.Append('\'');
-					buffer.Append((char) this.ttype);
+					buffer.Append((char) ttype);
 					buffer.Append('\'');
 				}
 			}
 
-			buffer.Append(StreamTokenizerSupport.LINE);
-			buffer.Append(this.lineno);
+			buffer.Append(LINE);
+			buffer.Append(lineno);
 			return buffer.ToString();
 		}
 
@@ -1391,7 +1371,7 @@ internal class SupportClass
 		/// <param name="hi">The high end of the range.</param>
 		public virtual void WhitespaceChars(int low, int hi)
 		{
-			this.setAttributes(low, hi, StreamTokenizerSupport.WHITESPACECHAR);
+			setAttributes(low, hi, WHITESPACECHAR);
 		}
 		
 		/// <summary>
@@ -1401,7 +1381,7 @@ internal class SupportClass
 		/// <param name="hi">The high end of the range.</param>
 		public virtual void WordChars(int low, int hi)
 		{
-			this.setAttributes(low, hi, StreamTokenizerSupport.WORDCHAR);
+			setAttributes(low, hi, WORDCHAR);
 		}
 	}
 
@@ -1410,7 +1390,7 @@ internal class SupportClass
 	/// <summary>
 	/// This class provides functionality to reads and unread characters into a buffer.
 	/// </summary>
-	internal class BackReader : System.IO.StreamReader
+	public class BackReader : System.IO.StreamReader
 	{
 		private char[] buffer;
 		private int position = 1;
@@ -1421,19 +1401,21 @@ internal class SupportClass
 		/// </summary>
 		/// <param name="streamReader">The buffer from which chars will be read.</param>
 		/// <param name="size">The size of the Back buffer.</param>
+		/// <param name="encoding">Character encoding of the buffer</param>
 		public BackReader(System.IO.Stream streamReader, int size, System.Text.Encoding encoding) : base(streamReader,encoding)
 		{
-			this.buffer = new char[size];
-			this.position = size;
+			buffer = new char[size];
+			position = size;
 		}
 
 		/// <summary>
 		/// Constructor. Calls the base constructor.
 		/// </summary>
 		/// <param name="streamReader">The buffer from which chars will be read.</param>
+		/// <param name="encoding">character encoding for the buffer</param>
 		public BackReader(System.IO.Stream streamReader, System.Text.Encoding encoding) : base(streamReader, encoding)
 		{
-			this.buffer = new char[this.position];
+			buffer = new char[position];
 		}
 
 		/// <summary>
@@ -1454,7 +1436,7 @@ internal class SupportClass
 		/// <remarks>
 		/// This method isn't supported.
 		/// </remarks>
-		public void Mark(int position)
+		public void Mark(int pos)
 		{
 			throw new System.IO.IOException("Mark operations are not allowed");			
 		}
@@ -1476,8 +1458,8 @@ internal class SupportClass
 		/// <returns>The character read.</returns>
 		public override int Read()
 		{
-			if (this.position >= 0 && this.position < this.buffer.Length)
-				return (int) this.buffer[this.position++];
+			if (position >= 0 && position < buffer.Length)
+				return buffer[position++];
 			return base.Read();
 		}
 
@@ -1490,7 +1472,7 @@ internal class SupportClass
 		/// <returns>The number of characters read.</returns>
 		public override int Read(char[] array, int index, int count)
 		{
-			int readLimit = this.buffer.Length - this.position;
+			var readLimit = buffer.Length - position;
 
 			if (count <= 0)
 				return 0;
@@ -1499,10 +1481,10 @@ internal class SupportClass
 			{
 				if (count < readLimit)
 					readLimit = count;
-				System.Array.Copy(this.buffer, this.position, array, index, readLimit);
+				Array.Copy(buffer, position, array, index, readLimit);
 				count -= readLimit;
 				index += readLimit;
-				this.position += readLimit;
+				position += readLimit;
 			}
 
 			if (count > 0)
@@ -1525,7 +1507,7 @@ internal class SupportClass
 		/// <returns>True if the position is less than the length, otherwise false.</returns>
 		public bool IsReady()
 		{
-			return (this.position >= this.buffer.Length || this.BaseStream.Position >= this.BaseStream.Length);
+			return (position >= buffer.Length || BaseStream.Position >= BaseStream.Length);
 		}
 
 		/// <summary>
@@ -1534,8 +1516,8 @@ internal class SupportClass
 		/// <param name="unReadChar">The character to be unread.</param>
 		public void UnRead(int unReadChar)
 		{
-			this.position--;
-			this.buffer[this.position] = (char) unReadChar;
+			position--;
+			buffer[position] = (char) unReadChar;
 		}
 
 		/// <summary>
@@ -1546,7 +1528,7 @@ internal class SupportClass
 		/// <param name="count">The number of characters to unread.</param>
 		public void UnRead(char[] array, int index, int count)
 		{
-			this.Move(array, index, count);
+			Move(array, index, count);
 		}
 
 		/// <summary>
@@ -1555,7 +1537,7 @@ internal class SupportClass
 		/// <param name="array">The character array to be unread.</param>
 		public void UnRead(char[] array)
 		{
-			this.Move(array, 0, array.Length - 1);
+			Move(array, 0, array.Length - 1);
 		}
 
 		/// <summary>
@@ -1566,8 +1548,8 @@ internal class SupportClass
 		/// <param name="count">Amount of characters to move.</param>
 		private void Move(char[] array, int index, int count)
 		{
-			for (int arrayPosition = index + count; arrayPosition >= index; arrayPosition--)
-				this.UnRead(array[arrayPosition]);
+			for (var arrayPosition = index + count; arrayPosition >= index; arrayPosition--)
+				UnRead(array[arrayPosition]);
 		}
 	}
 
@@ -1576,7 +1558,7 @@ internal class SupportClass
 	/// <summary>
 	/// Provides functionality to read and unread from a Stream.
 	/// </summary>
-	internal class BackInputStream : System.IO.BinaryReader
+	public class BackInputStream : System.IO.BinaryReader
 	{
 		private byte[] buffer;
 		private int position = 1;
@@ -1586,10 +1568,10 @@ internal class SupportClass
 		/// </summary>
 		/// <param name="streamReader">The stream to use.</param>
 		/// <param name="size">The specific size of the buffer.</param>
-		public BackInputStream(System.IO.Stream streamReader, System.Int32 size) : base(streamReader)
+		public BackInputStream(System.IO.Stream streamReader, int size) : base(streamReader)
 		{
-			this.buffer = new byte[size];
-			this.position = size;
+			buffer = new byte[size];
+			position = size;
 		}
 
 		/// <summary>
@@ -1598,7 +1580,7 @@ internal class SupportClass
 		/// <param name="streamReader">The stream to use.</param>
 		public BackInputStream(System.IO.Stream streamReader) : base(streamReader)
 		{
-			this.buffer = new byte[this.position];
+			buffer = new byte[position];
 		}
 
 		/// <summary>
@@ -1617,7 +1599,7 @@ internal class SupportClass
 		public override int Read()
 		{
 			if (position >= 0 && position < buffer.Length)
-				return (int) this.buffer[position++];
+				return buffer[position++];
 			return base.Read();
 		}
 
@@ -1630,9 +1612,9 @@ internal class SupportClass
 		/// <returns>The number of characters read into buffer.</returns>
 		public virtual int Read(sbyte[] array, int index, int count)
 		{
-			int byteCount = 0;
-			int readLimit = count + index;
-			byte[] aux = ToByteArray(array);
+			var byteCount = 0;
+			var readLimit = count + index;
+			var aux = ToByteArray(array);
 
 			for (byteCount = 0; position < buffer.Length && index < readLimit; byteCount++)
 				aux[index++] = buffer[position++];
@@ -1640,7 +1622,7 @@ internal class SupportClass
 			if (index < readLimit)
 				byteCount += base.Read(aux, index, readLimit - index);
 
-			for(int i = 0; i < aux.Length;i++)
+			for(var i = 0; i < aux.Length;i++)
 				array[i] = (sbyte)aux[i];
 
 			return byteCount;
@@ -1652,9 +1634,9 @@ internal class SupportClass
 		/// <param name="element">The value to be unread.</param>
 		public void UnRead(int element)
 		{
-			this.position--;
+			position--;
 			if (position >= 0)
-				this.buffer[this.position] = (byte) element;
+				buffer[position] = (byte) element;
 		}
 
 		/// <summary>
@@ -1665,7 +1647,7 @@ internal class SupportClass
 		/// <param name="count">The number of bytes to be unread.</param>
 		public void UnRead(byte[] array, int index, int count)
 		{
-			this.Move(array, index, count);
+			Move(array, index, count);
 		}
 
 		/// <summary>
@@ -1674,7 +1656,7 @@ internal class SupportClass
 		/// <param name="array">The byte array to be unread.</param>
 		public void UnRead(byte[] array)
 		{
-			this.Move(array, 0, array.Length - 1);
+			Move(array, 0, array.Length - 1);
 		}
 
 		/// <summary>
@@ -1684,7 +1666,7 @@ internal class SupportClass
 		/// <returns>The number of bytes actually skipped</returns>
 		public long Skip(long numberOfBytes)
 		{
-			return this.BaseStream.Seek(numberOfBytes, System.IO.SeekOrigin.Current) - this.BaseStream.Position;
+			return BaseStream.Seek(numberOfBytes, System.IO.SeekOrigin.Current) - BaseStream.Position;
 		}
 
 		/// <summary>
@@ -1695,8 +1677,8 @@ internal class SupportClass
 		/// <param name="count">The amount of bytes to be unread.</param>
 		private void Move(byte[] array, int index, int count)
 		{
-			for (int arrayPosition = index + count;  arrayPosition >= index; arrayPosition--)
-				this.UnRead(array[arrayPosition]);
+			for (var arrayPosition = index + count;  arrayPosition >= index; arrayPosition--)
+				UnRead(array[arrayPosition]);
 		}
 	}
 
@@ -1704,7 +1686,7 @@ internal class SupportClass
 	/// <summary>
 	/// SupportClass for the Stack class.
 	/// </summary>
-	internal class StackSupport
+	public class StackSupport
 	{
 		/// <summary>
 		/// Removes the element at the top of the stack and returns it.
@@ -1713,7 +1695,7 @@ internal class SupportClass
 		/// <returns>The element at the top of the stack.</returns>
 		public static T Pop<T>(System.Collections.Generic.List<T> stack)
 		{
-			T obj = stack[stack.Count - 1];
+			var obj = stack[stack.Count - 1];
 			stack.RemoveAt(stack.Count - 1);
 
 			return obj;

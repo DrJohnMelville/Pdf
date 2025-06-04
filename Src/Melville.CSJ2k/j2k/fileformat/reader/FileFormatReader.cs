@@ -40,11 +40,13 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-
+using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.io;
-namespace Melville.CSJ2K.j2k.fileformat.reader
+using CoreJ2K.j2k.codestream;
+using CoreJ2K.j2k.io;
+using CoreJ2K.j2k.util;
+
+namespace CoreJ2K.j2k.fileformat.reader
 {
 	
 	/// <summary> This class reads the file format wrapper that may or may not exist around a
@@ -53,10 +55,8 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 	/// finds the first valid codestream.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.fileformat.writer.FileFormatWriter">
-	/// 
-	/// </seealso>
-	internal class FileFormatReader
+	/// <seealso cref="j2k.fileformat.writer.FileFormatWriter" />
+	public class FileFormatReader
 	{
 		/// <summary> This method creates and returns an array of positions to contiguous
 		/// codestreams in the file
@@ -65,14 +65,14 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 		/// <returns> The positions of the contiguous codestreams in the file
 		/// 
 		/// </returns>
-		virtual public long[] CodeStreamPos
+		public virtual long[] CodeStreamPos
 		{
 			get
 			{
-				int size = codeStreamPos.Count;
-				long[] pos = new long[size];
-				for (int i = 0; i < size; i++)
-					pos[i] = (long) ((System.Int32) (codeStreamPos[i]));
+				var size = codeStreamPos.Count;
+				var pos = new long[size];
+				for (var i = 0; i < size; i++)
+					pos[i] = codeStreamPos[i];
 				return pos;
 			}
 			
@@ -84,14 +84,8 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 		/// <returns> The position of the first contiguous codestream in the file
 		/// 
 		/// </returns>
-		virtual public int FirstCodeStreamPos
-		{
-			get
-			{
-				return ((System.Int32) (codeStreamPos[0]));
-			}
-			
-		}
+		public virtual int FirstCodeStreamPos => codeStreamPos[0];
+
 		/// <summary> This method returns the length of the first contiguous codestreams in
 		/// the file
 		/// 
@@ -99,23 +93,16 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 		/// <returns> The length of the first contiguous codestream in the file
 		/// 
 		/// </returns>
-		virtual public int FirstCodeStreamLength
-		{
-			get
-			{
-				return ((System.Int32) (codeStreamLength[0]));
-			}
-			
-		}
-		
+		public virtual int FirstCodeStreamLength => codeStreamLength[0];
+
 		/// <summary>The random access from which the file format boxes are read </summary>
 		private RandomAccessIO in_Renamed;
 		
 		/// <summary>The positions of the codestreams in the fileformat</summary>
-		private System.Collections.Generic.List<System.Int32> codeStreamPos;
+		private List<int> codeStreamPos;
 		
 		/// <summary>The lengths of the codestreams in the fileformat</summary>
-		private System.Collections.Generic.List<System.Int32> codeStreamLength;
+		private List<int> codeStreamLength;
 		
 		/// <summary>Flag indicating whether or not the JP2 file format is used </summary>
 		public bool JP2FFUsed;
@@ -154,8 +141,8 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			long longLength = 0;
 			int pos;
 			short marker;
-			bool jp2HeaderBoxFound = false;
-			bool lastBoxFound = false;
+			var jp2HeaderBoxFound = false;
+			var lastBoxFound = false;
 			
 			try
 			{
@@ -165,15 +152,15 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 				
 				// Make sure that the first 12 bytes is the JP2_SIGNATURE_BOX or
 				// if not that the first 2 bytes is the SOC marker
-				if (in_Renamed.readInt() != 0x0000000c || in_Renamed.readInt() != Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.JP2_SIGNATURE_BOX || in_Renamed.readInt() != 0x0d0a870a)
+				if (in_Renamed.readInt() != 0x0000000c || in_Renamed.readInt() != FileFormatBoxes.JP2_SIGNATURE_BOX || in_Renamed.readInt() != 0x0d0a870a)
 				{
 					// Not a JP2 file
 					in_Renamed.seek(0);
 					
-					marker = (short) in_Renamed.readShort();
-					if (marker != Melville.CSJ2K.j2k.codestream.Markers.SOC)
+					marker = in_Renamed.readShort();
+					if (marker != Markers.SOC)
 					//Standard syntax marker found
-						throw new System.InvalidOperationException("File is neither valid JP2 file nor " + "valid JPEG 2000 codestream");
+						throw new InvalidOperationException("File is neither valid JP2 file nor " + "valid JPEG 2000 codestream");
 					JP2FFUsed = false;
 					in_Renamed.seek(0);
 					return ;
@@ -186,7 +173,7 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 				if (!readFileTypeBox())
 				{
 					// Not a valid JP2 file or codestream
-					throw new System.InvalidOperationException("Invalid JP2 file: File Type box missing");
+					throw new InvalidOperationException("Invalid JP2 file: File Type box missing");
 				}
 				
 				// Read all remaining boxes 
@@ -209,48 +196,49 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 						throw new System.IO.IOException("File too long.");
 					}
 					else
-						longLength = (long) 0;
+						longLength = 0;
 					
 					switch (box)
 					{
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.CONTIGUOUS_CODESTREAM_BOX: 
+						case FileFormatBoxes.CONTIGUOUS_CODESTREAM_BOX: 
 							if (!jp2HeaderBoxFound)
 							{
-								throw new System.InvalidOperationException("Invalid JP2 file: JP2Header box not " + "found before Contiguous codestream " + "box ");
+								throw new InvalidOperationException("Invalid JP2 file: JP2Header box not " + "found before Contiguous codestream " + "box ");
 							}
 							readContiguousCodeStreamBox(pos, length, longLength);
 							break;
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.JP2_HEADER_BOX: 
+						case FileFormatBoxes.JP2_HEADER_BOX: 
 							if (jp2HeaderBoxFound)
-								throw new System.InvalidOperationException("Invalid JP2 file: Multiple " + "JP2Header boxes found");
+								throw new InvalidOperationException("Invalid JP2 file: Multiple " + "JP2Header boxes found");
 							readJP2HeaderBox(pos, length, longLength);
 							jp2HeaderBoxFound = true;
 							break;
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.INTELLECTUAL_PROPERTY_BOX: 
+						case FileFormatBoxes.INTELLECTUAL_PROPERTY_BOX: 
 							readIntPropertyBox(length);
 							break;
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.XML_BOX: 
+						case FileFormatBoxes.XML_BOX: 
 							readXMLBox(length);
 							break;
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.UUID_BOX: 
+						case FileFormatBoxes.UUID_BOX: 
 							readUUIDBox(length);
 							break;
 						
-						case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.UUID_INFO_BOX: 
+						case FileFormatBoxes.UUID_INFO_BOX: 
 							readUUIDInfoBox(length);
 							break;
                         
-                        case Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.READER_REQUIREMENTS_BOX:
+                        case FileFormatBoxes.READER_REQUIREMENTS_BOX:
                             readReaderRequirementsBox(length);
                             break;
 						
 						default: 
-							FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Unknown box-type: 0x" + System.Convert.ToString(box, 16));
+							FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+								$"Unknown box-type: 0x{Convert.ToString(box, 16)}");
 							break;
 						
 					}
@@ -260,13 +248,13 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			}
 			catch (System.IO.EndOfStreamException)
 			{
-				throw new System.InvalidOperationException("EOF reached before finding Contiguous " + "Codestream Box");
+				throw new InvalidOperationException("EOF reached before finding Contiguous " + "Codestream Box");
 			}
 			
 			if (codeStreamPos.Count == 0)
 			{
 				// Not a valid JP2 file or codestream
-				throw new System.InvalidOperationException("Invalid JP2 file: Contiguous codestream box " + "missing");
+				throw new InvalidOperationException("Invalid JP2 file: Contiguous codestream box " + "missing");
 			}
 			
 			return ;
@@ -289,7 +277,7 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			long longLength = 0;
 			int pos;
 			int nComp;
-			bool foundComp = false;
+			var foundComp = false;
 			
 			// Get current position in file
 			pos = in_Renamed.Pos;
@@ -299,11 +287,11 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			if (length == 0)
 			{
 				// This can not be last box
-				throw new System.InvalidOperationException("Zero-length of Profile Box");
+				throw new InvalidOperationException("Zero-length of Profile Box");
 			}
 			
 			// Check that this is a File Type box (TBox)
-			if (in_Renamed.readInt() != Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.FILE_TYPE_BOX)
+			if (in_Renamed.readInt() != FileFormatBoxes.FILE_TYPE_BOX)
 			{
 				return false;
 			}
@@ -325,17 +313,12 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			// Check that there is at least one FT_BR entry in in
 			// compatibility list
 			nComp = (length - 16) / 4; // Number of compatibilities.
-			for (int i = nComp; i > 0; i--)
+			for (var i = nComp; i > 0; i--)
 			{
-				if (in_Renamed.readInt() == Melville.CSJ2K.j2k.fileformat.FileFormatBoxes.FT_BR)
+				if (in_Renamed.readInt() == FileFormatBoxes.FT_BR)
 					foundComp = true;
 			}
-			if (!foundComp)
-			{
-				return false;
-			}
-			
-			return true;
+			return foundComp;
 		}
 		
 		/// <summary> This method reads the JP2Header box
@@ -366,7 +349,7 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 			if (length == 0)
 			{
 				// This can not be last box
-				throw new System.InvalidOperationException("Zero-length of JP2Header Box");
+				throw new InvalidOperationException("Zero-length of JP2Header Box");
 			}
 			
 			// Here the JP2Header data (DBox) would be read if we were to use it
@@ -401,16 +384,16 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 		{
 			
 			// Add new codestream position to position vector
-			int ccpos = in_Renamed.Pos;
+			var ccpos = in_Renamed.Pos;
 			
 			if (codeStreamPos == null)
 				codeStreamPos = new List<int>(10);
-			codeStreamPos.Add((System.Int32) ccpos);
+			codeStreamPos.Add(ccpos);
 			
 			// Add new codestream length to length vector
 			if (codeStreamLength == null)
 				codeStreamLength = new List<int>(10);
-			codeStreamLength.Add((System.Int32) length);
+			codeStreamLength.Add(length);
 			
 			return true;
 		}

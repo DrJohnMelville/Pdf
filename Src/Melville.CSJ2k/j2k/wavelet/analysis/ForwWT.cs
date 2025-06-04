@@ -42,21 +42,20 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This interface extends the WaveletTransform with the specifics of forward
 	/// wavelet transforms. Classes that implement forward wavelet transfoms should
 	/// implement this interface.
 	/// 
-	/// <p>This class does not define the methods to transfer data, just the
+	/// This class does not define the methods to transfer data, just the
 	/// specifics to forward wavelet transform. Different data transfer methods are 
-	/// evisageable for different transforms.</p>
+	/// evisageable for different transforms.
 	/// 
 	/// </summary>
-	internal interface ForwWT:WaveletTransform, ForwWTDataProps
+	public interface ForwWT:WaveletTransform, ForwWTDataProps
 	{
-		
 		/// <summary> Returns the horizontal analysis wavelet filters used in each level, for
 		/// the specified tile-component. The first element in the array is the
 		/// filter used to obtain the lowest resolution (resolution level 0)
@@ -65,12 +64,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// there are less elements in the array than the number of resolution
 		/// levels, then the last one is assumed to repeat itself.
 		/// 
-		/// <p>The returned filters are applicable only to the specified component
-		/// and in the current tile.</p>
+		/// The returned filters are applicable only to the specified component
+		/// and in the current tile.
 		/// 
-		/// <p>The resolution level of a subband is the resolution level to which a
+		/// The resolution level of a subband is the resolution level to which a
 		/// subband contributes, which is different from its decomposition
-		/// level.</p>
+		/// level.
 		/// 
 		/// </summary>
 		/// <param name="t">The index of the tile for which to return the filters.
@@ -82,8 +81,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The horizontal analysis wavelet filters used in each level.
 		/// 
 		/// </returns>
-		AnWTFilter[] getHorAnWaveletFilters(int t, int c);
-		
+		WaveletFilter[] getHorAnWaveletFilters(int t, int c);
+
 		/// <summary> Returns the vertical analysis wavelet filters used in each level, for
 		/// the specified tile-component. The first element in the array is the
 		/// filter used to obtain the lowest resolution (resolution level 0)
@@ -92,12 +91,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// there are less elements in the array than the number of resolution
 		/// levels, then the last one is assumed to repeat itself.
 		/// 
-		/// <p>The returned filters are applicable only to the specified component
-		/// and in the current tile.</p>
+		/// The returned filters are applicable only to the specified component
+		/// and in the current tile.
 		/// 
-		/// <p>The resolution level of a subband is the resolution level to which a
+		/// The resolution level of a subband is the resolution level to which a
 		/// subband contributes, which is different from its decomposition
-		/// level.</p>
+		/// level.
 		/// 
 		/// </summary>
 		/// <param name="t">The index of the tile for which to return the filters.
@@ -109,7 +108,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The vertical analysis wavelet filters used in each level.
 		/// 
 		/// </returns>
-		AnWTFilter[] getVertAnWaveletFilters(int t, int c);
+		WaveletFilter[] getVertAnWaveletFilters(int t, int c);
 		
 		/// <summary> Returns the number of decomposition levels that are applied to obtain
 		/// the LL band, in the specified tile-component. A value of 0 means that

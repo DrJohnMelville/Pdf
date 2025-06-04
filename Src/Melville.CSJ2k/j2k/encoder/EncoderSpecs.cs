@@ -41,16 +41,16 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.quantization.quantizer;
-using Melville.CSJ2K.j2k.image.forwcomptransf;
-using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.quantization;
-using Melville.CSJ2K.j2k.entropy;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.roi;
+using CoreJ2K.j2k.entropy;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.image.forwcomptransf;
+using CoreJ2K.j2k.quantization;
+using CoreJ2K.j2k.quantization.quantizer;
+using CoreJ2K.j2k.roi;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet.analysis;
 
-namespace Melville.CSJ2K.j2k.encoder
+namespace CoreJ2K.j2k.encoder
 {
 	
 	/// <summary> This class holds references to each module specifications used in the
@@ -59,10 +59,8 @@ namespace Melville.CSJ2K.j2k.encoder
 	/// members must be instance of ModuleSpec class (or its children).
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class EncoderSpecs
+	/// <seealso cref="ModuleSpec" />
+	public class EncoderSpecs
 	{
 		
 		/// <summary>ROI maxshift value specifications </summary>
@@ -153,7 +151,7 @@ namespace Melville.CSJ2K.j2k.encoder
 			rois = new MaxShiftSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP);
 			
 			// Quantization
-			pl.checkList(Quantizer.OPT_PREFIX, Melville.CSJ2K.j2k.util.ParameterList.toNameArray(Quantizer.ParameterInfo));
+			pl.checkList(Quantizer.OPT_PREFIX, ParameterList.toNameArray(Quantizer.ParameterInfo));
 			qts = new QuantTypeSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, pl);
 			qsss = new QuantStepSizeSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, pl);
 			gbs = new GuardBitsSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, pl);
@@ -166,11 +164,11 @@ namespace Melville.CSJ2K.j2k.encoder
 			cts = new ForwCompTransfSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE, wfs, pl);
 			
 			// Entropy coder
-			System.String[] strLcs = new System.String[]{"near_opt", "lazy_good", "lazy"};
+			var strLcs = new string[]{"near_opt", "lazy_good", "lazy"};
 			lcs = new StringSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, "Clen_calc", strLcs, pl);
-			System.String[] strTerm = new System.String[]{"near_opt", "easy", "predict", "full"};
+			var strTerm = new string[]{"near_opt", "easy", "predict", "full"};
 			tts = new StringSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, "Cterm_type", strTerm, pl);
-			System.String[] strBoolean = new System.String[]{"on", "off"};
+			var strBoolean = new string[]{"on", "off"};
 			sss = new StringSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, "Cseg_symbol", strBoolean, pl);
 			css = new StringSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, "Ccausal", strBoolean, pl);
 			rts = new StringSpec(nt, nc, ModuleSpec.SPEC_TYPE_TILE_COMP, "Cterminate", strBoolean, pl);

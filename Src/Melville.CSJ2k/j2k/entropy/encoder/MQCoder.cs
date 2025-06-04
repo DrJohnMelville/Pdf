@@ -43,21 +43,21 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.j2k.util;
+using CoreJ2K.j2k.util;
 
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This class implements the MQ arithmetic coder. When initialized a specific
 	/// state can be specified for each context, which may be adapted to the
 	/// probability distribution that is expected for that context.
 	/// 
-	/// <p>The type of length calculation and termination can be chosen at
+	/// The type of length calculation and termination can be chosen at
 	/// construction time.
 	/// 
 	/// ---- Tricks that have been tried to improve speed ----
 	/// 
-	/// <p>1) Merging Qe and mPS and doubling the lookup tables<br>
+	/// 1) Merging Qe and mPS and doubling the lookup tables<br>
 	/// 
 	/// Merge the mPS into Qe, as the sign bit (if Qe>=0 the sense of MPS is 0, if
 	/// Qe<0 the sense is 1), and double the lookup tables. The first half of the
@@ -72,9 +72,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// decrease, probably due to the fact that often Q has to be negated. Also the
 	/// fact that a brach of the type "if (bit==mPS[li])" is replaced by two
 	/// simpler braches of the type "if (bit==0)" and "if (q<0)" may contribute to
-	/// that.</p>
+	/// that.
 	/// 
-	/// <p>2) Removing cT<br>
+	/// 2) Removing cT<br>
 	/// 
 	/// It is possible to remove the cT counter by setting a flag bit in the high
 	/// bits of the C register. This bit will be automatically shifted left
@@ -88,9 +88,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// There is NO speed improvement in doing this. I don't really know why since
 	/// the number of operations whenever a renormalization occurs is
 	/// decreased. Maybe it is due to the number of extra operations in the
-	/// byteOut(), terminate() and getNumCodedBytes() procedures.</p>
+	/// byteOut(), terminate() and getNumCodedBytes() procedures.
 	/// 
-	/// <p>3) Change the convention of MPS and LPS.<br>
+	/// 3) Change the convention of MPS and LPS.<br>
 	/// 
 	/// Making the LPS interval be above the MPS interval (MQ coder convention is
 	/// the opposite) can reduce the number of operations along the MPS path. In
@@ -102,23 +102,23 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// 
 	/// This has not been tested yet.<br>
 	/// 
-	/// <p>4) Removing normalization while loop on MPS path<br>
+	/// 4) Removing normalization while loop on MPS path<br>
 	/// 
 	/// Since in the MPS path Q is guaranteed to be always greater than 0x4000
 	/// (decimal 0.375) it is never necessary to do more than 1 renormalization
 	/// shift. Therefore the test of the while loop, and the loop itself, can be
-	/// removed.</p>
+	/// removed.
 	/// 
-	/// <p>5) Simplifying test on A register<br>
+	/// 5) Simplifying test on A register<br>
 	/// 
 	/// Since A is always less than or equal to 0xFFFF, the test "(a & 0x8000)==0"
 	/// can be replaced by the simplete test "a < 0x8000". This test is simpler in
 	/// Java since it involves only 1 operation (although the original test can be
 	/// converted to only one operation by  smart Just-In-Time compilers)<br>
 	/// 
-	/// This change has been integrated in the decoding procedures.</p>
+	/// This change has been integrated in the decoding procedures.
 	/// 
-	/// <p>6) Speedup mode<br>
+	/// 6) Speedup mode<br>
 	/// 
 	/// Implemented a method that uses the speedup mode of the MQ-coder if
 	/// possible. This should greately improve performance when coding long runs of 
@@ -126,19 +126,19 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// the entropy coder implementation has to explicetely use it. The generated
 	/// bit stream is the same as if no speedup mode would have been used.<br>
 	/// 
-	/// Implemented but performance not tested yet.</p>
+	/// Implemented but performance not tested yet.
 	/// 
-	/// <p>7) Multiple-symbol coding<br>
+	/// 7) Multiple-symbol coding<br>
 	/// 
 	/// Since the time spent in a method call is non-negligable, coding several
 	/// symbols with one method call reduces the overhead per coded symbol. The
 	/// decodeSymbols() method implements this. However, to take advantage of it,
 	/// the implementation of the entropy coder has to explicitely use it.<br>
 	/// 
-	/// Implemented but performance not tested yet.</p>
+	/// Implemented but performance not tested yet.
 	/// 
 	/// </summary>
-	internal class MQCoder
+	public class MQCoder
 	{
 		/// <summary> Set the length calculation type to the specified type.
 		/// 
@@ -147,14 +147,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// 'LENGTH_LAZY', 'LENGTH_LAZY_GOOD' or 'LENGTH_NEAR_OPT'.
 		/// 
 		/// </param>
-		virtual public int LenCalcType
+		public virtual int LenCalcType
 		{
 			set
 			{
 				// Verify the ttype and ltype
 				if (value != LENGTH_LAZY && value != LENGTH_LAZY_GOOD && value != LENGTH_NEAR_OPT)
 				{
-					throw new System.ArgumentException("Unrecognized length " + "calculation type code: " + value);
+					throw new ArgumentException($"Unrecognized length calculation type code: {value}");
 				}
 				
 				if (value == LENGTH_NEAR_OPT)
@@ -170,7 +170,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					if (savedDelFF == null)
 						savedDelFF = new bool[SAVED_LEN];
 				}
-				this.ltype = value;
+				ltype = value;
 			}
 			
 		}
@@ -181,15 +181,15 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// 'TERM_NEAR_OPT', 'TERM_EASY' or 'TERM_PRED_ER'.
 		/// 
 		/// </param>
-		virtual public int TermType
+		public virtual int TermType
 		{
 			set
 			{
 				if (value != TERM_FULL && value != TERM_NEAR_OPT && value != TERM_EASY && value != TERM_PRED_ER)
 				{
-					throw new System.ArgumentException("Unrecognized termination " + "type code: " + value);
+					throw new ArgumentException($"Unrecognized termination type code: {value}");
 				}
-				this.ttype = value;
+				ttype = value;
 			}
 			
 		}
@@ -199,37 +199,31 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <returns> The number of contexts
 		/// 
 		/// </returns>
-		virtual public int NumCtxts
-		{
-			get
-			{
-				return I.Length;
-			}
-			
-		}
+		public virtual int NumCtxts => I.Length;
+
 		/// <summary> Returns the number of bytes that are necessary from the compressed
 		/// output stream to decode all the symbols that have been coded this
 		/// far. The number of returned bytes does not include anything coded
 		/// previous to the last time the 'terminate()' or 'reset()' methods where
 		/// called.
 		/// 
-		/// <p>The values returned by this method are then to be used in finishing
+		/// The values returned by this method are then to be used in finishing
 		/// the length calculation with the 'finishLengthCalculation()' method,
 		/// after compensation of the offset in the number of bytes due to previous
-		/// terminated segments.</p>
+		/// terminated segments.
 		/// 
-		/// <p>This method should not be called if the current coding pass is to be
-		/// terminated. The 'terminate()' method should be called instead.</p>
+		/// This method should not be called if the current coding pass is to be
+		/// terminated. The 'terminate()' method should be called instead.
 		/// 
-		/// <p>The calculation is done based on the type of length calculation
-		/// specified at the constructor.</p>
+		/// The calculation is done based on the type of length calculation
+		/// specified at the constructor.
 		/// 
 		/// </summary>
 		/// <returns> The number of bytes in the compressed output stream necessary
 		/// to decode all the information coded this far.
 		/// 
 		/// </returns>
-		virtual public int NumCodedBytes
+		public virtual int NumCodedBytes
 		{
 			get
 			{
@@ -245,19 +239,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						// This one is a bit better than LENGTH_LAZY.
 						int bitsInN3Bytes; // The minimum amount of bits that can be
 						// stored in the 3 bytes following the current byte buffer 'b'.
-						
-						if (b >= 0xFE)
-						{
-							// The byte after b can have a bit stuffed so ther could be
-							// one less bit available
-							bitsInN3Bytes = 22; // 7 + 8 + 7
-						}
-						else
-						{
+
+						// The byte after b can have a bit stuffed so ther could be
+						// one less bit available
+						bitsInN3Bytes = b >= 0xFE ? 22 : // 7 + 8 + 7
 							// We are sure that next byte after current byte buffer has no
 							// bit stuffing
-							bitsInN3Bytes = 23; // 8 + 7 + 8
-						}
+							23; // 8 + 7 + 8
 						if ((11 - cT + 16) <= bitsInN3Bytes)
 						{
 							return nrOfWrittenBytes + (delFF?1:0) + 1 + 3;
@@ -293,7 +281,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						return nrOfWrittenBytes;
 					
 					default: 
-						throw new System.InvalidOperationException("Illegal length calculation type code");
+						throw new InvalidOperationException("Illegal length calculation type code");
 					
 				}
 			}
@@ -341,19 +329,19 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		
 		/// <summary>The data structures containing the probabilities for the LPS </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'qe'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] qe = new int[]{0x5601, 0x3401, 0x1801, 0x0ac1, 0x0521, 0x0221, 0x5601, 0x5401, 0x4801, 0x3801, 0x3001, 0x2401, 0x1c01, 0x1601, 0x5601, 0x5401, 0x5101, 0x4801, 0x3801, 0x3401, 0x3001, 0x2801, 0x2401, 0x2201, 0x1c01, 0x1801, 0x1601, 0x1401, 0x1201, 0x1101, 0x0ac1, 0x09c1, 0x08a1, 0x0521, 0x0441, 0x02a1, 0x0221, 0x0141, 0x0111, 0x0085, 0x0049, 0x0025, 0x0015, 0x0009, 0x0005, 0x0001, 0x5601};
+		internal static readonly int[] qe = {0x5601, 0x3401, 0x1801, 0x0ac1, 0x0521, 0x0221, 0x5601, 0x5401, 0x4801, 0x3801, 0x3001, 0x2401, 0x1c01, 0x1601, 0x5601, 0x5401, 0x5101, 0x4801, 0x3801, 0x3401, 0x3001, 0x2801, 0x2401, 0x2201, 0x1c01, 0x1801, 0x1601, 0x1401, 0x1201, 0x1101, 0x0ac1, 0x09c1, 0x08a1, 0x0521, 0x0441, 0x02a1, 0x0221, 0x0141, 0x0111, 0x0085, 0x0049, 0x0025, 0x0015, 0x0009, 0x0005, 0x0001, 0x5601};
 		
 		/// <summary>The indexes of the next MPS </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'nMPS'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] nMPS = new int[]{1, 2, 3, 4, 5, 38, 7, 8, 9, 10, 11, 12, 13, 29, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 45, 46};
+		internal static readonly int[] nMPS = {1, 2, 3, 4, 5, 38, 7, 8, 9, 10, 11, 12, 13, 29, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 45, 46};
 		
 		/// <summary>The indexes of the next LPS </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'nLPS'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] nLPS = new int[]{1, 6, 9, 12, 29, 33, 6, 14, 14, 14, 17, 18, 20, 21, 14, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46};
+		internal static readonly int[] nLPS = {1, 6, 9, 12, 29, 33, 6, 14, 14, 14, 17, 18, 20, 21, 14, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46};
 		
 		/// <summary>Whether LPS and MPS should be switched </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'switchLM'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int[] switchLM = new int[]{1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		internal static readonly int[] switchLM = {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		// Having ints proved to be more efficient than booleans
 		
 		/// <summary>The ByteOutputBuffer used to write the compressed bit stream. </summary>
@@ -430,15 +418,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// calculation. 
 		/// </summary>
 		internal int nSaved;
-		
+
 		/// <summary>The initial length of the arrays to save sates </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'SAVED_LEN '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int SAVED_LEN = 32 * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_PASSES;
-		
+		internal const int SAVED_LEN = 32 * StdEntropyCoderOptions.NUM_PASSES;
+
 		/// <summary>The increase in length for the arrays to save states </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'SAVED_INC '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		internal static readonly int SAVED_INC = 4 * Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_PASSES;
-		
+		internal const int SAVED_INC = 4 * StdEntropyCoderOptions.NUM_PASSES;
+
 		/// <summary> Instantiates a new MQ-coder, with the specified number of contexts and
 		/// initial states. The compressed bytestream is written to the 'oStream'
 		/// object.
@@ -469,14 +455,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			
 			a = 0x8000;
 			c = 0;
-			if (b == 0xFF)
-			{
-				cT = 13;
-			}
-			else
-			{
-				cT = 12;
-			}
+			cT = b == 0xFF ? 13 : 12;
 			
 			resetCtxts();
 			
@@ -487,18 +466,18 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <summary> This method performs the coding of the symbol 'bit', using context
 		/// 'ctxt', 'n' times, using the MQ-coder speedup mode if possible.
 		/// 
-		/// <p>If the symbol 'bit' is the current more probable symbol (MPS) and
+		/// If the symbol 'bit' is the current more probable symbol (MPS) and
 		/// qe[ctxt]<=0x4000, and (A-0x8000)>=qe[ctxt], speedup mode will be
 		/// used. Otherwise the normal mode will be used. The speedup mode can
 		/// significantly improve the speed of arithmetic coding when several MPS
 		/// symbols, with a high probability distribution, must be coded with the
 		/// same context. The generated bit stream is the same as if the normal mode
-		/// was used.</p>
+		/// was used.
 		/// 
-		/// <p>This method is also faster than the 'codeSymbols()' and
+		/// This method is also faster than the 'codeSymbols()' and
 		/// 'codeSymbol()' ones, for coding the same symbols with the same context
 		/// several times, when speedup mode can not be used, although not
-		/// significantly.</p>
+		/// significantly.
 		/// 
 		/// </summary>
 		/// <param name="bit">The symbol do code, 0 or 1.
@@ -689,12 +668,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// together. The function receives an array of symbols that are to be
 		/// encoded and an array containing the contexts with which to encode them.
 		/// 
-		/// <p>The advantage of using this function is that the cost of the method
-		/// call is amortized by the number of coded symbols per method call.</p>
+		/// The advantage of using this function is that the cost of the method
+		/// call is amortized by the number of coded symbols per method call.
 		/// 
-		/// <p>Each context has a current MPS and an index describing what the 
+		/// Each context has a current MPS and an index describing what the 
 		/// current probability is for the LPS. Each bit is encoded and if the
-		/// probability of the LPS exceeds .5, the MPS and LPS are switched.</p>
+		/// probability of the LPS exceeds .5, the MPS and LPS are switched.
 		/// 
 		/// </summary>
 		/// <param name="bits">An array containing the symbols to be encoded. Valid
@@ -830,9 +809,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// function receives a bit that is to be encoded and a context with which
 		/// to encode it.
 		/// 
-		/// <p>Each context has a current MPS and an index describing what the 
+		/// Each context has a current MPS and an index describing what the 
 		/// current probability is for the LPS. Each bit is encoded and if the
-		/// probability of the LPS exceeds .5, the MPS and LPS are switched.</p>
+		/// probability of the LPS exceeds .5, the MPS and LPS are switched.
 		/// 
 		/// </summary>
 		/// <param name="bit">The symbol to be encoded, must be 0 or 1.
@@ -1029,13 +1008,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// decoding, and then it reinitializes the internal state of the MQ coder
 		/// but without modifying the context states.
 		/// 
-		/// <p>After calling this method the 'finishLengthCalculation()' method
+		/// After calling this method the 'finishLengthCalculation()' method
 		/// should be called, after compensating the returned length for the length
 		/// of previous coded segments, so that the length calculation is
-		/// finalized.</p>
+		/// finalized.
 		/// 
-		/// <p>The type of termination used depends on the one specified at the
-		/// constructor.</p>
+		/// The type of termination used depends on the one specified at the
+		/// constructor.
 		/// 
 		/// </summary>
 		/// <returns> The length of the arithmetic codeword after termination, in
@@ -1049,14 +1028,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				
 				case TERM_FULL: 
 					//sets the remaining bits of the last byte of the coded bits.
-					int tempc = c + a;
+					var tempc = c + a;
 					c = c | 0xFFFF;
 					if (c >= tempc)
 					{
 						c = c - 0x8000;
 					}
 					
-					int remainingBits = 27 - cT;
+					var remainingBits = 27 - cT;
 					
 					// Flushes remainingBits
 					do 
@@ -1283,7 +1262,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					break;
 				
 				default: 
-					throw new System.InvalidOperationException("Illegal termination type code");
+					throw new InvalidOperationException("Illegal termination type code");
 				
 			}
 			
@@ -1341,10 +1320,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			a = 0x8000;
 			c = 0;
 			b = 0;
-			if (b == 0xFF)
-				cT = 13;
-			else
-				cT = 12;
+			cT = b == 0xFF ? 13 : 12;
 			resetCtxts();
 			nrOfWrittenBytes = - 1;
 			delFF = false;
@@ -1362,23 +1338,22 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// Increase capacity if necessary
 			if (nSaved == savedC.Length)
 			{
-				System.Object tmp;
+				object tmp;
 				tmp = savedC;
 				savedC = new int[nSaved + SAVED_INC];
-                // CONVERSION PROBLEM?
-				Array.Copy((System.Array)tmp, 0, savedC, 0, nSaved);
+				Array.Copy((Array)tmp, 0, savedC, 0, nSaved);
 				tmp = savedCT;
 				savedCT = new int[nSaved + SAVED_INC];
-                Array.Copy((System.Array)tmp, 0, savedCT, 0, nSaved);
+                Array.Copy((Array)tmp, 0, savedCT, 0, nSaved);
 				tmp = savedA;
 				savedA = new int[nSaved + SAVED_INC];
-                Array.Copy((System.Array)tmp, 0, savedA, 0, nSaved);
+                Array.Copy((Array)tmp, 0, savedA, 0, nSaved);
 				tmp = savedB;
 				savedB = new int[nSaved + SAVED_INC];
-                Array.Copy((System.Array)tmp, 0, savedB, 0, nSaved);
+                Array.Copy((Array)tmp, 0, savedB, 0, nSaved);
 				tmp = savedDelFF;
 				savedDelFF = new bool[nSaved + SAVED_INC];
-                Array.Copy((System.Array)tmp, 0, savedDelFF, 0, nSaved);
+                Array.Copy((Array)tmp, 0, savedDelFF, 0, nSaved);
 			}
 			// Save the current sate
 			savedC[nSaved] = c;
@@ -1393,9 +1368,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// pass. This method must be called just after the 'terminate()' one has
 		/// been called for each terminated MQ segment.
 		/// 
-		/// <p>The values in 'rates' must have been compensated for any offset due
+		/// The values in 'rates' must have been compensated for any offset due
 		/// to previous terminated segments, so that the correct index to the
-		/// stored coded data is used.</p>
+		/// stored coded data is used.
 		/// 
 		/// </summary>
 		/// <param name="rates">The array containing the values returned by
@@ -1415,7 +1390,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				if (n > 0 && rates[n - 1] > rates[n])
 				{
 					// We need correction
-					int tl = rates[n]; // The terminated length
+					var tl = rates[n]; // The terminated length
 					n--;
 					do 
 					{

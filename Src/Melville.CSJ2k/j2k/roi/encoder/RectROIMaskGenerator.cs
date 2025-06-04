@@ -41,36 +41,30 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.image;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.wavelet;
 
-namespace Melville.CSJ2K.j2k.roi.encoder
+namespace CoreJ2K.j2k.roi.encoder
 {
 	
 	/// <summary> This class generates the ROI masks when there are only rectangular ROIs in
 	/// the image. The ROI mask generation can then be simplified by only
 	/// calculating the boundaries of the ROI mask in the particular subbands
 	/// 
-	/// <P>The values are calculated from the scaling factors of the ROIs. The
+	/// The values are calculated from the scaling factors of the ROIs. The
 	/// values with which to scale are equal to u-umin where umin is the lowest
 	/// scaling factor within the block. The umin value is sent to the entropy
 	/// coder to be used for scaling the distortion values.
 	/// 
-	/// <P> To generate and to store the boundaries of the ROIs, the class
+	///  To generate and to store the boundaries of the ROIs, the class
 	/// SubbandRectROIMask is used. There is one tree of SubbandMasks for each
 	/// component.
 	/// 
 	/// </summary>
-	/// <seealso cref="SubbandRectROIMask">
-	/// 
-	/// </seealso>
-	/// <seealso cref="ROIMaskGenerator">
-	/// 
-	/// </seealso>
-	/// <seealso cref="ArbROIMaskGenerator">
-	/// 
-	/// </seealso>
-	internal class RectROIMaskGenerator:ROIMaskGenerator
+	/// <seealso cref="SubbandRectROIMask" />
+	/// <seealso cref="ROIMaskGenerator" />
+	/// <seealso cref="ArbROIMaskGenerator" />
+	public class RectROIMaskGenerator:ROIMaskGenerator
 	{
 		
 		/// <summary>The upper left xs of the ROIs</summary>
@@ -108,7 +102,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </param>
 		public RectROIMaskGenerator(ROI[] ROIs, int nrc):base(ROIs, nrc)
 		{
-			int nr = ROIs.Length;
+			var nr = ROIs.Length;
 			int r; // c removed
 			nrROIs = new int[nrc];
 			sMasks = new SubbandRectROIMask[nrc];
@@ -124,7 +118,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// <summary> This functions gets a DataBlk the size of the current code-block and
 		/// fills this block with the ROI mask.
 		/// 
-		/// <P> In order to get the mask for a particular Subband, the subband tree
+		///  In order to get the mask for a particular Subband, the subband tree
 		/// is traversed and at each decomposition, the ROI masks are computed. The
 		/// roi bondaries for each subband are stored in the SubbandRectROIMask
 		/// tree.
@@ -147,11 +141,11 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </returns>
 		public override bool getROIMask(DataBlkInt db, Subband sb, int magbits, int c)
 		{
-			int x = db.ulx;
-			int y = db.uly;
-			int w = db.w;
-			int h = db.h;
-			int[] mask = db.DataInt;
+			var x = db.ulx;
+			var y = db.uly;
+			var w = db.w;
+			var h = db.h;
+			var mask = db.DataInt;
             int i, j, k, r, maxk, maxj; // mink, minj removed
 			int ulx = 0, uly = 0, lrx = 0, lry = 0;
 			int wrap;
@@ -248,7 +242,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// <summary> This function returns the relevant data of the mask generator
 		/// 
 		/// </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			return ("Fast rectangular ROI mask generator");
 		}
@@ -266,14 +260,14 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 		/// </param>
 		public override void  makeMask(Subband sb, int magbits, int n)
 		{
-			int nr = nrROIs[n];
+			var nr = nrROIs[n];
 			int r;
 			int ulx, uly, lrx, lry;
-			int tileulx = sb.ulcx;
-			int tileuly = sb.ulcy;
-			int tilew = sb.w;
-			int tileh = sb.h;
-			ROI[] ROIs = roi_array; // local copy
+			var tileulx = sb.ulcx;
+			var tileuly = sb.ulcy;
+			var tilew = sb.w;
+			var tileh = sb.h;
+			var ROIs = roi_array; // local copy
 			
 			ulxs = new int[nr];
 			ulys = new int[nr];
@@ -313,14 +307,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 					nr++;
 				}
 			}
-			if (nr == 0)
-			{
-				roiInTile = false;
-			}
-			else
-			{
-				roiInTile = true;
-			}
+			roiInTile = nr != 0;
 			sMasks[n] = new SubbandRectROIMask(sb, ulxs, ulys, lrxs, lrys, nr);
 		}
 	}

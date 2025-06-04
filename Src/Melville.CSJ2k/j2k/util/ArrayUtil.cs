@@ -44,13 +44,13 @@
 * 
 */
 using System;
-namespace Melville.CSJ2K.j2k.util
+namespace CoreJ2K.j2k.util
 {
 	
 	/// <summary> This class contains a colleaction of utility static methods for arrays.
 	/// 
 	/// </summary>
-	internal class ArrayUtil
+	public class ArrayUtil
 	{
 		
 		/// <summary>The maximum array size to do element by element copying, larger

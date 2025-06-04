@@ -41,14 +41,14 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream.reader
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class contains location of code-blocks' piece of codewords (there is
 	/// one piece per layer) and some other information.
 	/// 
 	/// </summary>
-	internal class CBlkInfo
+	public class CBlkInfo
 	{
 		
 		/// <summary>Upper-left x-coordinate of the code-block (relative to the tile) </summary>
@@ -119,7 +119,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ntp = new int[nl];
 			segLen = new int[nl][];
 			pktIdx = new int[nl];
-			for (int i = nl - 1; i >= 0; i--)
+			for (var i = nl - 1; i >= 0; i--)
 			{
 				pktIdx[i] = - 1;
 			}
@@ -138,7 +138,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			ntp[l] = newtp;
 			ctp = 0;
-			for (int lIdx = 0; lIdx <= l; lIdx++)
+			for (var lIdx = 0; lIdx <= l; lIdx++)
 			{
 				ctp += ntp[lIdx];
 			}
@@ -150,18 +150,18 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> Object information
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String string_Renamed = "(ulx,uly,w,h)= (" + ulx + "," + uly + "," + w + "," + h;
+			var string_Renamed = $"(ulx,uly,w,h)= ({ulx},{uly},{w},{h}";
 			string_Renamed += (") " + msbSkipped + " MSB bit(s) skipped\n");
 			if (len != null)
-				for (int i = 0; i < len.Length; i++)
+				for (var i = 0; i < len.Length; i++)
 				{
 					string_Renamed += ("\tl:" + i + ", start:" + off[i] + ", len:" + len[i] + ", ntp:" + ntp[i] + ", pktIdx=" + pktIdx[i]);
-					if (segLen != null && segLen[i] != null)
+					if (segLen?[i] != null)
 					{
 						string_Renamed += " { ";
-						for (int j = 0; j < segLen[i].Length; j++)
+						for (var j = 0; j < segLen[i].Length; j++)
 							string_Renamed += (segLen[i][j] + " ");
 						string_Renamed += "}";
 					}

@@ -7,27 +7,26 @@
 /// ***************************************************************************
 /// </summary>
 
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> This exception is thrown when an image contains no icc profile.
 	/// is incorrect.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.ICCProfile" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	internal class ICCProfileNotFoundException:ICCProfileException
+	public class ICCProfileNotFoundException:ICCProfileException
 	{
 		
 		/// <summary> Contruct with message</summary>
 		/// <param name="msg">returned by getMessage()
 		/// </param>
-		internal ICCProfileNotFoundException(System.String msg):base(msg)
+		internal ICCProfileNotFoundException(string msg):base(msg)
 		{
 		}
 		

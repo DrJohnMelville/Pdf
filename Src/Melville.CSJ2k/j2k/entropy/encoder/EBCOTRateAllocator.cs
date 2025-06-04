@@ -41,14 +41,15 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.codestream;
+using CoreJ2K.j2k.codestream.writer;
+using CoreJ2K.j2k.encoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet.analysis;
 
-using Melville.CSJ2K.j2k.codestream.writer;
-using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.codestream;
-using Melville.CSJ2K.j2k.encoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This implements the EBCOT post compression rate allocation algorithm. This
@@ -58,7 +59,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// components, and then running the rate-allocation on the whole image at
 	/// once, for each layer.
 	/// 
-	/// <p>This implementation also provides some timing features. They can be
+	/// This implementation also provides some timing features. They can be
 	/// enabled by setting the 'DO_TIMING' constant of this class to true and
 	/// recompiling. The timing uses the 'System.currentTimeMillis()' Java API
 	/// call, which returns wall clock time, not the actual CPU time used. The
@@ -67,22 +68,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// to find the total used time (i.e. some time might be counted in several
 	/// places). When timing is disabled ('DO_TIMING' is false) there is no penalty
 	/// if the compiler performs some basic optimizations. Even if not the penalty
-	/// should be negligeable.</p>
+	/// should be negligeable.
 	/// 
 	/// </summary>
-	/// <seealso cref="PostCompRateAllocator">
-	/// </seealso>
-	/// <seealso cref="CodedCBlkDataSrcEnc">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.codestream.writer.CodestreamWriter">
-	/// 
-	/// </seealso>
-	internal class EBCOTRateAllocator:PostCompRateAllocator
+	/// <seealso cref="PostCompRateAllocator" />
+	/// <seealso cref="CodedCBlkDataSrcEnc" />
+	/// <seealso cref="j2k.codestream.writer.CodestreamWriter" />
+	public sealed class EBCOTRateAllocator:PostCompRateAllocator
 	{
-		
-		/// <summary>Whether to collect timing information or not: false. Used as a compile
-		/// time directive. 
-		/// </summary>
 
 #if DO_TIMING
 		/// <summary>The wall time for the initialization. </summary>
@@ -140,7 +133,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		
 		/// <summary>The log of 2, natural base </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'LOG2 '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly double LOG2 = System.Math.Log(2);
+		private static readonly double LOG2 = Math.Log(2);
 		
 		/// <summary>The normalization offset for the R-D summary table </summary>
 		private const int RD_SUMMARY_OFF = 24;
@@ -169,14 +162,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// truncation points that have a slope not less than
 		/// '2*(k-RD_SUMMARY_OFF)', where 'k' is the entry index.
 		/// 
-		/// <p>Therefore, the length at entry 'k' is the total number of bytes of
+		/// Therefore, the length at entry 'k' is the total number of bytes of
 		/// code-block data that would be obtained if the truncation slope was
 		/// chosen as '2*(k-RD_SUMMARY_OFF)', without counting the overhead
-		/// associated with the packet heads.</p>
+		/// associated with the packet heads.
 		/// 
-		/// <p>This summary is used to estimate the relation of the R-D slope to
+		/// This summary is used to estimate the relation of the R-D slope to
 		/// coded length, and to obtain absolute minimums on the slope given a
-		/// length. </p> 
+		/// length.  
 		/// </summary>
 		private int[] RDSlopesRates;
 		
@@ -206,9 +199,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="writer">The bit stream writer.
 		/// 
 		/// </param>
-		/// <seealso cref="ProgressionType">
-		/// 
-		/// </seealso>
+		/// <seealso cref="ProgressionType" />
 		public EBCOTRateAllocator(CodedCBlkDataSrcEnc src, LayersInfo lyrs, CodestreamWriter writer, EncoderSpecs encSpec, ParameterList pl):base(src, lyrs.TotNumLayers, writer, encSpec)
 		{
 			
@@ -239,20 +230,20 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			RDSlopesRates = new int[RD_SUMMARY_SIZE];
 			
 			//Get number of tiles, components
-			int nt = src.getNumTiles();
-			int nc = NumComps;
+			var nt = src.getNumTiles();
+			var nc = NumComps;
 			
 			//Allocate the coded code-blocks and truncation points indexes arrays
 			cblks = new CBlkRateDistStats[nt][][][][];
-			for (int i2 = 0; i2 < nt; i2++)
+			for (var i2 = 0; i2 < nt; i2++)
 			{
 				cblks[i2] = new CBlkRateDistStats[nc][][][];
 			}
 			truncIdxs = new int[nt][][][][][];
-			for (int i3 = 0; i3 < nt; i3++)
+			for (var i3 = 0; i3 < nt; i3++)
 			{
 				truncIdxs[i3] = new int[num_Layers][][][][];
-				for (int i4 = 0; i4 < num_Layers; i4++)
+				for (var i4 = 0; i4 < num_Layers; i4++)
 				{
 					truncIdxs[i3][i4] = new int[nc][][][];
 				}
@@ -277,11 +268,11 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			int xt0siz, yt0siz;
 			int xtsiz, ytsiz;
 			
-			int cb0x = src.CbULX;
-			int cb0y = src.CbULY;
+			var cb0x = src.CbULX;
+			var cb0y = src.CbULY;
 			
 			src.setTile(0, 0);
-			for (int t = 0; t < nt; t++)
+			for (var t = 0; t < nt; t++)
 			{
 				// Loop on tiles
 				nTiles = src.getNumTiles(nTiles);
@@ -301,7 +292,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
 				ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 				
-				for (int c = 0; c < nc; c++)
+				for (var c = 0; c < nc; c++)
 				{
 					// loop on components
 					
@@ -312,8 +303,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					// Initialize maximum number of precincts per resolution array
 					if (numPrec == null)
 					{
-						Coord[][][] tmpArray = new Coord[nt][][];
-						for (int i5 = 0; i5 < nt; i5++)
+						var tmpArray = new Coord[nt][][];
+						for (var i5 = 0; i5 < nt; i5++)
 						{
 							tmpArray[i5] = new Coord[nc][];
 						}
@@ -330,13 +321,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					
 					// Tile's coordinates in the image component domain
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					tcx0 = (int) System.Math.Ceiling(tx0 / (double) (xrsiz));
+					tcx0 = (int) Math.Ceiling(tx0 / (double) (xrsiz));
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					tcy0 = (int) System.Math.Ceiling(ty0 / (double) (yrsiz));
+					tcy0 = (int) Math.Ceiling(ty0 / (double) (yrsiz));
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					tcx1 = (int) System.Math.Ceiling(tx1 / (double) (xrsiz));
+					tcx1 = (int) Math.Ceiling(tx1 / (double) (xrsiz));
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					tcy1 = (int) System.Math.Ceiling(ty1 / (double) (yrsiz));
+					tcy1 = (int) Math.Ceiling(ty1 / (double) (yrsiz));
 					
 					cblks[t][c] = new CBlkRateDistStats[mrl][][];
 					
@@ -345,31 +336,31 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						truncIdxs[t][l][c] = new int[mrl][][];
 					}
 					
-					for (int r = 0; r < mrl; r++)
+					for (var r = 0; r < mrl; r++)
 					{
 						// loop on resolution levels
 						
 						// Tile's coordinates in the reduced resolution image
 						// domain
 						//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-						trx0 = (int) System.Math.Ceiling(tcx0 / (double) (1 << (mrl - 1 - r)));
+						trx0 = (int) Math.Ceiling(tcx0 / (double) (1 << (mrl - 1 - r)));
 						//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-						try0 = (int) System.Math.Ceiling(tcy0 / (double) (1 << (mrl - 1 - r)));
+						try0 = (int) Math.Ceiling(tcy0 / (double) (1 << (mrl - 1 - r)));
 						//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-						trx1 = (int) System.Math.Ceiling(tcx1 / (double) (1 << (mrl - 1 - r)));
+						trx1 = (int) Math.Ceiling(tcx1 / (double) (1 << (mrl - 1 - r)));
 						//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-						try1 = (int) System.Math.Ceiling(tcy1 / (double) (1 << (mrl - 1 - r)));
+						try1 = (int) Math.Ceiling(tcy1 / (double) (1 << (mrl - 1 - r)));
 						
 						// Calculate the maximum number of precincts for each
 						// resolution level taking into account tile specific
 						// options.
-						double twoppx = (double) encSpec.pss.getPPX(t, c, r);
-						double twoppy = (double) encSpec.pss.getPPY(t, c, r);
+						double twoppx = encSpec.pss.getPPX(t, c, r);
+						double twoppy = encSpec.pss.getPPY(t, c, r);
 						numPrec[t][c][r] = new Coord();
 						if (trx1 > trx0)
 						{
 							//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-							numPrec[t][c][r].x = (int) System.Math.Ceiling((trx1 - cb0x) / twoppx) - (int) System.Math.Floor((trx0 - cb0x) / twoppx);
+							numPrec[t][c][r].x = (int) Math.Ceiling((trx1 - cb0x) / twoppx) - (int) Math.Floor((trx0 - cb0x) / twoppx);
 						}
 						else
 						{
@@ -378,7 +369,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						if (try1 > try0)
 						{
 							//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-							numPrec[t][c][r].y = (int) System.Math.Ceiling((try1 - cb0y) / twoppy) - (int) System.Math.Floor((try0 - cb0y) / (double) twoppy);
+							numPrec[t][c][r].y = (int) Math.Ceiling((try1 - cb0y) / twoppy) - (int) Math.Floor((try0 - cb0y) / twoppy);
 						}
 						else
 						{
@@ -447,7 +438,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
             sb.Append("  final writing:  ");
             sb.Append(writeTime);
             sb.Append(" ms");
-            FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, sb.ToString());
+            FacilityManager.getMsgLogger().printmsg(CoreJ2K.j2k.util.MsgLogger_Fields.INFO, sb.ToString());
             //UPGRADE_NOTE: Call to 'super.finalize()' was removed. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1124'"
         }
 #endif
@@ -479,8 +470,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			int minlsz; // The minimum allowable number of bytes in a layer
 			int totenclength;
 			int maxpkt;
-			int numTiles = src.getNumTiles();
-			int numComps = src.NumComps;
+			var numTiles = src.getNumTiles();
+			var numComps = src.NumComps;
 			int numLvls;
 			int avgPktLen;
 #if DO_TIMING
@@ -499,21 +490,21 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// Make a rough estimation of the packet head overhead, as 2 bytes per
 			// packet in average (plus EPH / SOP) , and add that to the total
 			// encoded length
-			for (int t = 0; t < numTiles; t++)
+			for (var t = 0; t < numTiles; t++)
 			{
 				avgPktLen = 2;
 				// Add SOP length if set
-				if (((System.String) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper()))
+				if (((string) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper()))
 				{
-					avgPktLen += Melville.CSJ2K.j2k.codestream.Markers.SOP_LENGTH;
+					avgPktLen += Markers.SOP_LENGTH;
 				}
 				// Add EPH length if set
-				if (((System.String) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper()))
+				if (((string) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper()))
 				{
-					avgPktLen += Melville.CSJ2K.j2k.codestream.Markers.EPH_LENGTH;
+					avgPktLen += Markers.EPH_LENGTH;
 				}
 				
-				for (int c = 0; c < numComps; c++)
+				for (var c = 0; c < numComps; c++)
 				{
 					numLvls = src.getAnSubbandTree(t, c).resLvl + 1;
 					if (!src.precinctPartitionUsed(c, t))
@@ -527,7 +518,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						// Precinct partition is used so for each
 						// component/tile/resolution level, we get the maximum
 						// number of packets
-						for (int rl = 0; rl < numLvls; rl++)
+						for (var rl = 0; rl < numLvls; rl++)
 						{
 							maxpkt = numPrec[t][c][rl].x * numPrec[t][c][rl].y;
 							totenclength += num_Layers * avgPktLen * maxpkt;
@@ -548,7 +539,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			np = src.ImgWidth * src.ImgHeight / 8f;
 			
 			// SOT marker must be taken into account
-			for (int t = 0; t < numTiles; t++)
+			for (var t = 0; t < numTiles; t++)
 			{
 				headEnc.reset();
 				headEnc.encodeTilePartHeader(0, t);
@@ -562,9 +553,9 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			}
 			
 			minlsz = 0; // To keep compiler happy
-			for (int t = 0; t < numTiles; t++)
+			for (var t = 0; t < numTiles; t++)
 			{
-				for (int c = 0; c < numComps; c++)
+				for (var c = 0; c < numComps; c++)
 				{
 					numLvls = src.getAnSubbandTree(t, c).resLvl + 1;
 					
@@ -576,7 +567,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					else
 					{
 						// Precinct partition is used
-						for (int rl = 0; rl < numLvls; rl++)
+						for (var rl = 0; rl < numLvls; rl++)
 						{
 							maxpkt = numPrec[t][c][rl].x * numPrec[t][c][rl].y;
 							minlsz += MIN_AVG_PACKET_SZ * maxpkt;
@@ -593,7 +584,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			while (n < num_Layers - 1)
 			{
 				// At an optimized layer
-				basebytes = System.Math.Floor(lyrSpec.getTargetBitrate(i) * np);
+				basebytes = Math.Floor(lyrSpec.getTargetBitrate(i) * np);
 				if (i < lyrSpec.NOptPoints - 1)
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
@@ -607,7 +598,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					nextbytes = 1;
 				}
 				loopnlyrs = lyrSpec.getExtraLayers(i) + 1;
-				ls = System.Math.Exp(System.Math.Log((double) nextbytes / basebytes) / loopnlyrs);
+				ls = Math.Exp(Math.Log(nextbytes / basebytes) / loopnlyrs);
 				layers[n].optimize = true;
 				for (l = 0; l < loopnlyrs; l++)
 				{
@@ -641,7 +632,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				{
 					if (newbytes <= 0)
 					{
-						throw new System.ArgumentException("Overall target bitrate too " + "low, given the current " + "bit stream header overhead");
+						throw new ArgumentException("Overall target bitrate too low, given the current bit stream header overhead");
 					}
 					break;
 				}
@@ -658,36 +649,37 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// Re-initialize progression order changes if needed Default values
             Progression[] prog1; // prog2 removed
 			prog1 = (Progression[]) encSpec.pocs.getDefault();
-			int nValidProg = prog1.Length;
-			for (int prg = 0; prg < prog1.Length; prg++)
+			var nValidProg = prog1.Length;
+			foreach (var prg in prog1)
 			{
-				if (prog1[prg].lye > num_Layers)
+				if (prg.lye > num_Layers)
 				{
-					prog1[prg].lye = num_Layers;
+					prg.lye = num_Layers;
 				}
 			}
 			if (nValidProg == 0)
 			{
-				throw new System.InvalidOperationException("Unable to initialize rate allocator: No " + "default progression type has been defined.");
+				throw new InvalidOperationException("Unable to initialize rate allocator: No " + "default progression type has been defined.");
 			}
 			
 			// Tile specific values
-			for (int t = 0; t < numTiles; t++)
+			for (var t = 0; t < numTiles; t++)
 			{
 				if (encSpec.pocs.isTileSpecified(t))
 				{
 					prog1 = (Progression[]) encSpec.pocs.getTileDef(t);
 					nValidProg = prog1.Length;
-					for (int prg = 0; prg < prog1.Length; prg++)
+					foreach (var prg in prog1)
 					{
-						if (prog1[prg].lye > num_Layers)
+						if (prg.lye > num_Layers)
 						{
-							prog1[prg].lye = num_Layers;
+							prg.lye = num_Layers;
 						}
 					}
 					if (nValidProg == 0)
 					{
-						throw new System.InvalidOperationException("Unable to initialize rate allocator:" + " No default progression type has been " + "defined for tile " + t);
+						throw new InvalidOperationException(
+							$"Unable to initialize rate allocator: No default progression type has been defined for tile {t}");
 					}
 				}
 			} // End loop on tiles
@@ -702,7 +694,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// a 5D array according to the component, the resolution level, the tile,
 		/// the subband it belongs and its position in the subband.
 		/// 
-		/// <P> For each code-block, the valid slopes are computed and converted
+		///  For each code-block, the valid slopes are computed and converted
 		/// into the mantissa-exponent representation.
 		/// 
 		/// </summary>
@@ -721,14 +713,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			long stime = 0L;
 #endif
 			maxSlope = 0f;
-			minSlope = System.Single.MaxValue;
+			minSlope = float.MaxValue;
 			
 			//Get the number of components and tiles
 			numComps = src.NumComps;
 			numTiles = src.getNumTiles();
 			
 			SubbandAn root, sb;
-			int cblkToEncode = 0;
+			var cblkToEncode = 0;
 			
 			//Get all coded code-blocks Goto first tile
 			src.setTile(0, 0);
@@ -827,7 +819,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// </summary>
 		private void  buildAndWriteLayers()
 		{
-			int nPrec = 0;
+			var nPrec = 0;
 			int maxBytes, actualBytes;
 			float rdThreshold;
 			SubbandAn sb;
@@ -838,8 +830,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			int tmp;
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
-			int nt = src.getNumTiles();
+			var nc = src.NumComps;
+			var nt = src.getNumTiles();
 			int mrl;
 #if DO_TIMING			
 			long stime = 0L;
@@ -856,7 +848,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// |  First we build the layers   |
 			// +------------------------------+
 			// Bitstream is simulated to know tile length
-			for (int l = 0; l < num_Layers; l++)
+			for (var l = 0; l < num_Layers; l++)
 			{
 				//loop on layers
 				
@@ -869,12 +861,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				{
 					if (l <= 0 || l >= num_Layers - 1)
 					{
-						throw new System.ArgumentException("The first and the" + " last layer " + "thresholds" + " must be optimized");
+						throw new ArgumentException("The first and the" + " last layer " + "thresholds" + " must be optimized");
 					}
 					rdThreshold = estimateLayerThreshold(maxBytes, layers[l - 1]);
 				}
 				
-				for (int t = 0; t < nt; t++)
+				for (var t = 0; t < nt; t++)
 				{
 					//loop on tiles
 					if (l == 0)
@@ -885,14 +877,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 						tileLengths[t] += headEnc.Length;
 					}
 					
-					for (int c = 0; c < nc; c++)
+					for (var c = 0; c < nc; c++)
 					{
 						//loop on components
 						
 						// set boolean sopUsed here (SOP markers)
-						sopUsed = ((System.String) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper());
+						sopUsed = ((string) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper());
 						// set boolean ephUsed here (EPH markers)
-						ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper());
+						ephUsed = ((string) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper());
 						
 						// Go to LL band
 						sb = src.getAnSubbandTree(t, c);
@@ -903,12 +895,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 							sb = sb.subb_LL;
 						}
 						
-						for (int r = 0; r < mrl; r++)
+						for (var r = 0; r < mrl; r++)
 						{
 							// loop on resolution levels
 							
 							nPrec = numPrec[t][c][r].x * numPrec[t][c][r].y;
-							for (int p = 0; p < nPrec; p++)
+							for (var p = 0; p < nPrec; p++)
 							{
 								// loop on precincts
 								
@@ -943,14 +935,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			Progression[] prog; // Progression(s) in each tile
 			int cs, ce, rs, re, lye;
 			
-			int[] mrlc = new int[nc];
-			for (int t = 0; t < nt; t++)
+			var mrlc = new int[nc];
+			for (var t = 0; t < nt; t++)
 			{
 				//loop on tiles
 				//int[][] lysA; // layer index start for each component and
 				// resolution level
-				int[][] lys = new int[nc][];
-				for (int c = 0; c < nc; c++)
+				var lys = new int[nc][];
+				for (var c = 0; c < nc; c++)
 				{
 					mrlc[c] = src.getAnSubbandTree(t, c).resLvl;
 					lys[c] = new int[mrlc[c] + 1];
@@ -962,52 +954,52 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				bsWriter.commitBitstreamHeader(headEnc);
 				prog = (Progression[]) encSpec.pocs.getTileDef(t);
 				
-				for (int prg = 0; prg < prog.Length; prg++)
+				foreach (var p in prog)
 				{
 					// Loop on progression
-					lye = prog[prg].lye;
-					cs = prog[prg].cs;
-					ce = prog[prg].ce;
-					rs = prog[prg].rs;
-					re = prog[prg].re;
+					lye = p.lye;
+					cs = p.cs;
+					ce = p.ce;
+					rs = p.rs;
+					re = p.re;
 					
-					switch (prog[prg].type)
+					switch (p.type)
 					{
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_LY_COMP_POS_PROG: 
+						case ProgressionType.RES_LY_COMP_POS_PROG: 
 							writeResLyCompPos(t, rs, re, cs, ce, lys, lye);
 							break;
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.LY_RES_COMP_POS_PROG: 
+						case ProgressionType.LY_RES_COMP_POS_PROG: 
 							writeLyResCompPos(t, rs, re, cs, ce, lys, lye);
 							break;
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.POS_COMP_RES_LY_PROG: 
+						case ProgressionType.POS_COMP_RES_LY_PROG: 
 							writePosCompResLy(t, rs, re, cs, ce, lys, lye);
 							break;
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.COMP_POS_RES_LY_PROG: 
+						case ProgressionType.COMP_POS_RES_LY_PROG: 
 							writeCompPosResLy(t, rs, re, cs, ce, lys, lye);
 							break;
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_POS_COMP_LY_PROG: 
+						case ProgressionType.RES_POS_COMP_LY_PROG: 
 							writeResPosCompLy(t, rs, re, cs, ce, lys, lye);
 							break;
 						
 						default: 
-							throw new System.InvalidOperationException("Unsupported bit stream progression type");
+							throw new InvalidOperationException("Unsupported bit stream progression type");
 						
 					} // switch on progression
 					
 					// Update next first layer index 
-					for (int c = cs; c < ce; c++)
-						for (int r = rs; r < re; r++)
-						{
-							if (r > mrlc[c])
-								continue;
-							lys[c][r] = lye;
-						}
-				} // End loop on progression
+					for (var c = cs; c < ce; c++)
+					for (var r = rs; r < re; r++)
+					{
+						if (r > mrlc[c])
+							continue;
+						lys[c][r] = lye;
+					}
+				}
 			} // End loop on tiles
 			
 #if DO_TIMING
@@ -1040,22 +1032,22 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="lye">Index of the last layer.
 		/// 
 		/// </param>
-		public virtual void  writeResLyCompPos(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
+		public void  writeResLyCompPos(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
 		{
 			
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
-			int[] mrl = new int[nc];
+			var nc = src.NumComps;
+			var mrl = new int[nc];
 			SubbandAn sb;
 			float threshold;
 			BitOutputBuffer hBuff = null;
 			byte[] bBuff = null;
-			int nPrec = 0;
+			var nPrec = 0;
 			
 			// Max number of resolution levels in the tile
-			int maxResLvl = 0;
-			for (int c = 0; c < nc; c++)
+			var maxResLvl = 0;
+			for (var c = 0; c < nc; c++)
 			{
 				mrl[c] = src.getAnSubbandTree(t, c).resLvl;
 				if (mrl[c] > maxResLvl)
@@ -1064,14 +1056,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			
 			int minlys; // minimum layer start index of each component
 			
-			for (int r = rs; r < re; r++)
+			for (var r = rs; r < re; r++)
 			{
 				//loop on resolution levels
 				if (r > maxResLvl)
 					continue;
 				
 				minlys = 100000;
-				for (int c = cs; c < ce; c++)
+				for (var c = cs; c < ce; c++)
 				{
 					if (r < lys[c].Length && lys[c][r] < minlys)
 					{
@@ -1079,10 +1071,10 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 					}
 				}
 				
-				for (int l = minlys; l < lye; l++)
+				for (var l = minlys; l < lye; l++)
 				{
 					//loop on layers
-					for (int c = cs; c < ce; c++)
+					for (var c = cs; c < ce; c++)
 					{
 						//loop on components
 						if (r >= lys[c].Length)
@@ -1095,17 +1087,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 							continue;
 						
 						nPrec = numPrec[t][c][r].x * numPrec[t][c][r].y;
-						for (int p = 0; p < nPrec; p++)
+						for (var p = 0; p < nPrec; p++)
 						{
 							// loop on precincts
 							
 							// set boolean sopUsed here (SOP markers)
-							sopUsed = ((System.String) encSpec.sops.getTileDef(t)).Equals("on");
+							sopUsed = ((string) encSpec.sops.getTileDef(t)).Equals("on");
 							// set boolean ephUsed here (EPH markers)
-							ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).Equals("on");
+							ephUsed = ((string) encSpec.ephs.getTileDef(t)).Equals("on");
 							
 							sb = src.getAnSubbandTree(t, c);
-							for (int i = mrl[c]; i > r; i--)
+							for (var i = mrl[c]; i > r; i--)
 							{
 								sb = sb.subb_LL;
 							}
@@ -1151,23 +1143,23 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="lye">Index of the last layer.
 		/// 
 		/// </param>
-		public virtual void  writeLyResCompPos(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
+		public void  writeLyResCompPos(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
 		{
 			
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
+			var nc = src.NumComps;
 			int mrl;
 			SubbandAn sb;
 			float threshold;
 			BitOutputBuffer hBuff = null;
 			byte[] bBuff = null;
-			int nPrec = 0;
+			var nPrec = 0;
 			
-			int minlys = 100000; // minimum layer start index of each component
-			for (int c = cs; c < ce; c++)
+			var minlys = 100000; // minimum layer start index of each component
+			for (var c = cs; c < ce; c++)
 			{
-				for (int r = 0; r < lys.Length; r++)
+				for (var r = 0; r < lys.Length; r++)
 				{
 					if (lys[c] != null && r < lys[c].Length && lys[c][r] < minlys)
 					{
@@ -1176,13 +1168,13 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				}
 			}
 			
-			for (int l = minlys; l < lye; l++)
+			for (var l = minlys; l < lye; l++)
 			{
 				// loop on layers
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					// loop on resolution level
-					for (int c = cs; c < ce; c++)
+					for (var c = cs; c < ce; c++)
 					{
 						// loop on components
 						mrl = src.getAnSubbandTree(t, c).resLvl;
@@ -1194,17 +1186,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 							continue;
 						
 						nPrec = numPrec[t][c][r].x * numPrec[t][c][r].y;
-						for (int p = 0; p < nPrec; p++)
+						for (var p = 0; p < nPrec; p++)
 						{
 							// loop on precincts
 							
 							// set boolean sopUsed here (SOP markers)
-							sopUsed = ((System.String) encSpec.sops.getTileDef(t)).Equals("on");
+							sopUsed = ((string) encSpec.sops.getTileDef(t)).Equals("on");
 							// set boolean ephUsed here (EPH markers)
-							ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).Equals("on");
+							ephUsed = ((string) encSpec.ephs.getTileDef(t)).Equals("on");
 							
 							sb = src.getAnSubbandTree(t, c);
-							for (int i = mrl; i > r; i--)
+							for (var i = mrl; i > r; i--)
 							{
 								sb = sb.subb_LL;
 							}
@@ -1250,12 +1242,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="lye">Index of the last layer.
 		/// 
 		/// </param>
-		public virtual void  writePosCompResLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
+		public void  writePosCompResLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
 		{
 			
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
+			var nc = src.NumComps;
 			int mrl;
 			SubbandAn sb;
 			float threshold;
@@ -1263,43 +1255,43 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			byte[] bBuff = null;
 			
 			// Computes current tile offset in the reference grid
-			Coord nTiles = src.getNumTiles(null);
-			Coord tileI = src.getTile(null);
-			int x0siz = src.ImgULX;
-			int y0siz = src.ImgULY;
-			int xsiz = x0siz + src.ImgWidth;
-			int ysiz = y0siz + src.ImgHeight;
-			int xt0siz = src.TilePartULX;
-			int yt0siz = src.TilePartULY;
-			int xtsiz = src.NomTileWidth;
-			int ytsiz = src.NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = src.getNumTiles(null);
+			var tileI = src.getTile(null);
+			var x0siz = src.ImgULX;
+			var y0siz = src.ImgULY;
+			var xsiz = x0siz + src.ImgWidth;
+			var ysiz = y0siz + src.ImgHeight;
+			var xt0siz = src.TilePartULX;
+			var yt0siz = src.TilePartULY;
+			var xtsiz = src.NomTileWidth;
+			var ytsiz = src.NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[ce][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[ce][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
-			for (int c = cs; c < ce; c++)
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
 				nextPrec[c] = new int[mrl + 1];
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
@@ -1343,24 +1335,24 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
-			int y = ty0;
-			int x = tx0;
-			for (int py = 0; py <= pyend; py++)
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
+			var y = ty0;
+			var x = tx0;
+			for (var py = 0; py <= pyend; py++)
 			{
 				// Vertical precincts
-				for (int px = 0; px <= pxend; px++)
+				for (var px = 0; px <= pxend; px++)
 				{
 					// Horiz. precincts
-					for (int c = cs; c < ce; c++)
+					for (var c = cs; c < ce; c++)
 					{
 						// Components
 						mrl = src.getAnSubbandTree(t, c).resLvl;
-						for (int r = rs; r < re; r++)
+						for (var r = rs; r < re; r++)
 						{
 							// Resolution levels
 							if (r > mrl)
@@ -1374,7 +1366,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 							{
 								continue;
 							}
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								// Layers
 								if (r >= lys[c].Length)
@@ -1383,12 +1375,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 									continue;
 								
 								// set boolean sopUsed here (SOP markers)
-								sopUsed = ((System.String) encSpec.sops.getTileDef(t)).Equals("on");
+								sopUsed = ((string) encSpec.sops.getTileDef(t)).Equals("on");
 								// set boolean ephUsed here (EPH markers)
-								ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).Equals("on");
+								ephUsed = ((string) encSpec.ephs.getTileDef(t)).Equals("on");
 								
 								sb = src.getAnSubbandTree(t, c);
-								for (int i = mrl; i > r; i--)
+								for (var i = mrl; i > r; i--)
 								{
 									sb = sb.subb_LL;
 								}
@@ -1427,16 +1419,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			} // Vertical precincts
 			
 			// Check that all precincts have been written
-			for (int c = cs; c < ce; c++)
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
 					if (nextPrec[c][r] < numPrec[t][c][r].x * numPrec[t][c][r].y - 1)
 					{
-						throw new System.InvalidOperationException("JJ2000 bug: One precinct at least has " + "not been written for resolution level " + r + " of component " + c + " in tile " + t + ".");
+						throw new InvalidOperationException(
+							$"JJ2000 bug: One precinct at least has not been written for resolution level {r} of component {c} in tile {t}.");
 					}
 				}
 			}
@@ -1467,12 +1460,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="lye">Index of the last layer.
 		/// 
 		/// </param>
-		public virtual void  writeCompPosResLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
+		public void  writeCompPosResLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
 		{
 			
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
+			var nc = src.NumComps;
 			int mrl;
 			SubbandAn sb;
 			float threshold;
@@ -1480,42 +1473,42 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			byte[] bBuff = null;
 			
 			// Computes current tile offset in the reference grid
-			Coord nTiles = src.getNumTiles(null);
-			Coord tileI = src.getTile(null);
-			int x0siz = src.ImgULX;
-			int y0siz = src.ImgULY;
-			int xsiz = x0siz + src.ImgWidth;
-			int ysiz = y0siz + src.ImgHeight;
-			int xt0siz = src.TilePartULX;
-			int yt0siz = src.TilePartULY;
-			int xtsiz = src.NomTileWidth;
-			int ytsiz = src.NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = src.getNumTiles(null);
+			var tileI = src.getTile(null);
+			var x0siz = src.ImgULX;
+			var y0siz = src.ImgULY;
+			var xsiz = x0siz + src.ImgWidth;
+			var ysiz = y0siz + src.ImgHeight;
+			var xt0siz = src.TilePartULX;
+			var yt0siz = src.TilePartULY;
+			var xtsiz = src.NomTileWidth;
+			var ytsiz = src.NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[ce][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[ce][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
-			for (int c = cs; c < ce; c++)
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
@@ -1560,26 +1553,26 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
 			int y;
 			int x;
-			for (int c = cs; c < ce; c++)
+			for (var c = cs; c < ce; c++)
 			{
 				// Loop on components
 				y = ty0;
 				x = tx0;
 				mrl = src.getAnSubbandTree(t, c).resLvl;
-				for (int py = 0; py <= pyend; py++)
+				for (var py = 0; py <= pyend; py++)
 				{
 					// Vertical precincts
-					for (int px = 0; px <= pxend; px++)
+					for (var px = 0; px <= pxend; px++)
 					{
 						// Horiz. precincts
-						for (int r = rs; r < re; r++)
+						for (var r = rs; r < re; r++)
 						{
 							// Resolution levels
 							if (r > mrl)
@@ -1594,7 +1587,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 								continue;
 							}
 							
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								// Layers
 								if (r >= lys[c].Length)
@@ -1603,12 +1596,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 									continue;
 								
 								// set boolean sopUsed here (SOP markers)
-								sopUsed = ((System.String) encSpec.sops.getTileDef(t)).Equals("on");
+								sopUsed = ((string) encSpec.sops.getTileDef(t)).Equals("on");
 								// set boolean ephUsed here (EPH markers)
-								ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).Equals("on");
+								ephUsed = ((string) encSpec.ephs.getTileDef(t)).Equals("on");
 								
 								sb = src.getAnSubbandTree(t, c);
-								for (int i = mrl; i > r; i--)
+								for (var i = mrl; i > r; i--)
 								{
 									sb = sb.subb_LL;
 								}
@@ -1647,16 +1640,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			} // components
 			
 			// Check that all precincts have been written
-			for (int c = cs; c < ce; c++)
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
 					if (nextPrec[c][r] < numPrec[t][c][r].x * numPrec[t][c][r].y - 1)
 					{
-						throw new System.InvalidOperationException("JJ2000 bug: One precinct at least has " + "not been written for resolution level " + r + " of component " + c + " in tile " + t + ".");
+						throw new InvalidOperationException(
+							$"JJ2000 bug: One precinct at least has not been written for resolution level {r} of component {c} in tile {t}.");
 					}
 				}
 			}
@@ -1687,12 +1681,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// <param name="lye">Last layer index.
 		/// 
 		/// </param>
-		public virtual void  writeResPosCompLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
+		public void  writeResPosCompLy(int t, int rs, int re, int cs, int ce, int[][] lys, int lye)
 		{
 			
 			bool sopUsed; // Should SOP markers be used ?
 			bool ephUsed; // Should EPH markers be used ?
-			int nc = src.NumComps;
+			var nc = src.NumComps;
 			int mrl;
 			SubbandAn sb;
 			float threshold;
@@ -1700,43 +1694,43 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			byte[] bBuff = null;
 			
 			// Computes current tile offset in the reference grid
-			Coord nTiles = src.getNumTiles(null);
-			Coord tileI = src.getTile(null);
-			int x0siz = src.ImgULX;
-			int y0siz = src.ImgULY;
-			int xsiz = x0siz + src.ImgWidth;
-			int ysiz = y0siz + src.ImgHeight;
-			int xt0siz = src.TilePartULX;
-			int yt0siz = src.TilePartULY;
-			int xtsiz = src.NomTileWidth;
-			int ytsiz = src.NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = src.getNumTiles(null);
+			var tileI = src.getTile(null);
+			var x0siz = src.ImgULX;
+			var y0siz = src.ImgULY;
+			var xsiz = x0siz + src.ImgWidth;
+			var ysiz = y0siz + src.ImgHeight;
+			var xt0siz = src.TilePartULX;
+			var yt0siz = src.TilePartULY;
+			var xtsiz = src.NomTileWidth;
+			var ytsiz = src.NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[ce][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[ce][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
-			for (int c = cs; c < ce; c++)
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
 				nextPrec[c] = new int[mrl + 1];
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
@@ -1780,24 +1774,24 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
 			int x, y;
-			for (int r = rs; r < re; r++)
+			for (var r = rs; r < re; r++)
 			{
 				// Resolution levels
 				y = ty0;
 				x = tx0;
-				for (int py = 0; py <= pyend; py++)
+				for (var py = 0; py <= pyend; py++)
 				{
 					// Vertical precincts
-					for (int px = 0; px <= pxend; px++)
+					for (var px = 0; px <= pxend; px++)
 					{
 						// Horiz. precincts
-						for (int c = cs; c < ce; c++)
+						for (var c = cs; c < ce; c++)
 						{
 							// Components
 							mrl = src.getAnSubbandTree(t, c).resLvl;
@@ -1812,7 +1806,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 							{
 								continue;
 							}
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								if (r >= lys[c].Length)
 									continue;
@@ -1820,12 +1814,12 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 									continue;
 								
 								// set boolean sopUsed here (SOP markers)
-								sopUsed = ((System.String) encSpec.sops.getTileDef(t)).Equals("on");
+								sopUsed = ((string) encSpec.sops.getTileDef(t)).Equals("on");
 								// set boolean ephUsed here (EPH markers)
-								ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).Equals("on");
+								ephUsed = ((string) encSpec.ephs.getTileDef(t)).Equals("on");
 								
 								sb = src.getAnSubbandTree(t, c);
-								for (int i = mrl; i > r; i--)
+								for (var i = mrl; i > r; i--)
 								{
 									sb = sb.subb_LL;
 								}
@@ -1864,16 +1858,17 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			} // Resolution levels
 			
 			// Check that all precincts have been written
-			for (int c = cs; c < ce; c++)
+			for (var c = cs; c < ce; c++)
 			{
 				mrl = src.getAnSubbandTree(t, c).resLvl;
-				for (int r = rs; r < re; r++)
+				for (var r = rs; r < re; r++)
 				{
 					if (r > mrl)
 						continue;
 					if (nextPrec[c][r] < numPrec[t][c][r].x * numPrec[t][c][r].y - 1)
 					{
-						throw new System.InvalidOperationException("JJ2000 bug: One precinct at least has " + "not been written for resolution level " + r + " of component " + c + " in tile " + t + ".");
+						throw new InvalidOperationException(
+							$"JJ2000 bug: One precinct at least has not been written for resolution level {r} of component {c} in tile {t}.");
 					}
 				}
 			}
@@ -1987,25 +1982,25 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				actualBytes = prevBytes;
 				src.setTile(0, 0);
 				
-				for (int t = 0; t < nt; t++)
+				for (var t = 0; t < nt; t++)
 				{
-					for (int c = 0; c < nc; c++)
+					for (var c = 0; c < nc; c++)
 					{
 						// set boolean sopUsed here (SOP markers)
-						sopUsed = ((System.String) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper());
+						sopUsed = ((string) encSpec.sops.getTileDef(t)).ToUpper().Equals("on".ToUpper());
 						// set boolean ephUsed here (EPH markers)
-						ephUsed = ((System.String) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper());
+						ephUsed = ((string) encSpec.ephs.getTileDef(t)).ToUpper().Equals("on".ToUpper());
 						
 						// Get LL subband
-						sb = (SubbandAn) src.getAnSubbandTree(t, c);
+						sb = src.getAnSubbandTree(t, c);
 						numLvls = sb.resLvl + 1;
 						sb = (SubbandAn) sb.getSubbandByIdx(0, 0);
 						//loop on resolution levels
-						for (int r = 0; r < numLvls; r++)
+						for (var r = 0; r < numLvls; r++)
 						{
 							
 							nPrec = numPrec[t][c][r].x * numPrec[t][c][r].y;
-							for (int p = 0; p < nPrec; p++)
+							for (var p = 0; p < nPrec; p++)
 							{
 								
 								findTruncIndices(layerIdx, c, r, t, sb, ft, p);
@@ -2061,16 +2056,10 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// everything is taken into the layer. This is to avoid not sending
 			// some least significant bit-planes in the lossless case. We use the
 			// FLOAT_ABS_PRECISION value as a measure of "close" to 0.
-			if (ft <= FLOAT_ABS_PRECISION)
-			{
-				ft = 0f;
-			}
-			else
-			{
+			ft = ft <= FLOAT_ABS_PRECISION ? 0f :
 				// Otherwise make the threshold 'fmaxt', just to be sure that we
 				// will not send more bytes than allowed.
-				ft = fmaxt;
-			}
+				fmaxt;
 			return ft;
 		}
 		
@@ -2143,29 +2132,29 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				// RDSlopesRates[sidx]+1 bytes to the rates (just a crude simple
 				// solution to this rare case)
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len1 = (float) System.Math.Log((RDSlopesRates[sidx] << 1) + 1);
+				log_len1 = (float) Math.Log((RDSlopesRates[sidx] << 1) + 1);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len2 = (float) System.Math.Log(RDSlopesRates[sidx] + 1);
+				log_len2 = (float) Math.Log(RDSlopesRates[sidx] + 1);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_ab = (float) System.Math.Log(lastLayer.actualBytes + RDSlopesRates[sidx] + 1);
+				log_ab = (float) Math.Log(lastLayer.actualBytes + RDSlopesRates[sidx] + 1);
 			}
 			else
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len1 = (float) System.Math.Log(RDSlopesRates[sidx]);
+				log_len1 = (float) Math.Log(RDSlopesRates[sidx]);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len2 = (float) System.Math.Log(RDSlopesRates[sidx + 1]);
+				log_len2 = (float) Math.Log(RDSlopesRates[sidx + 1]);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_ab = (float) System.Math.Log(lastLayer.actualBytes);
+				log_ab = (float) Math.Log(lastLayer.actualBytes);
 			}
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			log_sl1 = (float) System.Math.Log(getSlopeFromSIndex(sidx));
+			log_sl1 = (float) Math.Log(getSlopeFromSIndex(sidx));
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			log_sl2 = (float) System.Math.Log(getSlopeFromSIndex(sidx + 1));
+			log_sl2 = (float) Math.Log(getSlopeFromSIndex(sidx + 1));
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			log_isl = (float) System.Math.Log(lthresh);
+			log_isl = (float) Math.Log(lthresh);
 			
 			log_ilen = log_len1 + (log_isl - log_sl1) * (log_len1 - log_len2) / (log_sl1 - log_sl2);
 			
@@ -2180,7 +2169,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			// 2) Correct the target layer length by the offset.
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			tlen = (int) (targetBytes / (float) System.Math.Exp(log_off));
+			tlen = (int) (targetBytes / (float) Math.Exp(log_off));
 			
 			// 3) Find, from the summary R-D info, the thresholds that generate
 			// lengths just above and below our corrected target layer length.
@@ -2208,34 +2197,34 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 				// RDSlopesRates[sidx-1]+1 bytes to the rates (just a crude simple 
 				// solution to this rare case)
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len1 = (float) System.Math.Log(RDSlopesRates[sidx - 1] + 1);
+				log_len1 = (float) Math.Log(RDSlopesRates[sidx - 1] + 1);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len2 = (float) System.Math.Log((RDSlopesRates[sidx - 1] << 1) + 1);
+				log_len2 = (float) Math.Log((RDSlopesRates[sidx - 1] << 1) + 1);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_ilen = (float) System.Math.Log(tlen + RDSlopesRates[sidx - 1] + 1);
+				log_ilen = (float) Math.Log(tlen + RDSlopesRates[sidx - 1] + 1);
 			}
 			else
 			{
 				// Normal case, we can safely take the logs.
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len1 = (float) System.Math.Log(RDSlopesRates[sidx]);
+				log_len1 = (float) Math.Log(RDSlopesRates[sidx]);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_len2 = (float) System.Math.Log(RDSlopesRates[sidx - 1]);
+				log_len2 = (float) Math.Log(RDSlopesRates[sidx - 1]);
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				log_ilen = (float) System.Math.Log(tlen);
+				log_ilen = (float) Math.Log(tlen);
 			}
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			log_sl1 = (float) System.Math.Log(getSlopeFromSIndex(sidx));
+			log_sl1 = (float) Math.Log(getSlopeFromSIndex(sidx));
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			log_sl2 = (float) System.Math.Log(getSlopeFromSIndex(sidx - 1));
+			log_sl2 = (float) Math.Log(getSlopeFromSIndex(sidx - 1));
 			
 			// 4) Interpolate the two thresholds to find the target threshold.
 			
 			log_isl = log_sl1 + (log_ilen - log_len1) * (log_sl1 - log_sl2) / (log_len1 - log_len2);
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			eth = (float) System.Math.Exp(log_isl);
+			eth = (float) Math.Exp(log_isl);
 			
 			// Correct out of bounds results
 			if (eth > lthresh)
@@ -2279,7 +2268,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			//Coord ncblks = null;
 			SubbandAn sb;
 			CBlkRateDistStats cur_cblk;
-			PrecInfo prec = pktEnc.getPrecInfo(tileIdx, compIdx, lvlIdx, precinctIdx);
+			var prec = pktEnc.getPrecInfo(tileIdx, compIdx, lvlIdx, precinctIdx);
 			Coord cbCoord;
 			
 			sb = subb;
@@ -2293,14 +2282,14 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			int yend, xend;
 			
 			sb = (SubbandAn) subb.getSubbandByIdx(lvlIdx, minsbi);
-			for (int s = minsbi; s < maxsbi; s++)
+			for (var s = minsbi; s < maxsbi; s++)
 			{
 				//loop on subbands
 				yend = (prec.cblk[s] != null)?prec.cblk[s].Length:0;
-				for (int y = 0; y < yend; y++)
+				for (var y = 0; y < yend; y++)
 				{
 					xend = (prec.cblk[s][y] != null)?prec.cblk[s][y].Length:0;
-					for (int x = 0; x < xend; x++)
+					for (var x = 0; x < xend; x++)
 					{
 						cbCoord = prec.cblk[s][y][x].idx;
 						b = cbCoord.x + cbCoord.y * sb.numCb.x;
@@ -2332,8 +2321,8 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		/// maximum exponent, base 2, that yields a value not larger than the slope
 		/// itself.
 		/// 
-		/// <p>If the value to return is lower than 0, 0 is returned. If it is
-		/// larger than the maximum table index, then the maximum is returned.</p>
+		/// If the value to return is lower than 0, 0 is returned. If it is
+		/// larger than the maximum table index, then the maximum is returned.
 		/// 
 		/// </summary>
 		/// <param name="slope">The slope value
@@ -2347,7 +2336,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			int idx;
 			
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			idx = (int) System.Math.Floor(System.Math.Log(slope) / LOG2) + RD_SUMMARY_OFF;
+			idx = (int) Math.Floor(Math.Log(slope) / LOG2) + RD_SUMMARY_OFF;
 			
 			if (idx < 0)
 			{
@@ -2376,7 +2365,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		private static float getSlopeFromSIndex(int index)
 		{
 			//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-			return (float) System.Math.Pow(2, (index - RD_SUMMARY_OFF));
+			return (float) Math.Pow(2, (index - RD_SUMMARY_OFF));
 		}
 	}
 }

@@ -7,10 +7,10 @@
 /// ***************************************************************************
 /// </summary>
 
-using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
-using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
+using Color_ColorSpace = CoreJ2K.Color.ColorSpace;
+using ColorSpaceException = CoreJ2K.Color.ColorSpaceException;
 
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
 	
 	/// <summary> The monochrome ICCProfile.
@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class ICCMonochromeInputProfile:ICCProfile
+	public class ICCMonochromeInputProfile:ICCProfile
 	{
 		
 		/// <summary> Return the ICCProfile embedded in the input image</summary>
@@ -32,7 +32,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="">
 		/// </exception>
-		public static ICCMonochromeInputProfile createInstance(ColorSpace csm)
+		public static ICCMonochromeInputProfile createInstance(Color_ColorSpace csm)
 		{
 			return new ICCMonochromeInputProfile(csm);
 		}
@@ -46,7 +46,7 @@ namespace Melville.CSJ2K.Icc
 		/// </exception>
 		/// <exception cref="ICCProfileInvalidException">
 		/// </exception>
-		protected internal ICCMonochromeInputProfile(ColorSpace csm):base(csm)
+		protected internal ICCMonochromeInputProfile(Color_ColorSpace csm):base(csm)
 		{
 		}
 		

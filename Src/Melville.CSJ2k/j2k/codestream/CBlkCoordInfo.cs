@@ -41,14 +41,15 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.codestream
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> This class is used to store the coordinates of code-blocks.
 	/// 
 	/// </summary>
-	internal class CBlkCoordInfo:CoordInfo
+	public class CBlkCoordInfo:CoordInfo
 	{
 		
 		/// <summary>The code-block horizontal and vertical indexes </summary>
@@ -59,7 +60,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// </summary>
 		public CBlkCoordInfo()
 		{
-			this.idx = new Coord();
+			idx = new Coord();
 		}
 		
 		/// <summary> Constructor. Creates a CBlkCoordInfo object width specified code-block
@@ -74,7 +75,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// </param>
 		public CBlkCoordInfo(int m, int n)
 		{
-			this.idx = new Coord(n, m);
+			idx = new Coord(n, m);
 		}
 		
 		/// <summary> Returns code-block's information in a String 
@@ -83,9 +84,9 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <returns> String with code-block's information
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return base.ToString() + ",idx=" + idx;
+			return $"{base.ToString()},idx={idx}";
 		}
 	}
 }

@@ -6,12 +6,13 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
 
-using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
-using ICCXYZType = Melville.CSJ2K.Icc.Tags.ICCXYZType;
-namespace Melville.CSJ2K.Icc
+namespace CoreJ2K.Icc
 {
-	
+	using ICCCurveType = Tags.ICCCurveType;
+	using ICCXYZType = Tags.ICCXYZType;
+
 	/// <summary> This class is a 3 component RestrictedICCProfile
 	/// 
 	/// </summary>
@@ -19,20 +20,13 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A Kern
 	/// </author>
-	internal class MatrixBasedRestrictedProfile:RestrictedICCProfile
+	public class MatrixBasedRestrictedProfile:RestrictedICCProfile
 	{
 		/// <summary> Get the type of RestrictedICCProfile for this object</summary>
 		/// <returns> kThreeCompInput
 		/// </returns>
-		override public int Type
-		{
-			get
-			{
-				return kThreeCompInput;
-			}
-			
-		}
-		
+		public override int Type => kThreeCompInput;
+
 		/// <summary> Factory method which returns a 3 component RestrictedICCProfile</summary>
 		/// <param name="rcurve">Red TRC curve
 		/// </param>
@@ -48,7 +42,7 @@ namespace Melville.CSJ2K.Icc
 		/// </param>
 		/// <returns> the RestrictedICCProfile
 		/// </returns>
-		public static new RestrictedICCProfile createInstance(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant)
+		public new static RestrictedICCProfile createInstance(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant)
 		{
 			return new MatrixBasedRestrictedProfile(rcurve, gcurve, bcurve, rcolorant, gcolorant, bcolorant);
 		}
@@ -68,6 +62,23 @@ namespace Melville.CSJ2K.Icc
 		/// </param>
 		protected internal MatrixBasedRestrictedProfile(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant):base(rcurve, gcurve, bcurve, rcolorant, gcolorant, bcolorant)
 		{
+		}
+		
+		/// <returns> String representation of a MatrixBasedRestrictedProfile
+		/// </returns>
+		public override string ToString()
+		{
+			var rep = new System.Text.StringBuilder("[Matrix-Based Input Restricted ICC profile").Append(Environment.NewLine);
+			
+			rep.Append("trc[RED]:").Append(Environment.NewLine).Append(trc[RED]).Append(Environment.NewLine);
+			rep.Append("trc[RED]:").Append(Environment.NewLine).Append(trc[GREEN]).Append(Environment.NewLine);
+			rep.Append("trc[RED]:").Append(Environment.NewLine).Append(trc[BLUE]).Append(Environment.NewLine);
+			
+			rep.Append("Red colorant:  ").Append(colorant[RED]).Append(Environment.NewLine);
+			rep.Append("Red colorant:  ").Append(colorant[GREEN]).Append(Environment.NewLine);
+			rep.Append("Red colorant:  ").Append(colorant[BLUE]).Append(Environment.NewLine);
+			
+			return rep.Append("]").ToString();
 		}
 		
 		/* end class MatrixBasedRestrictedProfile */

@@ -42,17 +42,20 @@
 * */
 using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.quantization.dequantizer;
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.entropy.decoder;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.roi;
-using Melville.CSJ2K.j2k.io;
-using Melville.CSJ2K.Color;
-using Melville.CSJ2K.Icc;
-namespace Melville.CSJ2K.j2k.codestream.reader
+using CoreJ2K.Color;
+using CoreJ2K.Icc;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.entropy;
+using CoreJ2K.j2k.entropy.decoder;
+using CoreJ2K.j2k.image;
+using CoreJ2K.j2k.io;
+using CoreJ2K.j2k.quantization.dequantizer;
+using CoreJ2K.j2k.roi;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet;
+using CoreJ2K.j2k.wavelet.synthesis;
+
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class reads main and tile-part headers from the codestream given a
@@ -60,7 +63,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// just before the SOC marker) or at the beginning of a tile-part (i.e. just
 	/// before a SOT marker segment) respectively.
 	/// 
-	/// <p>A marker segment includes a marker and eventually marker segment
+	/// A marker segment includes a marker and eventually marker segment
 	/// parameters. It is designed by the three letters code of the marker
 	/// associated with the marker segment. JPEG 2000 part 1 defines 6 types of
 	/// markers segments:
@@ -77,9 +80,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// <li> Pointer: TLM, PLM, PLT, PPM, PPT.</li>
 	/// 
 	/// <li> Informational: CRG, COM.</li>
-	/// </ul></p>
+	/// </ul>
 	/// 
-	/// <p>The main header is read when the constructor is called whereas tile-part
+	/// The main header is read when the constructor is called whereas tile-part
 	/// headers are read when the FileBitstreamReaderAgent instance is created. The
 	/// reading is done in 2 passes:
 	/// 
@@ -90,25 +93,20 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// <li>Buffered marker segment are analyzed in a logical way and
 	/// specifications are stored in appropriate member of DecoderSpecs instance
 	/// (readFoundMainMarkSeg and readFoundTilePartMarkSeg methods).</li>
-	/// </ol></p>
+	/// </ol>
 	/// 
-	/// <p>Whenever a marker segment is not recognized a warning message is
-	/// displayed and its length parameter is used to skip it.</p>
+	/// Whenever a marker segment is not recognized a warning message is
+	/// displayed and its length parameter is used to skip it.
 	/// 
-	/// <p>The information found in this header is stored in HeaderInfo and
-	/// DecoderSpecs instances.</p>
+	/// The information found in this header is stored in HeaderInfo and
+	/// DecoderSpecs instances.
 	/// 
 	/// </summary>
-	/// <seealso cref="DecoderSpecs">
-	/// </seealso>
-	/// <seealso cref="HeaderInfo">
-	/// </seealso>
-	/// <seealso cref="Decoder">
-	/// </seealso>
-	/// <seealso cref="FileBitstreamReaderAgent">
-	/// 
-	/// </seealso>
-	internal class HeaderDecoder
+	/// <seealso cref="DecoderSpecs" />
+	/// <seealso cref="HeaderInfo" />
+	/// <seealso cref="Decoder" />
+	/// <seealso cref="FileBitstreamReaderAgent" />
+	public class HeaderDecoder
 	{
 		/// <summary> Return the maximum height among all components 
 		/// 
@@ -116,56 +114,32 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> Maximum component height
 		/// 
 		/// </returns>
-		virtual public int MaxCompImgHeight
-		{
-			get
-			{
-				return hi.sizValue.MaxCompHeight;
-			}
-			
-		}
+		public virtual int MaxCompImgHeight => hi.sizValue.MaxCompHeight;
+
 		/// <summary> Return the maximum width among all components 
 		/// 
 		/// </summary>
 		/// <returns> Maximum component width
 		/// 
 		/// </returns>
-		virtual public int MaxCompImgWidth
-		{
-			get
-			{
-				return hi.sizValue.MaxCompWidth;
-			}
-			
-		}
+		public virtual int MaxCompImgWidth => hi.sizValue.MaxCompWidth;
+
 		/// <summary> Returns the image width in the reference grid.
 		/// 
 		/// </summary>
 		/// <returns> The image width in the reference grid
 		/// 
 		/// </returns>
-		virtual public int ImgWidth
-		{
-			get
-			{
-				return hi.sizValue.xsiz - hi.sizValue.x0siz;
-			}
-			
-		}
+		public virtual int ImgWidth => hi.sizValue.xsiz - hi.sizValue.x0siz;
+
 		/// <summary> Returns the image height in the reference grid.
 		/// 
 		/// </summary>
 		/// <returns> The image height in the reference grid
 		/// 
 		/// </returns>
-		virtual public int ImgHeight
-		{
-			get
-			{
-				return hi.sizValue.ysiz - hi.sizValue.y0siz;
-			}
-			
-		}
+		public virtual int ImgHeight => hi.sizValue.ysiz - hi.sizValue.y0siz;
+
 		/// <summary> Return the horizontal upper-left coordinate of the image in the
 		/// reference grid.
 		/// 
@@ -173,14 +147,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The horizontal coordinate of the image origin.
 		/// 
 		/// </returns>
-		virtual public int ImgULX
-		{
-			get
-			{
-				return hi.sizValue.x0siz;
-			}
-			
-		}
+		public virtual int ImgULX => hi.sizValue.x0siz;
+
 		/// <summary> Return the vertical upper-left coordinate of the image in the reference
 		/// grid.
 		/// 
@@ -188,94 +156,52 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The vertical coordinate of the image origin.
 		/// 
 		/// </returns>
-		virtual public int ImgULY
-		{
-			get
-			{
-				return hi.sizValue.y0siz;
-			}
-			
-		}
+		public virtual int ImgULY => hi.sizValue.y0siz;
+
 		/// <summary> Returns the nominal width of the tiles in the reference grid.
 		/// 
 		/// </summary>
 		/// <returns> The nominal tile width, in the reference grid.
 		/// 
 		/// </returns>
-		virtual public int NomTileWidth
-		{
-			get
-			{
-				return hi.sizValue.xtsiz;
-			}
-			
-		}
+		public virtual int NomTileWidth => hi.sizValue.xtsiz;
+
 		/// <summary> Returns the nominal width of the tiles in the reference grid.
 		/// 
 		/// </summary>
 		/// <returns> The nominal tile width, in the reference grid.
 		/// 
 		/// </returns>
-		virtual public int NomTileHeight
-		{
-			get
-			{
-				return hi.sizValue.ytsiz;
-			}
-			
-		}
+		public virtual int NomTileHeight => hi.sizValue.ytsiz;
+
 		/// <summary> Returns the number of components in the image.
 		/// 
 		/// </summary>
 		/// <returns> The number of components in the image.
 		/// 
 		/// </returns>
-		virtual public int NumComps
-		{
-			get
-			{
-				return nComp;
-			}
-			
-		}
+		public virtual int NumComps => nComp;
+
 		/// <summary> Returns the horizontal code-block partition origin.Allowable values are
 		/// 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULX
-		{
-			get
-			{
-				return cb0x;
-			}
-			
-		}
+		public virtual int CbULX => cb0x;
+
 		/// <summary> Returns the vertical code-block partition origin. Allowable values are
 		/// 0 and 1, nothing else.
 		/// 
 		/// </summary>
-		virtual public int CbULY
-		{
-			get
-			{
-				return cb0y;
-			}
-			
-		}
+		public virtual int CbULY => cb0y;
+
 		/// <summary> Return the DecoderSpecs instance filled when reading the headers
 		/// 
 		/// </summary>
 		/// <returns> The DecoderSpecs of the decoder
 		/// 
 		/// </returns>
-		virtual public DecoderSpecs DecoderSpecs
-		{
-			get
-			{
-				return decSpec;
-			}
-			
-		}
+		public virtual DecoderSpecs DecoderSpecs => decSpec;
+
 		/// <summary> Returns the parameters that are used in this class. It returns a 2D
 		/// String array. Each of the 1D arrays is for a different option, and they
 		/// have 3 elements. The first element is the option name, the second one
@@ -288,28 +214,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> the options name, their synopsis and their explanation.
 		/// 
 		/// </returns>
-		public static System.String[][] ParameterInfo
-		{
-			get
-			{
-				return pinfo;
-			}
-			
-		}
+		public static string[][] ParameterInfo => pinfo;
+
 		/// <summary> Return the number of tiles in the image
 		/// 
 		/// </summary>
 		/// <returns> The number of tiles
 		/// 
 		/// </returns>
-		virtual public int NumTiles
-		{
-			get
-			{
-				return nTiles;
-			}
-			
-		}
+		public virtual int NumTiles => nTiles;
+
 		/// <summary> Sets the tile of each tile part in order. This information is needed
 		/// for identifying which packet header belongs to which tile when using
 		/// the PPM marker.
@@ -318,13 +232,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <param name="tile">The tile number that the present tile part belongs to.
 		/// 
 		/// </param>
-		virtual public int TileOfTileParts
+		public virtual int TileOfTileParts
 		{
 			set
 			{
 				if (nPPMMarkSeg != 0)
 				{
-					tileOfTileParts.Add((System.Int32) value);
+					tileOfTileParts.Add(value);
 				}
 			}
 			
@@ -335,23 +249,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The number of marker segments found in the current header.
 		/// 
 		/// </returns>
-		virtual public int NumFoundMarkSeg
-		{
-			get
-			{
-				return nfMarkSeg;
-			}
-			
-		}
-		
+		public virtual int NumFoundMarkSeg => nfMarkSeg;
+
 		/// <summary>The prefix for header decoder options: 'H' </summary>
 		public const char OPT_PREFIX = 'H';
 		
 		/// <summary>The list of parameters that is accepted for quantization. Options 
 		/// for quantization start with 'Q'. 
 		/// </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String[][] pinfo = null;
+		private static readonly string[][] pinfo = null;
 		
 		/// <summary>The reference to the HeaderInfo instance holding the information found
 		/// in headers 
@@ -362,7 +268,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		//private bool verbose;
 		
 		/// <summary>Current header information in a string </summary>
-		private System.String hdStr = "";
+		private string hdStr = "";
 		
 		/// <summary>The number of tiles within the image </summary>
 		private int nTiles;
@@ -443,11 +349,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public const int CRG_FOUND = 1 << 16;
 		
 		/// <summary>The reset mask for new tiles </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'TILE_RESET '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		//private static readonly int TILE_RESET = ~ (PLM_FOUND | SIZ_FOUND | RGN_FOUND);
 		
 		/// <summary>HashTable used to store temporary marker segment byte buffers </summary>
-		private System.Collections.Generic.Dictionary<System.String, byte[]> ht = null;
+		private Dictionary<string, byte[]> ht = null;
 		
 		/// <summary>The number of components in the image </summary>
 		private int nComp;
@@ -468,7 +373,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public int mainHeadOff;
 		
 		/// <summary>Vector containing info as to which tile each tilepart belong </summary>
-		private System.Collections.Generic.List<System.Int32> tileOfTileParts;
+		private List<int> tileOfTileParts;
 		
 		/// <summary>Array containing the Nppm and Ippm fields of the PPM marker segments</summary>
 		private byte[][] pPMMarkerData;
@@ -491,9 +396,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// the reference grid.
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		public Coord getTilingOrigin(Coord co)
 		{
 			if (co != null)
@@ -587,7 +490,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> The dequantizer
 		/// 
 		/// </returns>
-		public Dequantizer createDequantizer(CBlkQuantDataSrcDec src, int[] rb, DecoderSpecs decSpec2)
+		public static Dequantizer createDequantizer(CBlkQuantDataSrcDec src, int[] rb, DecoderSpecs decSpec2)
 		{
 			return new StdDequantizer(src, rb, decSpec2);
 		}
@@ -669,10 +572,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			switch (kid)
 			{
 				
-				case Melville.CSJ2K.j2k.wavelet.FilterTypes_Fields.W9X7: 
+				case FilterTypes_Fields.W9X7: 
 					return new SynWTFilterFloatLift9x7();
 				
-				case Melville.CSJ2K.j2k.wavelet.FilterTypes_Fields.W5X3: 
+				case FilterTypes_Fields.W5X3: 
 					return new SynWTFilterIntLift5x3();
 				
 				default: 
@@ -694,22 +597,23 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// 
 		/// </exception>
 		//UPGRADE_TODO: Class 'java.io.DataInputStream' was converted to 'System.IO.BinaryReader' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioDataInputStream'"
-		public virtual void  checkMarkerLength(System.IO.BinaryReader ehs, System.String str)
+		public virtual void  checkMarkerLength(System.IO.BinaryReader ehs, string str)
 		{
 			long available;
 			available = ehs.BaseStream.Length - ehs.BaseStream.Position;
 			if ((int) available != 0)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, str + " length was short, attempting to resync.");
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+					$"{str} length was short, attempting to resync.");
 			}
 		}
 		
 		/// <summary> Reads the SIZ marker segment and realigns the codestream at the point
 		/// where the next marker segment should be found. 
 		/// 
-		/// <p>SIZ is a fixed information marker segment containing informations
+		/// SIZ is a fixed information marker segment containing informations
 		/// about image and tile sizes. It is required in the main header
-		/// immediately after SOC.</p>
+		/// immediately after SOC.
 		/// 
 		/// </summary>
 		/// <param name="ehs">The encoded header stream
@@ -722,7 +626,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		//UPGRADE_TODO: Class 'java.io.DataInputStream' was converted to 'System.IO.BinaryReader' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioDataInputStream'"
 		private void  readSIZ(System.IO.BinaryReader ehs)
 		{
-			HeaderInfo.SIZ ms = hi.NewSIZ;
+			var ms = hi.NewSIZ;
 			hi.sizValue = ms;
 			
 			// Read the length of SIZ marker segment (Lsiz)
@@ -732,7 +636,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ms.rsiz = ehs.ReadUInt16();
 			if (ms.rsiz > 2)
 			{
-				throw new System.InvalidOperationException("Codestream capabiities not JPEG 2000 - Part I" + " compliant");
+				throw new InvalidOperationException("Codestream capabiities not JPEG 2000 - Part I" + " compliant");
 			}
 			
 			// Read image size
@@ -771,7 +675,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			nComp = ms.csiz = ehs.ReadUInt16();
 			if (nComp < 1 || nComp > 16384)
 			{
-				throw new System.ArgumentException("Number of component out of " + "range 1--16384: " + nComp);
+				throw new ArgumentException($"Number of component out of range 1--16384: {nComp}");
 			}
 			
 			ms.ssiz = new int[nComp];
@@ -779,7 +683,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ms.yrsiz = new int[nComp];
 			
 			// Read bit-depth and down-sampling factors of each component
-			for (int i = 0; i < nComp; i++)
+			for (var i = 0; i < nComp; i++)
 			{
 				ms.ssiz[i] = ehs.ReadByte();
 				ms.xrsiz[i] = ehs.ReadByte();
@@ -807,15 +711,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		//UPGRADE_TODO: Class 'java.io.DataInputStream' was converted to 'System.IO.BinaryReader' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioDataInputStream'"
 		private void  readCRG(System.IO.BinaryReader ehs)
 		{
-			HeaderInfo.CRG ms = hi.NewCRG;
+			var ms = hi.NewCRG;
 			hi.crgValue = ms;
 			
 			ms.lcrg = ehs.ReadUInt16();
 			ms.xcrg = new int[nComp];
 			ms.ycrg = new int[nComp];
 			
-			FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Information in CRG marker segment " + "not taken into account. This may affect the display " + "of the decoded image.");
-			for (int c = 0; c < nComp; c++)
+			FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Information in CRG marker segment " + "not taken into account. This may affect the display " + "of the decoded image.");
+			for (var c = 0; c < nComp; c++)
 			{
 				ms.xcrg[c] = ehs.ReadUInt16();
 				ms.ycrg[c] = ehs.ReadUInt16();
@@ -852,7 +756,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		//UPGRADE_TODO: Class 'java.io.DataInputStream' was converted to 'System.IO.BinaryReader' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioDataInputStream'"
 		private void  readCOM(System.IO.BinaryReader ehs, bool mainh, int tileIdx, int comIdx)
 		{
-			HeaderInfo.COM ms = hi.NewCOM;
+			var ms = hi.NewCOM;
 			
 			// Read length of COM field
 			ms.lcom = ehs.ReadUInt16();
@@ -862,9 +766,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			switch (ms.rcom)
 			{
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.RCOM_GEN_USE: 
+				case Markers.RCOM_GEN_USE: 
 					ms.ccom = new byte[ms.lcom - 4];
-					for (int i = 0; i < ms.lcom - 4; i++)
+					for (var i = 0; i < ms.lcom - 4; i++)
 					{
 						ms.ccom[i] = ehs.ReadByte();
 					}
@@ -873,25 +777,26 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				default: 
 					// --- Unknown or unsupported markers ---
 					// (skip them and see if we can get way with it)
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "COM marker registered as 0x" + System.Convert.ToString(ms.rcom, 16) + " unknown, ignoring (this might crash the " + "decoder or decode a quality degraded or even " + "useless image)");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+						$"COM marker registered as 0x{Convert.ToString(ms.rcom, 16)} unknown, ignoring (this might crash the decoder or decode a quality degraded or even useless image)");
 					System.IO.BinaryReader temp_BinaryReader;
-					System.Int64 temp_Int64;
+					long temp_Int64;
 					temp_BinaryReader = ehs;
 					temp_Int64 = temp_BinaryReader.BaseStream.Position;
 					temp_Int64 = temp_BinaryReader.BaseStream.Seek(ms.lcom - 4, System.IO.SeekOrigin.Current) - temp_Int64;
                     // CONVERSION PROBLEM?
-					int generatedAux2 = (int)temp_Int64; //Ignore this field for the moment
+					var generatedAux2 = (int)temp_Int64; //Ignore this field for the moment
 					break;
 				
 			}
 			
 			if (mainh)
 			{
-				hi.comValue["main_" + comIdx] = ms;
+				hi.comValue[$"main_{comIdx}"] = ms;
 			}
 			else
 			{
-				hi.comValue["t" + tileIdx + "_" + comIdx] = ms;
+				hi.comValue[$"t{tileIdx}_{comIdx}"] = ms;
 			}
 			
 			// Check marker length
@@ -927,7 +832,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			int guardBits;
 			int[][] exp;
 			float[][] nStep = null;
-			HeaderInfo.QCD ms = hi.NewQCD;
+			var ms = hi.NewQCD;
 			
 			// Lqcd (length of QCD field)
 			ms.lqcd = ehs.ReadUInt16();
@@ -936,7 +841,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ms.sqcd = ehs.ReadByte();
 			
 			guardBits = ms.NumGuardBits;
-			int qType = ms.QuantType;
+			var qType = ms.QuantType;
 			
 			if (mainh)
 			{
@@ -946,15 +851,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				switch (qType)
 				{
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION: 
+					case Markers.SQCX_NO_QUANTIZATION: 
 						decSpec.qts.setDefault("reversible");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED: 
+					case Markers.SQCX_SCALAR_DERIVED: 
 						decSpec.qts.setDefault("derived");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_EXPOUNDED: 
+					case Markers.SQCX_SCALAR_EXPOUNDED: 
 						decSpec.qts.setDefault("expounded");
 						break;
 					
@@ -965,21 +870,21 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			else
 			{
-				hi.qcdValue["t" + tileIdx] = ms;
+				hi.qcdValue[$"t{tileIdx}"] = ms;
 				// If the tile header is being read set default value of
 				// dequantization spec for tile
 				switch (qType)
 				{
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION: 
+					case Markers.SQCX_NO_QUANTIZATION: 
 						decSpec.qts.setTileDef(tileIdx, "reversible");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED: 
+					case Markers.SQCX_SCALAR_DERIVED: 
 						decSpec.qts.setTileDef(tileIdx, "derived");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_EXPOUNDED: 
+					case Markers.SQCX_SCALAR_EXPOUNDED: 
 						decSpec.qts.setTileDef(tileIdx, "expounded");
 						break;
 					
@@ -991,16 +896,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			qParms = new StdDequantizerParams();
 			
-			if (qType == Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION)
+			if (qType == Markers.SQCX_NO_QUANTIZATION)
 			{
-				int maxrl = (mainh?((System.Int32) decSpec.dls.getDefault()):((System.Int32) decSpec.dls.getTileDef(tileIdx)));
+				var maxrl = (mainh?((int) decSpec.dls.getDefault()):((int) decSpec.dls.getTileDef(tileIdx)));
 				int j, rl; // i removed
 				int minb, maxb, hpd;
 				int tmp;
 				
 				exp = qParms.exp = new int[maxrl + 1][];
-				int[][] tmpArray = new int[maxrl + 1][];
-				for (int i2 = 0; i2 < maxrl + 1; i2++)
+				var tmpArray = new int[maxrl + 1][];
+				for (var i2 = 0; i2 < maxrl + 1; i2++)
 				{
 					tmpArray[i2] = new int[4];
 				}
@@ -1040,21 +945,21 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					for (j = minb; j < maxb; j++)
 					{
 						tmp = ms.spqcd[rl][j] = ehs.ReadByte();
-						exp[rl][j] = (tmp >> Melville.CSJ2K.j2k.codestream.Markers.SQCX_EXP_SHIFT) & Melville.CSJ2K.j2k.codestream.Markers.SQCX_EXP_MASK;
+						exp[rl][j] = (tmp >> Markers.SQCX_EXP_SHIFT) & Markers.SQCX_EXP_MASK;
 					}
 				} // end for rl
 			}
 			else
 			{
-				int maxrl = (qType == Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED)?0:(mainh?((System.Int32) decSpec.dls.getDefault()):((System.Int32) decSpec.dls.getTileDef(tileIdx)));
+				var maxrl = (qType == Markers.SQCX_SCALAR_DERIVED)?0:(mainh?((int) decSpec.dls.getDefault()):((int) decSpec.dls.getTileDef(tileIdx)));
 				int j, rl; // i removed
 				int minb, maxb, hpd;
 				int tmp;
 				
 				exp = qParms.exp = new int[maxrl + 1][];
 				nStep = qParms.nStep = new float[maxrl + 1][];
-				int[][] tmpArray2 = new int[maxrl + 1][];
-				for (int i3 = 0; i3 < maxrl + 1; i3++)
+				var tmpArray2 = new int[maxrl + 1][];
+				for (var i3 = 0; i3 < maxrl + 1; i3++)
 				{
 					tmpArray2[i3] = new int[4];
 				}
@@ -1109,12 +1014,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			if (mainh)
 			{
 				decSpec.qsss.setDefault(qParms);
-				decSpec.gbs.setDefault((System.Object) guardBits);
+				decSpec.gbs.setDefault(guardBits);
 			}
 			else
 			{
 				decSpec.qsss.setTileDef(tileIdx, qParms);
-				decSpec.gbs.setTileDef(tileIdx, (System.Object) guardBits);
+				decSpec.gbs.setTileDef(tileIdx, guardBits);
 			}
 			
 			// Check marker length
@@ -1151,7 +1056,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			StdDequantizerParams qParms;
 			int[][] expC;
 			float[][] nStepC = null;
-			HeaderInfo.QCC ms = hi.NewQCC;
+			var ms = hi.NewQCC;
 			
 			// Lqcc (length of QCC field)
 			ms.lqcc = ehs.ReadUInt16();
@@ -1172,26 +1077,26 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Sqcc (quantization style)
 			ms.sqcc = ehs.ReadByte();
-			int guardBits = ms.NumGuardBits;
-			int qType = ms.QuantType;
+			var guardBits = ms.NumGuardBits;
+			var qType = ms.QuantType;
 			
 			if (mainh)
 			{
-				hi.qccValue["main_c" + cComp] = ms;
+				hi.qccValue[$"main_c{cComp}"] = ms;
 				// If main header is being read, set default for component in all
 				// tiles
 				switch (qType)
 				{
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION: 
+					case Markers.SQCX_NO_QUANTIZATION: 
 						decSpec.qts.setCompDef(cComp, "reversible");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED: 
+					case Markers.SQCX_SCALAR_DERIVED: 
 						decSpec.qts.setCompDef(cComp, "derived");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_EXPOUNDED: 
+					case Markers.SQCX_SCALAR_EXPOUNDED: 
 						decSpec.qts.setCompDef(cComp, "expounded");
 						break;
 					
@@ -1202,21 +1107,21 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			else
 			{
-				hi.qccValue["t" + tileIdx + "_c" + cComp] = ms;
+				hi.qccValue[$"t{tileIdx}_c{cComp}"] = ms;
 				// If tile header is being read, set value for component in
 				// this tiles
 				switch (qType)
 				{
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION: 
+					case Markers.SQCX_NO_QUANTIZATION: 
 						decSpec.qts.setTileCompVal(tileIdx, cComp, "reversible");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED: 
+					case Markers.SQCX_SCALAR_DERIVED: 
 						decSpec.qts.setTileCompVal(tileIdx, cComp, "derived");
 						break;
 					
-					case Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_EXPOUNDED: 
+					case Markers.SQCX_SCALAR_EXPOUNDED: 
 						decSpec.qts.setTileCompVal(tileIdx, cComp, "expounded");
 						break;
 					
@@ -1229,15 +1134,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Decode all dequantizer params
 			qParms = new StdDequantizerParams();
 			
-			if (qType == Melville.CSJ2K.j2k.codestream.Markers.SQCX_NO_QUANTIZATION)
+			if (qType == Markers.SQCX_NO_QUANTIZATION)
 			{
-				int maxrl = (mainh?((System.Int32) decSpec.dls.getCompDef(cComp)):((System.Int32) decSpec.dls.getTileCompVal(tileIdx, cComp)));
+				var maxrl = (mainh?((int) decSpec.dls.getCompDef(cComp)):((int) decSpec.dls.getTileCompVal(tileIdx, cComp)));
 				int j, rl; // i removed
 				int minb, maxb, hpd;
 				
 				expC = qParms.exp = new int[maxrl + 1][];
-				int[][] tmpArray = new int[maxrl + 1][];
-				for (int i2 = 0; i2 < maxrl + 1; i2++)
+				var tmpArray = new int[maxrl + 1][];
+				for (var i2 = 0; i2 < maxrl + 1; i2++)
 				{
 					tmpArray[i2] = new int[4];
 				}
@@ -1277,20 +1182,20 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					for (j = minb; j < maxb; j++)
 					{
 						tmp = ms.spqcc[rl][j] = ehs.ReadByte();
-						expC[rl][j] = (tmp >> Melville.CSJ2K.j2k.codestream.Markers.SQCX_EXP_SHIFT) & Melville.CSJ2K.j2k.codestream.Markers.SQCX_EXP_MASK;
+						expC[rl][j] = (tmp >> Markers.SQCX_EXP_SHIFT) & Markers.SQCX_EXP_MASK;
 					}
 				} // end for rl
 			}
 			else
 			{
-				int maxrl = (qType == Melville.CSJ2K.j2k.codestream.Markers.SQCX_SCALAR_DERIVED)?0:(mainh?((System.Int32) decSpec.dls.getCompDef(cComp)):((System.Int32) decSpec.dls.getTileCompVal(tileIdx, cComp)));
+				var maxrl = (qType == Markers.SQCX_SCALAR_DERIVED)?0:(mainh?((int) decSpec.dls.getCompDef(cComp)):((int) decSpec.dls.getTileCompVal(tileIdx, cComp)));
 				int j, rl; // i removed
 				int minb, maxb, hpd;
 				
 				nStepC = qParms.nStep = new float[maxrl + 1][];
 				expC = qParms.exp = new int[maxrl + 1][];
-				int[][] tmpArray2 = new int[maxrl + 1][];
-				for (int i3 = 0; i3 < maxrl + 1; i3++)
+				var tmpArray2 = new int[maxrl + 1][];
+				for (var i3 = 0; i3 < maxrl + 1; i3++)
 				{
 					tmpArray2[i3] = new int[4];
 				}
@@ -1345,12 +1250,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			if (mainh)
 			{
 				decSpec.qsss.setCompDef(cComp, qParms);
-				decSpec.gbs.setCompDef(cComp, (System.Object) guardBits);
+				decSpec.gbs.setCompDef(cComp, guardBits);
 			}
 			else
 			{
 				decSpec.qsss.setTileCompVal(tileIdx, cComp, qParms);
-				decSpec.gbs.setTileCompVal(tileIdx, cComp, (System.Object) guardBits);
+				decSpec.gbs.setTileCompVal(tileIdx, cComp, guardBits);
 			}
 			
 			// Check marker length
@@ -1384,11 +1289,11 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			int cstyle; // The block style
 			SynWTFilter[] hfilters, vfilters;
 			//int l;
-			System.Int32[] cblk;
-			System.String errMsg;
+			int[] cblk;
+			string errMsg;
 			//bool sopUsed = false;
 			//bool ephUsed = false;
-			HeaderInfo.COD ms = hi.NewCOD;
+			var ms = hi.NewCOD;
 			
 			// Lcod (marker length)
 			ms.lcod = ehs.ReadUInt16();
@@ -1397,11 +1302,11 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// We only support wavelet transformed data
 			cstyle = ms.scod = ehs.ReadByte();
 			
-			if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_PRECINCT_PARTITION) != 0)
+			if ((cstyle & Markers.SCOX_PRECINCT_PARTITION) != 0)
 			{
 				precinctPartitionIsUsed = true;
 				// Remove flag
-				cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_PRECINCT_PARTITION);
+				cstyle &= ~ (Markers.SCOX_PRECINCT_PARTITION);
 			}
 			else
 			{
@@ -1413,109 +1318,109 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				hi.codValue["main"] = ms;
 				
-				if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_SOP) != 0)
+				if ((cstyle & Markers.SCOX_USE_SOP) != 0)
 				{
 					// SOP markers are used
-					decSpec.sops.setDefault((System.Object) "true".ToUpper().Equals("TRUE"));
+					decSpec.sops.setDefault("true".ToUpper().Equals("TRUE"));
 					//sopUsed = true;
 					// Remove flag
-					cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_SOP);
+					cstyle &= ~ (Markers.SCOX_USE_SOP);
 				}
 				else
 				{
 					// SOP markers are not used
-					decSpec.sops.setDefault((System.Object) "false".ToUpper().Equals("TRUE"));
+					decSpec.sops.setDefault("false".ToUpper().Equals("TRUE"));
 				}
 			}
 			else
 			{
-				hi.codValue["t" + tileIdx] = ms;
+				hi.codValue[$"t{tileIdx}"] = ms;
 				
-				if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_SOP) != 0)
+				if ((cstyle & Markers.SCOX_USE_SOP) != 0)
 				{
 					// SOP markers are used
-					decSpec.sops.setTileDef(tileIdx, (System.Object) "true".ToUpper().Equals("TRUE"));
+					decSpec.sops.setTileDef(tileIdx, "true".ToUpper().Equals("TRUE"));
 					//sopUsed = true;
 					// Remove flag
-					cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_SOP);
+					cstyle &= ~ (Markers.SCOX_USE_SOP);
 				}
 				else
 				{
 					// SOP markers are not used
-					decSpec.sops.setTileDef(tileIdx, (System.Object) "false".ToUpper().Equals("TRUE"));
+					decSpec.sops.setTileDef(tileIdx, "false".ToUpper().Equals("TRUE"));
 				}
 			}
 			
 			// EPH markers
 			if (mainh)
 			{
-				if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_EPH) != 0)
+				if ((cstyle & Markers.SCOX_USE_EPH) != 0)
 				{
 					// EPH markers are used
-					decSpec.ephs.setDefault((System.Object) "true".ToUpper().Equals("TRUE"));
+					decSpec.ephs.setDefault("true".ToUpper().Equals("TRUE"));
 					//ephUsed = true;
 					// Remove flag
-					cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_EPH);
+					cstyle &= ~ (Markers.SCOX_USE_EPH);
 				}
 				else
 				{
 					// EPH markers are not used
-					decSpec.ephs.setDefault((System.Object) "false".ToUpper().Equals("TRUE"));
+					decSpec.ephs.setDefault("false".ToUpper().Equals("TRUE"));
 				}
 			}
 			else
 			{
-				if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_EPH) != 0)
+				if ((cstyle & Markers.SCOX_USE_EPH) != 0)
 				{
 					// EPH markers are used
-					decSpec.ephs.setTileDef(tileIdx, (System.Object) "true".ToUpper().Equals("TRUE"));
+					decSpec.ephs.setTileDef(tileIdx, "true".ToUpper().Equals("TRUE"));
 					//ephUsed = true;
 					// Remove flag
-					cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_USE_EPH);
+					cstyle &= ~ (Markers.SCOX_USE_EPH);
 				}
 				else
 				{
 					// EPH markers are not used
-					decSpec.ephs.setTileDef(tileIdx, (System.Object) "false".ToUpper().Equals("TRUE"));
+					decSpec.ephs.setTileDef(tileIdx, "false".ToUpper().Equals("TRUE"));
 				}
 			}
 			
 			// Code-block partition origin
-			if ((cstyle & (Melville.CSJ2K.j2k.codestream.Markers.SCOX_HOR_CB_PART | Melville.CSJ2K.j2k.codestream.Markers.SCOX_VER_CB_PART)) != 0)
+			if ((cstyle & (Markers.SCOX_HOR_CB_PART | Markers.SCOX_VER_CB_PART)) != 0)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Code-block partition origin " + "different from (0,0). This is defined in JPEG 2000" + " part 2 and may not be supported by all JPEG " + "2000 decoders.");
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Code-block partition origin " + "different from (0,0). This is defined in JPEG 2000" + " part 2 and may not be supported by all JPEG " + "2000 decoders.");
 			}
-			if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_HOR_CB_PART) != 0)
+			if ((cstyle & Markers.SCOX_HOR_CB_PART) != 0)
 			{
 				if (cb0x != - 1 && cb0x == 0)
 				{
-					throw new System.ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
+					throw new ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
 				}
 				cb0x = 1;
-				cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_HOR_CB_PART);
+				cstyle &= ~ (Markers.SCOX_HOR_CB_PART);
 			}
 			else
 			{
 				if (cb0x != - 1 && cb0x == 1)
 				{
-					throw new System.ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
+					throw new ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
 				}
 				cb0x = 0;
 			}
-			if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_VER_CB_PART) != 0)
+			if ((cstyle & Markers.SCOX_VER_CB_PART) != 0)
 			{
 				if (cb0y != - 1 && cb0y == 0)
 				{
-					throw new System.ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
+					throw new ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
 				}
 				cb0y = 1;
-				cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_VER_CB_PART);
+				cstyle &= ~ (Markers.SCOX_VER_CB_PART);
 			}
 			else
 			{
 				if (cb0y != - 1 && cb0y == 1)
 				{
-					throw new System.ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
+					throw new ArgumentException("Code-block partition " + "origin redefined in new" + " COD marker segment. Not" + " supported by JJ2000");
 				}
 				cb0y = 0;
 			}
@@ -1536,47 +1441,48 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// SPcod
 			// decomposition levels
-			int mrl = ms.spcod_ndl = ehs.ReadByte();
+			var mrl = ms.spcod_ndl = ehs.ReadByte();
 			if (mrl > 32)
 			{
 				throw new CorruptedCodestreamException("Number of decomposition " + "levels out of range: " + "0--32");
 			}
 			
 			// Read the code-blocks dimensions
-			cblk = new System.Int32[2];
+			cblk = new int[2];
 			ms.spcod_cw = ehs.ReadByte();
-			cblk[0] = (System.Int32) (1 << (ms.spcod_cw + 2));
-			if (cblk[0] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM || cblk[0] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+			cblk[0] = 1 << (ms.spcod_cw + 2);
+			if (cblk[0] < StdEntropyCoderOptions.MIN_CB_DIM || cblk[0] > StdEntropyCoderOptions.MAX_CB_DIM)
 			{
 				errMsg = "Non-valid code-block width in SPcod field, " + "COD marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
 			ms.spcod_ch = ehs.ReadByte();
-			cblk[1] = (System.Int32) (1 << (ms.spcod_ch + 2));
-			if (cblk[1] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM || cblk[1] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+			cblk[1] = 1 << (ms.spcod_ch + 2);
+			if (cblk[1] < StdEntropyCoderOptions.MIN_CB_DIM || cblk[1] > StdEntropyCoderOptions.MAX_CB_DIM)
 			{
 				errMsg = "Non-valid code-block height in SPcod field, " + "COD marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
-			if ((cblk[0] * cblk[1]) > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_AREA)
+			if ((cblk[0] * cblk[1]) > StdEntropyCoderOptions.MAX_CB_AREA)
 			{
 				errMsg = "Non-valid code-block area in SPcod field, " + "COD marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
 			if (mainh)
 			{
-				decSpec.cblks.setDefault((System.Object) (cblk));
+				decSpec.cblks.setDefault(cblk);
 			}
 			else
 			{
-				decSpec.cblks.setTileDef(tileIdx, (System.Object) (cblk));
+				decSpec.cblks.setTileDef(tileIdx, cblk);
 			}
 			
 			// Style of the code-block coding passes
-			int ecOptions = ms.spcod_cs = ehs.ReadByte();
-			if ((ecOptions & ~ (Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_RESET_MQ | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_SEG_SYMBOLS)) != 0)
+			var ecOptions = ms.spcod_cs = ehs.ReadByte();
+			if ((ecOptions & ~ (StdEntropyCoderOptions.OPT_BYPASS | StdEntropyCoderOptions.OPT_RESET_MQ | StdEntropyCoderOptions.OPT_TERM_PASS | StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL | StdEntropyCoderOptions.OPT_PRED_TERM | StdEntropyCoderOptions.OPT_SEG_SYMBOLS)) != 0)
 			{
-				throw new CorruptedCodestreamException("Unknown \"code-block " + "style\" in SPcod field, " + "COD marker: 0x" + System.Convert.ToString(ecOptions, 16));
+				throw new CorruptedCodestreamException(
+					$"Unknown \"code-block style\" in SPcod field, COD marker: 0x{Convert.ToString(ecOptions, 16)}");
 			}
 			
 			// Read wavelet filter for tile or image
@@ -1588,33 +1494,33 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Fill the filter spec
 			// If this is the main header, set the default value, if it is the
 			// tile header, set default for this tile 
-			SynWTFilter[][] hvfilters = new SynWTFilter[2][];
+			var hvfilters = new SynWTFilter[2][];
 			hvfilters[0] = hfilters;
 			hvfilters[1] = vfilters;
 			
 			// Get precinct partition sizes
-			System.Collections.Generic.List<System.Int32>[] v = new System.Collections.Generic.List<System.Int32>[2];
+			var v = new List<int>[2];
 			v[0] = new List<int>(10);
 			v[1] = new List<int>(10);
-			int val = Melville.CSJ2K.j2k.codestream.Markers.PRECINCT_PARTITION_DEF_SIZE;
+			var val = Markers.PRECINCT_PARTITION_DEF_SIZE;
 			if (!precinctPartitionIsUsed)
 			{
-				System.Int32 w, h;
-				w = (System.Int32) (1 << (val & 0x000F));
+				int w, h;
+				w = 1 << (val & 0x000F);
 				v[0].Add(w);
-				h = (System.Int32) (1 << (((val & 0x00F0) >> 4)));
+				h = 1 << (((val & 0x00F0) >> 4));
 				v[1].Add(h);
 			}
 			else
 			{
 				ms.spcod_ps = new int[mrl + 1];
-				for (int rl = mrl; rl >= 0; rl--)
+				for (var rl = mrl; rl >= 0; rl--)
 				{
-					System.Int32 w, h;
+					int w, h;
 					val = ms.spcod_ps[mrl - rl] = ehs.ReadByte();
-					w = (System.Int32) (1 << (val & 0x000F));
+					w = 1 << (val & 0x000F);
 					v[0].Insert(0, w);
-					h = (System.Int32) (1 << (((val & 0x00F0) >> 4)));
+					h = 1 << (((val & 0x00F0) >> 4));
 					v[1].Insert(0, h);
 				}
 			}
@@ -1635,20 +1541,20 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			if (mainh)
 			{
 				decSpec.wfs.setDefault(hvfilters);
-				decSpec.dls.setDefault((System.Object) mrl);
-				decSpec.ecopts.setDefault((System.Object) ecOptions);
-				decSpec.cts.setDefault((System.Object) ms.sgcod_mct);
-				decSpec.nls.setDefault((System.Object) ms.sgcod_nl);
-				decSpec.pos.setDefault((System.Object) ms.sgcod_po);
+				decSpec.dls.setDefault(mrl);
+				decSpec.ecopts.setDefault(ecOptions);
+				decSpec.cts.setDefault(ms.sgcod_mct);
+				decSpec.nls.setDefault(ms.sgcod_nl);
+				decSpec.pos.setDefault(ms.sgcod_po);
 			}
 			else
 			{
 				decSpec.wfs.setTileDef(tileIdx, hvfilters);
-				decSpec.dls.setTileDef(tileIdx, (System.Object) mrl);
-				decSpec.ecopts.setTileDef(tileIdx, (System.Object) ecOptions);
-				decSpec.cts.setTileDef(tileIdx, (System.Object) ms.sgcod_mct);
-				decSpec.nls.setTileDef(tileIdx, (System.Object) ms.sgcod_nl);
-				decSpec.pos.setTileDef(tileIdx, (System.Object) ms.sgcod_po);
+				decSpec.dls.setTileDef(tileIdx, mrl);
+				decSpec.ecopts.setTileDef(tileIdx, ecOptions);
+				decSpec.cts.setTileDef(tileIdx, ms.sgcod_mct);
+				decSpec.nls.setTileDef(tileIdx, ms.sgcod_nl);
+				decSpec.pos.setTileDef(tileIdx, ms.sgcod_po);
 			}
 		}
 		
@@ -1680,9 +1586,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			SynWTFilter[] hfilters, vfilters;
 			//int tmp, l;
 			int ecOptions;
-			System.Int32[] cblk;
-			System.String errMsg;
-			HeaderInfo.COC ms = hi.NewCOC;
+			int[] cblk;
+			string errMsg;
+			var ms = hi.NewCOC;
 			
 			// Lcoc (marker length)
 			ms.lcoc = ehs.ReadUInt16();
@@ -1702,12 +1608,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			
 			// Scoc (block style)
-			int cstyle = ms.scoc = ehs.ReadByte();
-			if ((cstyle & Melville.CSJ2K.j2k.codestream.Markers.SCOX_PRECINCT_PARTITION) != 0)
+			var cstyle = ms.scoc = ehs.ReadByte();
+			if ((cstyle & Markers.SCOX_PRECINCT_PARTITION) != 0)
 			{
 				precinctPartitionIsUsed = true;
 				// Remove flag
-				cstyle &= ~ (Melville.CSJ2K.j2k.codestream.Markers.SCOX_PRECINCT_PARTITION);
+				cstyle &= ~ (Markers.SCOX_PRECINCT_PARTITION);
 			}
 			else
 			{
@@ -1717,44 +1623,45 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// SPcoc
 			
 			// decomposition levels
-			int mrl = ms.spcoc_ndl = ehs.ReadByte();
+			var mrl = ms.spcoc_ndl = ehs.ReadByte();
 			
 			// Read the code-blocks dimensions
-			cblk = new System.Int32[2];
+			cblk = new int[2];
 			ms.spcoc_cw = ehs.ReadByte();
-			cblk[0] = (System.Int32) (1 << (ms.spcoc_cw + 2));
-			if (cblk[0] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM || cblk[0] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+			cblk[0] = 1 << (ms.spcoc_cw + 2);
+			if (cblk[0] < StdEntropyCoderOptions.MIN_CB_DIM || cblk[0] > StdEntropyCoderOptions.MAX_CB_DIM)
 			{
 				errMsg = "Non-valid code-block width in SPcod field, " + "COC marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
 			ms.spcoc_ch = ehs.ReadByte();
-			cblk[1] = (System.Int32) (1 << (ms.spcoc_ch + 2));
-			if (cblk[1] < Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MIN_CB_DIM || cblk[1] > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_DIM)
+			cblk[1] = 1 << (ms.spcoc_ch + 2);
+			if (cblk[1] < StdEntropyCoderOptions.MIN_CB_DIM || cblk[1] > StdEntropyCoderOptions.MAX_CB_DIM)
 			{
 				errMsg = "Non-valid code-block height in SPcod field, " + "COC marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
-			if ((cblk[0] * cblk[1]) > Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.MAX_CB_AREA)
+			if ((cblk[0] * cblk[1]) > StdEntropyCoderOptions.MAX_CB_AREA)
 			{
 				errMsg = "Non-valid code-block area in SPcod field, " + "COC marker";
 				throw new CorruptedCodestreamException(errMsg);
 			}
 			if (mainh)
 			{
-				decSpec.cblks.setCompDef(cComp, (System.Object) (cblk));
+				decSpec.cblks.setCompDef(cComp, cblk);
 			}
 			else
 			{
-				decSpec.cblks.setTileCompVal(tileIdx, cComp, (System.Object) (cblk));
+				decSpec.cblks.setTileCompVal(tileIdx, cComp, cblk);
 			}
 			
 			// Read entropy block mode options
 			// NOTE: currently OPT_SEG_SYMBOLS is not included here
 			ecOptions = ms.spcoc_cs = ehs.ReadByte();
-			if ((ecOptions & ~ (Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_RESET_MQ | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_PRED_TERM | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_SEG_SYMBOLS)) != 0)
+			if ((ecOptions & ~ (StdEntropyCoderOptions.OPT_BYPASS | StdEntropyCoderOptions.OPT_RESET_MQ | StdEntropyCoderOptions.OPT_TERM_PASS | StdEntropyCoderOptions.OPT_VERT_STR_CAUSAL | StdEntropyCoderOptions.OPT_PRED_TERM | StdEntropyCoderOptions.OPT_SEG_SYMBOLS)) != 0)
 			{
-				throw new CorruptedCodestreamException("Unknown \"code-block " + "context\" in SPcoc field, " + "COC marker: 0x" + System.Convert.ToString(ecOptions, 16));
+				throw new CorruptedCodestreamException(
+					$"Unknown \"code-block context\" in SPcoc field, COC marker: 0x{Convert.ToString(ecOptions, 16)}");
 			}
 			
 			// Read wavelet filter for tile or image
@@ -1766,33 +1673,33 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Fill the filter spec
 			// If this is the main header, set the default value, if it is the
 			// tile header, set default for this tile 
-			SynWTFilter[][] hvfilters = new SynWTFilter[2][];
+			var hvfilters = new SynWTFilter[2][];
 			hvfilters[0] = hfilters;
 			hvfilters[1] = vfilters;
 			
 			// Get precinct partition sizes
-			System.Collections.Generic.List<System.Int32>[] v = new System.Collections.Generic.List<System.Int32>[2];
+			var v = new List<int>[2];
 			v[0] = new List<int>(10);
 			v[1] = new List<int>(10);
-			int val = Melville.CSJ2K.j2k.codestream.Markers.PRECINCT_PARTITION_DEF_SIZE;
+			var val = Markers.PRECINCT_PARTITION_DEF_SIZE;
 			if (!precinctPartitionIsUsed)
 			{
-				System.Int32 w, h;
-				w = (System.Int32) (1 << (val & 0x000F));
+				int w, h;
+				w = 1 << (val & 0x000F);
 				v[0].Add(w);
-				h = (System.Int32) (1 << (((val & 0x00F0) >> 4)));
+				h = 1 << (((val & 0x00F0) >> 4));
 				v[1].Add(h);
 			}
 			else
 			{
 				ms.spcoc_ps = new int[mrl + 1];
-				for (int rl = mrl; rl >= 0; rl--)
+				for (var rl = mrl; rl >= 0; rl--)
 				{
-					System.Int32 w, h;
+					int w, h;
 					val = ms.spcoc_ps[rl] = ehs.ReadByte();
-					w = (System.Int32) (1 << (val & 0x000F));
+					w = 1 << (val & 0x000F);
 					v[0].Insert(0, w);
-					h = (System.Int32) (1 << (((val & 0x00F0) >> 4)));
+					h = 1 << (((val & 0x00F0) >> 4));
 					v[1].Insert(0, h);
 				}
 			}
@@ -1811,17 +1718,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (mainh)
 			{
-				hi.cocValue["main_c" + cComp] = ms;
+				hi.cocValue[$"main_c{cComp}"] = ms;
 				decSpec.wfs.setCompDef(cComp, hvfilters);
-				decSpec.dls.setCompDef(cComp, (System.Object) mrl);
-				decSpec.ecopts.setCompDef(cComp, (System.Object) ecOptions);
+				decSpec.dls.setCompDef(cComp, mrl);
+				decSpec.ecopts.setCompDef(cComp, ecOptions);
 			}
 			else
 			{
-				hi.cocValue["t" + tileIdx + "_c" + cComp] = ms;
+				hi.cocValue[$"t{tileIdx}_c{cComp}"] = ms;
 				decSpec.wfs.setTileCompVal(tileIdx, cComp, hvfilters);
-				decSpec.dls.setTileCompVal(tileIdx, cComp, (System.Object) mrl);
-				decSpec.ecopts.setTileCompVal(tileIdx, cComp, (System.Object) ecOptions);
+				decSpec.dls.setTileCompVal(tileIdx, cComp, mrl);
+				decSpec.ecopts.setTileCompVal(tileIdx, cComp, ecOptions);
 			}
 		}
 		
@@ -1850,17 +1757,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		private void  readPOC(System.IO.BinaryReader ehs, bool mainh, int t, int tpIdx)
 		{
 			
-			bool useShort = (nComp >= 256)?true:false;
+			var useShort = nComp >= 256;
 			int tmp;
-			int nOldChg = 0;
+			var nOldChg = 0;
 			HeaderInfo.POC ms;
-			if (mainh || hi.pocValue["t" + t] == null)
+			if (mainh || hi.pocValue[$"t{t}"] == null)
 			{
 				ms = hi.NewPOC;
 			}
 			else
 			{
-				ms = (HeaderInfo.POC) hi.pocValue["t" + t];
+				ms = hi.pocValue[$"t{t}"];
 				nOldChg = ms.rspoc.Length;
 			}
 			
@@ -1870,29 +1777,29 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Compute the number of new progression changes
 			// newChg = (lpoc - Lpoc(2)) / (RSpoc(1) + CSpoc(2) +
 			//  LYEpoc(2) + REpoc(1) + CEpoc(2) + Ppoc (1) )
-			int newChg = (ms.lpoc - 2) / (5 + (useShort?4:2));
-			int ntotChg = nOldChg + newChg;
+			var newChg = (ms.lpoc - 2) / (5 + (useShort?4:2));
+			var ntotChg = nOldChg + newChg;
 			
 			int[][] change;
 			if (nOldChg != 0)
 			{
 				// Creates new arrays
-				int[][] tmpArray = new int[ntotChg][];
-				for (int i = 0; i < ntotChg; i++)
+				var tmpArray = new int[ntotChg][];
+				for (var i = 0; i < ntotChg; i++)
 				{
 					tmpArray[i] = new int[6];
 				}
 				change = tmpArray;
-				int[] tmprspoc = new int[ntotChg];
-				int[] tmpcspoc = new int[ntotChg];
-				int[] tmplyepoc = new int[ntotChg];
-				int[] tmprepoc = new int[ntotChg];
-				int[] tmpcepoc = new int[ntotChg];
-				int[] tmpppoc = new int[ntotChg];
+				var tmprspoc = new int[ntotChg];
+				var tmpcspoc = new int[ntotChg];
+				var tmplyepoc = new int[ntotChg];
+				var tmprepoc = new int[ntotChg];
+				var tmpcepoc = new int[ntotChg];
+				var tmpppoc = new int[ntotChg];
 				
 				// Copy old values
-				int[][] prevChg = (int[][]) decSpec.pcs.getTileDef(t);
-				for (int chg = 0; chg < nOldChg; chg++)
+				var prevChg = (int[][]) decSpec.pcs.getTileDef(t);
+				for (var chg = 0; chg < nOldChg; chg++)
 				{
 					change[chg] = prevChg[chg];
 					tmprspoc[chg] = ms.rspoc[chg];
@@ -1911,8 +1818,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			else
 			{
-				int[][] tmpArray2 = new int[newChg][];
-				for (int i2 = 0; i2 < newChg; i2++)
+				var tmpArray2 = new int[newChg][];
+				for (var i2 = 0; i2 < newChg; i2++)
 				{
 					tmpArray2[i2] = new int[6];
 				}
@@ -1925,7 +1832,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				ms.ppoc = new int[newChg];
 			}
 			
-			for (int chg = nOldChg; chg < ntotChg; chg++)
+			for (var chg = nOldChg; chg < ntotChg; chg++)
 			{
 				// RSpoc
 				change[chg][0] = ms.rspoc[chg] = ehs.ReadByte();
@@ -1944,14 +1851,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				change[chg][2] = ms.lyepoc[chg] = ehs.ReadUInt16();
 				if (change[chg][2] < 1)
 				{
-					throw new CorruptedCodestreamException("LYEpoc value must be greater than 1 in POC marker " + "segment of tile " + t + ", tile-part " + tpIdx);
+					throw new CorruptedCodestreamException(
+						$"LYEpoc value must be greater than 1 in POC marker segment of tile {t}, tile-part {tpIdx}");
 				}
 				
 				// REpoc
 				change[chg][3] = ms.repoc[chg] = ehs.ReadByte();
 				if (change[chg][3] <= change[chg][0])
 				{
-					throw new CorruptedCodestreamException("REpoc value must be greater than RSpoc in POC marker " + "segment of tile " + t + ", tile-part " + tpIdx);
+					throw new CorruptedCodestreamException(
+						$"REpoc value must be greater than RSpoc in POC marker segment of tile {t}, tile-part {tpIdx}");
 				}
 				
 				// CEpoc
@@ -1973,7 +1882,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				}
 				if (change[chg][4] <= change[chg][1])
 				{
-					throw new CorruptedCodestreamException("CEpoc value must be greater than CSpoc in POC marker " + "segment of tile " + t + ", tile-part " + tpIdx);
+					throw new CorruptedCodestreamException(
+						$"CEpoc value must be greater than CSpoc in POC marker segment of tile {t}, tile-part {tpIdx}");
 				}
 				
 				// Ppoc
@@ -1991,7 +1901,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			else
 			{
-				hi.pocValue["t" + t] = ms;
+				hi.pocValue[$"t{t}"] = ms;
 				decSpec.pcs.setTileDef(t, change);
 			}
 		}
@@ -2016,14 +1926,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			length = ehs.ReadUInt16();
 			//Ignore all informations contained
 			System.IO.BinaryReader temp_BinaryReader;
-			System.Int64 temp_Int64;
+			long temp_Int64;
 			temp_BinaryReader = ehs;
 			temp_Int64 = temp_BinaryReader.BaseStream.Position;
 			temp_Int64 = temp_BinaryReader.BaseStream.Seek(length - 2, System.IO.SeekOrigin.Current) - temp_Int64;
             // CONVERSION PROBLEM?
-			int generatedAux = (int)temp_Int64;
+			var generatedAux = (int)temp_Int64;
 			
-			FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, "Skipping unsupported TLM marker");
+			FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, "Skipping unsupported TLM marker");
 		}
 		
 		/// <summary> Reads PLM marker segment and realigns the codestream where the next
@@ -2046,14 +1956,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			length = ehs.ReadUInt16();
 			//Ignore all informations contained
 			System.IO.BinaryReader temp_BinaryReader;
-			System.Int64 temp_Int64;
+			long temp_Int64;
 			temp_BinaryReader = ehs;
 			temp_Int64 = temp_BinaryReader.BaseStream.Position;
 			temp_Int64 = temp_BinaryReader.BaseStream.Seek(length - 2, System.IO.SeekOrigin.Current) - temp_Int64;
             // CONVERSION PROBLEM?
-			int generatedAux = (int)temp_Int64;
+			var generatedAux = (int)temp_Int64;
 			
-			FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, "Skipping unsupported PLM marker");
+			FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, "Skipping unsupported PLM marker");
 		}
 		
 		/// <summary> Reads the PLT fields and realigns the codestream where the next marker
@@ -2076,21 +1986,21 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			length = ehs.ReadUInt16();
 			//Ignore all informations contained
 			System.IO.BinaryReader temp_BinaryReader;
-			System.Int64 temp_Int64;
+			long temp_Int64;
 			temp_BinaryReader = ehs;
 			temp_Int64 = temp_BinaryReader.BaseStream.Position;
 			temp_Int64 = temp_BinaryReader.BaseStream.Seek(length - 2, System.IO.SeekOrigin.Current) - temp_Int64;
             // CONVERSION PROBLEM?
-			int generatedAux = (int)temp_Int64;
+			var generatedAux = (int)temp_Int64;
 			
-			FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, "Skipping unsupported PLT marker");
+			FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, "Skipping unsupported PLT marker");
 		}
 		
 		/// <summary> Reads the RGN marker segment of the codestream header.
 		/// 
-		/// <p>May be used in tile or main header. If used in main header, it
+		/// May be used in tile or main header. If used in main header, it
 		/// refers to the maxshift value of a component in all tiles. When used in
-		/// tile header, only the particular tile-component is affected.</p>
+		/// tile header, only the particular tile-component is affected.
 		/// 
 		/// </summary>
 		/// <param name="ehs">The encoder header stream.
@@ -2116,7 +2026,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			int comp; // ROI component
 			//int i; // loop variable
 			//int tempComp; // Component for
-			HeaderInfo.RGN ms = hi.NewRGN;
+			var ms = hi.NewRGN;
 			
 			// Lrgn (marker length)
 			ms.lrgn = ehs.ReadUInt16();
@@ -2125,14 +2035,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ms.crgn = comp = (nComp < 257)?ehs.ReadByte():ehs.ReadUInt16();
 			if (comp >= nComp)
 			{
-				throw new CorruptedCodestreamException("Invalid component " + "index in RGN marker" + comp);
+				throw new CorruptedCodestreamException($"Invalid component index in RGN marker{comp}");
 			}
 			
 			// Read type of RGN.(Srgn) 
 			ms.srgn = ehs.ReadByte();
 			
 			// Check that we can handle it.
-			if (ms.srgn != Melville.CSJ2K.j2k.codestream.Markers.SRGN_IMPLICIT)
+			if (ms.srgn != Markers.SRGN_IMPLICIT)
 				throw new CorruptedCodestreamException("Unknown or unsupported " + "Srgn parameter in ROI " + "marker");
 			
 			if (decSpec.rois == null)
@@ -2147,13 +2057,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (mainh)
 			{
-				hi.rgnValue["main_c" + comp] = ms;
-				decSpec.rois.setCompDef(comp, (System.Object) ms.sprgn);
+				hi.rgnValue[$"main_c{comp}"] = ms;
+				decSpec.rois.setCompDef(comp, ms.sprgn);
 			}
 			else
 			{
-				hi.rgnValue["t" + tileIdx + "_c" + comp] = ms;
-				decSpec.rois.setTileCompVal(tileIdx, comp, (System.Object) ms.sprgn);
+				hi.rgnValue[$"t{tileIdx}_c{comp}"] = ms;
+				decSpec.rois.setTileCompVal(tileIdx, comp, ms.sprgn);
 			}
 			
 			// Check marker length
@@ -2184,7 +2094,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				pPMMarkerData = new byte[nPPMMarkSeg][];
 				tileOfTileParts = new List<int>(10);
-				decSpec.pphs.setDefault((System.Object) true);
+				decSpec.pphs.setDefault(true);
 			}
 			
 			// Lppm (marker length)
@@ -2196,7 +2106,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Read Nppm and Ippm data 
 			pPMMarkerData[indx] = new byte[remSegLen];
-            ehs.BaseStream.ReadExactly(pPMMarkerData[indx], 0, remSegLen); //SupportClass.ReadInput(ehs.BaseStream, pPMMarkerData[indx], 0, remSegLen);
+            ehs.BaseStream.Read(pPMMarkerData[indx], 0, remSegLen); //SupportClass.ReadInput(ehs.BaseStream, pPMMarkerData[indx], 0, remSegLen);
 			
 			// Check marker length
 			checkMarkerLength(ehs, "PPM marker");
@@ -2248,13 +2158,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Ippt (packed packet headers)
 			temp = new byte[curMarkSegLen - 3];
-            ehs.BaseStream.ReadExactly(temp, 0, temp.Length); //SupportClass.ReadInput(ehs.BaseStream, temp, 0, temp.Length);
+            ehs.BaseStream.Read(temp, 0, temp.Length); //SupportClass.ReadInput(ehs.BaseStream, temp, 0, temp.Length);
 			tilePartPkdPktHeaders[tile][tpIdx][indx] = temp;
 			
 			// Check marker length
 			checkMarkerLength(ehs, "PPT marker");
 			
-			decSpec.pphs.setTileDef(tile, (System.Object) true);
+			decSpec.pphs.setTileDef(tile, true);
 		}
 		
 		/// <summary> This method extract a marker segment from the main header and stores it
@@ -2262,10 +2172,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// identified. Then its flag is activated. Finally, its content is
 		/// buffered into a byte array stored in an hashTable.
 		/// 
-		/// <p>If the marker is not recognized, it prints a warning and skips it
-		/// according to its length.</p>
+		/// If the marker is not recognized, it prints a warning and skips it
+		/// according to its length.
 		/// 
-		/// <p>SIZ marker segment shall be the first encountered marker segment.</p>
+		/// SIZ marker segment shall be the first encountered marker segment.
 		/// 
 		/// </summary>
 		/// <param name="marker">The marker segment to process
@@ -2280,13 +2190,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				// First non-delimiting marker of the header
 				// JPEG 2000 part 1 specify that it must be SIZ
-				if (marker != Melville.CSJ2K.j2k.codestream.Markers.SIZ)
+				if (marker != Markers.SIZ)
 				{
-					throw new CorruptedCodestreamException("First marker after " + "SOC " + "must be SIZ " + System.Convert.ToString(marker, 16));
+					throw new CorruptedCodestreamException(
+						$"First marker after SOC must be SIZ {Convert.ToString(marker, 16)}");
 				}
 			}
 			
-			System.String htKey = ""; // Name used as a key for the hash-table
+			var htKey = ""; // Name used as a key for the hash-table
 			if (ht == null)
 			{
 				ht = new Dictionary<string, byte[]>();
@@ -2295,7 +2206,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			switch (marker)
 			{
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SIZ: 
+				case Markers.SIZ: 
 					if ((nfMarkSeg & SIZ_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one SIZ marker " + "segment found in main " + "header");
@@ -2304,13 +2215,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "SIZ";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SOD: 
+				case Markers.SOD: 
 					throw new CorruptedCodestreamException("SOD found in main header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.EOC: 
+				case Markers.EOC: 
 					throw new CorruptedCodestreamException("EOC found in main header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SOT: 
+				case Markers.SOT: 
 					if ((nfMarkSeg & SOT_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one SOT " + "marker " + "found right after " + "main " + "or tile header");
@@ -2318,7 +2229,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					nfMarkSeg |= SOT_FOUND;
 					return ;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COD: 
+				case Markers.COD: 
 					if ((nfMarkSeg & COD_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one COD " + "marker " + "found in main header");
@@ -2327,12 +2238,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "COD";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COC: 
+				case Markers.COC: 
 					nfMarkSeg |= COC_FOUND;
-					htKey = "COC" + (nCOCMarkSeg++);
+					htKey = $"COC{(nCOCMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.QCD: 
+				case Markers.QCD: 
 					if ((nfMarkSeg & QCD_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one QCD " + "marker " + "found in main header");
@@ -2341,22 +2252,22 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "QCD";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.QCC: 
+				case Markers.QCC: 
 					nfMarkSeg |= QCC_FOUND;
-					htKey = "QCC" + (nQCCMarkSeg++);
+					htKey = $"QCC{(nQCCMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.RGN: 
+				case Markers.RGN: 
 					nfMarkSeg |= RGN_FOUND;
-					htKey = "RGN" + (nRGNMarkSeg++);
+					htKey = $"RGN{(nRGNMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COM: 
+				case Markers.COM: 
 					nfMarkSeg |= COM_FOUND;
-					htKey = "COM" + (nCOMMarkSeg++);
+					htKey = $"COM{(nCOMMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.CRG: 
+				case Markers.CRG: 
 					if ((nfMarkSeg & CRG_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one CRG " + "marker " + "found in main header");
@@ -2365,12 +2276,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "CRG";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PPM: 
+				case Markers.PPM: 
 					nfMarkSeg |= PPM_FOUND;
-					htKey = "PPM" + (nPPMMarkSeg++);
+					htKey = $"PPM{(nPPMMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.TLM: 
+				case Markers.TLM: 
 					if ((nfMarkSeg & TLM_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one TLM " + "marker " + "found in main header");
@@ -2378,17 +2289,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					nfMarkSeg |= TLM_FOUND;
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PLM: 
+				case Markers.PLM: 
 					if ((nfMarkSeg & PLM_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one PLM " + "marker " + "found in main header");
 					}
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "PLM marker segment found but " + "not used by by JJ2000 decoder.");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "PLM marker segment found but " + "not used by by JJ2000 decoder.");
 					nfMarkSeg |= PLM_FOUND;
 					htKey = "PLM";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.POC: 
+				case Markers.POC: 
 					if ((nfMarkSeg & POC_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one POC " + "marker segment found " + "in main header");
@@ -2397,15 +2308,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "POC";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PLT: 
+				case Markers.PLT: 
 					throw new CorruptedCodestreamException("PLT found in main header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PPT: 
+				case Markers.PPT: 
 					throw new CorruptedCodestreamException("PPT found in main header");
 				
 				default: 
 					htKey = "UNKNOWN";
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Non recognized marker segment (0x" + System.Convert.ToString(marker, 16) + ") in main header!");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+						$"Non recognized marker segment (0x{Convert.ToString(marker, 16)}) in main header!");
 					break;
 				
 			}
@@ -2413,8 +2325,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			if (marker < unchecked((short)0xffffff30) || marker > unchecked((short)0xffffff3f))
 			{
 				// Read marker segment length and create corresponding byte buffer
-				int markSegLen = ehs.readUnsignedShort();
-				byte[] buf = new byte[markSegLen];
+				var markSegLen = ehs.readUnsignedShort();
+				var buf = new byte[markSegLen];
 				
 				// Copy data (after re-insertion of the marker segment length);
 				buf[0] = (byte) ((markSegLen >> 8) & 0xFF);
@@ -2452,7 +2364,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public virtual void  extractTilePartMarkSeg(short marker, RandomAccessIO ehs, int tileIdx, int tilePartIdx)
 		{
 			
-			System.String htKey = ""; // Name used as a hash-table key
+			var htKey = ""; // Name used as a hash-table key
 			if (ht == null)
 			{
 				ht = new Dictionary<string, byte[]>();
@@ -2461,25 +2373,25 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			switch (marker)
 			{
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SOT: 
+				case Markers.SOT: 
 					throw new CorruptedCodestreamException("Second SOT marker " + "segment found in tile-" + "part header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SIZ: 
+				case Markers.SIZ: 
 					throw new CorruptedCodestreamException("SIZ found in tile-part" + " header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.EOC: 
+				case Markers.EOC: 
 					throw new CorruptedCodestreamException("EOC found in tile-part" + " header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.TLM: 
+				case Markers.TLM: 
 					throw new CorruptedCodestreamException("TLM found in tile-part" + " header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PLM: 
+				case Markers.PLM: 
 					throw new CorruptedCodestreamException("PLM found in tile-part" + " header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PPM: 
+				case Markers.PPM: 
 					throw new CorruptedCodestreamException("PPM found in tile-part" + " header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COD: 
+				case Markers.COD: 
 					if ((nfMarkSeg & COD_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one COD " + "marker " + "found in tile-part" + " header");
@@ -2488,12 +2400,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "COD";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COC: 
+				case Markers.COC: 
 					nfMarkSeg |= COC_FOUND;
-					htKey = "COC" + (nCOCMarkSeg++);
+					htKey = $"COC{(nCOCMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.QCD: 
+				case Markers.QCD: 
 					if ((nfMarkSeg & QCD_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("More than one QCD " + "marker " + "found in tile-part" + " header");
@@ -2502,25 +2414,25 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					htKey = "QCD";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.QCC: 
+				case Markers.QCC: 
 					nfMarkSeg |= QCC_FOUND;
-					htKey = "QCC" + (nQCCMarkSeg++);
+					htKey = $"QCC{(nQCCMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.RGN: 
+				case Markers.RGN: 
 					nfMarkSeg |= RGN_FOUND;
-					htKey = "RGN" + (nRGNMarkSeg++);
+					htKey = $"RGN{(nRGNMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.COM: 
+				case Markers.COM: 
 					nfMarkSeg |= COM_FOUND;
-					htKey = "COM" + (nCOMMarkSeg++);
+					htKey = $"COM{(nCOMMarkSeg++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.CRG: 
+				case Markers.CRG: 
 					throw new CorruptedCodestreamException("CRG marker found in " + "tile-part header");
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PPT: 
+				case Markers.PPT: 
 					nfMarkSeg |= PPT_FOUND;
 					if (nPPTMarkSeg == null)
 					{
@@ -2530,39 +2442,40 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					{
 						nPPTMarkSeg[tileIdx] = new int[nTileParts[tileIdx]];
 					}
-					htKey = "PPT" + (nPPTMarkSeg[tileIdx][tilePartIdx]++);
+					htKey = $"PPT{(nPPTMarkSeg[tileIdx][tilePartIdx]++)}";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.SOD: 
+				case Markers.SOD: 
 					nfMarkSeg |= SOD_FOUND;
 					return ;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.POC: 
+				case Markers.POC: 
 					if ((nfMarkSeg & POC_FOUND) != 0)
 						throw new CorruptedCodestreamException("More than one POC " + "marker segment found " + "in tile-part" + " header");
 					nfMarkSeg |= POC_FOUND;
 					htKey = "POC";
 					break;
 				
-				case Melville.CSJ2K.j2k.codestream.Markers.PLT: 
+				case Markers.PLT: 
 					if ((nfMarkSeg & PLM_FOUND) != 0)
 					{
 						throw new CorruptedCodestreamException("PLT marker found even" + "though PLM marker " + "found in main header");
 					}
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "PLT marker segment found but " + "not used by JJ2000 decoder.");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "PLT marker segment found but " + "not used by JJ2000 decoder.");
 					htKey = "UNKNOWN";
 					break;
 				
 				default: 
 					htKey = "UNKNOWN";
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Non recognized marker segment (0x" + System.Convert.ToString(marker, 16) + ") in tile-part header" + " of tile " + tileIdx + " !");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+						$"Non recognized marker segment (0x{Convert.ToString(marker, 16)}) in tile-part header of tile {tileIdx} !");
 					break;
 				
 			}
 			
 			// Read marker segment length and create corresponding byte buffer
-			int markSegLen = ehs.readUnsignedShort();
-			byte[] buf = new byte[markSegLen];
+			var markSegLen = ehs.readUnsignedShort();
+			var buf = new byte[markSegLen];
 			
 			// Copy data (after re-insertion of marker segment length);
 			buf[0] = (byte) ((markSegLen >> 8) & 0xFF);
@@ -2589,85 +2502,85 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// SIZ marker segment
 			if ((nfMarkSeg & SIZ_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["SIZ"]);
-				readSIZ(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true));
+				bais = new System.IO.MemoryStream(ht["SIZ"]);
+				readSIZ(new Util.EndianBinaryReader(bais, true));
 			}
 			
 			// COM marker segments
 			if ((nfMarkSeg & COM_FOUND) != 0)
 			{
-				for (int i = 0; i < nCOMMarkSeg; i++)
+				for (var i = 0; i < nCOMMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["COM" + i]);
-					readCOM(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, i);
+					bais = new System.IO.MemoryStream(ht[$"COM{i}"]);
+					readCOM(new Util.EndianBinaryReader(bais, true), true, 0, i);
 				}
 			}
 			
 			// CRG marker segment
 			if ((nfMarkSeg & CRG_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["CRG"]);
-				readCRG(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true));
+				bais = new System.IO.MemoryStream(ht["CRG"]);
+				readCRG(new Util.EndianBinaryReader(bais, true));
 			}
 			
 			// COD marker segment
 			if ((nfMarkSeg & COD_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["COD"]);
-				readCOD(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+				bais = new System.IO.MemoryStream(ht["COD"]);
+				readCOD(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 			}
 			
 			// COC marker segments
 			if ((nfMarkSeg & COC_FOUND) != 0)
 			{
-				for (int i = 0; i < nCOCMarkSeg; i++)
+				for (var i = 0; i < nCOCMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["COC" + i]);
-					readCOC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+					bais = new System.IO.MemoryStream(ht[$"COC{i}"]);
+					readCOC(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 				}
 			}
 			
 			// RGN marker segment
 			if ((nfMarkSeg & RGN_FOUND) != 0)
 			{
-				for (int i = 0; i < nRGNMarkSeg; i++)
+				for (var i = 0; i < nRGNMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["RGN" + i]);
-					readRGN(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+					bais = new System.IO.MemoryStream(ht[$"RGN{i}"]);
+					readRGN(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 				}
 			}
 			
 			// QCD marker segment
 			if ((nfMarkSeg & QCD_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["QCD"]);
-				readQCD(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+				bais = new System.IO.MemoryStream(ht["QCD"]);
+				readQCD(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 			}
 			
 			// QCC marker segments
 			if ((nfMarkSeg & QCC_FOUND) != 0)
 			{
-				for (int i = 0; i < nQCCMarkSeg; i++)
+				for (var i = 0; i < nQCCMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["QCC" + i]);
-					readQCC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+					bais = new System.IO.MemoryStream(ht[$"QCC{i}"]);
+					readQCC(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 				}
 			}
 			
 			// POC marker segment
 			if ((nfMarkSeg & POC_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["POC"]);
-				readPOC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), true, 0, 0);
+				bais = new System.IO.MemoryStream(ht["POC"]);
+				readPOC(new Util.EndianBinaryReader(bais, true), true, 0, 0);
 			}
 			
 			// PPM marker segments
 			if ((nfMarkSeg & PPM_FOUND) != 0)
 			{
-				for (int i = 0; i < nPPMMarkSeg; i++)
+				for (var i = 0; i < nPPMMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["PPM" + i]);
-					readPPM(new Melville.CSJ2K.Util.EndianBinaryReader(bais));
+					bais = new System.IO.MemoryStream(ht[$"PPM{i}"]);
+					readPPM(new Util.EndianBinaryReader(bais));
 				}
 			}
 			
@@ -2689,77 +2602,77 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			
 			//UPGRADE_TODO: Class 'java.io.DataInputStream' was converted to 'System.IO.BinaryReader' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioDataInputStream'"
-			//Melville.CSJ2K.EndianBinaryReader dis;
+			//CoreJ2K.EndianBinaryReader dis;
 			System.IO.MemoryStream bais;
 			
 			// COD marker segment
 			if ((nfMarkSeg & COD_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["COD"]);
-				readCOD(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+				bais = new System.IO.MemoryStream(ht["COD"]);
+				readCOD(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 			}
 			
 			// COC marker segments
 			if ((nfMarkSeg & COC_FOUND) != 0)
 			{
-				for (int i = 0; i < nCOCMarkSeg; i++)
+				for (var i = 0; i < nCOCMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["COC" + i]);
-					readCOC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+					bais = new System.IO.MemoryStream(ht[$"COC{i}"]);
+					readCOC(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 				}
 			}
 			
 			// RGN marker segment
 			if ((nfMarkSeg & RGN_FOUND) != 0)
 			{
-				for (int i = 0; i < nRGNMarkSeg; i++)
+				for (var i = 0; i < nRGNMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["RGN" + i]);
-					readRGN(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+					bais = new System.IO.MemoryStream(ht[$"RGN{i}"]);
+					readRGN(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 				}
 			}
 			
 			// QCD marker segment
 			if ((nfMarkSeg & QCD_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["QCD"]);
-				readQCD(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+				bais = new System.IO.MemoryStream(ht["QCD"]);
+				readQCD(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 			}
 			
 			// QCC marker segments
 			if ((nfMarkSeg & QCC_FOUND) != 0)
 			{
-				for (int i = 0; i < nQCCMarkSeg; i++)
+				for (var i = 0; i < nQCCMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["QCC" + i]);
-					readQCC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+					bais = new System.IO.MemoryStream(ht[$"QCC{i}"]);
+					readQCC(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 				}
 			}
 			
 			// POC marker segment
 			if ((nfMarkSeg & POC_FOUND) != 0)
 			{
-				bais = new System.IO.MemoryStream((byte[])ht["POC"]);
-				readPOC(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
+				bais = new System.IO.MemoryStream(ht["POC"]);
+				readPOC(new Util.EndianBinaryReader(bais, true), false, tileIdx, tpIdx);
 			}
 			
 			// COM marker segments
 			if ((nfMarkSeg & COM_FOUND) != 0)
 			{
-				for (int i = 0; i < nCOMMarkSeg; i++)
+				for (var i = 0; i < nCOMMarkSeg; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["COM" + i]);
-					readCOM(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), false, tileIdx, i);
+					bais = new System.IO.MemoryStream(ht[$"COM{i}"]);
+					readCOM(new Util.EndianBinaryReader(bais, true), false, tileIdx, i);
 				}
 			}
 			
 			// PPT marker segments
 			if ((nfMarkSeg & PPT_FOUND) != 0)
 			{
-				for (int i = 0; i < nPPTMarkSeg[tileIdx][tpIdx]; i++)
+				for (var i = 0; i < nPPTMarkSeg[tileIdx][tpIdx]; i++)
 				{
-					bais = new System.IO.MemoryStream((byte[])ht["PPT" + i]);
-					readPPT(new Melville.CSJ2K.Util.EndianBinaryReader(bais, true), tileIdx, tpIdx);
+					bais = new System.IO.MemoryStream(ht[$"PPT{i}"]);
+					readPPT(new Util.EndianBinaryReader(bais, true), tileIdx, tpIdx);
 				}
 			}
 			
@@ -2802,7 +2715,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			pl.checkList(OPT_PREFIX, ParameterList.toNameArray(pinfo));
 			
 			mainHeadOff = ehs.Pos;
-			if (((short) ehs.readShort()) != Melville.CSJ2K.j2k.codestream.Markers.SOC)
+			if (ehs.readShort() != Markers.SOC)
 			{
 				throw new CorruptedCodestreamException("SOC marker segment not " + " found at the " + "beginning of the " + "codestream.");
 			}
@@ -2875,7 +2788,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <exception cref="ColorSpaceException">if image contains a bad colorspace box
 		/// 
 		/// </exception>
-		public virtual BlkImgDataSrc createColorSpaceMapper(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap)
+		public virtual BlkImgDataSrc createColorSpaceMapper(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return ColorSpaceMapper.createInstance(src, csMap);
 		}
@@ -2898,7 +2811,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <exception cref="ColorSpaceException">if image contains a bad colorspace box
 		/// 
 		/// </exception>
-		public virtual BlkImgDataSrc createChannelDefinitionMapper(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap)
+		public virtual BlkImgDataSrc createChannelDefinitionMapper(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return ChannelDefinitionMapper.createInstance(src, csMap);
 		}
@@ -2921,7 +2834,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <exception cref="ColorSpaceException">if image contains a bad colorspace box
 		/// 
 		/// </exception>
-		public virtual BlkImgDataSrc createPalettizedColorSpaceMapper(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap)
+		public virtual BlkImgDataSrc createPalettizedColorSpaceMapper(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return PalettizedColorSpaceMapper.createInstance(src, csMap);
 		}
@@ -2944,7 +2857,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <exception cref="ColorSpaceException">if image contains a bad colorspace box
 		/// 
 		/// </exception>
-		public virtual BlkImgDataSrc createResampler(BlkImgDataSrc src, Melville.CSJ2K.Color.ColorSpace csMap)
+		public virtual BlkImgDataSrc createResampler(BlkImgDataSrc src, ColorSpace csMap)
 		{
 			return Resampler.createInstance(src, csMap);
 		}
@@ -2994,7 +2907,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// <returns> Information in a String
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			return hdStr;
 		}
@@ -3026,10 +2939,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					// If this is first time packed packet headers are requested,
 					// create packed packet headers from Nppm and Ippm fields
 					int nppm;
-					int nTileParts = tileOfTileParts.Count;
+					var nTileParts = tileOfTileParts.Count;
 					byte[] temp;
 					System.IO.MemoryStream pph;
-					System.IO.MemoryStream allNppmIppm = new System.IO.MemoryStream();
+					var allNppmIppm = new System.IO.MemoryStream();
 					
 					// Concatenate all Nppm and Ippm fields
 					for (i = 0; i < nPPMMarkSeg; i++)
@@ -3044,13 +2957,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					// tile part
 					for (i = 0; i < nTileParts; i++)
 					{
-						t = ((System.Int32) tileOfTileParts[i]);
+						t = tileOfTileParts[i];
 						// get Nppm value
 						nppm = (pph.ReadByte() << 24) | (pph.ReadByte() << 16) | (pph.ReadByte() << 8) | (pph.ReadByte());
 						
 						temp = new byte[nppm];
 						// get ippm field
-                        pph.ReadExactly(temp, 0, temp.Length); //SupportClass.ReadInput(pph, temp, 0, temp.Length);
+                        pph.Read(temp, 0, temp.Length); //SupportClass.ReadInput(pph, temp, 0, temp.Length);
 						byte[] temp_byteArray2;
 						temp_byteArray2 = temp;
 						pkdPktHeaders[t].Write(temp_byteArray2, 0, temp_byteArray2.Length);

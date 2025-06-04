@@ -1,6 +1,6 @@
-﻿namespace Melville.CSJ2K.Util
+﻿namespace CoreJ2K.Util
 {
-	internal interface IFileInfo
+	public interface IFileInfo
 	{
 		#region PROPERTIES
 

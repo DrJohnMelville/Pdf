@@ -42,48 +42,38 @@
 * */
 using System;
 using System.Collections.Generic;
-using Melville.CSJ2K.j2k.quantization.dequantizer;
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.entropy.decoder;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k.io;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.entropy;
+using CoreJ2K.j2k.entropy.decoder;
+using CoreJ2K.j2k.io;
+using CoreJ2K.j2k.quantization.dequantizer;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-namespace Melville.CSJ2K.j2k.codestream.reader
+namespace CoreJ2K.j2k.codestream.reader
 {
 	
 	/// <summary> This class reads the bit stream (with the help of HeaderDecoder for tile
 	/// headers and PktDecoder for packets header and body) and retrives location
 	/// of all code-block's codewords.
 	/// 
-	/// <p>Note: All tile-parts headers are read by the constructor whereas packets
+	/// Note: All tile-parts headers are read by the constructor whereas packets
 	/// are processed when decoding related tile (when setTile method is
-	/// called).</p>
+	/// called).
 	/// 
-	/// <p>In parsing mode, the reader simulates a virtual layer-resolution
+	/// In parsing mode, the reader simulates a virtual layer-resolution
 	/// progressive bit stream with the same truncation points in each code-block,
 	/// whereas in truncation mode, only the first bytes are taken into account (it
-	/// behaves like if it is a real truncated codestream).</p>
+	/// behaves like if it is a real truncated codestream).
 	/// 
 	/// </summary>
-	/// <seealso cref="HeaderDecoder">
-	/// </seealso>
-	/// <seealso cref="PktDecoder">
-	/// 
-	/// </seealso>
-	internal class FileBitstreamReaderAgent:BitstreamReaderAgent
+	/// <seealso cref="HeaderDecoder" />
+	/// <seealso cref="PktDecoder" />
+	public class FileBitstreamReaderAgent:BitstreamReaderAgent
 	{
 		/// <summary>Gets the reference to the CBlkInfo array </summary>
-		virtual public CBlkInfo[][][][][] CBlkInfo
-		{
-			get
-			{
-				return cbI;
-			}
-			
-		}
-		
+		public virtual CBlkInfo[][][][][] CBlkInfo => cbI;
+
 		/// <summary>Whether or not the last read Psot value was zero. Only the Psot in the
 		/// last tile-part in the codestream can have such a value. 
 		/// </summary>
@@ -110,9 +100,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </param>
 		public virtual int getNumTileParts(int t)
 		{
-			if (firstPackOff == null || firstPackOff[t] == null)
+			if (firstPackOff?[t] == null)
 			{
-				throw new System.InvalidOperationException("Tile " + t + " not found in input codestream.");
+				throw new InvalidOperationException($"Tile {t} not found in input codestream.");
 			}
 			return firstPackOff[t].Length;
 		}
@@ -159,7 +149,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		private int[][] tilePartHeadLen;
 		
 		/// <summary>Length of each packet head found in the tile </summary>
-		private System.Collections.Generic.List<System.Int32> pktHL;
+		private List<int> pktHL;
 		
 		/// <summary>True if truncation mode is used. False if parsing mode </summary>
 		private bool isTruncMode;
@@ -230,63 +220,54 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// codestream. 
 		/// 
 		/// </param>
-		/// <seealso cref="allocateRate">
-		/// 
-		/// </seealso>
+		/// <seealso cref="allocateRate" />
 		public FileBitstreamReaderAgent(HeaderDecoder hd, RandomAccessIO ehs, DecoderSpecs decSpec, ParameterList pl, bool cdstrInfo, HeaderInfo hi):base(hd, decSpec)
 		{
 			
 			this.pl = pl;
-			this.printInfo = cdstrInfo;
+			printInfo = cdstrInfo;
 			this.hi = hi;
-			System.String strInfo = "Codestream elements information in bytes " + "(offset, total length, header length):\n\n";
+			var strInfo = "Codestream elements information in bytes " + "(offset, total length, header length):\n\n";
 			
 			// Check whether quit conditiosn used
 			usePOCQuit = pl.getBooleanParameter("poc_quit");
 			
 			// Get decoding rate
 			bool rateInBytes;
-			bool parsing = pl.getBooleanParameter("parsing");
+			var parsing = pl.getBooleanParameter("parsing");
 			try
 			{
 				trate = pl.getFloatParameter("rate");
 				if (trate == - 1)
 				{
-					trate = System.Single.MaxValue;
+					trate = float.MaxValue;
 				}
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.InvalidOperationException("Invalid value in 'rate' option: " + pl.getParameter("rate"));
+				throw new InvalidOperationException($"Invalid value in 'rate' option: {pl.getParameter("rate")}");
 			}
-			catch (System.ArgumentException)
+			catch (ArgumentException)
 			{
-				throw new System.InvalidOperationException("'rate' option is missing");
+				throw new InvalidOperationException("'rate' option is missing");
 			}
 			
 			try
 			{
 				tnbytes = pl.getIntParameter("nbytes");
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.InvalidOperationException("Invalid value in 'nbytes' option: " + pl.getParameter("nbytes"));
+				throw new InvalidOperationException($"Invalid value in 'nbytes' option: {pl.getParameter("nbytes")}");
 			}
-			catch (System.ArgumentException)
+			catch (ArgumentException)
 			{
-				throw new System.InvalidOperationException("'nbytes' option is missing");
+				throw new InvalidOperationException("'nbytes' option is missing");
 			}
 			
 			// Check that '-rate' and '-nbytes' are not used at the same time
-			ParameterList defaults = pl.DefaultParameterList;
-			if (tnbytes != defaults.getFloatParameter("nbytes"))
-			{
-				rateInBytes = true;
-			}
-			else
-			{
-				rateInBytes = false;
-			}
+			var defaults = pl.DefaultParameterList;
+			rateInBytes = tnbytes != defaults.getFloatParameter("nbytes");
 			
 			if (rateInBytes)
 			{
@@ -306,30 +287,31 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				ncbQuit = pl.getIntParameter("ncb_quit");
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.InvalidOperationException("Invalid value in 'ncb_quit' option: " + pl.getParameter("ncb_quit"));
+				throw new InvalidOperationException(
+					$"Invalid value in 'ncb_quit' option: {pl.getParameter("ncb_quit")}");
 			}
-			catch (System.ArgumentException)
+			catch (ArgumentException)
 			{
-				throw new System.InvalidOperationException("'ncb_quit' option is missing");
+				throw new InvalidOperationException("'ncb_quit' option is missing");
 			}
 			if (ncbQuit != - 1 && !isTruncMode)
 			{
-				throw new System.InvalidOperationException("Cannot use -parsing and -ncb_quit condition at " + "the same time.");
+				throw new InvalidOperationException("Cannot use -parsing and -ncb_quit condition at " + "the same time.");
 			}
 			
 			try
 			{
 				lQuit = pl.getIntParameter("l_quit");
 			}
-			catch (System.FormatException)
+			catch (FormatException)
 			{
-				throw new System.InvalidOperationException("Invalid value in 'l_quit' option: " + pl.getParameter("l_quit"));
+				throw new InvalidOperationException($"Invalid value in 'l_quit' option: {pl.getParameter("l_quit")}");
 			}
-			catch (System.ArgumentException)
+			catch (ArgumentException)
 			{
-				throw new System.InvalidOperationException("'l_quit' option is missing");
+				throw new InvalidOperationException("'l_quit' option is missing");
 			}
 			
 			// initializations
@@ -353,36 +335,29 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			int t = 0, pos, tp = 0, tptot = 0;
 			
 			// Keeps main header's length, takes file format overhead into account
-			int cdstreamStart = hd.mainHeadOff; // Codestream offset in the file
+			var cdstreamStart = hd.mainHeadOff; // Codestream offset in the file
 			mainHeadLen = in_Renamed.Pos - cdstreamStart;
 			headLen = mainHeadLen;
 			
 			// If ncb and lbody quit conditions are used, headers are not counted
-			if (ncbQuit == - 1)
-			{
-				anbytes = mainHeadLen;
-			}
-			else
-			{
-				anbytes = 0;
-			}
+			anbytes = ncbQuit == - 1 ? mainHeadLen : 0;
 			
 			strInfo += ("Main header length    : " + cdstreamStart + ", " + mainHeadLen + ", " + mainHeadLen + "\n");
 			
 			// If cannot even read the first tile-part
 			if (anbytes > tnbytes)
 			{
-				throw new System.InvalidOperationException("Requested bitrate is too small.");
+				throw new InvalidOperationException("Requested bitrate is too small.");
 			}
 			
 			// Read all tile-part headers from all tiles.
 			int tilePartStart;
-			bool rateReached = false;
+			var rateReached = false;
 			int mdl;
 			//int numtp = 0;
 			totAllTileLen = 0;
 			remainingTileParts = nt; // at least as many tile-parts as tiles
-			int maxTP = nt; // If maximum 1 tile part per tile specified
+			var maxTP = nt; // If maximum 1 tile part per tile specified
 			
 			try
 			{
@@ -412,7 +387,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					catch (System.IO.EndOfStreamException)
 					{
 						firstPackOff[t][tp] = in_Renamed.length();
-						throw ;
+						throw;
 					}
 					
 					pos = in_Renamed.Pos;
@@ -487,7 +462,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					{
 						if (remainingTileParts != 0)
 						{
-							FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Some tile-parts have not " + "been found. The codestream may be corrupted.");
+							FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "Some tile-parts have not " + "been found. The codestream may be corrupted.");
 						}
 						break;
 					}
@@ -497,12 +472,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				if (printInfo)
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 				}
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Codestream truncated in tile " + t);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, $"Codestream truncated in tile {t}");
 				
 				// Set specified rate to end of file if valid
-				int fileLen = in_Renamed.length();
+				var fileLen = in_Renamed.length();
 				if (fileLen < tnbytes)
 				{
 					tnbytes = fileLen;
@@ -527,12 +502,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 						targetRes = pl.getIntParameter("res");
 						if (targetRes < 0)
 						{
-							throw new System.ArgumentException("Specified negative " + "resolution level " + "index: " + targetRes);
+							throw new ArgumentException($"Specified negative resolution level index: {targetRes}");
 						}
 					}
-					catch (System.FormatException)
+					catch (FormatException)
 					{
-						throw new System.ArgumentException("Invalid resolution level " + "index ('-res' option) " + pl.getParameter("res"));
+						throw new ArgumentException(
+							$"Invalid resolution level index ('-res' option) {pl.getParameter("res")}");
 					}
 				}
 				
@@ -540,12 +516,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				mdl = decSpec.dls.Min;
 				if (targetRes > mdl)
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Specified resolution level (" + targetRes + ") is larger" + " than the maximum value. Setting it to " + mdl + " (maximum value)");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+						$"Specified resolution level ({targetRes}) is larger than the maximum value. Setting it to {mdl} (maximum value)");
 					targetRes = mdl;
 				}
 				
 				// Backup nBytes
-				for (int tIdx = 0; tIdx < nt; tIdx++)
+				for (var tIdx = 0; tIdx < nt; tIdx++)
 				{
 					baknBytes[tIdx] = nBytes[tIdx];
 				}
@@ -566,12 +543,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					targetRes = pl.getIntParameter("res");
 					if (targetRes < 0)
 					{
-						throw new System.ArgumentException("Specified negative " + "resolution level index: " + targetRes);
+						throw new ArgumentException($"Specified negative resolution level index: {targetRes}");
 					}
 				}
-				catch (System.FormatException)
+				catch (FormatException)
 				{
-					throw new System.ArgumentException("Invalid resolution level " + "index ('-res' option) " + pl.getParameter("res"));
+					throw new ArgumentException(
+						$"Invalid resolution level index ('-res' option) {pl.getParameter("res")}");
 				}
 			}
 			
@@ -579,13 +557,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			mdl = decSpec.dls.Min;
 			if (targetRes > mdl)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Specified resolution level (" + targetRes + ") is larger" + " than the maximum possible. Setting it to " + mdl + " (maximum possible)");
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+					$"Specified resolution level ({targetRes}) is larger than the maximum possible. Setting it to {mdl} (maximum possible)");
 				targetRes = mdl;
 			}
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			
 			// Check presence of EOC marker is decoding rate not reached or if
@@ -594,14 +573,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				try
 				{
-					if (!rateReached && !isPsotEqualsZero && in_Renamed.readShort() != Melville.CSJ2K.j2k.codestream.Markers.EOC)
+					if (!rateReached && !isPsotEqualsZero && in_Renamed.readShort() != Markers.EOC)
 					{
-						FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "EOC marker not found. " + "Codestream is corrupted.");
+						FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "EOC marker not found. " + "Codestream is corrupted.");
 					}
 				}
 				catch (System.IO.EndOfStreamException)
 				{
-					FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "EOC marker is missing");
+					FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, "EOC marker is missing");
 				}
 			}
 			
@@ -618,12 +597,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			
 			// Backup nBytes
-			for (int tIdx = 0; tIdx < nt; tIdx++)
+			for (var tIdx = 0; tIdx < nt; tIdx++)
 			{
 				baknBytes[tIdx] = nBytes[tIdx];
 				if (printInfo)
 				{
-					FacilityManager.getMsgLogger().println("" + hi.toStringTileHeader(tIdx, tilePartLen[tIdx].Length), 2, 2);
+					FacilityManager.getMsgLogger().println($"{hi.toStringTileHeader(tIdx, tilePartLen[tIdx].Length)}", 2, 2);
 				}
 			}
 		}
@@ -635,7 +614,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </summary>
 		private void  allocateRate()
 		{
-			int stopOff = tnbytes;
+			var stopOff = tnbytes;
 			
 			// In parsing mode, the bitrate is allocated related to each tile's
 			// length in the bit stream
@@ -647,13 +626,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// error
 			if (anbytes > stopOff)
 			{
-				throw new System.InvalidOperationException("Requested bitrate is too small for parsing");
+				throw new InvalidOperationException("Requested bitrate is too small for parsing");
 			}
 			
 			// Calculate bitrate for each tile
-			int rem = stopOff - anbytes;
-			int totnByte = rem;
-			for (int t = nt - 1; t > 0; t--)
+			var rem = stopOff - anbytes;
+			var totnByte = rem;
+			for (var t = nt - 1; t > 0; t--)
 			{
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
 				rem -= (nBytes[t] = (int) (totnByte * (totTileLen[t] / totAllTileLen)));
@@ -671,13 +650,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		private int readTilePartHeader()
 		{
-			HeaderInfo.SOT ms = hi.NewSOT;
+			var ms = hi.NewSOT;
 			
 			// SOT marker
-			short marker = in_Renamed.readShort();
-			if (marker != Melville.CSJ2K.j2k.codestream.Markers.SOT)
+			var marker = in_Renamed.readShort();
+			if (marker != Markers.SOT)
 			{
-				if (marker == Melville.CSJ2K.j2k.codestream.Markers.EOC)
+				if (marker == Markers.EOC)
 				{
 					isEOCFound = true;
 					return - 1;
@@ -690,13 +669,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			isEOCFound = false;
 			
 			// Lsot (shall equals 10)
-			int lsot = in_Renamed.readUnsignedShort();
+			var lsot = in_Renamed.readUnsignedShort();
 			ms.lsot = lsot;
 			if (lsot != 10)
-				throw new CorruptedCodestreamException("Wrong length for " + "SOT marker segment: " + lsot);
+				throw new CorruptedCodestreamException($"Wrong length for SOT marker segment: {lsot}");
 			
 			// Isot
-			int tile = in_Renamed.readUnsignedShort();
+			var tile = in_Renamed.readUnsignedShort();
 			ms.isot = tile;
 			if (tile > 65534)
 			{
@@ -704,9 +683,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			
 			// Psot
-			int psot = in_Renamed.readInt();
+			var psot = in_Renamed.readInt();
 			ms.psot = psot;
-			isPsotEqualsZero = (psot != 0)?false:true;
+			isPsotEqualsZero = (psot == 0);
 			if (psot < 0)
 			{
 				throw new NotImplementedException("Tile length larger " + "than maximum supported");
@@ -721,7 +700,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// TNsot
 			int nrOfTileParts = in_Renamed.read();
 			ms.tnsot = nrOfTileParts;
-			hi.sotValue["t" + tile + "_tp" + tilePart] = ms;
+			hi.sotValue[$"t{tile}_tp{tilePart}"] = ms;
 			if (nrOfTileParts == 0)
 			{
 				// The number of tile-part is not specified in
@@ -746,12 +725,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				
 				tileParts[tile] += nExtraTp;
 				nrOfTileParts = tileParts[tile];
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Header of tile-part " + tilePart + " of tile " + tile + ", does not indicate the total" + " number of tile-parts. Assuming that there are " + nrOfTileParts + " tile-parts for this tile.");
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING,
+					$"Header of tile-part {tilePart} of tile {tile}, does not indicate the total number of tile-parts. Assuming that there are {nrOfTileParts} tile-parts for this tile.");
 				
 				// Increase and re-copy tilePartLen array
-				int[] tmpA = tilePartLen[tile];
+				var tmpA = tilePartLen[tile];
 				tilePartLen[tile] = new int[nrOfTileParts];
-				for (int i = 0; i < nrOfTileParts - nExtraTp; i++)
+				for (var i = 0; i < nrOfTileParts - nExtraTp; i++)
 				{
 					tilePartLen[tile][i] = tmpA[i];
 				}
@@ -759,7 +739,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// Increase and re-copy tilePartNum array
 				tmpA = tilePartNum[tile];
 				tilePartNum[tile] = new int[nrOfTileParts];
-				for (int i = 0; i < nrOfTileParts - nExtraTp; i++)
+				for (var i = 0; i < nrOfTileParts - nExtraTp; i++)
 				{
 					tilePartNum[tile][i] = tmpA[i];
 				}
@@ -767,7 +747,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// Increase and re-copy firsPackOff array
 				tmpA = firstPackOff[tile];
 				firstPackOff[tile] = new int[nrOfTileParts];
-				for (int i = 0; i < nrOfTileParts - nExtraTp; i++)
+				for (var i = 0; i < nrOfTileParts - nExtraTp; i++)
 				{
 					firstPackOff[tile][i] = tmpA[i];
 				}
@@ -775,7 +755,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// Increase and re-copy tilePartHeadLen array
 				tmpA = tilePartHeadLen[tile];
 				tilePartHeadLen[tile] = new int[nrOfTileParts];
-				for (int i = 0; i < nrOfTileParts - nExtraTp; i++)
+				for (var i = 0; i < nrOfTileParts - nExtraTp; i++)
 				{
 					tilePartHeadLen[tile][i] = tmpA[i];
 				}
@@ -801,7 +781,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				else if (tileParts[tile] > nrOfTileParts)
 				{
 					// Already found more tile-parts than signaled here
-					throw new CorruptedCodestreamException("Invalid number " + "of tile-parts in" + " tile " + tile + ": " + nrOfTileParts);
+					throw new CorruptedCodestreamException(
+						$"Invalid number of tile-parts in tile {tile}: {nrOfTileParts}");
 				}
 				else
 				{
@@ -813,9 +794,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					{
 						
 						// Increase and re-copy tilePartLen array
-						int[] tmpA = tilePartLen[tile];
+						var tmpA = tilePartLen[tile];
 						tilePartLen[tile] = new int[nrOfTileParts];
-						for (int i = 0; i < tileParts[tile] - 1; i++)
+						for (var i = 0; i < tileParts[tile] - 1; i++)
 						{
 							tilePartLen[tile][i] = tmpA[i];
 						}
@@ -823,7 +804,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 						// Increase and re-copy tilePartNum array                
 						tmpA = tilePartNum[tile];
 						tilePartNum[tile] = new int[nrOfTileParts];
-						for (int i = 0; i < tileParts[tile] - 1; i++)
+						for (var i = 0; i < tileParts[tile] - 1; i++)
 						{
 							tilePartNum[tile][i] = tmpA[i];
 						}
@@ -831,7 +812,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 						// Increase and re-copy firstPackOff array
 						tmpA = firstPackOff[tile];
 						firstPackOff[tile] = new int[nrOfTileParts];
-						for (int i = 0; i < tileParts[tile] - 1; i++)
+						for (var i = 0; i < tileParts[tile] - 1; i++)
 						{
 							firstPackOff[tile][i] = tmpA[i];
 						}
@@ -839,7 +820,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 						// Increase and re-copy tilePartHeadLen array
 						tmpA = tilePartHeadLen[tile];
 						tilePartHeadLen[tile] = new int[nrOfTileParts];
-						for (int i = 0; i < tileParts[tile] - 1; i++)
+						for (var i = 0; i < tileParts[tile] - 1; i++)
 						{
 							tilePartHeadLen[tile][i] = tmpA[i];
 						}
@@ -856,7 +837,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				hd.extractTilePartMarkSeg(in_Renamed.readShort(), in_Renamed, tile, tilePart);
 			}
-			while ((hd.NumFoundMarkSeg & Melville.CSJ2K.j2k.codestream.reader.HeaderDecoder.SOD_FOUND) == 0);
+			while ((hd.NumFoundMarkSeg & HeaderDecoder.SOD_FOUND) == 0);
 			
 			// Read each marker segment previously found
 			hd.readFoundTilePartMarkSeg(tile, tilePart);
@@ -901,15 +882,15 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		private bool readLyResCompPos(int[][] lys, int lye, int ress, int rese, int comps, int compe)
 		{
 			
-			int minlys = 10000;
-			for (int c = comps; c < compe; c++)
+			var minlys = 10000;
+			for (var c = comps; c < compe; c++)
 			{
 				//loop on components
 				// Check if this component exists
 				if (c >= mdl.Length)
 					continue;
 				
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					//loop on resolution levels
 					if (lys[c] != null && r < lys[c].Length && lys[c][r] < minlys)
@@ -919,26 +900,22 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				}
 			}
 			
-			int t = TileIdx;
+			var t = TileIdx;
 			int start;
-			bool status = false;
-			int lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			int nPrec = 1;
+			var status = false;
+			var lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var nPrec = 1;
 			int hlen, plen;
-			System.String strInfo = "Tile " + TileIdx + " (tile-part:" + curTilePart + "): offset, length, header length\n"; ;
-			bool pph = false;
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
-			{
-				pph = true;
-			}
-			for (int l = minlys; l < lye; l++)
+			var strInfo = $"Tile {TileIdx} (tile-part:{curTilePart}): offset, length, header length\n"; ;
+			var pph = false || ((bool) decSpec.pphs.getTileDef(t));
+			for (var l = minlys; l < lye; l++)
 			{
 				// loop on layers
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					// loop on resolution levels
-					for (int c = comps; c < compe; c++)
+					for (var c = comps; c < compe; c++)
 					{
 						// loop on components
 						// Checks if component exists
@@ -954,7 +931,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							continue;
 						
 						nPrec = pktDec.getNumPrecinct(c, r);
-						for (int p = 0; p < nPrec; p++)
+						for (var p = 0; p < nPrec; p++)
 						{
 							// loop on precincts
 							start = in_Renamed.Pos;
@@ -982,7 +959,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								return true;
 							}
@@ -996,14 +973,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								return true;
 							}
 							
 							// Store packet's head length
 							hlen = in_Renamed.Pos - start;
-							pktHL.Add((System.Int32) hlen);
+							pktHL.Add(hlen);
 							
 							// Reads packet's body
 							status = pktDec.readPktBody(l, r, c, p, cbI[c][r], nBytes);
@@ -1014,7 +991,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								return true;
 							}
@@ -1025,7 +1002,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			return false; // Decoding rate was not reached
 		}
@@ -1058,18 +1035,18 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		private bool readResLyCompPos(int[][] lys, int lye, int ress, int rese, int comps, int compe)
 		{
 			
-			int t = TileIdx; // Current tile index
-			bool status = false; // True if decoding rate is reached when
-			int lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
-			int minlys = 10000;
-			for (int c = comps; c < compe; c++)
+			var t = TileIdx; // Current tile index
+			var status = false; // True if decoding rate is reached when
+			var lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
+			var minlys = 10000;
+			for (var c = comps; c < compe; c++)
 			{
 				//loop on components
 				// Check if this component exists
 				if (c >= mdl.Length)
 					continue;
 				
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					//loop on resolution levels
 					if (r > mdl[c])
@@ -1081,23 +1058,19 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				}
 			}
 			
-			System.String strInfo = "Tile " + TileIdx + " (tile-part:" + curTilePart + "): offset, length, header length\n"; ;
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			bool pph = false;
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
-			{
-				pph = true;
-			}
-			int nPrec = 1;
+			var strInfo = $"Tile {TileIdx} (tile-part:{curTilePart}): offset, length, header length\n"; ;
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var pph = false || ((bool) decSpec.pphs.getTileDef(t));
+			var nPrec = 1;
 			int start;
 			int hlen, plen;
-			for (int r = ress; r < rese; r++)
+			for (var r = ress; r < rese; r++)
 			{
 				// loop on resolution levels
-				for (int l = minlys; l < lye; l++)
+				for (var l = minlys; l < lye; l++)
 				{
 					// loop on layers
-					for (int c = comps; c < compe; c++)
+					for (var c = comps; c < compe; c++)
 					{
 						// loop on components
 						// Checks if component exists
@@ -1114,7 +1087,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 						
 						nPrec = pktDec.getNumPrecinct(c, r);
 						
-						for (int p = 0; p < nPrec; p++)
+						for (var p = 0; p < nPrec; p++)
 						{
 							// loop on precincts
 							start = in_Renamed.Pos;
@@ -1142,7 +1115,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								return true;
 							}
@@ -1156,7 +1129,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								// Output rate of EOF reached
 								return true;
@@ -1164,7 +1137,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							
 							// Store packet's head length
 							hlen = in_Renamed.Pos - start;
-							pktHL.Add((System.Int32) hlen);
+							pktHL.Add(hlen);
 							
 							// Reads packet's body
 							status = pktDec.readPktBody(l, r, c, p, cbI[c][r], nBytes);
@@ -1175,7 +1148,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								if (printInfo)
 								{
-									FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+									FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 								}
 								// Output rate or EOF reached
 								return true;
@@ -1187,7 +1160,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			return false; // Decoding rate was not reached
 		}
@@ -1221,44 +1194,44 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		{
 			// Computes current tile offset in the reference grid
 			
-			Coord nTiles = getNumTiles(null);
-			Coord tileI = getTile(null);
-			int x0siz = hd.ImgULX;
-			int y0siz = hd.ImgULY;
-			int xsiz = x0siz + hd.ImgWidth;
-			int ysiz = y0siz + hd.ImgHeight;
-			int xt0siz = TilePartULX;
-			int yt0siz = TilePartULY;
-			int xtsiz = NomTileWidth;
-			int ytsiz = NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = getNumTiles(null);
+			var tileI = getTile(null);
+			var x0siz = hd.ImgULX;
+			var y0siz = hd.ImgULY;
+			var xsiz = x0siz + hd.ImgWidth;
+			var ysiz = y0siz + hd.ImgHeight;
+			var xt0siz = TilePartULX;
+			var yt0siz = TilePartULY;
+			var xtsiz = NomTileWidth;
+			var ytsiz = NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
-			int t = TileIdx; // Current tile index
+			var t = TileIdx; // Current tile index
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[compe][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[compe][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
 			//Coord numPrec;
-			for (int c = comps; c < compe; c++)
+			for (var c = comps; c < compe; c++)
 			{
 				// components
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					// resolution levels
 					if (c >= mdl.Length)
@@ -1306,35 +1279,31 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
 			int x, y;
 			int hlen, plen;
 			int start;
-			bool status = false;
-			int lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			System.String strInfo = "Tile " + TileIdx + " (tile-part:" + curTilePart + "): offset, length, header length\n"; ;
-			bool pph = false;
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
-			{
-				pph = true;
-			}
-			for (int r = ress; r < rese; r++)
+			var status = false;
+			var lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var strInfo = $"Tile {TileIdx} (tile-part:{curTilePart}): offset, length, header length\n"; ;
+			var pph = false || ((bool) decSpec.pphs.getTileDef(t));
+			for (var r = ress; r < rese; r++)
 			{
 				// loop on resolution levels
 				y = ty0;
 				x = tx0;
-				for (int py = 0; py <= pyend; py++)
+				for (var py = 0; py <= pyend; py++)
 				{
 					// Vertical precincts
-					for (int px = 0; px <= pxend; px++)
+					for (var px = 0; px <= pxend; px++)
 					{
 						// Horiz. precincts
-						for (int c = comps; c < compe; c++)
+						for (var c = comps; c < compe; c++)
 						{
 							// Components
 							if (c >= mdl.Length)
@@ -1350,7 +1319,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								continue;
 							}
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								// layers
 								if (r >= lys[c].Length)
@@ -1384,7 +1353,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1398,14 +1367,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
 								
 								// Store packet's head length
 								hlen = in_Renamed.Pos - start;
-								pktHL.Add((System.Int32) hlen);
+								pktHL.Add(hlen);
 								
 								// Reads packet's body
 								status = pktDec.readPktBody(l, r, c, nextPrec[c][r], cbI[c][r], nBytes);
@@ -1416,7 +1385,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1445,7 +1414,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			return false; // Decoding rate was not reached
 		}
@@ -1477,44 +1446,44 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		private bool readPosCompResLy(int[][] lys, int lye, int ress, int rese, int comps, int compe)
 		{
-			Coord nTiles = getNumTiles(null);
-			Coord tileI = getTile(null);
-			int x0siz = hd.ImgULX;
-			int y0siz = hd.ImgULY;
-			int xsiz = x0siz + hd.ImgWidth;
-			int ysiz = y0siz + hd.ImgHeight;
-			int xt0siz = TilePartULX;
-			int yt0siz = TilePartULY;
-			int xtsiz = NomTileWidth;
-			int ytsiz = NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = getNumTiles(null);
+			var tileI = getTile(null);
+			var x0siz = hd.ImgULX;
+			var y0siz = hd.ImgULY;
+			var xsiz = x0siz + hd.ImgWidth;
+			var ysiz = y0siz + hd.ImgHeight;
+			var xt0siz = TilePartULX;
+			var yt0siz = TilePartULY;
+			var xtsiz = NomTileWidth;
+			var ytsiz = NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
-			int t = TileIdx; // Current tile index
+			var t = TileIdx; // Current tile index
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[compe][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[compe][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
 			//Coord numPrec;
-			for (int c = comps; c < compe; c++)
+			for (var c = comps; c < compe; c++)
 			{
 				// components
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					// resolution levels
 					if (c >= mdl.Length)
@@ -1562,37 +1531,33 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
 			int hlen, plen;
 			int start;
-			bool status = false;
-			int lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			System.String strInfo = "Tile " + TileIdx + " (tile-part:" + curTilePart + "): offset, length, header length\n"; ;
-			bool pph = false;
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
-			{
-				pph = true;
-			}
-			
-			int y = ty0;
-			int x = tx0;
-			for (int py = 0; py <= pyend; py++)
+			var status = false;
+			var lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var strInfo = $"Tile {TileIdx} (tile-part:{curTilePart}): offset, length, header length\n"; ;
+			var pph = false || ((bool) decSpec.pphs.getTileDef(t));
+
+			var y = ty0;
+			var x = tx0;
+			for (var py = 0; py <= pyend; py++)
 			{
 				// Vertical precincts
-				for (int px = 0; px <= pxend; px++)
+				for (var px = 0; px <= pxend; px++)
 				{
 					// Horiz. precincts
-					for (int c = comps; c < compe; c++)
+					for (var c = comps; c < compe; c++)
 					{
 						// Components
 						if (c >= mdl.Length)
 							continue;
-						for (int r = ress; r < rese; r++)
+						for (var r = ress; r < rese; r++)
 						{
 							// Resolution levels
 							if (r > mdl[c])
@@ -1606,7 +1571,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							{
 								continue;
 							}
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								// Layers
 								if (r >= lys[c].Length)
@@ -1640,7 +1605,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1654,14 +1619,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
 								
 								// Store packet's head length
 								hlen = in_Renamed.Pos - start;
-								pktHL.Add((System.Int32) hlen);
+								pktHL.Add(hlen);
 								
 								// Reads packet's body
 								status = pktDec.readPktBody(l, r, c, nextPrec[c][r], cbI[c][r], nBytes);
@@ -1672,7 +1637,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1701,7 +1666,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			return false; // Decoding rate was not reached
 		}
@@ -1733,44 +1698,44 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// </returns>
 		private bool readCompPosResLy(int[][] lys, int lye, int ress, int rese, int comps, int compe)
 		{
-			Coord nTiles = getNumTiles(null);
-			Coord tileI = getTile(null);
-			int x0siz = hd.ImgULX;
-			int y0siz = hd.ImgULY;
-			int xsiz = x0siz + hd.ImgWidth;
-			int ysiz = y0siz + hd.ImgHeight;
-			int xt0siz = TilePartULX;
-			int yt0siz = TilePartULY;
-			int xtsiz = NomTileWidth;
-			int ytsiz = NomTileHeight;
-			int tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
-			int ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
-			int tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
-			int ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
+			var nTiles = getNumTiles(null);
+			var tileI = getTile(null);
+			var x0siz = hd.ImgULX;
+			var y0siz = hd.ImgULY;
+			var xsiz = x0siz + hd.ImgWidth;
+			var ysiz = y0siz + hd.ImgHeight;
+			var xt0siz = TilePartULX;
+			var yt0siz = TilePartULY;
+			var xtsiz = NomTileWidth;
+			var ytsiz = NomTileHeight;
+			var tx0 = (tileI.x == 0)?x0siz:xt0siz + tileI.x * xtsiz;
+			var ty0 = (tileI.y == 0)?y0siz:yt0siz + tileI.y * ytsiz;
+			var tx1 = (tileI.x != nTiles.x - 1)?xt0siz + (tileI.x + 1) * xtsiz:xsiz;
+			var ty1 = (tileI.y != nTiles.y - 1)?yt0siz + (tileI.y + 1) * ytsiz:ysiz;
 			
 			// Get precinct information (number,distance between two consecutive
 			// precincts in the reference grid) in each component and resolution
 			// level
-			int t = TileIdx; // Current tile index
+			var t = TileIdx; // Current tile index
 			PrecInfo prec; // temporary variable
 			int p; // Current precinct index
-			int gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
-			int gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
-			int nPrec = 0; // Total number of found precincts
-			int[][] nextPrec = new int[compe][]; // Next precinct index in each
+			var gcd_x = 0; // Horiz. distance between 2 precincts in the ref. grid
+			var gcd_y = 0; // Vert. distance between 2 precincts in the ref. grid
+			var nPrec = 0; // Total number of found precincts
+			var nextPrec = new int[compe][]; // Next precinct index in each
 			// component and resolution level
-			int minlys = 100000; // minimum layer start index of each component
-			int minx = tx1; // Horiz. offset of the second precinct in the
+			var minlys = 100000; // minimum layer start index of each component
+			var minx = tx1; // Horiz. offset of the second precinct in the
 			// reference grid
-			int miny = ty1; // Vert. offset of the second precinct in the
+			var miny = ty1; // Vert. offset of the second precinct in the
 			// reference grid. 
-			int maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
-			int maxy = ty0; // Max. vert. offset of precincts in the ref. grid
+			var maxx = tx0; // Max. horiz. offset of precincts in the ref. grid
+			var maxy = ty0; // Max. vert. offset of precincts in the ref. grid
 			//Coord numPrec;
-			for (int c = comps; c < compe; c++)
+			for (var c = comps; c < compe; c++)
 			{
 				// components
-				for (int r = ress; r < rese; r++)
+				for (var r = ress; r < rese; r++)
 				{
 					// resolution levels
 					if (c >= mdl.Length)
@@ -1818,38 +1783,34 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (nPrec == 0)
 			{
-				throw new System.InvalidOperationException("Image cannot have no precinct");
+				throw new InvalidOperationException("Image cannot have no precinct");
 			}
 			
-			int pyend = (maxy - miny) / gcd_y + 1;
-			int pxend = (maxx - minx) / gcd_x + 1;
+			var pyend = (maxy - miny) / gcd_y + 1;
+			var pxend = (maxx - minx) / gcd_x + 1;
 			int hlen, plen;
 			int start;
-			bool status = false;
-			int lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			System.String strInfo = "Tile " + TileIdx + " (tile-part:" + curTilePart + "): offset, length, header length\n"; ;
-			bool pph = false;
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
-			{
-				pph = true;
-			}
+			var status = false;
+			var lastByte = firstPackOff[t][curTilePart] + tilePartLen[t][curTilePart] - 1 - tilePartHeadLen[t][curTilePart];
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var strInfo = $"Tile {TileIdx} (tile-part:{curTilePart}): offset, length, header length\n"; ;
+			var pph = ((bool) decSpec.pphs.getTileDef(t));
 			
 			int x, y;
-			for (int c = comps; c < compe; c++)
+			for (var c = comps; c < compe; c++)
 			{
 				// components
 				if (c >= mdl.Length)
 					continue;
 				y = ty0;
 				x = tx0;
-				for (int py = 0; py <= pyend; py++)
+				for (var py = 0; py <= pyend; py++)
 				{
 					// Vertical precincts
-					for (int px = 0; px <= pxend; px++)
+					for (var px = 0; px <= pxend; px++)
 					{
 						// Horiz. precincts
-						for (int r = ress; r < rese; r++)
+						for (var r = ress; r < rese; r++)
 						{
 							// Resolution levels
 							if (r > mdl[c])
@@ -1864,7 +1825,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								continue;
 							}
 							
-							for (int l = minlys; l < lye; l++)
+							for (var l = minlys; l < lye; l++)
 							{
 								// Layers
 								if (r >= lys[c].Length)
@@ -1898,7 +1859,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1912,14 +1873,14 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
 								
 								// Store packet's head length
 								hlen = in_Renamed.Pos - start;
-								pktHL.Add((System.Int32) hlen);
+								pktHL.Add(hlen);
 								
 								// Reads packet's body
 								status = pktDec.readPktBody(l, r, c, nextPrec[c][r], cbI[c][r], nBytes);
@@ -1930,7 +1891,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								{
 									if (printInfo)
 									{
-										FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+										FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 									}
 									return true;
 								}
@@ -1959,7 +1920,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			if (printInfo)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.INFO, strInfo);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.INFO, strInfo);
 			}
 			return false; // Decoding rate was not reached
 		}
@@ -1968,67 +1929,65 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// of each tile and keeps location of each code-block's codewords. The
 		/// last 2 tasks are done by calling specific methods of PktDecoder.
 		/// 
-		/// <p>Then, if a parsing output rate is defined, it keeps information of
+		/// Then, if a parsing output rate is defined, it keeps information of
 		/// first layers only. This operation simulates a creation of a
 		/// layer-resolution-component progressive bit-stream which will be next
-		/// truncated and decoded.</p>
+		/// truncated and decoded.
 		/// 
 		/// </summary>
 		/// <param name="t">Tile index
 		/// 
 		/// </param>
-		/// <seealso cref="PktDecoder">
-		/// 
-		/// </seealso>
+		/// <seealso cref="PktDecoder" />
 		private void  readTilePkts(int t)
 		{
 			pktHL = new List<int>(10);
 			
 			// Number of layers
-			int nl = ((System.Int32) decSpec.nls.getTileDef(t));
+			var nl = ((int) decSpec.nls.getTileDef(t));
 			
 			// If packed packet headers was used, get the packet headers for this
 			// tile
-			if (((System.Boolean) decSpec.pphs.getTileDef(t)))
+			if (((bool) decSpec.pphs.getTileDef(t)))
 			{
 				// Gets packed headers as separate input stream
-				System.IO.MemoryStream pphbais = hd.getPackedPktHead(t);
+				var pphbais = hd.getPackedPktHead(t);
 				
 				// Restarts PktDecoder instance
-				cbI = pktDec.restart(this.nc, mdl, nl, cbI, true, pphbais);
+				cbI = pktDec.restart(nc, mdl, nl, cbI, true, pphbais);
 			}
 			else
 			{
 				// Restarts PktDecoder instance
-				cbI = pktDec.restart(this.nc, mdl, nl, cbI, false, null);
+				cbI = pktDec.restart(nc, mdl, nl, cbI, false, null);
 			}
 			
 			// Reads packets of the tile according to the progression order
-			int[][] pocSpec = ((int[][]) decSpec.pcs.getTileDef(t));
-			int nChg = (pocSpec == null)?1:pocSpec.Length;
+			var pocSpec = ((int[][]) decSpec.pcs.getTileDef(t));
+			var nChg = pocSpec?.Length ?? 1;
 			
 			// Create an array containing information about changes (progression
 			// order type, layers index start, layer index end, resolution level
 			// start, resolution level end, component index start, component index
 			// end). There is one row per progresion order
-			int[][] change = new int[nChg][];
-			for (int i = 0; i < nChg; i++)
+			var change = new int[nChg][];
+			for (var i = 0; i < nChg; i++)
 			{
 				change[i] = new int[6];
 			}
-			int idx = 0; // Index of the current progression order
+			var idx = 0; // Index of the current progression order
 			
 			change[0][1] = 0; // layer start
 			
 			if (pocSpec == null)
 			{
-				change[idx][0] = ((System.Int32) decSpec.pos.getTileDef(t));
+				change[idx][0] = ((int) decSpec.pos.getTileDef(t));
 				// Progression type found in COx marker segments
 				change[idx][1] = nl; // Layer index end
 				change[idx][2] = 0; // resolution level start
 				change[idx][3] = decSpec.dls.getMaxInTile(t) + 1; // res. level end
 				change[idx][4] = 0; // Component index start
-				change[idx][5] = this.nc; // Component index end
+				change[idx][5] = nc; // Component index end
 			}
 			else
 			{
@@ -2057,7 +2016,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			catch (System.IO.EndOfStreamException)
 			{
-				FacilityManager.getMsgLogger().printmsg(Melville.CSJ2K.j2k.util.MsgLogger_Fields.WARNING, "Codestream truncated in tile " + t);
+				FacilityManager.getMsgLogger().printmsg(MsgLogger_Fields.WARNING, $"Codestream truncated in tile {t}");
 				return ;
 			}
 			
@@ -2065,79 +2024,70 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Start and end indexes for layers, resolution levels and components.
 			int lye, ress, rese, comps, compe;
-			bool status = false;
-			int nb = nBytes[t];
-			int[][] lys = new int[this.nc][];
-			for (int c = 0; c < this.nc; c++)
+			var status = false;
+			var nb = nBytes[t];
+			var lys = new int[this.nc][];
+			for (var c = 0; c < this.nc; c++)
 			{
-				lys[c] = new int[((System.Int32) decSpec.dls.getTileCompVal(t, c)) + 1];
+				lys[c] = new int[((int) decSpec.dls.getTileCompVal(t, c)) + 1];
 			}
-			
-			try
+
+			for (var chg = 0; chg < nChg; chg++)
 			{
-				for (int chg = 0; chg < nChg; chg++)
+					
+				lye = change[chg][1];
+				ress = change[chg][2];
+				rese = change[chg][3];
+				comps = change[chg][4];
+				compe = change[chg][5];
+					
+				switch (change[chg][0])
 				{
-					
-					lye = change[chg][1];
-					ress = change[chg][2];
-					rese = change[chg][3];
-					comps = change[chg][4];
-					compe = change[chg][5];
-					
-					switch (change[chg][0])
-					{
 						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.LY_RES_COMP_POS_PROG: 
-							status = readLyResCompPos(lys, lye, ress, rese, comps, compe);
-							break;
-						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_LY_COMP_POS_PROG: 
-							status = readResLyCompPos(lys, lye, ress, rese, comps, compe);
-							break;
-						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.RES_POS_COMP_LY_PROG: 
-							status = readResPosCompLy(lys, lye, ress, rese, comps, compe);
-							break;
-						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.POS_COMP_RES_LY_PROG: 
-							status = readPosCompResLy(lys, lye, ress, rese, comps, compe);
-							break;
-						
-						case Melville.CSJ2K.j2k.codestream.ProgressionType.COMP_POS_RES_LY_PROG: 
-							status = readCompPosResLy(lys, lye, ress, rese, comps, compe);
-							break;
-						
-						default: 
-							throw new System.ArgumentException("Not recognized " + "progression type");
-						
-					}
-					
-					// Update next first layer index 
-					for (int c = comps; c < compe; c++)
-					{
-						if (c >= lys.Length)
-							continue;
-						for (int r = ress; r < rese; r++)
-						{
-							if (r >= lys[c].Length)
-								continue;
-							lys[c][r] = lye;
-						}
-					}
-					
-					if (status || usePOCQuit)
-					{
+					case ProgressionType.LY_RES_COMP_POS_PROG: 
+						status = readLyResCompPos(lys, lye, ress, rese, comps, compe);
 						break;
+						
+					case ProgressionType.RES_LY_COMP_POS_PROG: 
+						status = readResLyCompPos(lys, lye, ress, rese, comps, compe);
+						break;
+						
+					case ProgressionType.RES_POS_COMP_LY_PROG: 
+						status = readResPosCompLy(lys, lye, ress, rese, comps, compe);
+						break;
+						
+					case ProgressionType.POS_COMP_RES_LY_PROG: 
+						status = readPosCompResLy(lys, lye, ress, rese, comps, compe);
+						break;
+						
+					case ProgressionType.COMP_POS_RES_LY_PROG: 
+						status = readCompPosResLy(lys, lye, ress, rese, comps, compe);
+						break;
+						
+					default: 
+						throw new ArgumentException("Not recognized " + "progression type");
+						
+				}
+					
+				// Update next first layer index 
+				for (var c = comps; c < compe; c++)
+				{
+					if (c >= lys.Length)
+						continue;
+					for (var r = ress; r < rese; r++)
+					{
+						if (r >= lys[c].Length)
+							continue;
+						lys[c][r] = lye;
 					}
 				}
+					
+				if (status || usePOCQuit)
+				{
+					break;
+				}
 			}
-			catch (System.IO.EndOfStreamException)
-			{
-				// Should never happen. Truncated codestream are normally found by
-				// the class constructor
-				throw;
-			}
-			
+
 			// In truncation mode, update the number of read bytes
 			if (isTruncMode)
 			{
@@ -2161,41 +2111,41 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// code-block, at least, is refused.
 				bool reject;
 				// Stop reading any data from the bit stream
-				bool stopCount = false;
+				var stopCount = false;
 				// Length of each packet's head (in an array)
-				int[] pktHeadLen = new int[pktHL.Count];
-				for (int i = pktHL.Count - 1; i >= 0; i--)
+				var pktHeadLen = new int[pktHL.Count];
+				for (var i = pktHL.Count - 1; i >= 0; i--)
 				{
-					pktHeadLen[i] = ((System.Int32) pktHL[i]);
+					pktHeadLen[i] = pktHL[i];
 				}
 				
 				// Parse each code-block, layer per layer until nBytes[t] is
 				// reached
 				reject = false;
-				for (int l = 0; l < nl; l++)
+				for (var l = 0; l < nl; l++)
 				{
 					// layers
 					if (cbI == null)
 						continue;
-					int nc = cbI.Length;
+					var nc = cbI.Length;
 					
-					int mres = 0;
-					for (int c = 0; c < nc; c++)
+					var mres = 0;
+					for (var c = 0; c < nc; c++)
 					{
 						if (cbI[c] != null && cbI[c].Length > mres)
 							mres = cbI[c].Length;
 					}
-					for (int r = 0; r < mres; r++)
+					for (var r = 0; r < mres; r++)
 					{
 						// resolutions
 						
-						int msub = 0;
-						for (int c = 0; c < nc; c++)
+						var msub = 0;
+						for (var c = 0; c < nc; c++)
 						{
 							if (cbI[c] != null && cbI[c][r] != null && cbI[c][r].Length > msub)
 								msub = cbI[c][r].Length;
 						}
-						for (int s = 0; s < msub; s++)
+						for (var s = 0; s < msub; s++)
 						{
 							// subbands
 							// Only LL subband resolution level 0
@@ -2209,25 +2159,25 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 								continue;
 							}
 							
-							int mnby = 0;
-							for (int c = 0; c < nc; c++)
+							var mnby = 0;
+							for (var c = 0; c < nc; c++)
 							{
 								if (cbI[c] != null && cbI[c][r] != null && cbI[c][r][s] != null && cbI[c][r][s].Length > mnby)
 									mnby = cbI[c][r][s].Length;
 							}
-							for (int m = 0; m < mnby; m++)
+							for (var m = 0; m < mnby; m++)
 							{
 								
-								int mnbx = 0;
-								for (int c = 0; c < nc; c++)
+								var mnbx = 0;
+								for (var c = 0; c < nc; c++)
 								{
 									if (cbI[c] != null && cbI[c][r] != null && cbI[c][r][s] != null && cbI[c][r][s][m] != null && cbI[c][r][s][m].Length > mnbx)
 										mnbx = cbI[c][r][s][m].Length;
 								}
-								for (int n = 0; n < mnbx; n++)
+								for (var n = 0; n < mnbx; n++)
 								{
 									
-									for (int c = 0; c < nc; c++)
+									for (var c = 0; c < nc; c++)
 									{
 										
 										if (cbI[c] == null || cbI[c][r] == null || cbI[c][r][s] == null || cbI[c][r][s][m] == null || cbI[c][r][s][m][n] == null)
@@ -2332,9 +2282,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			// Check validity of tile indexes
 			if (x < 0 || y < 0 || x >= ntX || y >= ntY)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
-			int t = (y * ntX + x);
+			var t = (y * ntX + x);
 			
 			// Reset number of read bytes if needed
 			if (t == 0)
@@ -2345,7 +2295,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					anbytes += 2;
 				}
 				// Restore values of nBytes
-				for (int tIdx = 0; tIdx < nt; tIdx++)
+				for (var tIdx = 0; tIdx < nt; tIdx++)
 				{
 					nBytes[tIdx] = baknBytes[tIdx];
 				}
@@ -2355,8 +2305,8 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			ctX = x;
 			ctY = y;
 			// Calculate tile relative points
-			int ctox = (x == 0)?ax:px + x * ntW;
-			int ctoy = (y == 0)?ay:py + y * ntH;
+			var ctox = (x == 0)?ax:px + x * ntW;
+			var ctoy = (y == 0)?ay:py + y * ntH;
 			for (i = nc - 1; i >= 0; i--)
 			{
 				culx[i] = (ctox + hd.getCompSubsX(i) - 1) / hd.getCompSubsX(i);
@@ -2372,12 +2322,12 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			params_Renamed = new StdDequantizerParams[nc];
 			gb = new int[nc];
 			
-			for (int c = 0; c < nc; c++)
+			for (var c = 0; c < nc; c++)
 			{
 				derived[c] = decSpec.qts.isDerived(t, c);
 				params_Renamed[c] = (StdDequantizerParams) decSpec.qsss.getTileCompVal(t, c);
-				gb[c] = ((System.Int32) decSpec.gbs.getTileCompVal(t, c));
-				mdl[c] = ((System.Int32) decSpec.dls.getTileCompVal(t, c));
+				gb[c] = ((int) decSpec.gbs.getTileCompVal(t, c));
+				mdl[c] = ((int) decSpec.dls.getTileCompVal(t, c));
 				
 				subbTrees[c] = new SubbandSyn(getTileCompWidth(t, c, mdl[c]), getTileCompHeight(t, c, mdl[c]), getResULX(c, mdl[c]), getResULY(c, mdl[c]), mdl[c], decSpec.wfs.getHFilters(t, c), decSpec.wfs.getVFilters(t, c));
 				initSubbandsFields(c, subbTrees[c]);
@@ -2391,7 +2341,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			catch (System.IO.IOException e)
 			{
 				SupportClass.WriteStackTrace(e);
-				throw new System.InvalidOperationException("IO Error when reading tile " + x + " x " + y);
+				throw new InvalidOperationException($"IO Error when reading tile {x} x {y}");
 			}
 		}
 		
@@ -2424,26 +2374,26 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		/// number of layers that is returned depends on 'nl' and the amount of
 		/// available data.
 		/// 
-		/// <p>The argument 'fl' is to be used by subsequent calls to this method
+		/// The argument 'fl' is to be used by subsequent calls to this method
 		/// for the same code-block. In this way supplemental data can be retrieved
 		/// at a later time. The fact that data from more than one layer can be
 		/// returned means that several packets from the same code-block, of the
-		/// same component, and the same tile, have been concatenated.</p>
+		/// same component, and the same tile, have been concatenated.
 		/// 
-		/// <p>The returned compressed code-block can have its progressive
+		/// The returned compressed code-block can have its progressive
 		/// attribute set. If this attribute is set it means that more data can be
 		/// obtained by subsequent calls to this method (subject to transmission
 		/// delays, etc). If the progressive attribute is not set it means that the
 		/// returned data is all the data that can be obtained for the specified
-		/// code-block.</p>
+		/// code-block.
 		/// 
-		/// <p>The compressed code-block is uniquely specified by the current tile,
+		/// The compressed code-block is uniquely specified by the current tile,
 		/// the component (identified by 'c'), the subband (indentified by 'sb')
-		/// and the code-block vertical and horizontal indexes 'n' and 'm'.</p>
+		/// and the code-block vertical and horizontal indexes 'n' and 'm'.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'DecLyrdCBlk' object
+		/// The 'ulx' and 'uly' members of the returned 'DecLyrdCBlk' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.
@@ -2480,16 +2430,16 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 		public override DecLyrdCBlk getCodeBlock(int c, int m, int n, SubbandSyn sb, int fl, int nl, DecLyrdCBlk ccb)
 		{
 			
-			int t = TileIdx;
+			var t = TileIdx;
 			CBlkInfo rcb; // requested code-block
-			int r = sb.resLvl; // Resolution level
-			int s = sb.sbandIdx; // Subband index
+			var r = sb.resLvl; // Resolution level
+			var s = sb.sbandIdx; // Subband index
 			int tpidx;
 			int passtype;
 			
 			// Number of layers
-			int numLayers = ((System.Int32) decSpec.nls.getTileDef(t));
-			int options = ((System.Int32) decSpec.ecopts.getTileCompVal(t, c));
+			var numLayers = ((int) decSpec.nls.getTileDef(t));
+			var options = ((int) decSpec.ecopts.getTileCompVal(t, c));
 			if (nl < 0)
 			{
 				nl = numLayers - fl + 1;
@@ -2504,10 +2454,10 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Check validity of resquested resolution level (according to the
 			// "-res" option).
-			int maxdl = getSynSubbandTree(t, c).resLvl;
+			var maxdl = getSynSubbandTree(t, c).resLvl;
 			if (r > targetRes + maxdl - decSpec.dls.Min)
 			{
-				throw new System.InvalidOperationException("JJ2000 error: requesting a code-block " + "disallowed by the '-res' option.");
+				throw new InvalidOperationException("JJ2000 error: requesting a code-block " + "disallowed by the '-res' option.");
 			}
 			
 			// Check validity of all the arguments
@@ -2517,16 +2467,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				
 				if (fl < 1 || fl > numLayers || fl + nl - 1 > numLayers)
 				{
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				}
 			}
-			catch (System.IndexOutOfRangeException)
+			catch (IndexOutOfRangeException)
 			{
-				throw new System.ArgumentException("Code-block (t:" + t + ", c:" + c + ", r:" + r + ", s:" + s + ", " + m + "x" + (+ n) + ") not found in codestream");
+				throw new ArgumentException(
+					$"Code-block (t:{t}, c:{c}, r:{r}, s:{s}, {m}x{(+n)}) not found in codestream");
 			}
-			catch (System.NullReferenceException)
+			catch (NullReferenceException)
 			{
-				throw new System.ArgumentException("Code-block (t:" + t + ", c:" + c + ", r:" + r + ", s:" + s + ", " + m + "x" + n + ") not found in bit stream");
+				throw new ArgumentException($"Code-block (t:{t}, c:{c}, r:{r}, s:{s}, {m}x{n}) not found in bit stream");
 			}
 			
 			// Create DecLyrdCBlk object if necessary
@@ -2559,7 +2510,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Search for index of first truncation point (first layer where
 			// length of data is not zero)
-			int l = 0;
+			var l = 0;
 			while ((l < rcb.len.Length) && (rcb.len[l] == 0))
 			{
 				ccb.ftpIdx += rcb.ntp[l];
@@ -2577,13 +2528,13 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			
 			// Calculate number of terminated segments
 			int nts;
-			if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
+			if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
 			{
 				// Regular termination in use One segment per pass
 				// (i.e. truncation point)
 				nts = ccb.nTrunc - ccb.ftpIdx;
 			}
-			else if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS) != 0)
+			else if ((options & StdEntropyCoderOptions.OPT_BYPASS) != 0)
 			{
 				// Selective arithmetic coding bypass mode in use, but no regular
 				// termination: 1 segment upto the end of the last pass of the 4th
@@ -2591,7 +2542,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// one segment upto the end of the 2nd pass and one upto the end
 				// of the 3rd pass.
 				
-				if (ccb.nTrunc <= Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX)
+				if (ccb.nTrunc <= StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX)
 				{
 					nts = 1;
 				}
@@ -2601,9 +2552,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					// Adds one for each terminated pass
 					for (tpidx = ccb.ftpIdx; tpidx < ccb.nTrunc; tpidx++)
 					{
-						if (tpidx >= Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX - 1)
+						if (tpidx >= StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX - 1)
 						{
-							passtype = (tpidx + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_EMPTY_PASSES_IN_MS_BP) % Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_PASSES;
+							passtype = (tpidx + StdEntropyCoderOptions.NUM_EMPTY_PASSES_IN_MS_BP) % StdEntropyCoderOptions.NUM_PASSES;
 							if (passtype == 1 || passtype == 2)
 							{
 								// lazy pass just before MQ pass or MQ pass just
@@ -2631,17 +2582,17 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				ccb.tsLengths = new int[nts];
 			}
-			else if (nts > 1 && (options & (Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS | Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS)) == Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_BYPASS)
+			else if (nts > 1 && (options & (StdEntropyCoderOptions.OPT_BYPASS | StdEntropyCoderOptions.OPT_TERM_PASS)) == StdEntropyCoderOptions.OPT_BYPASS)
 			{
 				ArrayUtil.intArraySet(ccb.tsLengths, 0);
 			}
 			
 			// Fill ccb with compressed data
-			int dataIdx = - 1;
+			var dataIdx = - 1;
 			tpidx = ccb.ftpIdx;
-			int ctp = ccb.ftpIdx; // Cumulative number of truncation
+			var ctp = ccb.ftpIdx; // Cumulative number of truncation
 			// point for the current layer layer
-			int tsidx = 0;
+			var tsidx = 0;
 			int j;
 			
 			for (l = fl - 1; l < fl + nl - 1; l++)
@@ -2668,7 +2619,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 				// Get the terminated segment lengths, if any
 				if (nts == 1)
 					continue;
-				if ((options & Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
+				if ((options & StdEntropyCoderOptions.OPT_TERM_PASS) != 0)
 				{
 					// Regular termination => each pass is terminated
 					for (j = 0; tpidx < ctp; j++, tpidx++)
@@ -2689,9 +2640,9 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					// Lazy coding without regular termination
 					for (j = 0; tpidx < ctp; tpidx++)
 					{
-						if (tpidx >= Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX - 1)
+						if (tpidx >= StdEntropyCoderOptions.FIRST_BYPASS_PASS_IDX - 1)
 						{
-							passtype = (tpidx + Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_EMPTY_PASSES_IN_MS_BP) % Melville.CSJ2K.j2k.entropy.StdEntropyCoderOptions.NUM_PASSES;
+							passtype = (tpidx + StdEntropyCoderOptions.NUM_EMPTY_PASSES_IN_MS_BP) % StdEntropyCoderOptions.NUM_PASSES;
 							if (passtype != 0)
 							{
 								// lazy pass just before MQ pass or MQ
@@ -2736,7 +2687,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			}
 			
 			// Set the progressive flag
-			int lastlayer = fl + nl - 1;
+			var lastlayer = fl + nl - 1;
 			if (lastlayer < numLayers - 1)
 			{
 				for (l = lastlayer + 1; l < numLayers; l++)

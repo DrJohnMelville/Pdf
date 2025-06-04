@@ -45,25 +45,23 @@
 * 
 */
 
-namespace Melville.CSJ2K.j2k.io
+namespace CoreJ2K.j2k.io
 {
 	
 	/// <summary> This interface defines the output of binary data to streams and/or files.
 	/// 
-	/// <P>Byte level output (i.e., for byte, int, long, float, etc.) should
+	/// Byte level output (i.e., for byte, int, long, float, etc.) should
 	/// always be byte aligned. For example, a request to write an
 	/// <tt>int</tt> should always realign the output at the byte level.
 	/// 
-	/// <P>The implementation of this interface should clearly define if
+	/// The implementation of this interface should clearly define if
 	/// multi-byte output data is written in little- or big-endian byte
 	/// ordering (least significant byte first or most significant byte
 	/// first, respectively).
 	/// 
 	/// </summary>
-	/// <seealso cref="EndianType">
-	/// 
-	/// </seealso>
-	internal interface BinaryDataOutput
+	/// <seealso cref="EndianType" />
+	public interface BinaryDataOutput
 	{
 		/// <summary> Returns the endianness (i.e., byte ordering) of the implementing
 		/// class. Note that an implementing class may implement only one
@@ -90,7 +88,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// significant bits) to the output. Prior to writing, the output
 		/// should be realigned at the byte level.
 		/// 
-		/// <P>Signed or unsigned data can be written. To write a signed
+		/// Signed or unsigned data can be written. To write a signed
 		/// value just pass the <tt>byte</tt> value as an argument. To
 		/// write unsigned data pass the <tt>int</tt> value as an argument
 		/// (it will be automatically casted, and only the 8 least
@@ -111,7 +109,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// significant bits) to the output. Prior to writing, the output
 		/// should be realigned at the byte level.
 		/// 
-		/// <P>Signed or unsigned data can be written. To write a signed
+		/// Signed or unsigned data can be written. To write a signed
 		/// value just pass the <tt>short</tt> value as an argument. To
 		/// write unsigned data pass the <tt>int</tt> value as an argument
 		/// (it will be automatically casted, and only the 16 least

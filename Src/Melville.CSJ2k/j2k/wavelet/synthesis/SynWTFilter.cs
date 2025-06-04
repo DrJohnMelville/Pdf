@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This abstract class defines the methods of all synthesis wavelet
@@ -52,10 +52,10 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// classes. Implementations of snythesis filters should inherit from one of
 	/// those classes.
 	/// 
-	/// <p>The length of the output signal is always the sum of the length of the
-	/// low-pass and high-pass input signals.</p>
+	/// The length of the output signal is always the sum of the length of the
+	/// low-pass and high-pass input signals.
 	/// 
-	/// <p>All synthesis wavelet filters should follow the following conventions:
+	/// All synthesis wavelet filters should follow the following conventions:
 	/// 
 	/// <ul> 
 	/// 
@@ -74,18 +74,15 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// 
 	/// </ul>
 	/// 
-	/// <p>The synthetize method may seem very complicated, but is designed to
+	/// The synthetize method may seem very complicated, but is designed to
 	/// minimize the amount of data copying and redundant calculations when used
 	/// for block-based or line-based wavelet transform implementations, while
-	/// being applicable to full-frame transforms as well.</p>
+	/// being applicable to full-frame transforms as well.
 	/// 
 	/// </summary>
-	/// <seealso cref="SynWTFilterInt">
-	/// </seealso>
-	/// <seealso cref="SynWTFilterFloat">
-	/// 
-	/// </seealso>
-	internal abstract class SynWTFilter : WaveletFilter
+	/// <seealso cref="SynWTFilterInt" />
+	/// <seealso cref="SynWTFilterFloat" />
+	public abstract class SynWTFilter : WaveletFilter
 	{
 		public abstract int AnHighPosSupport{get;}
 		public abstract int AnLowNegSupport{get;}
@@ -104,14 +101,14 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// performs the upsampling and fitering with the low pass first filtering
 		/// convention.
 		/// 
-		/// <p>The input low-pass (high-pass) signal resides in the lowSig
+		/// The input low-pass (high-pass) signal resides in the lowSig
 		/// array. The index of the first sample to filter (i.e. that will generate
 		/// the first (second) output sample). is given by lowOff (highOff). This
 		/// array must be of the same type as the one for which the particular
 		/// implementation works with (which is returned by the getDataType()
-		/// method).</p>
+		/// method).
 		/// 
-		/// <p>The low-pass (high-pass) input signal can be interleaved with other
+		/// The low-pass (high-pass) input signal can be interleaved with other
 		/// signals in the same lowSig (highSig) array, and this is determined by
 		/// the lowStep (highStep) argument. This means that the first sample of
 		/// the low-pass (high-pass) input signal is lowSig[lowOff]
@@ -122,12 +119,12 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// columns of a 2-D signal, when it is stored in a line by line order in
 		/// lowSig (highSig), without having to copy the data, in this case the
 		/// lowStep (highStep) argument should be the line width of the low-pass
-		/// (high-pass) signal.</p>
+		/// (high-pass) signal.
 		/// 
-		/// <p>The output signal is placed in the outSig array. The outOff and
+		/// The output signal is placed in the outSig array. The outOff and
 		/// outStep arguments are analogous to the lowOff and lowStep ones, but
 		/// they apply to the outSig array. The outSig array must be long enough to
-		/// hold the low-pass output signal.</p>
+		/// hold the low-pass output signal.
 		/// 
 		/// </summary>
 		/// <param name="lowSig">This is the array that contains the low-pass input
@@ -177,21 +174,21 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// samples in the outSig array. See above.
 		/// 
 		/// </param>
-		public abstract void  synthetize_lpf(System.Object lowSig, int lowOff, int lowLen, int lowStep, System.Object highSig, int highOff, int highLen, int highStep, System.Object outSig, int outOff, int outStep);
+		public abstract void  synthetize_lpf(object lowSig, int lowOff, int lowLen, int lowStep, object highSig, int highOff, int highLen, int highStep, object outSig, int outOff, int outStep);
 		
 		/// <summary> Reconstructs the output signal by the synthesis filter, recomposing the
 		/// low-pass and high-pass input signals in one output signal. This method
 		/// performs the upsampling and fitering with the high pass first filtering
 		/// convention.
 		/// 
-		/// <p>The input low-pass (high-pass) signal resides in the lowSig
+		/// The input low-pass (high-pass) signal resides in the lowSig
 		/// array. The index of the first sample to filter (i.e. that will generate
 		/// the first (second) output sample). is given by lowOff (highOff). This
 		/// array must be of the same type as the one for which the particular
 		/// implementation works with (which is returned by the getDataType()
-		/// method).</p>
+		/// method).
 		/// 
-		/// <p>The low-pass (high-pass) input signal can be interleaved with other
+		/// The low-pass (high-pass) input signal can be interleaved with other
 		/// signals in the same lowSig (highSig) array, and this is determined by
 		/// the lowStep (highStep) argument. This means that the first sample of
 		/// the low-pass (high-pass) input signal is lowSig[lowOff]
@@ -202,12 +199,12 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// columns of a 2-D signal, when it is stored in a line by line order in
 		/// lowSig (highSig), without having to copy the data, in this case the
 		/// lowStep (highStep) argument should be the line width of the low-pass
-		/// (high-pass) signal.</p>
+		/// (high-pass) signal.
 		/// 
-		/// <p>The output signal is placed in the outSig array. The outOff and
+		/// The output signal is placed in the outSig array. The outOff and
 		/// outStep arguments are analogous to the lowOff and lowStep ones, but
 		/// they apply to the outSig array. The outSig array must be long enough to
-		/// hold the low-pass output signal.</p>
+		/// hold the low-pass output signal.
 		/// 
 		/// </summary>
 		/// <param name="lowSig">This is the array that contains the low-pass input
@@ -257,7 +254,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// samples in the outSig array. See above.
 		/// 
 		/// </param>
-		public abstract void  synthetize_hpf(System.Object lowSig, int lowOff, int lowLen, int lowStep, System.Object highSig, int highOff, int highLen, int highStep, System.Object outSig, int outOff, int outStep);
+		public abstract void  synthetize_hpf(object lowSig, int lowOff, int lowLen, int lowStep, object highSig, int highOff, int highLen, int highStep, object outSig, int outOff, int outStep);
 		public abstract bool isSameAsFullWT(int param1, int param2, int param3);
 	}
 }

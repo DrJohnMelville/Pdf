@@ -44,31 +44,27 @@
 * 
 */
 
-namespace Melville.CSJ2K.j2k.wavelet
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This is the generic class from which the ones that hold the analysis or
 	/// synthesis filters to be used in each part of the image derive. See
 	/// AnWTFilterSpec and SynWTFilterSpec.
 	/// 
-	/// <P>The filters to use are defined by a hierarchy. The hierarchy is:
+	/// The filters to use are defined by a hierarchy. The hierarchy is:
 	/// 
-	/// <P>- Tile and component specific filters<br>
+	/// - Tile and component specific filters<br>
 	/// - Tile specific default filters<br>
 	/// - Component main default filters<br>
 	/// - Main default filters<br>
 	/// 
-	/// <P>At the moment tiles are not supported by this class.
+	/// At the moment tiles are not supported by this class.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.wavelet.analysis.AnWTFilterSpec">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.wavelet.synthesis.SynWTFilterSpec">
-	/// 
-	/// </seealso>
+	/// <seealso cref="j2k.wavelet.analysis.AnWTFilterSpec" />
+	/// <seealso cref="j2k.wavelet.synthesis.SynWTFilterSpec" />
 	
-	internal abstract class WTFilterSpec
+	public abstract class WTFilterSpec
 	{
 		/// <summary> Returns the data type used by the filters in this object, as defined in 
 		/// the 'DataBlk' interface.
@@ -77,7 +73,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <returns> The data type of the filters in this object
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
+		/// <seealso cref="j2k.image.DataBlk">
 		/// 
 		/// 
 		/// 
@@ -107,7 +103,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// tiles to the 'FILTER_SPEC_MAIN_DEF' spec type, for the specified number
 		/// of components and tiles.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="nc">The number of components
@@ -128,7 +124,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// 'FILTER_SPEC_MAIN_DEF', 'FILTER_SPEC_COMP_DEF', 'FILTER_SPEC_TILE_DEF',
 		/// 'FILTER_SPEC_TILE_COMP'.
 		/// 
-		/// <P>NOTE: The tile specific things are not supported yet
+		/// NOTE: The tile specific things are not supported yet
 		/// 
 		/// </summary>
 		/// <param name="n">The component index

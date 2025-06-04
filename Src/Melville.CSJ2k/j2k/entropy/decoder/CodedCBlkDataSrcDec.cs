@@ -43,32 +43,26 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 *  */
 
-using Melville.CSJ2K.j2k.wavelet.synthesis;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-namespace Melville.CSJ2K.j2k.entropy.decoder
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This interface defines a source of entropy coded data and methods to
 	/// transfer it in a code-block by code-block basis. In each call to
 	/// 'geCodeBlock()' a specified coded code-block is returned.
 	/// 
-	/// <p>This interface is the source of data for the entropy decoder. See the
-	/// 'EntropyDecoder' class.</p>
+	/// This interface is the source of data for the entropy decoder. See the
+	/// 'EntropyDecoder' class.
 	/// 
-	/// <p>For each coded-code-block the entropy-coded data is returned along with
-	/// its truncation point information in a 'DecLyrdCBlk' object.</p>
+	/// For each coded-code-block the entropy-coded data is returned along with
+	/// its truncation point information in a 'DecLyrdCBlk' object.
 	/// 
 	/// </summary>
-	/// <seealso cref="EntropyDecoder">
-	/// 
-	/// </seealso>
-	/// <seealso cref="DecLyrdCBlk">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.codestream.reader.BitstreamReaderAgent">
-	/// 
-	/// </seealso>
-	internal interface CodedCBlkDataSrcDec:InvWTData
+	/// <seealso cref="EntropyDecoder" />
+	/// <seealso cref="DecLyrdCBlk" />
+	/// <seealso cref="j2k.codestream.reader.BitstreamReaderAgent" />
+	public interface CodedCBlkDataSrcDec:InvWTData
 	{
 		
 		/// <summary> Returns the specified coded code-block, for the specified component, in
@@ -76,26 +70,26 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// number of layers that is returned depends on 'nl' and the amount of
 		/// data available.
 		/// 
-		/// <p>The argument 'fl' is to be used by subsequent calls to this method
+		/// The argument 'fl' is to be used by subsequent calls to this method
 		/// for the same code-block. In this way supplamental data can be retrieved
 		/// at a later time. The fact that data from more than one layer can be
 		/// returned means that several packets from the same code-block, of the
-		/// same component, and the same tile, have been concatenated.</p>
+		/// same component, and the same tile, have been concatenated.
 		/// 
-		/// <p>The returned compressed code-block can have its progressive
+		/// The returned compressed code-block can have its progressive
 		/// attribute set. If this attribute is set it means that more data can be
 		/// obtained by subsequent calls to this method (subject to transmission
 		/// delays, etc). If the progressive attribute is not set it means that the
 		/// returned data is all the data that can be obtained for the specified
-		/// subblock.</p>
+		/// subblock.
 		/// 
-		/// <p>The compressed code-block is uniquely specified by the current tile,
+		/// The compressed code-block is uniquely specified by the current tile,
 		/// the component (identified by 'c'), the subband (indentified by 'sb')
-		/// and the code-bock vertical and horizontal indexes 'm' and 'n'.</p>
+		/// and the code-bock vertical and horizontal indexes 'm' and 'n'.
 		/// 
-		/// <p>The 'ulx' and 'uly' members of the returned 'DecLyrdCBlk' object
+		/// The 'ulx' and 'uly' members of the returned 'DecLyrdCBlk' object
 		/// contain the coordinates of the top-left corner of the block, with
-		/// respect to the tile, not the subband.</p>
+		/// respect to the tile, not the subband.
 		/// 
 		/// </summary>
 		/// <param name="c">The index of the component, from 0 to N-1.

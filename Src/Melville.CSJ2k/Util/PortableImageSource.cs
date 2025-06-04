@@ -1,22 +1,16 @@
-﻿// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+﻿// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
-namespace Melville.CSJ2K.Util    
+namespace CoreJ2K.Util    
 {
     using System;
 
-    using Melville.CSJ2K.j2k;
-    using Melville.CSJ2K.j2k.image;
+    using j2k;
+    using j2k.image;
 
-    internal class PortableImageSource : BlkImgDataSrc
+    public class PortableImageSource : BlkImgDataSrc
     {
         #region FIELDS
-
-        private readonly int w;
-
-        private readonly int h;
-
-        private readonly int nc;
 
         private readonly int rb;
 
@@ -30,9 +24,9 @@ namespace Melville.CSJ2K.Util
 
         public PortableImageSource(int w, int h, int nc, int rb, bool[] sgnd, int[][] comps)
         {
-            this.w = w;
-            this.h = h;
-            this.nc = nc;
+            this.TileWidth = w;
+            this.TileHeight = h;
+            this.NumComps = nc;
             this.rb = rb;
             this.sgnd = sgnd;
             this.comps = comps;
@@ -42,92 +36,29 @@ namespace Melville.CSJ2K.Util
 
         #region PROPERTIES
 
-        public int TileWidth
-        {
-            get
-            {
-                return this.w;
-            }
-        }
+        public int TileWidth { get; }
 
-        public int TileHeight
-        {
-            get
-            {
-                return this.h;
-            }
-        }
+        public int TileHeight { get; }
 
-        public int NomTileWidth
-        {
-            get
-            {
-                return this.w;
-            }
-        }
+        public int NomTileWidth => TileWidth;
 
-        public int NomTileHeight {
-            get
-            {
-                return this.h;
-            }
-        }
+        public int NomTileHeight => TileHeight;
 
-        public int ImgWidth {
-            get
-            {
-                return this.w;
-            }
-        }
+        public int ImgWidth => TileWidth;
 
-        public int ImgHeight {
-            get
-            {
-                return this.h;
-            }
-        }
+        public int ImgHeight => TileHeight;
 
-        public int NumComps {
-            get
-            {
-                return this.nc;
-            }
-        }
+        public int NumComps { get; }
 
-        public int TileIdx {
-            get
-            {
-                return 0;
-            }
-        }
+        public int TileIdx => 0;
 
-        public int TilePartULX {
-            get
-            {
-                return 0;
-            }
-        }
+        public int TilePartULX => 0;
 
-        public int TilePartULY {
-            get
-            {
-                return 0;
-            }
-        }
+        public int TilePartULY => 0;
 
-        public int ImgULX {
-            get
-            {
-                return 0;
-            }
-        }
+        public int ImgULX => 0;
 
-        public int ImgULY {
-            get
-            {
-                return 0;
-            }
-        }
+        public int ImgULY => 0;
 
         #endregion
 
@@ -147,40 +78,40 @@ namespace Melville.CSJ2K.Util
         {
             if (t != 0)
             {
-                throw new System.InvalidOperationException("Asking a tile-component width for a tile index" + " greater than 0 whereas there is only one tile");
+                throw new InvalidOperationException("Asking a tile-component width for a tile index" + " greater than 0 whereas there is only one tile");
             }
-            return this.w;
+            return TileWidth;
         }
 
         public int getTileCompHeight(int t, int c)
         {
             if (t != 0)
             {
-                throw new System.InvalidOperationException("Asking a tile-component width for a tile index" + " greater than 0 whereas there is only one tile");
+                throw new InvalidOperationException("Asking a tile-component width for a tile index" + " greater than 0 whereas there is only one tile");
             }
-            return this.h;
+            return TileHeight;
         }
 
         public int getCompImgWidth(int c)
         {
-            return this.w;
+            return TileWidth;
         }
 
         public int getCompImgHeight(int c)
         {
-            return this.h;
+            return TileHeight;
         }
 
-        public int getNomRangeBits(int c)
+        public int getNomRangeBits(int compIndex)
         {
-            return this.rb;
+            return rb;
         }
 
         public void setTile(int x, int y)
         {
             if (x != 0 || y != 0)
             {
-                throw new System.ArgumentException();
+                throw new ArgumentException();
             }
         }
 
@@ -228,24 +159,24 @@ namespace Melville.CSJ2K.Util
             return 1;
         }
 
-        public int getFixedPoint(int c)
+        public int GetFixedPoint(int compIndex)
         {
             return 0;
         }
 
-        public DataBlk getInternCompData(DataBlk blk, int c)
+        public DataBlk GetInternCompData(DataBlk blk, int compIndex)
         {
-            if (c < 0 || c >= this.nc)
+            if (compIndex < 0 || compIndex >= NumComps)
             {
-                throw new ArgumentOutOfRangeException("c");
+                throw new ArgumentOutOfRangeException(nameof(compIndex));
             }
 
             var data = new int[blk.w * blk.h];
             for (int y = blk.uly, k = 0; y < blk.uly + blk.h; ++y)
             {
-                for (int x = blk.ulx, xy = blk.uly * this.w + blk.ulx; x < blk.ulx + blk.w; ++x, ++k, ++xy)
+                for (int x = blk.ulx, xy = blk.uly * TileWidth + blk.ulx; x < blk.ulx + blk.w; ++x, ++k, ++xy)
                 {
-                    data[k] = this.comps[c][xy];
+                    data[k] = comps[compIndex][xy];
                 }
             }
 
@@ -257,25 +188,25 @@ namespace Melville.CSJ2K.Util
             return blk;
         }
 
-        public DataBlk getCompData(DataBlk blk, int c)
+        public DataBlk GetCompData(DataBlk blk, int c)
         {
             var newBlk = new DataBlkInt(blk.ulx, blk.uly, blk.w, blk.h);
-            return this.getInternCompData(newBlk, c);
+            return GetInternCompData(newBlk, c);
         }
 
-        public void close()
+        public void Close()
         {
             // Do nothing.
         }
 
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
-            if (c < 0 || c >= this.nc)
+            if (compIndex < 0 || compIndex >= NumComps)
             {
-                throw new ArgumentOutOfRangeException("c");
+                throw new ArgumentOutOfRangeException(nameof(compIndex));
             }
 
-            return this.sgnd[c];
+            return sgnd[compIndex];
         }
 
         #endregion

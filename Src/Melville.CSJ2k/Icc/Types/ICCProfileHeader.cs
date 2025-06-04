@@ -6,8 +6,9 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
 
-namespace Melville.CSJ2K.Icc.Types
+namespace CoreJ2K.Icc.Types
 {
 	
 	
@@ -19,18 +20,14 @@ namespace Melville.CSJ2K.Icc.Types
 	/// in the header.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
+	/// <seealso cref="j2k.icc.ICCProfile" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	internal class ICCProfileHeader
+	public class ICCProfileHeader
 	{
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String eol = System.Environment.NewLine;
-		
 		/// <summary>ICCProfile header byte array. </summary>
 		//private byte[] header = null;
 		
@@ -44,18 +41,18 @@ namespace Melville.CSJ2K.Icc.Types
 		/// <summary>Profile header signature </summary>
 		public static int kdwProfileSigReverse = ICCProfile.getInt(System.Text.Encoding.UTF8.GetBytes("psca"),0);
 
-		private const System.String kdwInputProfile = "scnr";
-		private const System.String kdwDisplayProfile = "mntr";
-		private const System.String kdwRGBData = "RGB ";
-		private const System.String kdwGrayData = "GRAY";
-		private const System.String kdwXYZData = "XYZ ";
-		private const System.String kdwGrayTRCTag = "kTRC";
-		private const System.String kdwRedColorantTag = "rXYZ";
-		private const System.String kdwGreenColorantTag = "gXYZ";
-		private const System.String kdwBlueColorantTag = "bXYZ";
-		private const System.String kdwRedTRCTag = "rTRC";
-		private const System.String kdwGreenTRCTag = "gTRC";
-		private const System.String kdwBlueTRCTag = "bTRC";
+		private const string kdwInputProfile = "scnr";
+		private const string kdwDisplayProfile = "mntr";
+		private const string kdwRGBData = "RGB ";
+		private const string kdwGrayData = "GRAY";
+		private const string kdwXYZData = "XYZ ";
+		private const string kdwGrayTRCTag = "kTRC";
+		private const string kdwRedColorantTag = "rXYZ";
+		private const string kdwGreenColorantTag = "gXYZ";
+		private const string kdwBlueColorantTag = "bXYZ";
+		private const string kdwRedTRCTag = "rTRC";
+		private const string kdwGreenTRCTag = "gTRC";
+		private const string kdwBlueTRCTag = "bTRC";
 		
 		/* Offsets into ICCProfile header byte array. */
 		
@@ -88,7 +85,7 @@ namespace Melville.CSJ2K.Icc.Types
 		public int dwCMMTypeSignature;
 		/// <summary>Header field </summary>
 		// The preferred CMM for this profile
-		internal int dwProfileClass;
+		public int dwProfileClass;
 		/// <summary>Header field </summary>
 		// Profile/Device class signature
 		public int dwColorSpaceType;
@@ -166,7 +163,7 @@ namespace Melville.CSJ2K.Icc.Types
 			dateTime = ICCProfile.getICCDateTime(data, offDateTime);
 			PCSIlluminant = ICCProfile.getXYZNumber(data, offPCSIlluminant);
 			
-			for (int i = 0; i < reserved.Length; ++i)
+			for (var i = 0; i < reserved.Length; ++i)
 				reserved[i] = data[offReserved + i];
 		}
 		
@@ -179,23 +176,23 @@ namespace Melville.CSJ2K.Icc.Types
 		public virtual void  write(System.IO.Stream raf)
 		{
 			
-			raf.Seek(offProfileSize, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwProfileSize);
-			raf.Seek(offCMMTypeSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwCMMTypeSignature);
+			raf.Seek(offProfileSize, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwProfileSize);
+			raf.Seek(offCMMTypeSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwCMMTypeSignature);
 			raf.Seek(offProfileVersion, System.IO.SeekOrigin.Begin); profileVersion.write(raf);
-			raf.Seek(offProfileClass, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwProfileClass);
-			raf.Seek(offColorSpaceType, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwColorSpaceType);
-			raf.Seek(offPCSType, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwPCSType);
+			raf.Seek(offProfileClass, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwProfileClass);
+			raf.Seek(offColorSpaceType, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwColorSpaceType);
+			raf.Seek(offPCSType, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwPCSType);
 			raf.Seek(offDateTime, System.IO.SeekOrigin.Begin); dateTime.write(raf);
-			raf.Seek(offProfileSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwProfileSignature);
-			raf.Seek(offPlatformSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwPlatformSignature);
-			raf.Seek(offCMMFlags, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwCMMFlags);
-			raf.Seek(offDeviceManufacturer, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwDeviceManufacturer);
-			raf.Seek(offDeviceModel, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwDeviceModel);
-			raf.Seek(offDeviceAttributes1, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwDeviceAttributes1);
-			raf.Seek(offDeviceAttributesReserved, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwDeviceAttributesReserved);
-			raf.Seek(offRenderingIntent, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwRenderingIntent);
+			raf.Seek(offProfileSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwProfileSignature);
+			raf.Seek(offPlatformSignature, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwPlatformSignature);
+			raf.Seek(offCMMFlags, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwCMMFlags);
+			raf.Seek(offDeviceManufacturer, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwDeviceManufacturer);
+			raf.Seek(offDeviceModel, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwDeviceModel);
+			raf.Seek(offDeviceAttributes1, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwDeviceAttributes1);
+			raf.Seek(offDeviceAttributesReserved, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwDeviceAttributesReserved);
+			raf.Seek(offRenderingIntent, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwRenderingIntent);
 			raf.Seek(offPCSIlluminant, System.IO.SeekOrigin.Begin); PCSIlluminant.write(raf);
-			raf.Seek(offCreatorSig, System.IO.SeekOrigin.Begin); raf.WriteByte((System.Byte) dwCreatorSig);
+			raf.Seek(offCreatorSig, System.IO.SeekOrigin.Begin); raf.WriteByte((byte) dwCreatorSig);
 			raf.Seek(offReserved, System.IO.SeekOrigin.Begin);
             raf.Write(reserved, 0, reserved.Length);
             //SupportClass.RandomAccessFileSupport.WriteRandomFile(reserved, raf);
@@ -203,26 +200,26 @@ namespace Melville.CSJ2K.Icc.Types
 		
 		
 		/// <summary>String representation of class </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[ICCProfileHeader: ");
+			var rep = new System.Text.StringBuilder("[ICCProfileHeader: ");
 			
-			rep.Append(eol + "         ProfileSize: " + System.Convert.ToString(dwProfileSize, 16));
-			rep.Append(eol + "    CMMTypeSignature: " + System.Convert.ToString(dwCMMTypeSignature, 16));
-			rep.Append(eol + "        ProfileClass: " + System.Convert.ToString(dwProfileClass, 16));
-			rep.Append(eol + "      ColorSpaceType: " + System.Convert.ToString(dwColorSpaceType, 16));
-			rep.Append(eol + "           dwPCSType: " + System.Convert.ToString(dwPCSType, 16));
-			rep.Append(eol + "  dwProfileSignature: " + System.Convert.ToString(dwProfileSignature, 16));
-			rep.Append(eol + " dwPlatformSignature: " + System.Convert.ToString(dwPlatformSignature, 16));
-			rep.Append(eol + "          dwCMMFlags: " + System.Convert.ToString(dwCMMFlags, 16));
-			rep.Append(eol + "dwDeviceManufacturer: " + System.Convert.ToString(dwDeviceManufacturer, 16));
-			rep.Append(eol + "       dwDeviceModel: " + System.Convert.ToString(dwDeviceModel, 16));
-			rep.Append(eol + " dwDeviceAttributes1: " + System.Convert.ToString(dwDeviceAttributes1, 16));
-			rep.Append(eol + "   dwRenderingIntent: " + System.Convert.ToString(dwRenderingIntent, 16));
-			rep.Append(eol + "        dwCreatorSig: " + System.Convert.ToString(dwCreatorSig, 16));
-			rep.Append(eol + "      profileVersion: " + profileVersion);
-			rep.Append(eol + "            dateTime: " + dateTime);
-			rep.Append(eol + "       PCSIlluminant: " + PCSIlluminant);
+			rep.Append($"{Environment.NewLine}         ProfileSize: {Convert.ToString(dwProfileSize, 16)}");
+			rep.Append($"{Environment.NewLine}    CMMTypeSignature: {Convert.ToString(dwCMMTypeSignature, 16)}");
+			rep.Append($"{Environment.NewLine}        ProfileClass: {Convert.ToString(dwProfileClass, 16)}");
+			rep.Append($"{Environment.NewLine}      ColorSpaceType: {Convert.ToString(dwColorSpaceType, 16)}");
+			rep.Append($"{Environment.NewLine}           dwPCSType: {Convert.ToString(dwPCSType, 16)}");
+			rep.Append($"{Environment.NewLine}  dwProfileSignature: {Convert.ToString(dwProfileSignature, 16)}");
+			rep.Append($"{Environment.NewLine} dwPlatformSignature: {Convert.ToString(dwPlatformSignature, 16)}");
+			rep.Append($"{Environment.NewLine}          dwCMMFlags: {Convert.ToString(dwCMMFlags, 16)}");
+			rep.Append($"{Environment.NewLine}dwDeviceManufacturer: {Convert.ToString(dwDeviceManufacturer, 16)}");
+			rep.Append($"{Environment.NewLine}       dwDeviceModel: {Convert.ToString(dwDeviceModel, 16)}");
+			rep.Append($"{Environment.NewLine} dwDeviceAttributes1: {Convert.ToString(dwDeviceAttributes1, 16)}");
+			rep.Append($"{Environment.NewLine}   dwRenderingIntent: {Convert.ToString(dwRenderingIntent, 16)}");
+			rep.Append($"{Environment.NewLine}        dwCreatorSig: {Convert.ToString(dwCreatorSig, 16)}");
+			rep.Append($"{Environment.NewLine}      profileVersion: {profileVersion}");
+			rep.Append($"{Environment.NewLine}            dateTime: {dateTime}");
+			rep.Append($"{Environment.NewLine}       PCSIlluminant: {PCSIlluminant}");
 			return rep.Append("]").ToString();
 		}
 		

@@ -41,17 +41,15 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This class extends ModuleSpec class for synthesis filters specification
 	/// holding purpose.
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class SynWTFilterSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public class SynWTFilterSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs a new 'SynWTFilterSpec' for the specified number of
@@ -85,24 +83,22 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The data type of the filters in this object
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.DataBlk" />
 		public virtual int getWTDataType(int t, int c)
 		{
-			SynWTFilter[][] an = (SynWTFilter[][]) getSpec(t, c);
+			var an = (SynWTFilter[][]) getSpec(t, c);
 			return an[0][0].DataType;
 		}
 		
 		/// <summary> Returns the horizontal analysis filters to be used in component 'n' and
 		/// tile 't'.
 		/// 
-		/// <p>The horizontal analysis filters are returned in an array of
+		/// The horizontal analysis filters are returned in an array of
 		/// SynWTFilter. Each element contains the horizontal filter for each
 		/// resolution level starting with resolution level 1 (i.e. the analysis
 		/// filter to go from resolution level 1 to resolution level 0). If there
 		/// are less elements than the maximum resolution level, then the last
-		/// element is assumed to be repeated.</p>
+		/// element is assumed to be repeated.
 		/// 
 		/// </summary>
 		/// <param name="t">The tile index, in raster scan order
@@ -117,19 +113,19 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// </returns>
 		public virtual SynWTFilter[] getHFilters(int t, int c)
 		{
-			SynWTFilter[][] an = (SynWTFilter[][]) getSpec(t, c);
+			var an = (SynWTFilter[][]) getSpec(t, c);
 			return an[0];
 		}
 		
 		/// <summary> Returns the vertical analysis filters to be used in component 'n' and
 		/// tile 't'.
 		/// 
-		/// <p>The vertical analysis filters are returned in an array of
+		/// The vertical analysis filters are returned in an array of
 		/// SynWTFilter. Each element contains the vertical filter for each
 		/// resolution level starting with resolution level 1 (i.e. the analysis
 		/// filter to go from resolution level 1 to resolution level 0). If there
 		/// are less elements than the maximum resolution level, then the last
-		/// element is assumed to be repeated.</p>
+		/// element is assumed to be repeated.
 		/// 
 		/// </summary>
 		/// <param name="t">The tile index, in raster scan order
@@ -144,39 +140,37 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// </returns>
 		public virtual SynWTFilter[] getVFilters(int t, int c)
 		{
-			SynWTFilter[][] an = (SynWTFilter[][]) getSpec(t, c);
+			var an = (SynWTFilter[][]) getSpec(t, c);
 			return an[1];
 		}
 		
 		/// <summary>Debugging method </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String str = "";
+			var str = "";
 			SynWTFilter[][] an;
 			
-			str += ("nTiles=" + nTiles + "\nnComp=" + nComp + "\n\n");
+			str += $"nTiles={nTiles}\nnComp={nComp}\n\n";
 			
-			for (int t = 0; t < nTiles; t++)
+			for (var t = 0; t < nTiles; t++)
 			{
-				for (int c = 0; c < nComp; c++)
+				for (var c = 0; c < nComp; c++)
 				{
 					an = (SynWTFilter[][]) getSpec(t, c);
 					
-					str += ("(t:" + t + ",c:" + c + ")\n");
+					str += $"(t:{t},c:{c})\n";
 					
 					// Horizontal filters
 					str += "\tH:";
-					for (int i = 0; i < an[0].Length; i++)
+					for (var i = 0; i < an[0].Length; i++)
 					{
-						//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-						str += (" " + an[0][i]);
+						str += ($" {an[0][i]}");
 					}
 					// Horizontal filters
 					str += "\n\tV:";
-					for (int i = 0; i < an[1].Length; i++)
+					for (var i = 0; i < an[1].Length; i++)
 					{
-						//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-						str += (" " + an[1][i]);
+						str += ($" {an[1][i]}");
 					}
 					str += "\n";
 				}
@@ -202,7 +196,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 			SynWTFilter[] hfilter = getHFilters(t, c), vfilter = getVFilters(t, c);
 			
 			// As soon as a filter is not reversible, false can be returned
-			for (int i = hfilter.Length - 1; i >= 0; i--)
+			for (var i = hfilter.Length - 1; i >= 0; i--)
 				if (!hfilter[i].Reversible || !vfilter[i].Reversible)
 					return false;
 			return true;

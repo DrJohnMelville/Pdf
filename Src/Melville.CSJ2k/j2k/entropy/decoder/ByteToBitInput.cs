@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.entropy.decoder
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This class provides an adapter to perform bit based input on byte based
@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// arithmetic coding bypass' mode of the JPEG 2000 entropy coder.
 	/// 
 	/// </summary>
-	internal class ByteToBitInput
+	public class ByteToBitInput
 	{
 		
 		/// <summary>The byte based input </summary>

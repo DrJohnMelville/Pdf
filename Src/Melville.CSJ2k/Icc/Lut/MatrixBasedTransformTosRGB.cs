@@ -6,39 +6,29 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
+using System;
+using System.Globalization;
+using ColorSpace = CoreJ2K.Color.ColorSpace;
+using ICCXYZType = CoreJ2K.Icc.Tags.ICCXYZType;
+using image_DataBlkFloat = CoreJ2K.j2k.image.DataBlkFloat;
+using image_DataBlkInt = CoreJ2K.j2k.image.DataBlkInt;
 
-using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
-using ICCXYZType = Melville.CSJ2K.Icc.Tags.ICCXYZType;
-using DataBlkInt = Melville.CSJ2K.j2k.image.DataBlkInt;
-using DataBlkFloat = Melville.CSJ2K.j2k.image.DataBlkFloat;
-namespace Melville.CSJ2K.Icc.Lut
+namespace CoreJ2K.Icc.Lut
 {
 	
 	/// <summary> Transform for applying ICCProfiling to an input DataBlk
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.image.DataBlkInt">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.image.DataBlkFloat">
-	/// </seealso>
+	/// <seealso cref="j2k.image.DataBlkInt" />
+	/// <seealso cref="j2k.image.DataBlkFloat" />
 	/// <version> 	1.0
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal class MatrixBasedTransformTosRGB
+	public class MatrixBasedTransformTosRGB
 	{
+		// Start of constant definitions:
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		private static readonly System.String eol = System.Environment.NewLine;
-		
-		// Start of contant definitions:
-		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'RED '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'RED' was moved to static method 'icc.lut.MatrixBasedTransformTosRGB'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GREEN '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GREEN' was moved to static method 'icc.lut.MatrixBasedTransformTosRGB'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		//UPGRADE_NOTE: Final was removed from the declaration of 'BLUE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'BLUE' was moved to static method 'icc.lut.MatrixBasedTransformTosRGB'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
 		private static readonly int RED;
 		private static readonly int GREEN;
 		private static readonly int BLUE;
@@ -72,15 +62,12 @@ namespace Melville.CSJ2K.Icc.Lut
 		
 		// End of contant definitions:
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'matrix '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private double[] matrix; // Matrix coefficients 
 		
 		private LookUpTableFP[] fLut = new LookUpTableFP[3];
 		private LookUpTable32LinearSRGBtoSRGB lut; // Linear sRGB to sRGB LUT
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'dwMaxValue '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int[] dwMaxValue;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'dwShiftValue '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int[] dwShiftValue;
 		
 		//private int dwMaxCols = 0; // Maximum number of columns that can be processed
@@ -91,40 +78,42 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// <summary> String representation of class</summary>
 		/// <returns> suitable representation for class 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			int i, j;
 			
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[MatrixBasedTransformTosRGB: ");
+			var rep = new System.Text.StringBuilder("[MatrixBasedTransformTosRGB: ");
 			
-			System.Text.StringBuilder body = new System.Text.StringBuilder("  ");
-			body.Append(eol).Append("ksRGBExponent= ").Append(System.Convert.ToString(ksRGBExponent));
-			body.Append(eol).Append("ksRGBScaleAfterExp= ").Append(System.Convert.ToString(ksRGBScaleAfterExp));
-			body.Append(eol).Append("ksRGBReduceAfterExp= ").Append(System.Convert.ToString(ksRGBReduceAfterExp));
+			var body = new System.Text.StringBuilder("  ");
+			body.Append(Environment.NewLine).Append("ksRGBExponent= ").Append(Convert.ToString(ksRGBExponent, CultureInfo.InvariantCulture));
+			body.Append(Environment.NewLine).Append("ksRGBScaleAfterExp= ").Append(Convert.ToString(ksRGBScaleAfterExp, CultureInfo.InvariantCulture));
+			body.Append(Environment.NewLine).Append("ksRGBReduceAfterExp= ").Append(Convert.ToString(ksRGBReduceAfterExp, CultureInfo.InvariantCulture));
 			
 			
-			body.Append(eol).Append("dwMaxValues= ").Append(System.Convert.ToString(dwMaxValue[0])).Append(", ").Append(System.Convert.ToString(dwMaxValue[1])).Append(", ").Append(System.Convert.ToString(dwMaxValue[2]));
+			body.Append(Environment.NewLine).Append("dwMaxValues= ").Append(Convert.ToString(dwMaxValue[0])).Append(", ").Append(Convert.ToString(dwMaxValue[1])).Append(", ").Append(Convert.ToString(dwMaxValue[2]));
 			
-			body.Append(eol).Append("dwShiftValues= ").Append(System.Convert.ToString(dwShiftValue[0])).Append(", ").Append(System.Convert.ToString(dwShiftValue[1])).Append(", ").Append(System.Convert.ToString(dwShiftValue[2]));
+			body.Append(Environment.NewLine).Append("dwShiftValues= ").Append(Convert.ToString(dwShiftValue[0])).Append(", ").Append(Convert.ToString(dwShiftValue[1])).Append(", ").Append(Convert.ToString(dwShiftValue[2]));
 			
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-			body.Append(eol).Append(eol).Append("fLut= ").Append(eol).Append(ColorSpace.indent("  ", "fLut[RED]=  " + fLut[0].ToString())).Append(eol).Append(ColorSpace.indent("  ", "fLut[GRN]=  " + fLut[1].ToString())).Append(eol).Append(ColorSpace.indent("  ", "fLut[BLU]=  " + fLut[2].ToString()));
+			body.Append(Environment.NewLine).Append(Environment.NewLine).Append("fLut= ").Append(Environment.NewLine).Append(ColorSpace.indent("  ",
+				$"fLut[RED]=  {fLut[0]}")).Append(Environment.NewLine).Append(ColorSpace.indent("  ", $"fLut[GRN]=  {fLut[1]}")).Append(Environment.NewLine).Append(ColorSpace.indent("  ",
+				$"fLut[BLU]=  {fLut[2]}"));
 			
 			// Print the matrix
-			body.Append(eol).Append(eol).Append("[matrix ");
+			body.Append(Environment.NewLine).Append(Environment.NewLine).Append("[matrix ");
 			for (i = 0; i < 3; ++i)
 			{
-				body.Append(eol).Append("  ");
+				body.Append(Environment.NewLine).Append("  ");
 				for (j = 0; j < 3; ++j)
 				{
-					body.Append(matrix[3 * i + j] + "   ");
+					body.Append($"{matrix[3 * i + j]}   ");
 				}
 			}
 			body.Append("]");
 			
 			
 			// Print the LinearSRGBtoSRGB lut.
-			body.Append(eol).Append(eol).Append(lut.ToString());
+			body.Append(Environment.NewLine).Append(Environment.NewLine).Append(lut);
 			
 			rep.Append(ColorSpace.indent("  ", body)).Append("]");
 			return rep.Append("]").ToString();
@@ -153,7 +142,7 @@ namespace Melville.CSJ2K.Icc.Lut
 			
 			// Assure the proper type profile for this xform.
 			if (ricc.Type != RestrictedICCProfile.kThreeCompInput)
-				throw new System.ArgumentException("MatrixBasedTransformTosRGB: wrong type ICCProfile supplied");
+				throw new ArgumentException("MatrixBasedTransformTosRGB: wrong type ICCProfile supplied");
 			
 			int c; // component index.
 			this.dwMaxValue = dwMaxValue;
@@ -177,17 +166,17 @@ namespace Melville.CSJ2K.Icc.Lut
 		{
 			
 			// Coefficients from the input linear to PCS matrix
-			double dfPCS00 = ICCXYZType.XYZToDouble(ricc.colorant[RED].x);
-			double dfPCS01 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].x);
-			double dfPCS02 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].x);
-			double dfPCS10 = ICCXYZType.XYZToDouble(ricc.colorant[RED].y);
-			double dfPCS11 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].y);
-			double dfPCS12 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].y);
-			double dfPCS20 = ICCXYZType.XYZToDouble(ricc.colorant[RED].z);
-			double dfPCS21 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].z);
-			double dfPCS22 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].z);
+			var dfPCS00 = ICCXYZType.XYZToDouble(ricc.colorant[RED].x);
+			var dfPCS01 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].x);
+			var dfPCS02 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].x);
+			var dfPCS10 = ICCXYZType.XYZToDouble(ricc.colorant[RED].y);
+			var dfPCS11 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].y);
+			var dfPCS12 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].y);
+			var dfPCS20 = ICCXYZType.XYZToDouble(ricc.colorant[RED].z);
+			var dfPCS21 = ICCXYZType.XYZToDouble(ricc.colorant[GREEN].z);
+			var dfPCS22 = ICCXYZType.XYZToDouble(ricc.colorant[BLUE].z);
 			
-			double[] matrix = new double[9];
+			var matrix = new double[9];
 			matrix[M00] = maxValues[0] * (SRGB00 * dfPCS00 + SRGB01 * dfPCS10 + SRGB02 * dfPCS20);
 			matrix[M01] = maxValues[0] * (SRGB00 * dfPCS01 + SRGB01 * dfPCS11 + SRGB02 * dfPCS21);
 			matrix[M02] = maxValues[0] * (SRGB00 * dfPCS02 + SRGB01 * dfPCS12 + SRGB02 * dfPCS22);
@@ -219,7 +208,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <exception cref="MatrixBasedTransformException">
 		/// </exception>
-		public virtual void  apply(DataBlkInt[] inb, DataBlkInt[] outb)
+		public virtual void  apply(image_DataBlkInt[] inb, image_DataBlkInt[] outb)
 		{
 			int[][] in_Renamed = new int[3][], out_Renamed = new int[3][]; // data references.
 			
@@ -227,8 +216,8 @@ namespace Melville.CSJ2K.Icc.Lut
 			
 			if ((fBuf == null) || (fBuf[0].Length < ncols * nrows))
 			{
-				float[][] tmpArray = new float[3][];
-				for (int i = 0; i < 3; i++)
+				var tmpArray = new float[3][];
+				for (var i = 0; i < 3; i++)
 				{
 					tmpArray[i] = new float[ncols * nrows];
 				}
@@ -236,7 +225,7 @@ namespace Melville.CSJ2K.Icc.Lut
 			}
 			
 			// for each component (rgb)
-			for (int c = 0; c < 3; ++c)
+			for (var c = 0; c < 3; ++c)
 			{
 				
 				// Reference the input and output samples.
@@ -256,20 +245,20 @@ namespace Melville.CSJ2K.Icc.Lut
 			}
 			
 			// For each row and column
-			float[] ra = fBuf[RED];
-			float[] ga = fBuf[GREEN];
-			float[] ba = fBuf[BLUE];
+			var ra = fBuf[RED];
+			var ga = fBuf[GREEN];
+			var ba = fBuf[BLUE];
 			
-			int[] ro = out_Renamed[RED];
-			int[] go = out_Renamed[GREEN];
-			int[] bo = out_Renamed[BLUE];
-			int[] lut32 = lut.lut;
+			var ro = out_Renamed[RED];
+			var go = out_Renamed[GREEN];
+			var bo = out_Renamed[BLUE];
+			var lut32 = lut.lut;
 			
 			double r, g, b;
 			int val, index = 0;
-			for (int y = 0; y < inb[0].h; ++y)
+			for (var y = 0; y < inb[0].h; ++y)
 			{
-				int end = index + inb[0].w;
+				var end = index + inb[0].w;
 				while (index < end)
 				{
 					// Calculate the rgb pixel indices for this row / column
@@ -331,7 +320,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <exception cref="MatrixBasedTransformException">
 		/// </exception>
-		public virtual void  apply(DataBlkFloat[] inb, DataBlkFloat[] outb)
+		public virtual void  apply(image_DataBlkFloat[] inb, image_DataBlkFloat[] outb)
 		{
 			
 			float[][] in_Renamed = new float[3][], out_Renamed = new float[3][]; // data references.
@@ -340,8 +329,8 @@ namespace Melville.CSJ2K.Icc.Lut
 			
 			if ((fBuf == null) || (fBuf[0].Length < ncols * nrows))
 			{
-				float[][] tmpArray = new float[3][];
-				for (int i = 0; i < 3; i++)
+				var tmpArray = new float[3][];
+				for (var i = 0; i < 3; i++)
 				{
 					tmpArray[i] = new float[ncols * nrows];
 				}
@@ -349,7 +338,7 @@ namespace Melville.CSJ2K.Icc.Lut
 			}
 			
 			// for each component (rgb)
-			for (int c = 0; c < 3; ++c)
+			for (var c = 0; c < 3; ++c)
 			{
 				
 				// Reference the input and output pixels.
@@ -368,13 +357,13 @@ namespace Melville.CSJ2K.Icc.Lut
 				standardizeMatrixLineThroughLut(inb[c], fBuf[c], dwMaxValue[c], fLut[c]);
 			}
 			
-			int[] lut32 = lut.lut;
+			var lut32 = lut.lut;
 			
 			// For each row and column 
 			int index = 0, val;
-			for (int y = 0; y < inb[0].h; ++y)
+			for (var y = 0; y < inb[0].h; ++y)
 			{
-				int end = index + inb[0].w;
+				var end = index + inb[0].w;
 				while (index < end)
 				{
 					// Calculate the rgb pixel indices for this row / column
@@ -416,16 +405,16 @@ namespace Melville.CSJ2K.Icc.Lut
 			}
 		}
 		
-		private static void  standardizeMatrixLineThroughLut(DataBlkInt inb, float[] out_Renamed, int dwInputMaxValue, LookUpTableFP lut)
+		private static void  standardizeMatrixLineThroughLut(image_DataBlkInt inb, float[] out_Renamed, int dwInputMaxValue, LookUpTableFP lut)
 		{
 			int wTemp, j = 0;
-			int[] in_Renamed = (int[]) inb.Data; // input pixel reference
-			float[] lutFP = lut.lut;
-			for (int y = inb.uly; y < inb.uly + inb.h; ++y)
+			var in_Renamed = (int[]) inb.Data; // input pixel reference
+			var lutFP = lut.lut;
+			for (var y = inb.uly; y < inb.uly + inb.h; ++y)
 			{
-				for (int x = inb.ulx; x < inb.ulx + inb.w; ++x)
+				for (var x = inb.ulx; x < inb.ulx + inb.w; ++x)
 				{
-					int i = inb.offset + (y - inb.uly) * inb.scanw + (x - inb.ulx); // pixel index.
+					var i = inb.offset + (y - inb.uly) * inb.scanw + (x - inb.ulx); // pixel index.
 					if (in_Renamed[i] > dwInputMaxValue)
 						wTemp = dwInputMaxValue;
 					else if (in_Renamed[i] < 0)
@@ -438,18 +427,18 @@ namespace Melville.CSJ2K.Icc.Lut
 		}
 		
 		
-		private static void  standardizeMatrixLineThroughLut(DataBlkFloat inb, float[] out_Renamed, float dwInputMaxValue, LookUpTableFP lut)
+		private static void  standardizeMatrixLineThroughLut(image_DataBlkFloat inb, float[] out_Renamed, float dwInputMaxValue, LookUpTableFP lut)
 		{
-			int j = 0;
+			var j = 0;
 			float wTemp;
-			float[] in_Renamed = (float[]) inb.Data; // input pixel reference
-			float[] lutFP = lut.lut;
+			var in_Renamed = (float[]) inb.Data; // input pixel reference
+			var lutFP = lut.lut;
 			
-			for (int y = inb.uly; y < inb.uly + inb.h; ++y)
+			for (var y = inb.uly; y < inb.uly + inb.h; ++y)
 			{
-				for (int x = inb.ulx; x < inb.ulx + inb.w; ++x)
+				for (var x = inb.ulx; x < inb.ulx + inb.w; ++x)
 				{
-					int i = inb.offset + (y - inb.uly) * inb.scanw + (x - inb.ulx); // pixel index.
+					var i = inb.offset + (y - inb.uly) * inb.scanw + (x - inb.ulx); // pixel index.
 					if (in_Renamed[i] > dwInputMaxValue)
 						wTemp = dwInputMaxValue;
 					else if (in_Renamed[i] < 0)

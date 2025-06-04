@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2016 Melville.CSJ2K contributors.
+// Copyright (c) 2007-2016 CSJ2K contributors.
 // Licensed under the BSD 3-Clause License.
 
 /*
@@ -34,28 +34,28 @@
  * Copyright (c) 1999/2000 JJ2000 Partners.
  */
 
-namespace Melville.CSJ2K.j2k.util
+namespace CoreJ2K.j2k.util
 {
 
     /// <summary> This class provides a simple common abstraction of a facility that logs
     /// and/or displays messages or simple strings. The underlying facility can be
     /// a terminal, text file, text area in a GUI display, dialog boxes in a GUI
     /// display, etc., or a combination of those.
-    /// <p>Messages are short strings (a couple of lines) that indicate some state
+    /// Messages are short strings (a couple of lines) that indicate some state
     /// of the program, and that have a severity code associated with them (see
     /// below). Simple strings is text (can be long) that has no severity code
     /// associated with it. Typical use of simple strings is to display help
-    /// texts.</p>
-    /// <p>Each message has a severity code, which can be one of the following:
+    /// texts.
+    /// Each message has a severity code, which can be one of the following:
     /// LOG, INFO, WARNING, ERROR. Each implementation should treat each severity
-    /// code in a way which corresponds to the type of diplay used.</p>
-    /// <p>Messages are printed via the 'printmsg()' method. Simple strings are
+    /// code in a way which corresponds to the type of diplay used.
+    /// Messages are printed via the 'printmsg()' method. Simple strings are
     /// printed via the 'print()', 'println()' and 'flush()' methods, each simple
     /// string is considered to be terminated once the 'flush()' method has been
     /// called. The 'printmsg()' method should never be called before a previous
-    /// simple string has been terminated.</p>
+    /// simple string has been terminated.
     /// </summary>
-    internal struct MsgLogger_Fields
+    public struct MsgLogger_Fields
     {
         /// <summary>Severity of message. LOG messages are just for bookkeeping and do not
         /// need to be displayed in the majority of cases 
@@ -79,7 +79,7 @@ namespace Melville.CSJ2K.j2k.util
         public const int ERROR = 3;
     }
 
-    internal interface IMsgLogger
+    public interface IMsgLogger
     {
         /// <summary> Prints the message 'msg' to the output device, appending a newline,
         /// with severity 'sev'. Some implementations where the appended newline is

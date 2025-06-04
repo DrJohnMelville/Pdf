@@ -44,27 +44,23 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using System.Threading;
-
-namespace Melville.CSJ2K.j2k.entropy.decoder
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This class provides a byte input facility from byte buffers. It is similar
 	/// to the ByteArrayInputStream class, but adds the possibility to add data to
 	/// the stream after the creation of the object.
 	/// 
-	/// <p>Unlike the ByteArrayInputStream this class is not thread safe (i.e. no
+	/// Unlike the ByteArrayInputStream this class is not thread safe (i.e. no
 	/// two threads can use the same object at the same time, but different objects
-	/// may be used in different threads).</p>
+	/// may be used in different threads).
 	/// 
-	/// <p>This class can modify the contents of the buffer given to the
-	/// constructor, when the addByteArray() method is called.</p>
+	/// This class can modify the contents of the buffer given to the
+	/// constructor, when the addByteArray() method is called.
 	/// 
 	/// </summary>
-	/// <seealso cref="InputStream">
-	/// 
-	/// </seealso>
-	internal class ByteInputBuffer
+	/// <seealso cref="InputStream" />
+	public class ByteInputBuffer
 	{
 		
 		/// <summary>The byte array containing the data </summary>
@@ -97,7 +93,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// specified byte array. Up to length characters are to be read from the
 		/// byte array, starting at the indicated offset.
 		/// 
-		/// <p>The byte array is not copied.</p>
+		/// The byte array is not copied.
 		/// 
 		/// </summary>
 		/// <param name="buf">the input buffer.
@@ -122,7 +118,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// 'off+len', where 'off' and 'len' are the offset and length of the
 		/// current byte buffer.
 		/// 
-		/// <p>The byte array is not copied.</p>
+		/// The byte array is not copied.
 		/// 
 		/// </summary>
 		/// <param name="buf">the input buffer. If null it is the current input buffer.
@@ -143,7 +139,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 			{
 				if (length < 0 || count + length > this.buf.Length)
 				{
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				}
 				if (offset < 0)
 				{
@@ -161,15 +157,14 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 				// New input buffer
 				if (offset < 0 || length < 0 || offset + length > buf.Length)
 				{
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				}
 				this.buf = buf;
 				count = offset + length;
 				pos = offset;
 			}
 		}
-
-        private Lock mutex = new();
+		
 		/// <summary> Adds the specified data to the end of the byte array stream. This
 		/// method modifies the byte array buffer. It can also discard the already
 		/// read input.
@@ -185,15 +180,14 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <param name="len">The number of elements to add to the array.
 		/// 
 		/// </param>
-		//UPGRADE_NOTE: Synchronized keyword was removed from method 'addByteArray'. Lock expression was added. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1027'"
 		public virtual void  addByteArray(byte[] data, int off, int len)
 		{
-			lock (mutex)
+			lock (this)
 			{
 				// Check integrity
 				if (len < 0 || off < 0 || len + off > buf.Length)
 				{
-					throw new System.ArgumentException();
+					throw new ArgumentException();
 				}
 				// Copy new data
 				if (count + len <= buf.Length)
@@ -213,7 +207,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 					else
 					{
 						// Not enough place in 'buf', use new buffer
-						byte[] oldbuf = buf;
+						var oldbuf = buf;
 						buf = new byte[count - pos + len];
 						// Copy buffer
 						Array.Copy(oldbuf, count, buf, 0, count - pos);
@@ -232,7 +226,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// because the end of the stream has been reached, the EOFException
 		/// exception is thrown.
 		/// 
-		/// <p>This method is not synchronized, so it is not thread safe.</p>
+		/// This method is not synchronized, so it is not thread safe.
 		/// 
 		/// </summary>
 		/// <returns> The byte read in the range 0-255.
@@ -245,7 +239,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		{
 			if (pos < count)
 			{
-				return (int) buf[pos++] & 0xFF;
+				return buf[pos++] & 0xFF;
 			}
 			else
 			{
@@ -257,7 +251,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// returned as an int in the range 0 to 255. If no byte is available
 		/// because the end of the stream has been reached, -1 is returned.
 		/// 
-		/// <p>This method is not synchronized, so it is not thread safe.</p>
+		/// This method is not synchronized, so it is not thread safe.
 		/// 
 		/// </summary>
 		/// <returns> The byte read in the range 0-255, or -1 if the end of stream
@@ -268,7 +262,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		{
 			if (pos < count)
 			{
-				return (int) buf[pos++] & 0xFF;
+				return buf[pos++] & 0xFF;
 			}
 			else
 			{

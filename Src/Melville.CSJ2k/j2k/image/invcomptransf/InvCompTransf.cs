@@ -41,11 +41,11 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.util;
+using CoreJ2K.j2k.decoder;
+using CoreJ2K.j2k.util;
+using CoreJ2K.j2k.wavelet.synthesis;
 
-namespace Melville.CSJ2K.j2k.image.invcomptransf
+namespace CoreJ2K.j2k.image.invcomptransf
 {
 
     /// <summary> This class apply inverse component transformations to the tiles depending
@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
     /// <seealso cref="ModuleSpec">
     /// 
     /// </seealso>
-    internal class InvCompTransf : ImgDataAdapter, BlkImgDataSrc
+    public class InvCompTransf : ImgDataAdapter, BlkImgDataSrc
     {
         /// <summary> Returns the parameters that are used in this class and implementing
         /// classes. It returns a 2D String array. Each of the 1D arrays is for a
@@ -75,14 +75,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// or null if no options are supported.
         /// 
         /// </returns>
-        public static System.String[][] ParameterInfo
-        {
-            get
-            {
-                return pinfo;
-            }
-
-        }
+        public static string[][] ParameterInfo => pinfo;
 
         /// <summary> Returns true if this transform is reversible in current
         /// tile. Reversible component transformations are those which operation
@@ -109,7 +102,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                         return false;
 
                     default:
-                        throw new System.ArgumentException("Non JPEG 2000 part I" + " component transformation");
+                        throw new ArgumentException("Non JPEG 2000 part I component transformation");
 
                 }
             }
@@ -125,8 +118,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// <summary>The list of parameters that is accepted by the inverse
         /// component transformation module. They start with 'M'. 
         /// </summary>
-        //UPGRADE_NOTE: Final was removed from the declaration of 'pinfo'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-        private static readonly System.String[][] pinfo = null;
+        private static readonly string[][] pinfo = null;
 
         /// <summary>Identifier for the Inverse Reversible Component Transformation
         /// (INV_RCT). Value is 1. 
@@ -200,8 +192,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         public InvCompTransf(BlkImgDataSrc imgSrc, DecoderSpecs decSpec, int[] utdepth, ParameterList pl)
             : base(imgSrc)
         {
-            this.cts = decSpec.cts;
-            this.wfs = decSpec.wfs;
+            cts = decSpec.cts;
+            wfs = decSpec.wfs;
             src = imgSrc;
             this.utdepth = utdepth;
             noCompTransf = !(pl.getBooleanParameter("comp_transf"));
@@ -215,7 +207,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// <returns> A descriptive string
         /// 
         /// </returns>
-        public override System.String ToString()
+        public override string ToString()
         {
             switch (transfType)
             {
@@ -230,7 +222,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                     return "No component transformation";
 
                 default:
-                    throw new System.ArgumentException("Non JPEG 2000 part I" + " component transformation");
+                    throw new ArgumentException("Non JPEG 2000 part I component transformation");
 
             }
         }
@@ -243,20 +235,20 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// and 0 should be returned. Position 0 is the position of the least
         /// significant bit in the data.
         /// 
-        /// <P>This default implementation assumes that the number of fractional
+        /// This default implementation assumes that the number of fractional
         /// bits is not modified by the component mixer.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The value of the fixed point position of the source since the
         /// color transform does not affect it.
         /// 
         /// </returns>
-        public virtual int getFixedPoint(int c)
+        public virtual int GetFixedPoint(int compIndex)
         {
-            return src.getFixedPoint(c);
+            return src.GetFixedPoint(compIndex);
         }
 
         /// <summary> Calculates the bitdepths of the transformed components, given the
@@ -282,7 +274,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
 
             if (utdepth.Length < 3 && ttype != NONE)
             {
-                throw new System.ArgumentException();
+                throw new ArgumentException();
             }
 
             if (tdepth == null)
@@ -327,21 +319,21 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                     tdepth[0] =
                         MathUtil.log2(
                             (int)
-                            System.Math.Floor(
+                            Math.Floor(
                                 (1 << utdepth[0]) * 0.299072 + (1 << utdepth[1]) * 0.586914
                                 + (1 << utdepth[2]) * 0.114014) - 1) + 1;
                     //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
                     tdepth[1] =
                         MathUtil.log2(
                             (int)
-                            System.Math.Floor(
+                            Math.Floor(
                                 (1 << utdepth[0]) * 0.168701 + (1 << utdepth[1]) * 0.331299 + (1 << utdepth[2]) * 0.5)
                             - 1) + 1;
                     //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
                     tdepth[2] =
                         MathUtil.log2(
                             (int)
-                            System.Math.Floor(
+                            Math.Floor(
                                 (1 << utdepth[0]) * 0.5 + (1 << utdepth[1]) * 0.418701 + (1 << utdepth[2]) * 0.081299)
                             - 1) + 1;
                     break;
@@ -357,22 +349,22 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// -2^(b-1) and 2^(b-1)-1.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component.
+        /// <param name="compIndex">The index of the component.
         /// 
         /// </param>
         /// <returns> The bitdepth of un-transformed component 'c'.
         /// 
         /// </returns>
-        public override int getNomRangeBits(int c)
+        public override int getNomRangeBits(int compIndex)
         {
-            return utdepth[c];
+            return utdepth[compIndex];
         }
 
         /// <summary> Apply inverse component transformation associated with the current
         /// tile. If no component transformation has been requested by the user,
         /// data are not modified.
         /// 
-        /// <P>This method calls the getInternCompData() method, but respects the
+        /// This method calls the getInternCompData() method, but respects the
         /// definitions of the getCompData() method defined in the BlkImgDataSrc
         /// interface.
         /// 
@@ -387,22 +379,22 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        /// <seealso cref="BlkImgDataSrc.getCompData">
+        /// <seealso cref="BlkImgDataSrc.GetCompData">
         /// 
         /// </seealso>
-        public virtual DataBlk getCompData(DataBlk blk, int c)
+        public virtual DataBlk GetCompData(DataBlk blk, int c)
         {
             // If requesting a component whose index is greater than 3 or there is
             // no transform return a copy of data (getInternCompData returns the
             // actual data in those cases)
             if (c >= 3 || transfType == NONE || noCompTransf)
             {
-                return src.getCompData(blk, c);
+                return src.GetCompData(blk, c);
             }
             else
             {
                 // We can use getInternCompData (since data is a copy anyways)
-                return getInternCompData(blk, c);
+                return GetInternCompData(blk, c);
             }
         }
 
@@ -412,7 +404,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// </summary>
         /// <exception cref="IOException">If an I/O error occurs.
         /// </exception>
-        public void close()
+        public void Close()
         {
             // Do nothing.
         }
@@ -421,13 +413,13 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// component, false if not.
         /// 
         /// </summary>
-        /// <param name="c">The index of the component, from 0 to C-1.
+        /// <param name="compIndex">The index of the component, from 0 to C-1.
         /// 
         /// </param>
         /// <returns> true if the data was originally signed, false if not.
         /// 
         /// </returns>
-        public bool isOrigSigned(int c)
+        public bool IsOrigSigned(int compIndex)
         {
             return false;
         }
@@ -447,33 +439,33 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// <param name="blk">Determines the rectangular area to return.
         /// 
         /// </param>
-        /// <param name="c">Index of the output component.
+        /// <param name="compIndex">Index of the output component.
         /// 
         /// </param>
         /// <returns> The requested DataBlk
         /// 
         /// </returns>
-        public virtual DataBlk getInternCompData(DataBlk blk, int c)
+        public virtual DataBlk GetInternCompData(DataBlk blk, int compIndex)
         {
             // if specified in the command line that no component transform should
             // be made, return original data
-            if (noCompTransf) return src.getInternCompData(blk, c);
+            if (noCompTransf) return src.GetInternCompData(blk, compIndex);
 
             switch (transfType)
             {
 
                 case NONE:
-                    return src.getInternCompData(blk, c);
+                    return src.GetInternCompData(blk, compIndex);
 
 
                 case INV_RCT:
-                    return invRCT(blk, c);
+                    return invRCT(blk, compIndex);
 
                 case INV_ICT:
-                    return invICT(blk, c);
+                    return invICT(blk, compIndex);
 
                 default:
-                    throw new System.ArgumentException("Non JPEG 2000 part I" + " component transformation");
+                    throw new ArgumentException("Non JPEG 2000 part I component transformation");
 
             }
         }
@@ -498,7 +490,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             if (c >= 3 && c < NumComps)
             {
                 // Requesting a component whose index is greater than 3
-                return src.getInternCompData(blk, c);
+                return src.GetInternCompData(blk, c);
             }
             // If asking a component for the first time for this block,
             // do transform for the 3 components
@@ -506,8 +498,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                      || (dbi.ulx + dbi.w < blk.ulx + blk.w) || (dbi.uly + dbi.h < blk.uly + blk.h))
             {
                 int k, k0, k1, k2, mink, i;
-                int w = blk.w; //width of output block
-                int h = blk.h; //height of ouput block
+                var w = blk.w; //width of output block
+                var h = blk.h; //height of ouput block
 
                 //Reference to output block data array
                 outdata[c] = (int[])blk.Data;
@@ -534,11 +526,11 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
 
                 // Fill in buffer blocks (to be read only)
                 // Returned blocks may have different size and position
-                block0 = (DataBlkInt)src.getInternCompData(block0, 0);
+                block0 = (DataBlkInt)src.GetInternCompData(block0, 0);
                 data0 = (int[])block0.Data;
-                block1 = (DataBlkInt)src.getInternCompData(block1, 1);
+                block1 = (DataBlkInt)src.GetInternCompData(block1, 1);
                 data1 = (int[])block1.Data;
-                block2 = (DataBlkInt)src.getInternCompData(block2, 2);
+                block2 = (DataBlkInt)src.GetInternCompData(block2, 2);
                 data2 = (int[])block2.Data;
 
                 // Set the progressiveness of the output data
@@ -588,7 +580,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             else
             {
                 // Requesting a non valid component index
-                throw new System.ArgumentException();
+                throw new ArgumentException();
             }
             return blk;
         }
@@ -613,8 +605,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             {
                 // Requesting a component whose index is greater than 3            
                 int k, k0, mink, i; //  k1, k2 removed
-                int w = blk.w; //width of output block
-                int h = blk.h; //height of ouput block
+                var w = blk.w; //width of output block
+                var h = blk.h; //height of ouput block
 
                 int[] out_data; // array of output data
 
@@ -629,12 +621,12 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                 }
 
                 // Variables
-                DataBlkFloat indb = new DataBlkFloat(blk.ulx, blk.uly, w, h);
+                var indb = new DataBlkFloat(blk.ulx, blk.uly, w, h);
                 float[] indata; // input data array
 
                 // Get the input data
                 // (returned block may be larger than requested one)
-                src.getInternCompData(indb, c);
+                src.GetInternCompData(indb, c);
                 indata = (float[])indb.Data;
 
                 // Copy the data converting from int to int
@@ -662,8 +654,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                      || (dbi.ulx + dbi.w < blk.ulx + blk.w) || (dbi.uly + dbi.h < blk.uly + blk.h))
             {
                 int k, k0, k1, k2, mink, i;
-                int w = blk.w; //width of output block
-                int h = blk.h; //height of ouput block
+                var w = blk.w; //width of output block
+                var h = blk.h; //height of ouput block
 
                 //Reference to output block data array
                 outdata[c] = (int[])blk.Data;
@@ -690,11 +682,11 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
 
                 // Fill in buffer blocks (to be read only)
                 // Returned blocks may have different size and position
-                block0 = (DataBlkFloat)src.getInternCompData(block0, 0);
+                block0 = (DataBlkFloat)src.GetInternCompData(block0, 0);
                 data0 = (float[])block0.Data;
-                block2 = (DataBlkFloat)src.getInternCompData(block2, 1);
+                block2 = (DataBlkFloat)src.GetInternCompData(block2, 1);
                 data2 = (float[])block2.Data;
-                block1 = (DataBlkFloat)src.getInternCompData(block1, 2);
+                block1 = (DataBlkFloat)src.GetInternCompData(block1, 2);
                 data1 = (float[])block1.Data;
 
                 // Set the progressiveness of the output data
@@ -747,7 +739,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             else
             {
                 // Requesting a non valid component index
-                throw new System.ArgumentException();
+                throw new ArgumentException();
             }
             return blk;
         }
@@ -756,7 +748,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// IllegalArgumentException is thrown if the indexes do not
         /// correspond to a valid tile.
         /// 
-        /// <P>This default implementation changes the tile in the source
+        /// This default implementation changes the tile in the source
         /// and re-initializes properly component transformation variables..
         /// 
         /// </summary>
@@ -773,12 +765,12 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             tIdx = TileIdx; // index of the current tile
 
             // initializations
-            if (((System.Int32)cts.getTileDef(tIdx)) == NONE) transfType = NONE;
+            if (((int)cts.getTileDef(tIdx)) == NONE) transfType = NONE;
             else
             {
-                int nc = src.NumComps > 3 ? 3 : src.NumComps;
-                int rev = 0;
-                for (int c = 0; c < nc; c++)
+                var nc = src.NumComps > 3 ? 3 : src.NumComps;
+                var rev = 0;
+                for (var c = 0; c < nc; c++)
                 {
                     rev += (wfs.isReversible(tIdx, c) ? 1 : 0);
                 }
@@ -795,8 +787,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                 else
                 {
                     // Error
-                    throw new System.ArgumentException(
-                        "Wavelet transformation and " + "component transformation" + " not coherent in tile" + tIdx);
+                    throw new ArgumentException(
+                        $"Wavelet transformation and component transformation not coherent in tile{tIdx}");
                 }
             }
         }
@@ -805,7 +797,7 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
         /// then columns). An NoNextElementException is thrown if the
         /// current tile is the last one (i.e. there is no next tile).
         /// 
-        /// <P>This default implementation just advances to the next tile
+        /// This default implementation just advances to the next tile
         /// in the source and re-initializes properly component
         /// transformation variables.
         /// 
@@ -817,12 +809,12 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
             tIdx = TileIdx; // index of the current tile
 
             // initializations
-            if (((System.Int32)cts.getTileDef(tIdx)) == NONE) transfType = NONE;
+            if (((int)cts.getTileDef(tIdx)) == NONE) transfType = NONE;
             else
             {
-                int nc = src.NumComps > 3 ? 3 : src.NumComps;
-                int rev = 0;
-                for (int c = 0; c < nc; c++)
+                var nc = src.NumComps > 3 ? 3 : src.NumComps;
+                var rev = 0;
+                for (var c = 0; c < nc; c++)
                 {
                     rev += (wfs.isReversible(tIdx, c) ? 1 : 0);
                 }
@@ -839,8 +831,8 @@ namespace Melville.CSJ2K.j2k.image.invcomptransf
                 else
                 {
                     // Error
-                    throw new System.ArgumentException(
-                        "Wavelet transformation and " + "component transformation" + " not coherent in tile" + tIdx);
+                    throw new ArgumentException(
+                        $"Wavelet transformation and component transformation not coherent in tile{tIdx}");
                 }
             }
         }

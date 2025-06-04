@@ -41,21 +41,20 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This is an implementation of the 'CBlkWTData' abstract class for signed 32
 	/// bit integer data.
 	/// 
-	/// <p>The methods in this class are declared final, so that they can be
-	/// inlined by inlining compilers.</p>
+	/// The methods in this class are declared final, so that they can be
+	/// inlined by inlining compilers.
 	/// 
 	/// </summary>
-	/// <seealso cref="CBlkWTData">
-	/// 
-	/// </seealso>
-	internal class CBlkWTDataInt:CBlkWTData
+	/// <seealso cref="CBlkWTData" />
+	public class CBlkWTDataInt:CBlkWTData
 	{
 		/// <summary> Returns the data type of this object, always DataBlk.TYPE_INT.
 		/// 
@@ -63,14 +62,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The data type of the object, always DataBlk.TYPE_INT
 		/// 
 		/// </returns>
-		override public int DataType
-		{
-			get
-			{
-				return DataBlk.TYPE_INT;
-			}
-			
-		}
+		public override int DataType => DataBlk.TYPE_INT;
+
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
 		/// array. The returned array is an int array.
@@ -87,18 +80,11 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <param name="arr">The data array to use. Must be an int array.
 		/// 
 		/// </param>
-		override public System.Object Data
+		public override object Data
 		{
-			get
-			{
-				return data_array;
-			}
-			
-			set
-			{
-				data_array = (int[]) value;
-			}
-			
+			get => data_array;
+
+			set => data_array = (int[]) value;
 		}
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
@@ -116,18 +102,11 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <param name="arr">The data array to use.
 		/// 
 		/// </param>
-		virtual public int[] DataInt
+		public virtual int[] DataInt
 		{
-			get
-			{
-				return data_array;
-			}
-			
-			set
-			{
-				data_array = value;
-			}
-			
+			get => data_array;
+
+			set => data_array = value;
 		}
 		
 		/// <summary>The array where the data is stored </summary>

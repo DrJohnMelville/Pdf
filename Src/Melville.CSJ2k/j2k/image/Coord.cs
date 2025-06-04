@@ -41,13 +41,13 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.image
+namespace CoreJ2K.j2k.image
 {
 	
 	/// <summary> This class represents 2-D coordinates.
 	/// 
 	/// </summary>
-	internal class Coord
+	public class Coord
 	{
 		/// <summary>The horizontal coordinate </summary>
 		public int x;
@@ -86,8 +86,8 @@ namespace Melville.CSJ2K.j2k.image
 		/// </param>
 		public Coord(Coord c)
 		{
-			this.x = c.x;
-			this.y = c.y;
+			x = c.x;
+			y = c.y;
 		}
 		
 		/// <summary> Returns a string representation of the object coordinates
@@ -96,9 +96,9 @@ namespace Melville.CSJ2K.j2k.image
 		/// <returns> The vertical and the horizontal coordinates
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "(" + x + "," + y + ")";
+			return $"({x},{y})";
 		}
 	}
 }

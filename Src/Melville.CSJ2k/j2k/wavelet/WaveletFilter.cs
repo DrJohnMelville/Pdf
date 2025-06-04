@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 */
 
-namespace Melville.CSJ2K.j2k.wavelet
+namespace CoreJ2K.j2k.wavelet
 {
 	
 	/// <summary> This interface defines how a wavelet filter implementation should present
@@ -50,27 +50,25 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// and synthesis filters. The AnWTFilter and SynWTFilter classes provide the
 	/// specifics of analysis and synthesis filters.
 	/// 
-	/// <p>Both analysis and filters must be able to return the extent of the
+	/// Both analysis and filters must be able to return the extent of the
 	/// negative and positive support for both synthesis and analysis sides. This
 	/// simplifies the sue of some functionalities that need extra information
-	/// about the filters.</p>
+	/// about the filters.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.wavelet.analysis.AnWTFilter">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.wavelet.synthesis.SynWTFilter">
-	/// 
-	/// </seealso>
-	internal struct WaveletFilter_Fields{
+	/// <seealso cref="j2k.wavelet.analysis.AnWTFilter" />
+	/// <seealso cref="j2k.wavelet.synthesis.SynWTFilter" />
+	public struct WaveletFilter_Fields{
 		/// <summary>The ID for integer lifting spteps implementations </summary>
-		public readonly static int WT_FILTER_INT_LIFT = 0;
+		public const int WT_FILTER_INT_LIFT = 0;
+
 		/// <summary>The ID for floating-point lifting spteps implementations </summary>
-		public readonly static int WT_FILTER_FLOAT_LIFT = 1;
+		public const int WT_FILTER_FLOAT_LIFT = 1;
+
 		/// <summary>The ID for floatring-poitn convolution implementations </summary>
-		public readonly static int WT_FILTER_FLOAT_CONVOL = 2;
+		public static readonly int WT_FILTER_FLOAT_CONVOL = 2;
 	}
-	internal interface WaveletFilter
+	public interface WaveletFilter
 	{
 		//UPGRADE_NOTE: Members of interface 'WaveletFilter' were extracted into structure 'WaveletFilter_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		/// <summary> Returns the negative support of the low-pass analysis filter. That is
@@ -189,7 +187,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <returns> The type of data as defined in the DataBlk interface.
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.DataBlk">
+		/// <seealso cref="j2k.image.DataBlk">
 		/// </seealso>
 		int DataType
 		{
@@ -217,9 +215,9 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// affected by image boundaries processings such as symmetric extension,
 		/// since there is not reference method for this.
 		/// 
-		/// <p>The result depends on the length of the allowed overlap when
+		/// The result depends on the length of the allowed overlap when
 		/// compared to the overlap required by the wavelet filter. It also depends
-		/// on how overlap processing is implemented in the wavelet filter.</p>
+		/// on how overlap processing is implemented in the wavelet filter.
 		/// 
 		/// </summary>
 		/// <param name="tailOvrlp">This is the number of samples in the input signal

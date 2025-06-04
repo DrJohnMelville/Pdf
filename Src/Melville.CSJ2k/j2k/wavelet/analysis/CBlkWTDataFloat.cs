@@ -41,21 +41,20 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This is an implementation of the 'CBlkWTData' abstract class for 32 bit
 	/// floating point data (float).
 	/// 
-	/// <p>The methods in this class are declared final, so that they can be
-	/// inlined by inlining compilers.</p>
+	/// The methods in this class are declared final, so that they can be
+	/// inlined by inlining compilers.
 	/// 
 	/// </summary>
-	/// <seealso cref="CBlkWTData">
-	/// 
-	/// </seealso>
-	internal class CBlkWTDataFloat:CBlkWTData
+	/// <seealso cref="CBlkWTData" />
+	public class CBlkWTDataFloat:CBlkWTData
 	{
 		/// <summary> Returns the identifier of this data type, <tt>TYPE_FLOAT</tt>, as
 		/// defined in <tt>DataBlk</tt>.
@@ -64,17 +63,9 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The type of data stored. Always <tt>DataBlk.TYPE_FLOAT</tt>
 		/// 
 		/// </returns>
-		/// <seealso cref="DataBlk.TYPE_FLOAT">
-		/// 
-		/// </seealso>
-		override public int DataType
-		{
-			get
-			{
-				return DataBlk.TYPE_FLOAT;
-			}
-			
-		}
+		/// <seealso cref="DataBlk.TYPE_FLOAT" />
+		public override int DataType => DataBlk.TYPE_FLOAT;
+
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
 		/// array. The returned array is a float array.
@@ -91,18 +82,11 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <param name="arr">The data array to use. Must be a float array.
 		/// 
 		/// </param>
-		override public System.Object Data
+		public override object Data
 		{
-			get
-			{
-				return data;
-			}
-			
-			set
-			{
-				data = (float[]) value;
-			}
-			
+			get => data;
+
+			set => data = (float[]) value;
 		}
 		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
@@ -120,18 +104,11 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <param name="arr">The data array to use.
 		/// 
 		/// </param>
-		virtual public float[] DataFloat
+		public virtual float[] DataFloat
 		{
-			get
-			{
-				return data;
-			}
-			
-			set
-			{
-				data = value;
-			}
-			
+			get => data;
+
+			set => data = value;
 		}
 		
 		/// <summary>The array where the data is stored </summary>

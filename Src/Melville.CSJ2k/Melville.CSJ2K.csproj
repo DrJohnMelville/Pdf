@@ -7,7 +7,7 @@
         <Nullable>disable</Nullable>
 
         <Title>Melville.CSJ2K</Title>
-        <PackageDescription>Read Jpeg 2000 files.  This is a fork of https://github.com/cureos/csj2k</PackageDescription>
+        <PackageDescription>Read Jpeg 2000 files.  This is a fork of https://github.com/cinderblocks/CoreJ2K</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 

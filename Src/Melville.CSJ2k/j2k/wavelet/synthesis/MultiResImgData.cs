@@ -42,8 +42,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-using Melville.CSJ2K.j2k.image;
-namespace Melville.CSJ2K.j2k.wavelet.synthesis
+using CoreJ2K.j2k.image;
+
+namespace CoreJ2K.j2k.wavelet.synthesis
 {
 	
 	/// <summary> This interface defines methods to access image attributes (width, height,
@@ -55,36 +56,32 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// define methods to transfer image data (i.e. pixel data), that is defined by
 	/// other interfaces, such as 'CBlkQuantDataSrcDec'.
 	/// 
-	/// <p>This interface is very similar to the 'ImgData' one. It differs only by
-	/// the fact that it handles multiple resolutions.</p>
+	/// This interface is very similar to the 'ImgData' one. It differs only by
+	/// the fact that it handles multiple resolutions.
 	/// 
-	/// <p>Resolution levels are counted from 0 to L. Resolution level 0 is the
+	/// Resolution levels are counted from 0 to L. Resolution level 0 is the
 	/// lower resolution, while L is the maximum resolution level, or full
 	/// resolution, which is returned by 'getMaxResLvl()'. Note that there are L+1
-	/// resolution levels available.</p>
+	/// resolution levels available.
 	/// 
-	/// <p>As in the 'ImgData' interface a multi-resolution image lies on top of a
+	/// As in the 'ImgData' interface a multi-resolution image lies on top of a
 	/// canvas. The canvas coordinates are mapped from the full resolution
 	/// reference grid (i.e. resolution level 'L' reference grid) to a resolution
 	/// level 'l' reference grid by '(x_l,y_l) =
 	/// (ceil(x_l/2^(L-l)),ceil(y_l/2^(L-l)))', where '(x,y)' are the full
 	/// resolution reference grid coordinates and '(x_l,y_l)' are the level 'l'
-	/// reference grid coordinates.</p>
+	/// reference grid coordinates.
 	/// 
-	/// <p>For details on the canvas system and its implications consult the
-	/// 'ImgData' interface.</p>
+	/// For details on the canvas system and its implications consult the
+	/// 'ImgData' interface.
 	/// 
-	/// <p>Note that tile sizes may not be obtained by simply dividing the tile
-	/// size in the reference grid by the subsampling factor.</p>
+	/// Note that tile sizes may not be obtained by simply dividing the tile
+	/// size in the reference grid by the subsampling factor.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.image.ImgData">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.quantization.dequantizer.CBlkQuantDataSrcDec">
-	/// 
-	/// </seealso>
-	internal interface MultiResImgData
+	/// <seealso cref="j2k.image.ImgData" />
+	/// <seealso cref="j2k.quantization.dequantizer.CBlkQuantDataSrcDec" />
+	public interface MultiResImgData
 	{
 		/// <summary>Returns the nominal tiles width </summary>
 		int NomTileWidth
@@ -204,9 +201,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The horizontal subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		int getCompSubsX(int c);
 		
 		/// <summary> Returns the component subsampling factor in the vertical direction, for
@@ -221,9 +216,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 		/// <returns> The vertical subsampling factor of component 'c'
 		/// 
 		/// </returns>
-		/// <seealso cref="jj2000.j2k.image.ImgData">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.image.ImgData" />
 		int getCompSubsY(int c);
 		
 		/// <summary> Returns the width in pixels of the specified tile-component for the

@@ -44,20 +44,16 @@
 * 
 */
 
-namespace Melville.CSJ2K.j2k.fileformat
+namespace CoreJ2K.j2k.fileformat
 {
 	
 	
 	/// <summary> This class contains all the markers used in the JPEG 2000 Part I file format
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.fileformat.writer.FileFormatWriter">
-	/// 
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.fileformat.reader.FileFormatReader">
-	/// 
-	/// </seealso>
-	internal struct FileFormatBoxes {
+	/// <seealso cref="j2k.fileformat.writer.FileFormatWriter" />
+	/// <seealso cref="j2k.fileformat.reader.FileFormatReader" />
+	public struct FileFormatBoxes {
 		/// <summary>* Main boxes ***</summary>
 
         public const int READER_REQUIREMENTS_BOX = 0x72726571;

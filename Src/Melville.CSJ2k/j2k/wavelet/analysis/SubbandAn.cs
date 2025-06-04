@@ -41,25 +41,26 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
 
-namespace Melville.CSJ2K.j2k.wavelet.analysis
+namespace CoreJ2K.j2k.wavelet.analysis
 {
 	
 	/// <summary> This class represents a subband in a bidirectional tree structure that
 	/// describes the subband decomposition for a wavelet transform, specifically
 	/// for the analysis side.
 	/// 
-	/// <p>The element can be either a node or a leaf of the tree. If it is a node
+	/// The element can be either a node or a leaf of the tree. If it is a node
 	/// then ther are 4 descendants (LL, HL, LH and HH). If it is a leaf there are
-	/// no descendants.</p>
+	/// no descendants.
 	/// 
-	/// <p>The tree is bidirectional. Each element in the tree structure has a
+	/// The tree is bidirectional. Each element in the tree structure has a
 	/// "parent", which is the subband from which the element was obtained by
 	/// decomposition. The only exception is the root element which has no parent
-	/// (i.e.it's null), for obvious reasons.</p>
+	/// (i.e.it's null), for obvious reasons.
 	/// 
 	/// </summary>
-	internal class SubbandAn:Subband
+	public class SubbandAn:Subband
 	{
 		/// <summary> Returns the parent of this subband. The parent of a subband is the
 		/// subband from which this one was obtained by decomposition. The root
@@ -69,70 +70,40 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The parent subband, or null for the root one.
 		/// 
 		/// </returns>
-		override public Subband Parent
-		{
-			get
-			{
-				return parentband;
-			}
-			
-		}
+		public override Subband Parent => parentband;
+
 		/// <summary> Returns the LL child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The LL child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband LL
-		{
-			get
-			{
-				return subb_LL;
-			}
-			
-		}
+		public override Subband LL => subb_LL;
+
 		/// <summary> Returns the HL (horizontal high-pass) child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The HL child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband HL
-		{
-			get
-			{
-				return subb_HL;
-			}
-			
-		}
+		public override Subband HL => subb_HL;
+
 		/// <summary> Returns the LH (vertical high-pass) child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The LH child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband LH
-		{
-			get
-			{
-				return subb_LH;
-			}
-			
-		}
+		public override Subband LH => subb_LH;
+
 		/// <summary> Returns the HH child subband of this subband.
 		/// 
 		/// </summary>
 		/// <returns> The HH child subband, or null if there are no childs.
 		/// 
 		/// </returns>
-		override public Subband HH
-		{
-			get
-			{
-				return subb_HH;
-			}
-			
-		}
+		public override Subband HH => subb_HH;
+
 		/// <summary> This function returns the horizontal wavelet filter relevant to this
 		/// subband
 		/// 
@@ -140,14 +111,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The horizontal wavelet filter
 		/// 
 		/// </returns>
-		override public WaveletFilter HorWFilter
-		{
-			get
-			{
-				return hFilter;
-			}
-			
-		}
+		public override WaveletFilter HorWFilter => hFilter;
+
 		/// <summary> This function returns the vertical wavelet filter relevant to this
 		/// subband
 		/// 
@@ -155,15 +120,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> The vertical wavelet filter
 		/// 
 		/// </returns>
-		override public WaveletFilter VerWFilter
-		{
-			get
-			{
-				return hFilter;
-			}
-			
-		}
-		
+		public override WaveletFilter VerWFilter => hFilter;
+
 		/// <summary>The reference to the parent of this subband. It is null for the root
 		/// element. It is null by default.  
 		/// </summary>
@@ -214,9 +172,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// contains valid data only after quantization 9See Quantizer).
 		/// 
 		/// </summary>
-		/// <seealso cref="jj2000.j2k.quantization.quantizer.Quantizer">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.quantization.quantizer.Quantizer" />
 		public float stepWMSE;
 		
 		/// <summary> Creates a SubbandAn element with all the default values. The dimensions
@@ -231,12 +187,12 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// top-level dimensions, the number of decompositions, and the
 		/// decomposition tree as specified.
 		/// 
-		/// <p>This constructor just calls the same constructor of the super class,
-		/// and then calculates the L2-norm (or energy weight) of each leaf.</p>
+		/// This constructor just calls the same constructor of the super class,
+		/// and then calculates the L2-norm (or energy weight) of each leaf.
 		/// 
-		/// <p>This constructor does not initialize the value of the magBits or
+		/// This constructor does not initialize the value of the magBits or
 		/// stepWMSE member variables. This variables are normally initialized by
-		/// the quantizer (see Quantizer).</p>
+		/// the quantizer (see Quantizer).
 		/// 
 		/// </summary>
 		/// <param name="w">The top-level width
@@ -268,9 +224,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// WaveletFilter[],WaveletFilter[])
 		/// 
 		/// </seealso>
-		/// <seealso cref="jj2000.j2k.quantization.quantizer.Quantizer">
-		/// 
-		/// </seealso>
+		/// <seealso cref="j2k.quantization.quantizer.Quantizer" />
 		public SubbandAn(int w, int h, int ulcx, int ulcy, int lvls, WaveletFilter[] hfilters, WaveletFilter[] vfilters):base(w, h, ulcx, ulcy, lvls, hfilters, vfilters)
 		{
 			// Caculate the L2-norms
@@ -282,7 +236,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// the childs and initializes them. An IllegalArgumentException is thrown
 		/// if this subband is not a leaf.
 		/// 
-		/// <p>It uses the initChilds() method to initialize the childs.</p>
+		/// It uses the initChilds() method to initialize the childs.
 		/// 
 		/// </summary>
 		/// <param name="hfilter">The horizontal wavelet filter used to decompose this
@@ -296,21 +250,19 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// <returns> A reference to the LL leaf (subb_LL).
 		/// 
 		/// </returns>
-		/// <seealso cref="Subband.initChilds">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Subband.initChilds" />
 		protected internal override Subband split(WaveletFilter hfilter, WaveletFilter vfilter)
 		{
 			// Test that this is a node
 			if (isNode)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			
 			// Modify this element into a node and set the filters
 			isNode = true;
-			this.hFilter = (AnWTFilter) hfilter;
-			this.vFilter = (AnWTFilter) vfilter;
+			hFilter = (AnWTFilter) hfilter;
+			vFilter = (AnWTFilter) vfilter;
 			
 			// Create childs
 			subb_LL = new SubbandAn();
@@ -336,13 +288,13 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// first leaf for which the value has not been calculated yet, and then
 		/// calculates the L2-norm on the return path.
 		/// 
-		/// <p>The wfs argument should be a size 2 array of float arrays (i.e. 2D
+		/// The wfs argument should be a size 2 array of float arrays (i.e. 2D
 		/// array) and it must be of length 2 (or more). When returning, wfs[0]
 		/// will contain the line waveform, and wfs[1] will contain the column
-		/// waveform.</p>
+		/// waveform.
 		/// 
-		/// <p>This method can not be called on an element that ahs a non-negative
-		/// value in l2Norm, since that means that we are done.</p>
+		/// This method can not be called on an element that ahs a non-negative
+		/// value in l2Norm, since that means that we are done.
 		/// 
 		/// </summary>
 		/// <param name="wfs">An size 2 array where the line and column waveforms will be
@@ -385,7 +337,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					{
 						// There is an error! If all childs have non-negative
 						// l2norm, then this node should have non-negative l2norm
-						throw new System.InvalidOperationException("You have found a bug in JJ2000!");
+						throw new InvalidOperationException("You have found a bug in JJ2000!");
 					}
 				}
 				else
@@ -402,7 +354,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			{
 				// This is an error! The calcBasisWaveForms() method is never
 				// called on an element with non-negative l2norm
-				throw new System.InvalidOperationException("You have found a bug in JJ2000!");
+				throw new InvalidOperationException("You have found a bug in JJ2000!");
 			}
 		}
 		
@@ -412,8 +364,8 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		/// method, so that this method is used to assigne the l2norm of the
 		/// previously computed waveforms.
 		/// 
-		/// <p>This method can not be called on an element that ahs a non-negative
-		/// value in l2Norm, since that means that we are done.</p>
+		/// This method can not be called on an element that ahs a non-negative
+		/// value in l2Norm, since that means that we are done.
 		/// 
 		/// </summary>
 		/// <param name="l2n">The L2-norm to assign.
@@ -452,7 +404,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					{
 						// There is an error! If all childs have non-negative
 						// l2norm, then this node should have non-negative l2norm
-						throw new System.InvalidOperationException("You have found a bug in JJ2000!");
+						throw new InvalidOperationException("You have found a bug in JJ2000!");
 					}
 				}
 				else
@@ -465,7 +417,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 			{
 				// This is an error! The assignL2Norm() method is never called on
 				// an element with non-negative l2norm
-				throw new System.InvalidOperationException("You have found a bug in JJ2000!");
+				throw new InvalidOperationException("You have found a bug in JJ2000!");
 			}
 		}
 		
@@ -477,7 +429,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 		private void  calcL2Norms()
 		{
 			int i;
-			float[][] wfs = new float[2][];
+			var wfs = new float[2][];
 			double acc;
 			float l2n;
 			
@@ -494,7 +446,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					acc += wfs[0][i] * wfs[0][i];
 				}
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				l2n = (float) System.Math.Sqrt(acc);
+				l2n = (float) Math.Sqrt(acc);
 				// Compute column L2-norm
 				acc = 0.0;
 				for (i = wfs[1].Length - 1; i >= 0; i--)
@@ -502,7 +454,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 					acc += wfs[1][i] * wfs[1][i];
 				}
 				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				l2n *= (float) System.Math.Sqrt(acc);
+				l2n *= (float) Math.Sqrt(acc);
 				// Release waveforms
 				wfs[0] = null;
 				wfs[1] = null;

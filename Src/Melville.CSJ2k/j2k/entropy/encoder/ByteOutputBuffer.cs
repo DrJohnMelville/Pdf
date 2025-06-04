@@ -44,24 +44,22 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-namespace Melville.CSJ2K.j2k.entropy.encoder
+namespace CoreJ2K.j2k.entropy.encoder
 {
 	
 	/// <summary> This class provides a buffering output stream similar to
 	/// ByteArrayOutputStream, with some additional methods.
 	/// 
-	/// <p>Once an array has been written to an output stream or to a byte array,
+	/// Once an array has been written to an output stream or to a byte array,
 	/// the object can be reused as a new stream if the reset() method is
-	/// called.</p>
+	/// called.
 	/// 
-	/// <p>Unlike the ByteArrayOutputStream class, this class is not thread
-	/// safe.</p>
+	/// Unlike the ByteArrayOutputStream class, this class is not thread
+	/// safe.
 	/// 
 	/// </summary>
-	/// <seealso cref="reset">
-	/// 
-	/// </seealso>
-	internal class ByteOutputBuffer
+	/// <seealso cref="reset" />
+	public class ByteOutputBuffer
 	{
 		
 		/// <summary>The buffer where the data is stored </summary>
@@ -111,7 +109,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 			if (count == buf.Length)
 			{
 				// Resize buffer
-				byte[] tmpbuf = buf;
+				var tmpbuf = buf;
 				buf = new byte[buf.Length + BUF_INC];
 				Array.Copy(tmpbuf, 0, buf, 0, count);
 			}
@@ -176,7 +174,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 		{
 			if (pos >= count)
 			{
-				throw new System.ArgumentException();
+				throw new ArgumentException();
 			}
 			return buf[pos] & 0xFF;
 		}

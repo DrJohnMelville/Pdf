@@ -39,14 +39,14 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.codestream
+namespace CoreJ2K.j2k.codestream
 {
 	
 	/// <summary> Class that holds precinct coordinates and references to contained
 	/// code-blocks in each subband. 
 	/// 
 	/// </summary>
-	internal class PrecInfo
+	public class PrecInfo
 	{
 		
 		/// <summary>Precinct horizontal upper-left coordinate in the reference grid </summary>
@@ -140,9 +140,9 @@ namespace Melville.CSJ2K.j2k.codestream
 		/// <returns> PrecInfo information 
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "ulx=" + ulx + ",uly=" + uly + ",w=" + w + ",h=" + h + ",rgulx=" + rgulx + ",rguly=" + rguly + ",rgw=" + rgw + ",rgh=" + rgh;
+			return $"ulx={ulx},uly={uly},w={w},h={h},rgulx={rgulx},rguly={rguly},rgw={rgw},rgh={rgh}";
 		}
 	}
 }

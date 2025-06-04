@@ -41,22 +41,19 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.entropy
+namespace CoreJ2K.j2k.entropy
 {
 	
 	/// <summary> This is the generic class to store coded (compressed) code-block. It stores
 	/// the compressed data as well as the necessary side-information.
 	/// 
-	/// <p>This class is normally not used. Instead the EncRDCBlk, EncLyrdCBlk and
-	/// the DecLyrdCBlk subclasses are used.</p>
+	/// This class is normally not used. Instead the EncRDCBlk, EncLyrdCBlk and
+	/// the DecLyrdCBlk subclasses are used.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.entropy.encoder.CBlkRateDistStats">
-	/// </seealso>
-	/// <seealso cref="jj2000.j2k.entropy.decoder.DecLyrdCBlk">
-	/// 
-	/// </seealso>
-	internal class CodedCBlk
+	/// <seealso cref="j2k.entropy.encoder.CBlkRateDistStats" />
+	/// <seealso cref="j2k.entropy.decoder.DecLyrdCBlk" />
+	public class CodedCBlk
 	{
 		
 		/// <summary>The horizontal index of the code-block, within the subband. </summary>
@@ -112,9 +109,9 @@ namespace Melville.CSJ2K.j2k.entropy
 		/// <returns> A string with the contents of the object
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			return "m=" + m + ", n=" + n + ", skipMSBP=" + skipMSBP + ", data.length=" + ((data != null)?"" + data.Length:"(null)");
+			return $"m={m}, n={n}, skipMSBP={skipMSBP}, data.length={((data != null) ? $"{data.Length}" : "(null)")}";
 		}
 	}
 }

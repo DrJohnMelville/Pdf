@@ -41,18 +41,17 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 */
 
-using Melville.CSJ2K.j2k.image.input;
+using CoreJ2K.j2k.image.input;
 
-namespace Melville.CSJ2K.j2k.roi.encoder
+namespace CoreJ2K.j2k.roi.encoder
 {
 	
 	/// <summary> This class contains the shape of a single ROI. In the current 
 	/// implementation only rectangles and circles are supported.
 	/// 
 	/// </summary>
-	/// <seealso cref="ROIMaskGenerator">
-	/// </seealso>
-	internal class ROI
+	/// <seealso cref="ROIMaskGenerator" />
+	public class ROI
 	{
 		
 		/// <summary>ImgReaderPGM object with the arbrtrary ROI </summary>
@@ -153,20 +152,20 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 			this.comp = comp;
 			this.x = x;
 			this.y = y;
-			this.r = rad;
+			r = rad;
 		}
 		
 		/// <summary> This function prints all relevant data for the ROI</summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
 			if (arbShape)
 			{
-				return "ROI with arbitrary shape, PGM file= " + maskPGM;
+				return $"ROI with arbitrary shape, PGM file= {maskPGM}";
 			}
 			else if (rect)
-				return "Rectangular ROI, comp=" + comp + " ulx=" + ulx + " uly=" + uly + " w=" + w + " h=" + h;
+				return $"Rectangular ROI, comp={comp} ulx={ulx} uly={uly} w={w} h={h}";
 			else
-				return "Circular ROI,  comp=" + comp + " x=" + x + " y=" + y + " radius=" + r;
+				return $"Circular ROI,  comp={comp} x={x} y={y} radius={r}";
 		}
 	}
 }

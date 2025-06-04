@@ -42,7 +42,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 */
 
-namespace Melville.CSJ2K.j2k.quantization.dequantizer
+namespace CoreJ2K.j2k.quantization.dequantizer
 {
 	
 	/// <summary> This is the generic ineterface for dequantization parameters. Generally,
@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// stream header, that concern dequantization.
 	/// 
 	/// </summary>
-	internal abstract class DequantizerParams
+	public abstract class DequantizerParams
 	{
 		/// <summary> Returns the type of the dequantizer for which the parameters are. The
 		/// types are defined in the Dequantizer class.
@@ -61,9 +61,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 		/// are.
 		/// 
 		/// </returns>
-		/// <seealso cref="Dequantizer">
-		/// 
-		/// </seealso>
+		/// <seealso cref="Dequantizer" />
 		public abstract int DequantizerType{get;}
 	}
 }

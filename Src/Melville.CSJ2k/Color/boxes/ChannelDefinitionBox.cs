@@ -6,11 +6,12 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-
+using System;
 using System.Collections.Generic;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
-using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
-namespace Melville.CSJ2K.Color.Boxes
+using ICCProfile = CoreJ2K.Icc.ICCProfile;
+using io_RandomAccessIO = CoreJ2K.j2k.io.RandomAccessIO;
+
+namespace CoreJ2K.Color.Boxes
 {
 	
 	/// <summary> This class maps the components in the codestream
@@ -22,21 +23,11 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal sealed class ChannelDefinitionBox:JP2Box
+	public sealed class ChannelDefinitionBox:JP2Box
 	{
-		public int NDefs
-		{
-			/* Return the number of channel definitions. */
-			
-			get
-			{
-				return ndefs;
-			}
-			
-		}
-		
-		private int ndefs;
-		private System.Collections.Generic.Dictionary<System.Int32, int[]> definitions = new Dictionary<int, int[]>();
+		public int NDefs { get; private set; }
+
+		private Dictionary<int, int[]> definitions = new Dictionary<int, int[]>();
 		
 		/// <summary> Construct a ChannelDefinitionBox from an input image.</summary>
 		/// <param name="in">RandomAccessIO jp2 image
@@ -45,7 +36,7 @@ namespace Melville.CSJ2K.Color.Boxes
 		/// </param>
 		/// <exception cref="IOException,">ColorSpaceException 
 		/// </exception>
-		public ChannelDefinitionBox(RandomAccessIO in_Renamed, int boxStart):base(in_Renamed, boxStart)
+		public ChannelDefinitionBox(io_RandomAccessIO in_Renamed, int boxStart):base(in_Renamed, boxStart)
 		{
 			readBox();
 		}
@@ -54,35 +45,35 @@ namespace Melville.CSJ2K.Color.Boxes
 		private void  readBox()
 		{
 			
-			byte[] bfr = new byte[8];
+			var bfr = new byte[8];
 			
 			in_Renamed.seek(dataStart);
 			in_Renamed.readFully(bfr, 0, 2);
-            ndefs = ICCProfile.getShort(bfr, 0) & 0x0000ffff;
+            NDefs = ICCProfile.getShort(bfr, 0) & 0x0000ffff;
 			
-			int offset = dataStart + 2;
+			var offset = dataStart + 2;
 			in_Renamed.seek(offset);
-			for (int i = 0; i < ndefs; ++i)
+			for (var i = 0; i < NDefs; ++i)
 			{
 				in_Renamed.readFully(bfr, 0, 6);
                 int channel = ICCProfile.getShort(bfr, 0);
-				int[] channel_def = new int[3];
+				var channel_def = new int[3];
 				channel_def[0] = getCn(bfr);
 				channel_def[1] = getTyp(bfr);
 				channel_def[2] = getAsoc(bfr);
-				definitions[(System.Int32) channel_def[0]] = channel_def;
+				definitions[channel_def[0]] = channel_def;
 			}
 		}
 		
 		/* Return the channel association. */
 		public int getCn(int asoc)
 		{
-			System.Collections.Generic.IEnumerator<int> keys = definitions.Keys.GetEnumerator();
+			IEnumerator<int> keys = definitions.Keys.GetEnumerator();
 			//UPGRADE_TODO: Method 'java.util.Enumeration.hasMoreElements' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationhasMoreElements'"
 			while (keys.MoveNext())
 			{
 				//UPGRADE_TODO: Method 'java.util.Enumeration.nextElement' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationnextElement'"
-				int[] bfr = (int[]) definitions[keys.Current];
+				var bfr = definitions[keys.Current];
 				if (asoc == getAsoc(bfr))
 					return getCn(bfr);
 			}
@@ -92,31 +83,31 @@ namespace Melville.CSJ2K.Color.Boxes
 		/* Return the channel type. */
 		public int getTyp(int channel)
 		{
-			int[] bfr = (int[]) definitions[(System.Int32) channel];
+			var bfr = definitions[channel];
 			return getTyp(bfr);
 		}
 		
 		/* Return the associated channel of the association. */
 		public int getAsoc(int channel)
 		{
-			int[] bfr = (int[]) definitions[(System.Int32) channel];
+			var bfr = definitions[channel];
 			return getAsoc(bfr);
 		}
 		
 		
 		/// <summary>Return a suitable String representation of the class instance. </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[ChannelDefinitionBox ").Append(eol).Append("  ");
-			rep.Append("ndefs= ").Append(System.Convert.ToString(ndefs));
+			var rep = new System.Text.StringBuilder("[ChannelDefinitionBox ").Append(Environment.NewLine).Append("  ");
+			rep.Append("ndefs= ").Append(Convert.ToString(NDefs));
 			
-			System.Collections.Generic.IEnumerator<int> keys = definitions.Keys.GetEnumerator();
+			IEnumerator<int> keys = definitions.Keys.GetEnumerator();
 			//UPGRADE_TODO: Method 'java.util.Enumeration.hasMoreElements' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationhasMoreElements'"
 			while (keys.MoveNext())
 			{
 				//UPGRADE_TODO: Method 'java.util.Enumeration.nextElement' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationnextElement'"
-				int[] bfr = (int[]) definitions[keys.Current];
-				rep.Append(eol).Append("  ").Append("Cn= ").Append(System.Convert.ToString(getCn(bfr))).Append(", ").Append("Typ= ").Append(System.Convert.ToString(getTyp(bfr))).Append(", ").Append("Asoc= ").Append(System.Convert.ToString(getAsoc(bfr)));
+				var bfr = definitions[keys.Current];
+				rep.Append(Environment.NewLine).Append("  ").Append("Cn= ").Append(Convert.ToString(getCn(bfr))).Append(", ").Append("Typ= ").Append(Convert.ToString(getTyp(bfr))).Append(", ").Append("Asoc= ").Append(Convert.ToString(getAsoc(bfr)));
 			}
 			
 			rep.Append("]");

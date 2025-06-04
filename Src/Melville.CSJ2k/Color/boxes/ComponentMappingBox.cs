@@ -6,11 +6,12 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-
+using System;
 using System.Collections.Generic;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
-using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
-namespace Melville.CSJ2K.Color.Boxes
+using ICCProfile = CoreJ2K.Icc.ICCProfile;
+using io_RandomAccessIO = CoreJ2K.j2k.io.RandomAccessIO;
+
+namespace CoreJ2K.Color.Boxes
 {
 	
 	/// <summary> This class maps the components in the codestream
@@ -22,21 +23,11 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	internal sealed class ComponentMappingBox:JP2Box
+	public sealed class ComponentMappingBox:JP2Box
 	{
-		public int NChannels
-		{
-			/* Return the number of mapped channels. */
-			
-			get
-			{
-				return nChannels;
-			}
-			
-		}
-		
-		private int nChannels;
-		private System.Collections.Generic.List<byte[]> map = new List<byte[]>(10);
+		public int NChannels { get; private set; }
+
+		private List<byte[]> map = new List<byte[]>(10);
 		
 		/// <summary> Construct a ComponentMappingBox from an input image.</summary>
 		/// <param name="in">RandomAccessIO jp2 image
@@ -45,7 +36,7 @@ namespace Melville.CSJ2K.Color.Boxes
 		/// </param>
 		/// <exception cref="IOException,">ColorSpaceException 
 		/// </exception>
-		public ComponentMappingBox(RandomAccessIO in_Renamed, int boxStart):base(in_Renamed, boxStart)
+		public ComponentMappingBox(io_RandomAccessIO in_Renamed, int boxStart):base(in_Renamed, boxStart)
 		{
 			readBox();
 		}
@@ -53,11 +44,11 @@ namespace Melville.CSJ2K.Color.Boxes
 		/// <summary>Analyze the box content. </summary>
 		internal void  readBox()
 		{
-			nChannels = (boxEnd - dataStart) / 4;
+			NChannels = (boxEnd - dataStart) / 4;
 			in_Renamed.seek(dataStart);
-			for (int offset = dataStart; offset < boxEnd; offset += 4)
+			for (var offset = dataStart; offset < boxEnd; offset += 4)
 			{
-				byte[] mapping = new byte[4];
+				var mapping = new byte[4];
 				in_Renamed.readFully(mapping, 0, 4);
 				map.Add(mapping);
 			}
@@ -66,38 +57,38 @@ namespace Melville.CSJ2K.Color.Boxes
 		/* Return the component mapped to the channel. */
 		public int getCMP(int channel)
 		{
-			byte[] mapping = (byte[]) map[channel];
+			var mapping = map[channel];
 			return ICCProfile.getShort(mapping, 0) & 0x0000ffff;
 		}
 		
 		/// <summary>Return the channel type. </summary>
 		public short getMTYP(int channel)
 		{
-			byte[] mapping = (byte[]) map[channel];
+			var mapping = map[channel];
 			return (short) (mapping[2] & 0x00ff);
 		}
 		
 		/// <summary>Return the palette index for the channel. </summary>
 		public short getPCOL(int channel)
 		{
-			byte[] mapping = (byte[]) map[channel];
+			var mapping = map[channel];
 			return (short) (mapping[3] & 0x000ff);
 		}
 		
 		/// <summary>Return a suitable String representation of the class instance. </summary>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[ComponentMappingBox ").Append("  ");
-			rep.Append("nChannels= ").Append(System.Convert.ToString(nChannels));
+			var rep = new System.Text.StringBuilder("[ComponentMappingBox ").Append("  ");
+			rep.Append("nChannels= ").Append(Convert.ToString(NChannels));
 			System.Collections.IEnumerator Enum = map.GetEnumerator();
 			//UPGRADE_TODO: Method 'java.util.Enumeration.hasMoreElements' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationhasMoreElements'"
 			while (Enum.MoveNext())
 			{
 				//UPGRADE_TODO: Method 'java.util.Enumeration.nextElement' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilEnumerationnextElement'"
-				byte[] bfr = (byte[]) Enum.Current;
-				rep.Append(eol).Append("  ").Append("CMP= ").Append(System.Convert.ToString(getCMP(bfr))).Append(", ");
-				rep.Append("MTYP= ").Append(System.Convert.ToString(getMTYP(bfr))).Append(", ");
-				rep.Append("PCOL= ").Append(System.Convert.ToString(getPCOL(bfr)));
+				var bfr = (byte[]) Enum.Current;
+				rep.Append(Environment.NewLine).Append("  ").Append("CMP= ").Append(Convert.ToString(getCMP(bfr))).Append(", ");
+				rep.Append("MTYP= ").Append(Convert.ToString(getMTYP(bfr))).Append(", ");
+				rep.Append("PCOL= ").Append(Convert.ToString(getPCOL(bfr)));
 			}
 			rep.Append("]");
 			return rep.ToString();

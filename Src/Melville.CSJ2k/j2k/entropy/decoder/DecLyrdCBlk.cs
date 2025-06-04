@@ -42,7 +42,9 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 
-namespace Melville.CSJ2K.j2k.entropy.decoder
+using System.Linq;
+
+namespace CoreJ2K.j2k.entropy.decoder
 {
 	
 	/// <summary> This class stores coded (compressed) code-blocks that are organized in
@@ -51,17 +53,15 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// code-block. It is applicable to the decoder engine only. Some data of the
 	/// coded-block is stored in the super class, see CodedCBlk.
 	/// 
-	/// <p>A code-block may have its progressive attribute set (i.e. the 'prog'
+	/// A code-block may have its progressive attribute set (i.e. the 'prog'
 	/// flag is true). If a code-block is progressive then it means that more data
 	/// for it may be obtained for an improved quality. If the progressive flag is
 	/// false then no more data is available from the source for this
-	/// code-block.</p>
+	/// code-block.
 	/// 
 	/// </summary>
-	/// <seealso cref="CodedCBlk">
-	/// 
-	/// </seealso>
-	internal class DecLyrdCBlk:CodedCBlk
+	/// <seealso cref="CodedCBlk" />
+	public class DecLyrdCBlk:CodedCBlk
 	{
 		
 		/// <summary>The horizontal coordinate of the upper-left corner of the code-block </summary>
@@ -111,14 +111,15 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 		/// <returns> Information in a string
 		/// 
 		/// </returns>
-		public override System.String ToString()
+		public override string ToString()
 		{
-			System.String str = "Coded code-block (" + m + "," + n + "): " + skipMSBP + " MSB skipped, " + dl + " bytes, " + nTrunc + " truncation points, " + nl + " layers, " + "progressive=" + prog + ", ulx=" + ulx + ", uly=" + uly + ", w=" + w + ", h=" + h + ", ftpIdx=" + ftpIdx;
+			var str =
+				$"Coded code-block ({m},{n}): {skipMSBP} MSB skipped, {dl} bytes, {nTrunc} truncation points, {nl} layers, progressive={prog}, ulx={ulx}, uly={uly}, w={w}, h={h}, ftpIdx={ftpIdx}";
 			if (tsLengths != null)
 			{
 				str += " {";
-				for (int i = 0; i < tsLengths.Length; i++)
-					str += (" " + tsLengths[i]);
+				str = tsLengths.Aggregate(str, (current, t) => current + (" " + t));
+
 				str += " }";
 			}
 			return str;

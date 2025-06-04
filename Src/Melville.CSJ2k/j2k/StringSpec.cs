@@ -40,20 +40,18 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
+using System;
+using CoreJ2K.j2k.util;
 
-using Melville.CSJ2K.j2k.util;
-
-namespace Melville.CSJ2K.j2k
+namespace CoreJ2K.j2k
 {
 	
 	/// <summary> This class extends ModuleSpec class in order to hold tile-component
 	/// specifications using Strings.
 	/// 
 	/// </summary>
-	/// <seealso cref="ModuleSpec">
-	/// 
-	/// </seealso>
-	internal class StringSpec:ModuleSpec
+	/// <seealso cref="ModuleSpec" />
+	public sealed class StringSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs an empty 'StringSpec' with specified number of
@@ -80,7 +78,7 @@ namespace Melville.CSJ2K.j2k
 		/// checks that the arguments belongs to the recognized arguments
 		/// list.
 		/// 
-		/// <P><u>Note:</u> The arguments must not start with 't' or 'c'
+		/// <u>Note:</u> The arguments must not start with 't' or 'c'
 		/// since it is reserved for respectively tile and components
 		/// indexes specification.
 		/// 
@@ -95,7 +93,7 @@ namespace Melville.CSJ2K.j2k
 		/// component specific or both.
 		/// 
 		/// </param>
-		/// <param name="name">of the option using boolean spec.
+		/// <param name="optName">of the option using boolean spec.
 		/// 
 		/// </param>
 		/// <param name="list">The list of all recognized argument in a String array
@@ -104,28 +102,28 @@ namespace Melville.CSJ2K.j2k
 		/// <param name="pl">The ParameterList
 		/// 
 		/// </param>
-		public StringSpec(int nt, int nc, byte type, System.String optName, System.String[] list, ParameterList pl):base(nt, nc, type)
+		public StringSpec(int nt, int nc, byte type, string optName, string[] list, ParameterList pl):base(nt, nc, type)
 		{
 			
-			System.String param = pl.getParameter(optName);
-			bool recognized = false;
+			var param = pl.getParameter(optName);
+			var recognized = false;
 			
 			if (param == null)
 			{
 				param = pl.DefaultParameterList.getParameter(optName);
-				for (int i = list.Length - 1; i >= 0; i--)
+				for (var i = list.Length - 1; i >= 0; i--)
 					if (param.ToUpper().Equals(list[i].ToUpper()))
 						recognized = true;
 				if (!recognized)
-					throw new System.ArgumentException("Default parameter of " + "option -" + optName + " not" + " recognized: " + param);
+					throw new ArgumentException($"Default parameter of option -{optName} not recognized: {param}");
 				setDefault(param);
 				return ;
 			}
 			
 			// Parse argument
-			SupportClass.Tokenizer stk = new SupportClass.Tokenizer(param);
-			System.String word; // current word
-			byte curSpecType = SPEC_DEF; // Specification type of the
+			var stk = new SupportClass.Tokenizer(param);
+			string word; // current word
+			var curSpecType = SPEC_DEF; // Specification type of the
 			// current parameter
 			bool[] tileSpec = null; // Tiles concerned by the
 			// specification
@@ -141,66 +139,63 @@ namespace Melville.CSJ2K.j2k
 					
 					case 't':  // Tiles specification
 						tileSpec = parseIdx(word, nTiles);
-						if (curSpecType == SPEC_COMP_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-						{
-							curSpecType = SPEC_TILE_DEF;
-						}
+						curSpecType = curSpecType == SPEC_COMP_DEF ? SPEC_TILE_COMP : SPEC_TILE_DEF;
 						break;
 					
 					case 'c':  // Components specification
 						compSpec = parseIdx(word, nComp);
-						if (curSpecType == SPEC_TILE_DEF)
-						{
-							curSpecType = SPEC_TILE_COMP;
-						}
-						else
-							curSpecType = SPEC_COMP_DEF;
+						curSpecType = curSpecType == SPEC_TILE_DEF ? SPEC_TILE_COMP : SPEC_COMP_DEF;
 						break;
 					
 					default: 
 						recognized = false;
 						
-						for (int i = list.Length - 1; i >= 0; i--)
+						for (var i = list.Length - 1; i >= 0; i--)
 							if (word.ToUpper().Equals(list[i].ToUpper()))
 								recognized = true;
 						if (!recognized)
-							throw new System.ArgumentException("Default parameter of " + "option -" + optName + " not" + " recognized: " + word);
+							throw new ArgumentException(
+								$"Default parameter of option -{optName} not recognized: {word}");
 						
-						if (curSpecType == SPEC_DEF)
+						switch (curSpecType)
 						{
-							setDefault(word);
-						}
-						else if (curSpecType == SPEC_TILE_DEF)
-						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
-								if (tileSpec[i])
-								{
-									setTileDef(i, word);
-								}
-						}
-						else if (curSpecType == SPEC_COMP_DEF)
-						{
-							for (int i = compSpec.Length - 1; i >= 0; i--)
-								if (compSpec[i])
-								{
-									setCompDef(i, word);
-								}
-						}
-						else
-						{
-							for (int i = tileSpec.Length - 1; i >= 0; i--)
+							case SPEC_DEF:
+								setDefault(word);
+								break;
+							case SPEC_TILE_DEF:
 							{
-								for (int j = compSpec.Length - 1; j >= 0; j--)
-								{
-									if (tileSpec[i] && compSpec[j])
+								for (var i = tileSpec.Length - 1; i >= 0; i--)
+									if (tileSpec[i])
 									{
-										setTileCompVal(i, j, word);
+										setTileDef(i, word);
+									}
+
+								break;
+							}
+							case SPEC_COMP_DEF:
+							{
+								for (var i = compSpec.Length - 1; i >= 0; i--)
+									if (compSpec[i])
+									{
+										setCompDef(i, word);
+									}
+
+								break;
+							}
+							default:
+							{
+								for (var i = tileSpec.Length - 1; i >= 0; i--)
+								{
+									for (var j = compSpec.Length - 1; j >= 0; j--)
+									{
+										if (tileSpec[i] && compSpec[j])
+										{
+											setTileCompVal(i, j, word);
+										}
 									}
 								}
+
+								break;
 							}
 						}
 						
@@ -216,10 +211,10 @@ namespace Melville.CSJ2K.j2k
 			// Check that default value has been specified
 			if (getDefault() == null)
 			{
-				int ndefspec = 0;
-				for (int t = nt - 1; t >= 0; t--)
+				var ndefspec = 0;
+				for (var t = nt - 1; t >= 0; t--)
 				{
-					for (int c = nc - 1; c >= 0; c--)
+					for (var c = nc - 1; c >= 0; c--)
 					{
 						if (specValType[t][c] == SPEC_DEF)
 						{
@@ -233,11 +228,11 @@ namespace Melville.CSJ2K.j2k
 				if (ndefspec != 0)
 				{
 					param = pl.DefaultParameterList.getParameter(optName);
-					for (int i = list.Length - 1; i >= 0; i--)
+					for (var i = list.Length - 1; i >= 0; i--)
 						if (param.ToUpper().Equals(list[i].ToUpper()))
 							recognized = true;
 					if (!recognized)
-						throw new System.ArgumentException("Default parameter of " + "option -" + optName + " not" + " recognized: " + param);
+						throw new ArgumentException($"Default parameter of option -{optName} not recognized: {param}");
 					setDefault(param);
 				}
 				else
@@ -249,7 +244,7 @@ namespace Melville.CSJ2K.j2k
 					{
 						
 						case SPEC_TILE_DEF: 
-							for (int c = nc - 1; c >= 0; c--)
+							for (var c = nc - 1; c >= 0; c--)
 							{
 								if (specValType[0][c] == SPEC_TILE_DEF)
 									specValType[0][c] = SPEC_DEF;
@@ -258,7 +253,7 @@ namespace Melville.CSJ2K.j2k
 							break;
 						
 						case SPEC_COMP_DEF: 
-							for (int t = nt - 1; t >= 0; t--)
+							for (var t = nt - 1; t >= 0; t--)
 							{
 								if (specValType[t][0] == SPEC_COMP_DEF)
 									specValType[t][0] = SPEC_DEF;
