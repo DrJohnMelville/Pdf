@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Melville.Linq.Statistics" Version="0.7.6" />
+	  <PackageReference Include="Melville.Linq.Statistics" />
 	</ItemGroup>
 
 	<ItemGroup>

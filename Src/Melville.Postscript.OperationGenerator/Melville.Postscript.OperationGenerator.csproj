@@ -6,9 +6,9 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Melville.INPC" Version="0.7.6" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.12.0" PrivateAssets="all" />
-		<PackageReference Include="Melville.Generators.INPC" Version="0.7.6" />
+		<PackageReference Include="Melville.INPC" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
+		<PackageReference Include="Melville.Generators.INPC" />
 	</ItemGroup>
 
 </Project>

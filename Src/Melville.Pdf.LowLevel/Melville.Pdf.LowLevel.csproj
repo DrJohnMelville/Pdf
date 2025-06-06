@@ -11,10 +11,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Hacks" Version="0.7.6" />
-      <PackageReference Include="Melville.Linq" Version="0.7.6" />
-      <PackageReference Include="System.IO.Pipelines" Version="9.0.1" />
-      <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+      <PackageReference Include="Melville.Hacks" />
+      <PackageReference Include="Melville.Linq" />
+      <PackageReference Include="System.IO.Pipelines" />
+      <PackageReference Include="System.Linq.Async" />
     </ItemGroup>
 
     <ItemGroup>
