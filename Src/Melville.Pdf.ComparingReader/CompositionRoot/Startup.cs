@@ -36,7 +36,6 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         protected override void RegisterWithIocContainer(IBindableIocService service)
         {
-            service.AddLogging();
             service.RegisterHomeViewModel<MainWindowViewModel>();
             RegisterRenderers(service);
             RegisterRootWindows(service);

@@ -26,7 +26,6 @@ public class Startup: StartupBase
 
     protected override void RegisterWithIocContainer(IBindableIocService service)
     {
-        service.AddLogging();
         service.RegisterHomeViewModel<MainDisplayViewModel>();
         RegisterMainWindow(service);
         TryRegistedCommandLine(service);

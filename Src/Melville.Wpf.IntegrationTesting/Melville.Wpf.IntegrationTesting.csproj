@@ -13,9 +13,7 @@
 		    <OutputItemType>Analyzer</OutputItemType>
 	    </ProjectReference>
         <PackageReference Include="Melville.TestHelpers" />
-        <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
