@@ -90,7 +90,6 @@ public readonly struct DeviceColor
     public uint AsArgbUint32() => (uint)
         ((Alpha << 24) | (RedByte << 16) | (GreenByte << 8) | BlueByte);
 
-#warning I do not know why I need a square root on the alpha.  This is a hack for right now only.
     /// <summary>
     /// Apply an alpha to a device color
     /// </summary>
@@ -98,6 +97,6 @@ public readonly struct DeviceColor
     /// <returns>A new device color with the desired alpha.</returns>
     public DeviceColor WithAlpha(double newAlpha) =>
         newAlpha < 1.0?
-        new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * Math.Sqrt(newAlpha))):
+        new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * newAlpha)):
         this;
 }
