@@ -37,7 +37,7 @@ internal class LinkedListByteSource : IByteSource
     private void AssertValidState()
     {
         Debug.Assert(data != LinkedList.Empty);
-        Debug.Assert((int)(data.GetField("pendingReaders")!) > 0);
+         Debug.Assert((int)(data.GetField("pendingReaders")!) > 0);
         Debug.Assert(nextByte != LinkedListPosition.NullPosition);
         Debug.Assert(unexaminedByte != LinkedListPosition.NullPosition);
     }

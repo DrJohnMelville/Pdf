@@ -74,6 +74,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     public void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value)
     {
             builder.Reassign(reference, value);
+       
     }
 
 

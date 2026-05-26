@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
@@ -15,26 +15,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
-
-internal class CompositeMapper(IReadOnlyList<IMapCharacterToGlyph> mappers) : IMapCharacterToGlyph
-{
-    /// <inheritdoc />
-    public uint GetGlyph(uint character)
-    {
-        foreach (var mapper in mappers)
-        {
-            if (mapper.GetGlyph(character) is var val and > 0) return val;
-        }
-
-        return 0;
-    }
-}
-
-internal class CMapWrapper(ICmapImplementation inner) : IMapCharacterToGlyph
-{
-    /// <inheritdoc />
-    public uint GetGlyph(uint character) => inner.Map(character);
-}
 
 internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, PdfFont font, PdfEncoding encoding)
 {
@@ -65,7 +45,7 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
         var source = await iFont.GetCmapSourceAsync().CA();
         var charmap =
             await source.GetByPlatformEncodingAsync(1, 0).CA() ??
-            await source.GetByPlatformEncodingAsync(3, 0).CA();
+            WindowsSyntheticSymbolCharMapper.Wrap(await source.GetByPlatformEncodingAsync(3, 0).CA());
 
         if (charmap is null) return null;
         return new CMapWrapper(charmap);

@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -49,9 +52,19 @@ public class ModifyableLowLevelDocument: PdfLowLevelDocument, ICanReplaceObjects
         new Dictionary<(int ObjectNumber, int GenerationNumber), PdfIndirectObject>(documentObjects);
 
     /// <inheritdoc />
-    public void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value)
-    {
+    public void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value) => 
+        ReplaceReferenceObject(reference.GetObjectReference(), value);
+    /// <summary>
+    /// Replace an object in the document
+    /// </summary>
+    /// <param name="objectNumber">Object number of the item to replace</param>
+    /// <param name="generationNumber">Generation number of the object to replace</param>
+    /// <param name="value">Replacement value.</param>
+    public void ReplaceReferenceObject(int objectNumber, int generationNumber, PdfDirectObject value) =>
+        ReplaceReferenceObject((objectNumber, generationNumber), value);
+
+    private void ReplaceReferenceObject((int ObjectNumber, int Generation) refNumbers, PdfDirectObject value) => 
         ((Dictionary<(int ObjectNumber, int GenerationNumber), PdfIndirectObject>)Objects)
-            [reference.GetObjectReference()] = value;
-    }
+            [refNumbers] = value;
+
 }

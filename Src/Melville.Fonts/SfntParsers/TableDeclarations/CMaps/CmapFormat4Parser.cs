@@ -70,8 +70,10 @@ internal class CmapFormat4Implementation (
 
         var index = TryFlipBits(endCode.AsSpan()[..^1].BinarySearch((ushort)character));
         glyph = MapCharacter(index, character);
-        return true;
+        return glyph > 0;
     }
+    
+
 
     private int TryFlipBits(int value)
     {
