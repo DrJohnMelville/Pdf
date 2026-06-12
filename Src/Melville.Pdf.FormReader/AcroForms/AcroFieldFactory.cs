@@ -218,8 +218,7 @@ internal class AcroFieldFactory
 
     private static string XfaControlType(XElement field) =>
         field.Element(xfaTemplate+"ui")?
-            .Elements().First()?.Name.LocalName ??
-        throw new PdfParseException("Xfa control missing ui element");
+            .Elements().First()?.Name.LocalName ?? "NoUI";
 
     private XfaControl ParsePick(XElement field, IPdfFormField dataStore)
     {
