@@ -354,8 +354,8 @@ RenderingTest.cs_Skia-JBig200__8__0__stripe|2701887628
 RenderingTest.cs_Skia-JBig200__8__45|1299024188
 RenderingTest.cs_Skia-JBig200__8__45__stripe|4216890784
 RenderingTest.cs_Skia-JBig200__lossless|685872769
-RenderingTest.cs_wpf-Jpeg2000Image|294332711
-RenderingTest.cs_Skia-Jpeg2000Image|1078842957
+RenderingTest.cs_wpf-Jpeg2000Image|1555398603
+RenderingTest.cs_Skia-Jpeg2000Image|722880207
 RenderingTest.cs_wpf-Type1FunctionalShader|1138215553
 RenderingTest.cs_Skia-Type1FunctionalShader|4049483872
 RenderingTest.cs_wpf-Type1TrippleFunctions|2023418841
@@ -584,7 +584,7 @@ RenderingTest.cs_Skia-SimplifiedChinese|1072797566
 RenderingTest.cs_Skia-TraditionalChinese|1402036434
 RenderingTest.cs_Skia-Japan1|1377194269
 RenderingTest.cs_Skia-Korea1|2466719345
-RenderingTest.cs_wpf-Jpeg2000ColorImage|212278562
-RenderingTest.cs_Skia-Jpeg2000ColorImage|152254151
+RenderingTest.cs_wpf-Jpeg2000ColorImage|2904211411
+RenderingTest.cs_Skia-Jpeg2000ColorImage|2427825951
 RenderingTest.cs_wpf-WithAnnotation|637684557
 RenderingTest.cs_Skia-WithAnnotation|1689464111
