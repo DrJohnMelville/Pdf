@@ -11,13 +11,13 @@ namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters
         /// <inheritdoc />
         public bool IsDefault => false;
 
+        public Type ImageType => typeof(RawImage);
+
         /// <inheritdoc />
         public IImage Create(int width, int height, int numComponents, byte[] bytes)
         {
             return new RawImage(width, height, numComponents, bytes);
         }
-
-        public static void Register() => ImageFactory.Register(Instance);
 
         /// <inheritdoc />
         public BlkImgDataSrc ToPortableImageSource(object imageObject)

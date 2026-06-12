@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using CoreJ2K.Util;
 using Melville.Parsing.Streams.Bases;
 
@@ -9,12 +12,17 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
     private int position;
     private ReadOnlyMemory<byte> source;
 
-    public ReadPartialBytesStream(PortableImage image, int bytesPerQuad) : base(true, false, false)
+    static ReadPartialBytesStream()
+    {
+        (typeof(ImageFactory).GetField("_creators", BindingFlags.NonPublic | BindingFlags.Static)?.
+            GetValue(null) as List<IImageCreator>)?.Add(RawImageCreator.Instance);
+    }
+
+    public ReadPartialBytesStream(InterleavedImage image, int bytesPerQuad) : base(true, false, false)
     {
         Width = image.Width;
         Height = image.Height;
         ImageComponents = image.NumberOfComponents;
-        RawImageCreator.Register();
         var data = image.As<RawImage>();
         source = CompressArray(data, bytesPerQuad);
     }
