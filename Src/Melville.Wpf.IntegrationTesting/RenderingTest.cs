@@ -8,23 +8,25 @@ using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
 using Melville.TestHelpers.StringDatabase;
-using Xunit;
+using TUnit.Core.Executors;
 namespace Melville.Wpf.IntegrationTesting;
 
-public class RenderingTest:IClassFixture<StringTestDatabase>
+[ClassDataSource<StringTestDatabase>(Shared = SharedType.PerClass)]
+public class RenderingTest
 {
     private readonly StringTestDatabase hashes;
     public RenderingTest(StringTestDatabase hashes)
     {
         this.hashes = hashes; 
-        hashes.Recording = true;
+       // hashes.Recording = true;
     }
 
     public static IEnumerable<object[]> GeneratorTests() =>
         GeneratorFactory.AllGenerators.Select(i => new object[] { i.Prefix, i });
 
-    [WpfTheory]
-    [MemberData(nameof(GeneratorTests))]
+    [Test]
+    [MethodDataSource(nameof(GeneratorTests))]
+    [TestExecutor<STAThreadExecutor>]
     public async Task WpfRenderingTestAsync(string shortName, IPdfGenerator generator)
     {
         var computeWpfHashAsync = await ComputeWpfHashAsync(generator);
@@ -40,8 +42,8 @@ public class RenderingTest:IClassFixture<StringTestDatabase>
         return rtdg.RenderToPngStreamAsync(target);
     }
     
-    [Theory]
-    [MemberData(nameof(GeneratorTests))]
+    [Test]
+    [MethodDataSource(nameof(GeneratorTests))]
     public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator) => 
         hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia"+shortName);
 

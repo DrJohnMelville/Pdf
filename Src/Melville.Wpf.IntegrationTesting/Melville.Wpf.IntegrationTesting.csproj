@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0-windows</TargetFramework>
@@ -13,16 +13,7 @@
 		    <OutputItemType>Analyzer</OutputItemType>
 	    </ProjectReference>
         <PackageReference Include="Melville.TestHelpers" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="xunit.runner.visualstudio">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="Xunit.StaFact" />
+        <PackageReference Include="TUnit.Engine" />
     </ItemGroup>
 
     <ItemGroup>

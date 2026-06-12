@@ -109,7 +109,7 @@ public class JBigSorter
     private void WriteSegment(SegmentHeader header, Span<byte> headerSpan, Span<byte> dataSpan)
     {
         var target = header.Page == 0 ? globals : specific;
-        if (header.Page is not 0 or 1)
+        if (header.Page is not (0 or 1))
         {
             FixHeaderPage(header, headerSpan);
         }
