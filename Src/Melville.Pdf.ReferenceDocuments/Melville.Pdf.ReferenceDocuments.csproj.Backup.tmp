@@ -1,0 +1,149 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        
+        
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Graphics\Images\JPEG.jpg" />
+      <None Remove="Graphics\Images\Jpeg2000Color.jp2" />
+      <EmbeddedResource Include="Graphics\Images\JPEG.jpg" />
+      <None Remove="Graphics\Images\png.png" />
+      <None Remove="Text\Zev.ttf" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg2000Color.jp2" />
+      <EmbeddedResource Include="Text\Zev.ttf" />
+      <None Remove="Text\GFSEustace.otf" />
+      <EmbeddedResource Include="Text\GFSEustace.otf" />
+        
+      <EmbeddedResource Include="Graphics\Images\JBig\042_1.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_2.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_3.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_4.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_5.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_6.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_7.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_8.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_9.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_10.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_11.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_12.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_13.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_14.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_15.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_16.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_17.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_18.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_19.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_20.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_21.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_22.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_23.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_24.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_25.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\amb_1.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\amb_2.jb2" />
+      <None Remove="Graphics\Images\JBig\200-10-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-10-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-10-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-10-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-10-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-10-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-10-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-10-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-2-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-2-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-2-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-2-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-20-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-20-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-20-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-20-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-20-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-20-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-20-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-20-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-3-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-3-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-3-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-3-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-3-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-3-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-3-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-3-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-4-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-4-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-4-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-4-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-4-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-4-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-4-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-4-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-5-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-5-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-5-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-5-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-5-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-5-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-5-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-5-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-6-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-6-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-6-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-6-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-6-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-6-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-6-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-6-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-8-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-8-0.jb2" />
+      <None Remove="Graphics\Images\JBig\200-8-0-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-8-0-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-8-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-8-45.jb2" />
+      <None Remove="Graphics\Images\JBig\200-8-45-stripe.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-8-45-stripe.jb2" />
+      <None Remove="Graphics\Images\JBig\200-lossless.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\200-lossless.jb2" />
+      <None Remove="Graphics\Images\JBig\600-10-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\600-10-0.jb2" />
+      <None Remove="Graphics\Images\JBig\600-6-0.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\600-6-0.jb2" />
+      <None Remove="Graphics\Images\JBig\600-6-45.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\600-6-45.jb2" />
+      <None Remove="Graphics\Images\Jpeg2000.jp2" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg2000.jp2" />
+      <EmbeddedResource Include="Text\Type1Font.Fon" />
+      <None Remove="Text\FlateEncodedPiFont.fon" />
+      <EmbeddedResource Include="Text\FlateEncodedPiFont.fon" />
+      <None Remove="Text\SymbolicTTFontWithABrokenCMAP.TTF" />
+      <EmbeddedResource Include="Text\SymbolicTTFontWithABrokenCMAP.TTF" />
+      <None Remove="Text\FlatedFontWithAdobeCmap.ttf" />
+      <EmbeddedResource Include="Text\FlatedFontWithAdobeCmap.ttf" />
+      <None Remove="Graphics\Images\CMYKJpeg.jpg" />
+      <EmbeddedResource Include="Graphics\Images\CMYKJpeg.jpg" />
+      <None Remove="Graphics\Images\JPEGGray.jpg" />
+      <EmbeddedResource Include="Graphics\Images\JPEGGray.jpg" />
+      <None Remove="Graphics\Images\Jpeg\JpegHuffmanBug.jpg" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg\JpegHuffmanBug.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Text\CharSet\CMaps\" />
+      <Folder Include="Text\Type3\" />
+    </ItemGroup>
+
+</Project>

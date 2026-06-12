@@ -27,7 +27,7 @@ public class MultiBufferStreamTest
         var buf2 = new byte[256];
         using var reader = sut.ReadFrom(0);
         buf2.FillBuffer(0, 256, reader.Read);
-        buf2.Should().BeEquivalentTo(numberedBuffer);
+        buf2.Should().Be(numberedBuffer.AsSpan());
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class MultiBufferStreamTest
         reader.Seek(0, SeekOrigin.Begin);
         var buffer = new byte[256];
         reader.ReadExactly(buffer);
-        buffer.Should().StartWith(new byte[] { 1, 2, 3 });
+        buffer.AsSpan(0,3).Should().Be(new byte[] { 1, 2, 3 });
         // the contents of jumped over sections are undefined.
     }
 
@@ -70,7 +70,7 @@ public class MultiBufferStreamTest
         var buf2 = new byte[256];
         await using var reader = sut.ReadFrom(0);
         await buf2.FillBufferAsync(0, 256, reader);
-        buf2.Should().BeEquivalentTo(numberedBuffer);
+        buf2.Should().Be(numberedBuffer);
     }
     [Fact]
     public async Task RoundTripStreamWithSeekAsync()

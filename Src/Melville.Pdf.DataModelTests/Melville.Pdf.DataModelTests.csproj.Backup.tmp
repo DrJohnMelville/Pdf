@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="Melville.FileSystem" />
+		<PackageReference Include="Melville.Hacks" />
+		<PackageReference Include="Meziantou.Xunit.ParallelTestFramework" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="Moq" />
+		<PackageReference Include="NetArchTest.Rules" />
+		<PackageReference Include="System.IO.Pipelines" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.runner.visualstudio">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+		<ProjectReference Include="..\Melville.Fonts\Melville.Fonts.csproj" />
+		<ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.TextExtractor\Melville.Pdf.TextExtractor.csproj" />
+		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="ICC\sample.icc" />
+		<EmbeddedResource Include="ICC\sample.icc" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="ImageExtractors\" />
+		<Folder Include="SpanShould\" />
+		<Folder Include="Postscript.Interpreter\Tokenizers\" />
+		<Folder Include="Standard\S7_6Encryption\S7_6_3_4PasswordAlgorithms\V6Algorithms\NewFolder\" />
+		<Folder Include="Standard\S9_10 TextExtraction\" />
+	</ItemGroup>
+
+</Project>

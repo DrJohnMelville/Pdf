@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
+		<IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+
+		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Melville.WpfAppFramework" />
+		<PackageReference Include="Melville.WpfControls" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="ImageViewers\" />
+	</ItemGroup>
+
+</Project>

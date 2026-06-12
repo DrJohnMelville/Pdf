@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <Title>Melville.Pdf.Model</Title>
@@ -17,10 +17,6 @@
       <ProjectReference Include="..\Melville.Fonts\Melville.Fonts.csproj" />
       <ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="System.Linq.Async" />
     </ItemGroup>
 
     <ItemGroup>

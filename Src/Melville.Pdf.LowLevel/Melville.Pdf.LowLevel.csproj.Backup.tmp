@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        
+        <TargetFramework>net10.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Title>Melville.Pdf.LowLevel</Title>
+        <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CoreJ2K" />
+      <PackageReference Include="Melville.Hacks" />
+      <PackageReference Include="Melville.Linq" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+          <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+      <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+      <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
+      <ProjectReference Include="..\Melville.JBig2\Melville.JBig2.csproj" />
+      <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
+      <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+      <ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
+      <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+      <None Remove="Model\Conventions\KnownNames.dsl" />
+      <AdditionalFiles Include="Model\Conventions\KnownNames.dsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\glyphlist.cedsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\stdEncodings.cedsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,181 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Title>Melville.Pdf.Model</Title>
+        <PackageDescription>Reads PDF files as a series of pages.  If you want to render PDF pages
+        you probably want to include one of the Melville.PDF.[Output Technology] packages rather than
+        this one.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+		
+	</PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Fonts\Melville.Fonts.csproj" />
+      <ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Linq.Async" />
+    </ItemGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+	    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	    <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
+    <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Renderers\Colors\Profiles\Cmyk.icc" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\83pv-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90ms-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90ms-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90msp-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90msp-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-CNS1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-GB1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Japan1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Korea1-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-KR-UCS2" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETen-B5-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETen-B5-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETenms-B5-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETenms-B5-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Ext-RKSJ-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Ext-RKSJ-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GB-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GB-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK2K-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK2K-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBKp-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBKp-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBpc-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBpc-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-HW-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-HW-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCpc-EUC-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCpc-EUC-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UCS2-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UCS2-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UTF16-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UTF16-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UCS2-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UCS2-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UTF16-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UTF16-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-HW-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-HW-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UTF16-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UTF16-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UCS2-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UCS2-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UTF16-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UTF16-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\V" />
+      <EmbeddedResource Include="Renderers\Colors\Profiles\Cmyk.icc" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\83pv-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90ms-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90ms-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90msp-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90msp-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\90pv-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Add-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-CNS1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-GB1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Japan1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-Korea1-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Adobe-KR-UCS2" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\B5pc-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\CNS-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETen-B5-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETen-B5-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETenms-B5-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\ETenms-B5-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Ext-RKSJ-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Ext-RKSJ-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GB-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GB-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK2K-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBK2K-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBKp-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBKp-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBpc-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\GBpc-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-HW-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-HW-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCpc-EUC-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCpc-EUC-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UCS2-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UCS2-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UTF16-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniCNS-UTF16-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UCS2-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UCS2-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UTF16-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UTF16-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-HW-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-HW-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UCS2-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UTF16-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniJIS-UTF16-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UCS2-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UCS2-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UTF16-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniKS-UTF16-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\V" />
+      <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />
+      <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Renderers\Colors\DeviceCmyk.cs" />
+    </ItemGroup>
+
+</Project>

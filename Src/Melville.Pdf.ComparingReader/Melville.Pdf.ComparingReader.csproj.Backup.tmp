@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Melville.WpfAppFramework" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+	        <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	        <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
+        <ProjectReference Include="..\Melville.Pdf.FontLibrary.Cjk\Melville.Pdf.FontLibrary.Cjk.csproj" />
+        <ProjectReference Include="..\Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj" />
+        <ProjectReference Include="..\Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj" />
+        <ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.TextExtractor\Melville.Pdf.TextExtractor.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Title>Melville.ICC</Title>
+        <PackageDescription>Read International Color Consortium color profiles and convert colors between ICC 
+            profiles.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+	<ItemGroup>
+	    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+		    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		    <OutputItemType>Analyzer</OutputItemType>
+	    </ProjectReference>
+      <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <Title>Melville.ICC</Title>
+	  <PackageDescription>Read And render fonts in PDF files.</PackageDescription>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+		<ProjectReference Include="..\Melville.Fonts.TableGenerator\Melville.Fonts.TableGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+
+		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+
+		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
+		<ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="RawCffParsers\" />
+	</ItemGroup>
+
+</Project>

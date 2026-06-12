@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,28 @@ internal interface IHasPageAttributes
     ValueTask<Stream> GetContentBytesAsync();
     ValueTask<IHasPageAttributes?> GetParentAsync();
 
+}
+
+internal static class WhereAsyncImpl {
+    extension<T> (IAsyncEnumerable<T> src)
+    {
+        public async IAsyncEnumerable<T> Where(Func<T,bool> sel)
+        {
+            await foreach (var item in src)
+            {
+                if (sel(item))
+                    yield return item;
+            }
+        }
+
+        public async IAsyncEnumerable<T2> SelectAwait<T2>(Func<T, ValueTask<T2>> proj)
+        {
+            await foreach (var item in src)
+            {
+                yield return await proj(item);
+            }
+        }
+    }
 }
 
 internal static class PdfPageAttributesOperations

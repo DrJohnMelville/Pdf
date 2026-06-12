@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Title>Melville.Pdf.SkiaSharp</Title>
+        <PackageDescription>Render PDF pages to a SkiaSharp surface or graphics file.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+
+	</ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp" />
+    </ItemGroup>
+
+</Project>

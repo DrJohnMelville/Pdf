@@ -21,7 +21,7 @@ internal readonly partial struct CmapFormat2Parser
 
     public ICmapImplementation CreateImplementation()
     {
-        var glyphsAsUint = MemoryMarshal.Cast<byte, ushort>(glyphArray);
+        var glyphsAsUint = MemoryMarshal.Cast<byte, ushort>(glyphArray.AsSpan());
         BinaryPrimitives.ReverseEndianness(glyphsAsUint, glyphsAsUint);
         return new Type2Cmap(subheadderKeys, glyphArray);
     }

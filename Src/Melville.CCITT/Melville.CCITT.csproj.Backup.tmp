@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <Title>Melville.CCITT</Title>
+        <PackageDescription>Read CCITT type 3 and 4 encoded files.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+
+	</ItemGroup>
+</Project>
