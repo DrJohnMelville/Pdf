@@ -9,8 +9,7 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
     private readonly GraphicsStateStack<SkiaGraphicsState> state;
-    private SKPath compositePath = new();
-    private SKPath? path = null;
+    private SKPathBuilder? path = null;
 
     public SkiaDrawTarget(
         SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state)
@@ -21,20 +20,12 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
 
     public void Dispose() => path?.Dispose();
 
-    private void TryAddCurrent()
-    {
-        if (path is null or {IsEmpty:true} ) return;
-        //var matrix = currentMatrix.Transform();
-        compositePath.AddPath(path);//, ref matrix);
-        path = new SKPath();
-    }
-
     public void MoveTo(Vector2 startPoint) => GetOrCreatePath()
         .MoveTo(startPoint.X, startPoint.Y);
 
     //The Adobe Pdf interpreter ignores drawing operations before the first MoveTo operation.
     //If path == null then we have not yet gotten a moveto command and we just ignore all the drawing operations
-    private SKPath GetOrCreatePath() => path ??= new SKPath();
+    private SKPathBuilder GetOrCreatePath() => path ??= new SKPathBuilder();
 
     public void LineTo(Vector2 endPoint) => path?.LineTo(
         endPoint.X, endPoint.Y);
@@ -57,15 +48,11 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
 
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        TryAddCurrent();
-        InnerPaintPath(stroke, fill, evenOddFillRule);
-    }
+        var compositePath = GetPath(evenOddFillRule);
+        if (compositePath is null) return;
 
-    private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule)
-    {
         if (fill && state.StronglyTypedCurrentState().Brush() is { } brush)
         {
-            SetCurrentFillRule(evenOddFillRule);
             target.DrawPath(compositePath, brush);
         }
 
@@ -75,14 +62,22 @@ internal class SkiaDrawTarget : IDrawTarget, IDisposable
         }
     }
 
-    private void SetCurrentFillRule(bool evenOddFillRule) => 
-        compositePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
+    private SKPath? GetPath(bool evenOddFillRule)
+    {
+        if (path is null) return null;
+        var compositePath = path.Detach();
+        compositePath.FillType = FillRule(evenOddFillRule);
+        return compositePath;
+    }
+
+    private SKPathFillType FillRule(bool evenOddFillRule) => 
+        evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
 
 
     public void ClipToPath(bool evenOddRule)
     {
-        TryAddCurrent();
-        SetCurrentFillRule(evenOddRule);
+        var compositePath = GetPath(evenOddRule);
+        if (compositePath is null) return;
         target.ClipPath(compositePath);
     }
 }
