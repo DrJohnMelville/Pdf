@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -10,7 +10,7 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" />
-      <PackageReference Include="xunit" />
+      <PackageReference Include="xunit.V3" />
     </ItemGroup>
 
     <ItemGroup>

@@ -15,7 +15,7 @@
 		<PackageReference Include="Moq" />
 		<PackageReference Include="NetArchTest.Rules" />
 		<PackageReference Include="System.IO.Pipelines" />
-		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.V3" />
 		<PackageReference Include="xunit.runner.visualstudio">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>

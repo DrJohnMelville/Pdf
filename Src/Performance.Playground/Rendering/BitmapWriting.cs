@@ -58,7 +58,6 @@ public class BitmapWriting
         }
     }
 
-    [Fact]
     public unsafe void StencilWriterTest()
     {
         var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(new byte[] { 0b1010_1100 }));

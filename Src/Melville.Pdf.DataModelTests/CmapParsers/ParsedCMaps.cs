@@ -14,14 +14,14 @@ public class ParsedCMaps: IAsyncLifetime
 {
     public IReadCharacter[] Maps { get; } = new IReadCharacter[3];
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Maps[0] = await ParseMapAsync(CMapFromCmapSpec);
         Maps[1] = await ParseMapAsync(UnicodeCMapFromSpec);
         Maps[2] = await ParseMapAsync(BrokenFromPdfFile);
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     private async ValueTask<IReadCharacter> ParseMapAsync(string text)
     {

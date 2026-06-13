@@ -3,7 +3,6 @@ using Melville.JBig2.ArithmeticEncodings;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
