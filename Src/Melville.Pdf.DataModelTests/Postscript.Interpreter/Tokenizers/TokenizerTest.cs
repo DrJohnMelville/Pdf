@@ -29,7 +29,7 @@ public class TokenizerTest
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
         using var sut = CreateTokenizer(source);
-        var list = await sut.TokensAsync().ToListAsync();
+        var list = await sut.TokensAsync().ToListAsync(TestContext.Current.CancellationToken);
         Assert.Equal(2, list.Count);
         VerifyToken(list[0], name1);
         VerifyToken(list[1], name2);
@@ -39,7 +39,7 @@ public class TokenizerTest
     public async Task ParseAsyncWithSyncTokenizerAsync()
     {
         using var sut = CreateSyncTokenizer("/App1 %This is a comment\r\r\r\r\nApp2");
-        var list = await sut.TokensAsync().ToListAsync();
+        var list = await sut.TokensAsync().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, list.Count);
         VerifyToken(list[0], "/App1");
         VerifyToken(list[1], "App2");
@@ -64,7 +64,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     public async Task TestStringParseAsync(string source, string result)
     {
         using var tokenizer = CreateTokenizer(source);
-        var token = await tokenizer.TokensAsync().FirstAsync();
+        var token = await tokenizer.TokensAsync().FirstAsync(TestContext.Current.CancellationToken);
         Assert.Equal(result, token.ToString());
     }
 
@@ -95,7 +95,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
         Assert.ThrowsAsync<PostscriptNamedErrorException>(()=>
         {
             using var tokenizer = CreateTokenizer(">");
-            return tokenizer.TokensAsync().FirstAsync().AsTask();
+            return tokenizer.TokensAsync().FirstAsync(cancellationToken: TestContext.Current.CancellationToken).AsTask();
         });
 
     [Theory]
@@ -108,7 +108,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     public async Task ParseIntsAsync(string source, int result)
     {
         using var sut = CreateTokenizer(source);
-        var token = await sut.TokensAsync().FirstAsync();
+        var token = await sut.TokensAsync().FirstAsync(TestContext.Current.CancellationToken);
         Assert.Equal(result, token.Get<int>());
     }
 
@@ -125,7 +125,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     public async Task ParseFloatAsync(string source, float result)
     {
         using var sut = CreateTokenizer(source);
-        var token = await sut.TokensAsync().FirstAsync();
+        var token = await sut.TokensAsync().FirstAsync(TestContext.Current.CancellationToken);
         Assert.Equal(result, token.Get<double>(), 4);
     }
 
@@ -133,7 +133,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
     public async Task EnumerateTokensAsync()
     {
         using var sut = CreateTokenizer("123.4 true false (Hello World)");
-        Assert.Equal(4, await sut.TokensAsync().CountAsync());
+        Assert.Equal(4, await sut.TokensAsync().CountAsync(TestContext.Current.CancellationToken));
     }
 
     private static Tokenizer CreateTokenizer(string code)

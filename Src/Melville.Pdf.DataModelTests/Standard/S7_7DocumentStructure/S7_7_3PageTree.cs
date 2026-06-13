@@ -17,7 +17,7 @@ public class S7_7_3PageTree
 
         var pagesAsync = await doc.PagesAsync();
         Assert.Equal(3, await pagesAsync.CountAsync());
-        Assert.Equal(3, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync());
+        Assert.Equal(3, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync(TestContext.Current.CancellationToken));
     }
 
     private static PdfDocument CreateThreePageSimpleDocument()
@@ -39,7 +39,7 @@ public class S7_7_3PageTree
     {
         var doc = CreateThreePageSimpleDocument();
         var pagesTree = await doc.PagesAsync();
-        Assert.Equal((await pagesTree.ElementAtAsync(position)).LowLevel,
+        Assert.Equal((await pagesTree.ElementAtAsync(position, TestContext.Current.CancellationToken)).LowLevel,
             (await pagesTree.GetPageAsync(position+1)).LowLevel);
         
     }
@@ -61,7 +61,7 @@ public class S7_7_3PageTree
         var doc = CreateFourPageComplexDocument();
 
         Assert.Equal(4, await (await doc.PagesAsync()).CountAsync());
-        Assert.Equal(4, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync());
+        Assert.Equal(4, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync(TestContext.Current.CancellationToken));
     }
     [Theory]
     [InlineData(0)]

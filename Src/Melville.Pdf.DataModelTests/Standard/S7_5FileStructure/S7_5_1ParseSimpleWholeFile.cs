@@ -68,7 +68,7 @@ public class S7_5_1ParseSimpleWholeFile
         var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.Root);
         await using var contentStream = await stream.StreamContentAsync(StreamFormat.DiskRepresentation);
         var value = await new StreamReader(
-            contentStream).ReadToEndAsync();
+            contentStream).ReadToEndAsync(TestContext.Current.CancellationToken);
         Assert.Equal("Stream data", value);
             
     }

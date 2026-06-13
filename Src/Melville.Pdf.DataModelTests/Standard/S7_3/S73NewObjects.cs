@@ -145,6 +145,6 @@ public class S7_3NewObjects
 
         Assert.Equal("Hello World",
             
-            await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync());
+            await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync(TestContext.Current.CancellationToken));
     }
 }

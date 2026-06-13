@@ -119,7 +119,7 @@ public class S7_9Trees
         Assert.Equal(Enumerable.Range(1,500).Select(i=>10*i).ToList(), await 
             new PdfTree(CreateNumberTree(500))
                 .Select(i=>(int)(i).Get<int>())
-                .ToListAsync() );
+                .ToListAsync(TestContext.Current.CancellationToken) );
             
     }
 }

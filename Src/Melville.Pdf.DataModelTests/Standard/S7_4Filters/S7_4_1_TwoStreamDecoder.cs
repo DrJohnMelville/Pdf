@@ -19,7 +19,7 @@ public class S7_4_1_TwoStreamDecoder
             .AsStream(compressedData, StreamFormat.DiskRepresentation);
 
         var str = await stream.StreamContentAsync();
-        var output = await new StreamReader(str).ReadToEndAsync();
+        var output = await new StreamReader(str).ReadToEndAsync(TestContext.Current.CancellationToken);
         Assert.Equal(expandedData.Replace("\r\n","\r"), output);
     }
 
