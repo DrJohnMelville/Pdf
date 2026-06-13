@@ -21,7 +21,7 @@ internal interface IHasPageAttributes
 internal static class WhereAsyncImpl {
     extension<T> (IAsyncEnumerable<T> src)
     {
-        public async IAsyncEnumerable<T> Where(Func<T,bool> sel)
+        public async IAsyncEnumerable<T> WhereAsync(Func<T,bool> sel)
         {
             await foreach (var item in src)
             {
@@ -30,7 +30,7 @@ internal static class WhereAsyncImpl {
             }
         }
 
-        public async IAsyncEnumerable<T2> SelectAwait<T2>(Func<T, ValueTask<T2>> proj)
+        public async IAsyncEnumerable<T2> SelectAsync<T2>(Func<T, ValueTask<T2>> proj)
         {
             await foreach (var item in src)
             {
@@ -55,8 +55,8 @@ internal static class PdfPageAttributesOperations
     private static IAsyncEnumerable<PdfDirectObject> InheritedResourceItemAsync(IHasPageAttributes item, PdfDirectObject name) =>
         InheritedPagePropertiesAsync(item, KnownNames.Resources)
             .SelectInnerAsync<PdfDictionary>()
-            .SelectAwait(i => i.GetOrNullAsync(name))
-            .Where(i => !i.IsNull);
+            .SelectAsync(i => i.GetOrNullAsync(name))
+            .WhereAsync(i => !i.IsNull);
 
     public static async ValueTask<PdfArray?> GetProcSetsAsync<T>(this T item)
         where T : IHasPageAttributes =>
@@ -74,8 +74,8 @@ internal static class PdfPageAttributesOperations
         InheritedResourceItemAsync(item, subDictionaryName)
             .Select(i=>i.TryGet(out PdfDictionary? dict)?dict:null)
             .OfType<PdfDictionary>()
-            .SelectAwait(i => i.GetOrNullAsync(name))
-            .Where(i => !i.IsNull)
+            .SelectAsync(i => i.GetOrNullAsync(name))
+            .WhereAsync(i => !i.IsNull)
             .DefaultIfEmpty(PdfDirectObject.CreateNull())
             .FirstOrDefaultAsync();
 
@@ -83,7 +83,7 @@ internal static class PdfPageAttributesOperations
         InheritedPagePropertiesAsync(item, name)
             .Select(i=>i.TryGet(out PdfArray? arr)?arr:null)
             .OfType<PdfArray>()
-            .SelectAwait(PdfRect.CreateAsync)
+            .SelectAsync(PdfRect.CreateAsync)
             .Select(i => new PdfRect?(i))
             .DefaultIfEmpty(new PdfRect?())
             .FirstOrDefaultAsync();

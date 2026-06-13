@@ -26,7 +26,7 @@ public class HexDecodeStreamTests
         var source = new MemoryStream(Encoding.ASCII.GetBytes(input));
         var target = new MemoryStream();
         var stream = new DecodeHexStream(source);
-        await stream.CopyToAsync(target);
+        await stream.CopyToAsync(target, TestContext.Current.CancellationToken);
         target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());
     }
 }

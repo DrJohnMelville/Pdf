@@ -66,7 +66,7 @@ public class MultiBufferStreamTest
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
         using var sut = WritableBuffer.Create(16);
         await using var writer = sut.WritingStream();
-        await writer.WriteAsync(numberedBuffer, 0, 256);
+        await writer.WriteAsync(numberedBuffer, 0, 256, TestContext.Current.CancellationToken);
         var buf2 = new byte[256];
         await using var reader = sut.ReadFrom(0);
         await buf2.FillBufferAsync(0, 256, reader);
