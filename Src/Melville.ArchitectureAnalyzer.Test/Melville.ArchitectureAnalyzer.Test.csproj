@@ -14,8 +14,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" />
-    </ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" />
+      <ProjectReference Include="..\Melville.AsyncCodeFix\Melville.AsyncCodeFix.csproj" />
+	</ItemGroup>
 
     <ItemGroup>
       <Folder Include="AsyncDetectorTest\" />

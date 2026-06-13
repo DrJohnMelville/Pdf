@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.AsyncAnalyzer;
+using Melville.AsyncCodeFix;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
