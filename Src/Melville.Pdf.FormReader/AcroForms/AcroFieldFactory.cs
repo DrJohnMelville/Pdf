@@ -180,13 +180,14 @@ internal class AcroFieldFactory
         }
     }
 
-    private static readonly XNamespace xfaTemplate =
-        XNamespace.Get(@"http://www.xfa.org/schema/xfa-template/2.5/");
+    //private static readonly XNamespace xfaTemplate =
+    //    XNamespace.Get(@"http://www.xfa.org/schema/xfa-template/2.5/");
 
     private XfaControl? CreateXfaControl(XElement field, IPdfFormField dataStore)
     {
         if (field.Name.LocalName == "exclGroup") return ParseExclGroup(field, dataStore);
-        return XfaControlType(field) switch
+        var type = XfaControlType(field);
+        return type switch
         {
             "choiceList" => ParsePick(field, dataStore),
             "checkButton" => new XfaCheckBox(dataStore),
@@ -200,7 +201,7 @@ internal class AcroFieldFactory
 
     private XfaControl ParseExclGroup(XElement field, IPdfFormField dataStore) =>
         new XfaSinglePick(dataStore, 
-            field.Descendants(xfaTemplate+"field").Select(ParseExclField).ToList());
+            field.DescendantsByLocalName("field").Select(ParseExclField).ToList());
 
     private PdfPickOption ParseExclField(XElement field) => 
         new(ReadExclCaption(field), ReadExclValue(field));
@@ -208,21 +209,23 @@ internal class AcroFieldFactory
 
     private static string ReadExclCaption(XElement field) =>
         ReadTypedValue(
-            field.Element(xfaTemplate + "caption")?.Element(xfaTemplate + "value"));
+            field.ElementByLocalName("caption")?.ElementByLocalName("value"));
 
-    private static string ReadExclValue(XElement field) => ReadTypedValue(field.Element(xfaTemplate + "items"));
+    private static string ReadExclValue(XElement field) => ReadTypedValue(field.ElementByLocalName ("items"));
 
     private static string ReadTypedValue(XElement? typeNodeParent) =>
         typeNodeParent?.Elements().First()
             ?.InnerText() ?? throw new PdfParseException("Cannot get value");
 
     private static string XfaControlType(XElement field) =>
-        field.Element(xfaTemplate+"ui")?
-            .Elements().First()?.Name.LocalName ?? "NoUI";
+        UIElement(field)?.Elements().First()?.Name.LocalName ?? "NoUI";
+
+    private static XElement? UIElement(XElement field) =>
+        field.ElementByLocalName("ui");
 
     private XfaControl ParsePick(XElement field, IPdfFormField dataStore)
     {
-        var items = field.Elements(xfaTemplate + "items").ToList();
+        var items = field.ElementsByLocalName("items").ToList();
         if (items.Count is not (1 or 2))
           //  throw new PdfParseException("Xfa choice list has invalid number of items elements./");
             return new XfaSinglePick(dataStore, Array.Empty<PdfPickOption>());
