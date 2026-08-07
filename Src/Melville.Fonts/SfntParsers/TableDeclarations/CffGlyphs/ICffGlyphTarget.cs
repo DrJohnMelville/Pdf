@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

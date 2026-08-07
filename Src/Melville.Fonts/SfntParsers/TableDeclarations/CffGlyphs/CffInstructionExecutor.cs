@@ -185,6 +185,7 @@ internal partial class CffInstructionExecutor<T>:
                 throw new NotSupportedException($"Charstring Operator {instruction} is not implemented ");
         }
         StackSize = 0;
+        StackSize = 0;
         return ValueTask.FromResult(0);
     }
 
@@ -206,12 +207,6 @@ internal partial class CffInstructionExecutor<T>:
         target.RelativeCharWidth(CurrentStackSpan[1].FloatValue);
     }
     
-    private void DoSetCurrentPoint()
-    {
-        CurrentX = Stack[0].FloatValue;
-        CurrentY = Stack[1].FloatValue;
-    }
-
     #endregion
 
     #region Blending
@@ -356,18 +351,22 @@ internal partial class CffInstructionExecutor<T>:
 
     #region Path creation operations
 
-    private void DoRmoveTo(Span<DictValue> point)
+
+
+    private void DoRmoveTo(Span<DictValue> point) => 
+        TryPropogateMove(IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue));
+
+    private void TryPropogateMove(Vector2 location)
     {
-        var location = IncrementCurrentPoint(point[0].FloatValue, point[1].FloatValue);
         if (ShouldSuppressRmove) return;
         target.MoveTo(location);
     }
 
     private void DoHMoveTo(Span<DictValue> coord) => 
-        target.MoveTo(IncrementCurrentPoint(coord[0].FloatValue, 0));
+        TryPropogateMove(IncrementCurrentPoint(coord[0].FloatValue, 0));
 
     private void DoVMoveTo(Span<DictValue> coord) => 
-        target.MoveTo(IncrementCurrentPoint(0, coord[0].FloatValue));
+        TryPropogateMove(IncrementCurrentPoint(0, coord[0].FloatValue));
 
     private void DoRLineTo(Span<DictValue> span)
     {

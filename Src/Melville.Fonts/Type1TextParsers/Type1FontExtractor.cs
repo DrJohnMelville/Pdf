@@ -79,12 +79,13 @@ internal ref struct Type1FontExtractor
         if (name.Equals(".notdef", StringComparison.Ordinal)) notDefIndex = i;
     }
 
-    private int GetLenV() =>
-        !privateDict.TryGet("/LenV", out PostscriptValue pv) &&
+    private int GetLenV()
+    {
+        return privateDict.TryGet("/lenIV", out PostscriptValue pv) &&
         pv.TryGet(out int result)
             ? result
             : 4;
-
+    }
 
     private Type1SubrExecutor ReadSubrs() => new(SubrsArray());
 

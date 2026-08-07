@@ -12,9 +12,9 @@ public class CffOperator: ICffAction
 {
     private string result;
 
-    public CffOperator(CharStringOperators opCode, Span<DictValue> stack)
+    public CffOperator(CharStringOperators opCode, Span<DictValue> stack, int indent)
     {
-        result = $"## {opCode}({string.Join(", ", stack.ToArray().Select(i => i.ToString()))})";
+        result = $"{new string('+', indent*2)}## {opCode}({string.Join(", ", stack.ToArray().Select(i => i.ToString()))})";
     }
 
     public void Execute(ICffGlyphTarget target)

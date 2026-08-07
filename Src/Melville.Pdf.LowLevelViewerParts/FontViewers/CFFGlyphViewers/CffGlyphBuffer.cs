@@ -6,10 +6,26 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers.CFFGlyphViewers;
 public class CffGlyphBuffer : ICffGlyphTarget
 {
     public  List<ICffAction> Output { get; } = new();
+    int indent = 0;
 
     public void Operator(CharStringOperators opCode, Span<DictValue> stack)
     {
-        AddInstr(new CffOperator(opCode, stack));
+        AddInstr(new CffOperator(opCode, stack, indent));
+        AdjustIndentForSubrs(opCode);
+    }
+
+    private void AdjustIndentForSubrs(CharStringOperators opCode)
+    {
+        switch (opCode)
+        {
+            case CharStringOperators.CallSubr:
+            case CharStringOperators.CallGSubr:
+                indent++;
+                break;
+            case CharStringOperators.Return:
+                indent--;
+                break;
+        }
     }
 
     private void AddInstr(ICffAction action) => Output.Add(action);
