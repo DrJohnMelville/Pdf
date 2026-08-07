@@ -1,5 +1,15 @@
 ﻿# Releases
 
+## 8/7/2026 0.6.8
+- Fix a transparency bug.
+- Fix Type 1 Font Files that use the FontDirectory feature
+- Return Empty when reading an AcroForm from a PDF that has no AcroForm.
+- Use the external bouid of CoreJ2k
+- Multiple fixes arround bitmap rendering/
+- More bugfixes in CFF file parsing including a debug only parsemap feature.
+- Lots of work on CFF parsing.
+- Fixe type 0 font character mapping.
+
 ## 3/3/2025 0.6.3
 - Fix a regression invlolving the rendering of Type 0 fonts with identity character maos.
 

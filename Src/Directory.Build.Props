@@ -1,15 +1,14 @@
 ﻿<Project>
     <PropertyGroup>
-        <Version>0.6.8-preview</Version>
+        <Version>0.6.8</Version>
         <LangVersion>14</LangVersion>
         <Authors>John Melville, MS, MD</Authors>
         <Company>Melville Computing</Company>
-        <Copyright>2025 John Melville, MS, MD</Copyright>
+        <Copyright>2026 John Melville, MS, MD</Copyright>
         <Nullable>enable</Nullable>
         <AnalysisLevel>latest</AnalysisLevel>
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-<!--		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
     </PropertyGroup>
 
 	<ItemGroup>
