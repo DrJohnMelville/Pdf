@@ -428,7 +428,7 @@ public class CharStringInterpreterTest: IDisposable
     }
 
     [Theory]
-    [InlineData("1c0001 1c0002 0c21 1c0000 1c0000 15", 1f, 2f)]
+    [InlineData("1c0001 1c0002 0c21 1c0000 1c0000 15", 0f, 0f)]
     [InlineData("1c0001 1c0002 0c1c 15", 2f, 1f)]
     [InlineData("1c0001 1c0002 1c0002 1c0003 0c1E 15", 2f, 1f)]
     [InlineData("1c0001 1c0002 1c0002 1cFFFF 0c1E 15", 2f, 1f)]
@@ -513,6 +513,7 @@ public class CharStringInterpreterTest: IDisposable
             new Vector2(4,6), new Vector2(9,12), new Vector2(16,20)));
         target.Verify(i=>i.CurveTo(
             new Vector2(25,30), new Vector2(36,42), new Vector2(49,56)));
+        target.Verify(i => i.RelativeCharWidth(0), Times.AtLeast(1));
         target.VerifyNoOtherCalls();
     }
 }

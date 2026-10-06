@@ -1,17 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Melville.Pdf.LowLevel.Encryption.StringFilters;
-
-[Flags]
-internal enum CharacterKind
-{
-    None = 0b0000,
-    RorAL = 0x40,
-    LCat = 0x20,
-    Error = 0x01
-}
 
 internal static class SaslValidator
 {
@@ -67,26 +60,4 @@ internal static class SaslValidator
         '\x200E' or '\x200F' or '\x202A' or '\x202B' or '\x202C' or '\x202D' or
         '\x202E' or '\x206A' or '\x206B' or '\x206C' or '\x206D' or '\x206E'
         or '\x206F';
-}
-
-internal static class CharUnicodeInfoThunk
-{
-    private static readonly BindingFlags bindingFlags = 
-        BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.InvokeMethod;
-    private static readonly MethodInfo method = ComputeMethodInfo();
-
-    private static MethodInfo ComputeMethodInfo()
-    {
-        var typeCharUnicodeInfo = Type.GetType("System.Globalization.CharUnicodeInfo");
-        return typeCharUnicodeInfo?.GetMethod("GetBidiCategory", bindingFlags, null,
-                   CallingConventions.Any, new Type[]{typeof(string), typeof(int)}, null)??
-               throw new InvalidOperationException("Cannot find CharUnicodeInfo");
-    }
-
-    internal static CharacterKind GetBidiKind(string s, int position)
-    {
-        var parameters = new object[] { s, position };
-        return (CharacterKind)
-            method.Invoke(null, bindingFlags, null, parameters, CultureInfo.InvariantCulture)!;
-    }
 }

@@ -214,12 +214,12 @@ RenderingTest.cs_wpf-ColoredTileRotated|3369191070
 RenderingTest.cs_wpf-ColoredTileMissingMatrix|2040196014
 RenderingTest.cs_wpf-ColoredTilePattern|3764987863
 RenderingTest.cs_Skia-DingBatsWithANameDifferences|328271065
-RenderingTest.cs_Skia-ColoredTileWithSpacing|3402144763
+RenderingTest.cs_Skia-ColoredTileWithSpacing|2885203668
 RenderingTest.cs_Skia-ColoredTileRotated|890685597
-RenderingTest.cs_Skia-ColoredTileMissingMatrix|2809339273
-RenderingTest.cs_Skia-ColoredTilePattern|3098275049
+RenderingTest.cs_Skia-ColoredTileMissingMatrix|4210160605
+RenderingTest.cs_Skia-ColoredTilePattern|2280200165
 RenderingTest.cs_wpf-UncoloredTilingPattern|487929876
-RenderingTest.cs_Skia-UncoloredTilingPattern|4092366542
+RenderingTest.cs_Skia-UncoloredTilingPattern|2585667407
 RenderingTest.cs_wpf-HideOptionalImageOn|1628921656
 RenderingTest.cs_wpf-HideOptionalImageOff|1295938836
 RenderingTest.cs_Skia-HideOptionalImageOn|2650185880
@@ -231,7 +231,7 @@ RenderingTest.cs_Skia-UnalignedSMask|410171177
 RenderingTest.cs_wpf-DeviceCMYK2|642931830
 RenderingTest.cs_Skia-DeviceCMYK2|2084362961
 RenderingTest.cs_wpf-InterpolatedIndexedImage|2263087978
-RenderingTest.cs_Skia-InterpolatedIndexedImage|4137004314
+RenderingTest.cs_Skia-InterpolatedIndexedImage|4088354382
 RenderingTest.cs_wpf-Type0WithTightDefaultCharSpacing|362453109
 RenderingTest.cs_wpf-Type0WithIndividualCharSpacing|1845457199
 RenderingTest.cs_Skia-Type0WithTightDefaultCharSpacing|1506253836
@@ -247,10 +247,10 @@ RenderingTest.cs_wpf-JBigamb_2|2088728090
 RenderingTest.cs_Skia-JBigSampleBitStream1|3921878644
 RenderingTest.cs_Skia-JBigSampleBitStream2|3921878644
 RenderingTest.cs_Skia-JBigSampleBitStream3|1516124992
-RenderingTest.cs_Skia-JBig042_1|1225493042
+RenderingTest.cs_Skia-JBig042_1|3365614878
 RenderingTest.cs_Skia-JBig042_2|4194801023
 RenderingTest.cs_Skia-JBig042_3|4194801023
-RenderingTest.cs_Skia-JBigamb_1|1719196481
+RenderingTest.cs_Skia-JBigamb_1|3175013299
 RenderingTest.cs_Skia-JBigamb_2|1930480778
 RenderingTest.cs_wpf-JBig042_12|2717977635
 RenderingTest.cs_wpf-JBig042_21|2715951161
@@ -298,7 +298,7 @@ RenderingTest.cs_wpf-JBig200__10__45|1604998054
 RenderingTest.cs_wpf-JBig200__10__45__stripe|3011532215
 RenderingTest.cs_wpf-JBig200__2__0|2636822012
 RenderingTest.cs_wpf-JBig200__2__0__stripe|2378665001
-RenderingTest.cs_Skia-JBig200__10__0|4222541787
+RenderingTest.cs_Skia-JBig200__10__0|760596199
 RenderingTest.cs_Skia-JBig200__10__0__stripe|3866410699
 RenderingTest.cs_Skia-JBig200__10__45|79572436
 RenderingTest.cs_Skia-JBig200__10__45__stripe|3437173270
@@ -354,8 +354,8 @@ RenderingTest.cs_Skia-JBig200__8__0__stripe|2701887628
 RenderingTest.cs_Skia-JBig200__8__45|1299024188
 RenderingTest.cs_Skia-JBig200__8__45__stripe|4216890784
 RenderingTest.cs_Skia-JBig200__lossless|685872769
-RenderingTest.cs_wpf-Jpeg2000Image|523800119
-RenderingTest.cs_Skia-Jpeg2000Image|3254313091
+RenderingTest.cs_wpf-Jpeg2000Image|1295938836
+RenderingTest.cs_Skia-Jpeg2000Image|3150822017
 RenderingTest.cs_wpf-Type1FunctionalShader|3249566913
 RenderingTest.cs_Skia-Type1FunctionalShader|443273846
 RenderingTest.cs_wpf-Type1TrippleFunctions|3458448337
@@ -382,7 +382,7 @@ RenderingTest.cs_wpf-Type2ExtendHigh|3996828171
 RenderingTest.cs_wpf-Type2ExtendBoth|1433342635
 RenderingTest.cs_wpf-Type2ExtendBothWithBackground|1433342635
 RenderingTest.cs_wpf-Type2ExtendNoneWithBackground|3848897957
-RenderingTest.cs_Skia-UncoloredTilingPatternMatrix|2356654668
+RenderingTest.cs_Skia-UncoloredTilingPatternMatrix|3714045226
 RenderingTest.cs_Skia-ShadingOperator|1156287737
 RenderingTest.cs_Skia-Type3RadialShader|2031546340
 RenderingTest.cs_Skia-Type3RadialShaderWithBackground|1778657112
@@ -573,7 +573,7 @@ RenderingTest.cs_wpf-UniKS_UTF16_V|1801852527
 RenderingTest.cs_wpf-CmykViaNamedReference|3256171887
 RenderingTest.cs_Skia-CmykViaNamedReference|2470567388
 RenderingTest.cs_wpf-TilePatternWithBareColorspace|3764987863
-RenderingTest.cs_Skia-TilePatternWithBareColorspace|3098275049
+RenderingTest.cs_Skia-TilePatternWithBareColorspace|2280200165
 RenderingTest.cs_wpf-AlphaValueDictionary|4231280469
 RenderingTest.cs_Skia-AlphaValueDictionary|2900083397
 RenderingTest.cs_wpf-SimplifiedChinese|3058294010
@@ -584,7 +584,7 @@ RenderingTest.cs_Skia-SimplifiedChinese|1255585457
 RenderingTest.cs_Skia-TraditionalChinese|1565964258
 RenderingTest.cs_Skia-Japan1|66014889
 RenderingTest.cs_Skia-Korea1|3850772784
-RenderingTest.cs_wpf-Jpeg2000ColorImage|2358655348
-RenderingTest.cs_Skia-Jpeg2000ColorImage|2647928454
+RenderingTest.cs_wpf-Jpeg2000ColorImage|1295938836
+RenderingTest.cs_Skia-Jpeg2000ColorImage|3150822017
 RenderingTest.cs_wpf-WithAnnotation|3576178036
 RenderingTest.cs_Skia-WithAnnotation|1689464111

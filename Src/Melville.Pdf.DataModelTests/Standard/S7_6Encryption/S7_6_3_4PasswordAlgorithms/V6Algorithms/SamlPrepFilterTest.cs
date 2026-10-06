@@ -85,7 +85,7 @@ public class SamlPrepFilterTest
     public void ValidSasl(string input) =>
         input.SaslPrepIfValid(); // implicitly, does not throw
 
-    [Theory]
+     [Theory]
     [InlineData('\x0000', '\x001f', CharacterKind.Error)]
     [InlineData('\x0020', '\x007E', CharacterKind.None)]
     [InlineData('\x007f', '\x007f', CharacterKind.Error)]
