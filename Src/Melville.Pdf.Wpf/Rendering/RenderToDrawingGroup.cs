@@ -8,6 +8,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Wpf.Controls;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
@@ -95,6 +96,7 @@ public readonly struct RenderToDrawingGroup
 
     private  ValueTask RenderToAsync(DrawingContext dc, DependencyObject sizeTarget)
     {
+        #warning -- can I manualy marshal to the correct calls to the right thread to avoid needing to always go back to the UI thread.
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
         return doc.RenderPageToAsync(oneBasedPageNumber, (rect, preTransform) =>

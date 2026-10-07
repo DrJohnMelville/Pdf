@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Parsing.ParserMapping;

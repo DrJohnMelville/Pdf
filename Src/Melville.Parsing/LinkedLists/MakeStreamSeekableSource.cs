@@ -2,6 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
+using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.LinkedLists;
 

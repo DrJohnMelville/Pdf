@@ -8,6 +8,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

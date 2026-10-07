@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -55,7 +56,7 @@ public static class RenderToArrayImpl
     /// Render the bitmap to a C# array
     /// </summary>
     /// <param name="bitmap">The bitmap to render.</param>
-    /// <returns>A byte array containing the bitmap as pargb quadruples</returns>
+    /// <returns>A byte array containing the bitmap as argb quadruples</returns>
     public static async ValueTask<byte[]> AsByteArrayAsync(this IPdfBitmap bitmap)
     {
         var ret = new byte[bitmap.ReqiredBufferSize()];

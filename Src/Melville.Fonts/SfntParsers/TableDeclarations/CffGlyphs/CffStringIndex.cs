@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

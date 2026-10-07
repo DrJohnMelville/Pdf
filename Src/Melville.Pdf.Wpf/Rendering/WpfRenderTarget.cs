@@ -10,6 +10,7 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.FontCaching;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Wpf.Rendering;
 

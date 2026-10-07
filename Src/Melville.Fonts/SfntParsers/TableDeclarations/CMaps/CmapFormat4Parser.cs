@@ -2,11 +2,12 @@
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 internal readonly partial struct CmapFormat4Parser
-{
+{ 
     [SFntField] private readonly ushort format;
     [SFntField] private readonly ushort length;
     [SFntField] private readonly ushort language;

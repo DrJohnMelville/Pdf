@@ -14,6 +14,7 @@
     <ItemGroup>
       <PackageReference Include="Melville.Generators.INPC" />
       <PackageReference Include="Melville.Hacks" />
+      <PackageReference Include="Melville.StreamInterfaces" />
 
       <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

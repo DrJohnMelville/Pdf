@@ -4,6 +4,7 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 

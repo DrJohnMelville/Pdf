@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 

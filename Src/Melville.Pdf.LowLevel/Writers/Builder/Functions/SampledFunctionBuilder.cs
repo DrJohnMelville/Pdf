@@ -10,6 +10,7 @@ using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 

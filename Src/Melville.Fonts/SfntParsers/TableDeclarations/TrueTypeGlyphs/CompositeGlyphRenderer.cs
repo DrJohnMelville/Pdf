@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 {

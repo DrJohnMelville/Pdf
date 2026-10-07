@@ -10,6 +10,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;

@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 

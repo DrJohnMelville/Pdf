@@ -1,6 +1,6 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.AwaitConfiguration;
-
+using Melville.StreamInterfaces;
 namespace Melville.Fonts;
 
 /// <summary>

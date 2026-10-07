@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Documents;
 

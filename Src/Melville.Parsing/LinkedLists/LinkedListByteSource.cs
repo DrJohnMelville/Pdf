@@ -5,6 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
+using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.LinkedLists;
 

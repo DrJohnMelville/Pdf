@@ -14,6 +14,7 @@ using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 

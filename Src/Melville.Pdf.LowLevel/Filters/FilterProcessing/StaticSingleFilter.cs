@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 

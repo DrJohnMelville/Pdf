@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces;
 
 namespace Melville.JBig2.SegmentParsers;
 

@@ -13,6 +13,7 @@ using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers;
 

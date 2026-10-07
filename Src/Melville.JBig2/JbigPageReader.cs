@@ -6,6 +6,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.StreamInterfaces;
 
 namespace Melville.JBig2;
 

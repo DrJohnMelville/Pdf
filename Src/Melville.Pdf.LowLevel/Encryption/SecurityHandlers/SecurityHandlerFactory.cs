@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers.V6SecurityHandler;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 

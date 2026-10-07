@@ -5,6 +5,7 @@ using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.Streams;
 

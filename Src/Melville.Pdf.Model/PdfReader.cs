@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model;
 
@@ -87,14 +88,16 @@ public readonly partial struct PdfReader
     /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public async ValueTask<DocumentRenderer> ReadFromAsync(byte[] input) =>
         await ReadFromAsync(await LowLevelReader().ReadFromAsync(input).CA()).CA();
-    
+
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="input">A stream containing the PDF data.  The stream must support reading and seeking.</param>
     /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
-    public async ValueTask<DocumentRenderer> ReadFromAsync(Stream input) =>
-        await ReadFromAsync(await LowLevelReader().ReadFromAsync(input).CA()).CA();
+    public async ValueTask<DocumentRenderer> ReadFromAsync(Stream input)
+    {
+        return await ReadFromAsync(await LowLevelReader().ReadFromAsync(input).CA()).CA();
+    }
 
     private PdfLowLevelReader LowLevelReader() => new(passwordSource);
 

@@ -7,6 +7,7 @@ using Melville.JBig2.SegmentParsers;
 using Melville.JBig2.Segments;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces;
 
 namespace Melville.JBig2.FileOrganization;
 

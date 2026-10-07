@@ -8,6 +8,7 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.TextExtractor;
 

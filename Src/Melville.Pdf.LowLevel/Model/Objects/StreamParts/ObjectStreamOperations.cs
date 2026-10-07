@@ -6,6 +6,7 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 

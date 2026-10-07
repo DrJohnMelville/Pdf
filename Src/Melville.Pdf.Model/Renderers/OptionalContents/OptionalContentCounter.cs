@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 internal interface IOptionalContentCounter 

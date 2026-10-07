@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

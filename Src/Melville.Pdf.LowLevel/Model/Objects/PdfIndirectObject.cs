@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 

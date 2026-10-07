@@ -2,6 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
+using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;

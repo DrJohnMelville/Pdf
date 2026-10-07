@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 

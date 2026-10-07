@@ -8,6 +8,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
+using Melville.StreamInterfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 

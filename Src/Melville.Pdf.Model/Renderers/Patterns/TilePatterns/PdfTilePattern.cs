@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 

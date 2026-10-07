@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 

@@ -15,6 +15,7 @@
     <PackageVersion Include="Melville.Linq" Version="0.8.5" />
     <PackageVersion Include="Melville.Linq.Statistics" Version="0.8.4" />
     <PackageVersion Include="Melville.MVVM.Wpf" Version="0.8.5" />
+    <PackageVersion Include="Melville.StreamInterfaces" Version="0.1.1-preview" />
     <PackageVersion Include="Melville.TestHelpers" Version="0.8.5" />
     <PackageVersion Include="Melville.WpfAppFramework" Version="0.8.5" />
     <PackageVersion Include="Melville.WpfControls" Version="0.8.5" />

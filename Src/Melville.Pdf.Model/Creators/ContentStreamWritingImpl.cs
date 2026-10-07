@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Creators;
 

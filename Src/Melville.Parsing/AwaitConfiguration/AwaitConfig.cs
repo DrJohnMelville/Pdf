@@ -2,6 +2,7 @@
 
 namespace Melville.Parsing.AwaitConfiguration;
 
+/*
 /// <summary>
 /// The WPF renderer must always return to the same thread, but others do not.  This class controls whether or
 /// not await operations must resume on the same theread they were awaited upon
@@ -60,3 +61,4 @@ public static class AwaitConfig
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ConfiguredAsyncDisposable CA(this IAsyncDisposable vt) => vt.ConfigureAwait(resumeOnCalledThread);
 }
+*/

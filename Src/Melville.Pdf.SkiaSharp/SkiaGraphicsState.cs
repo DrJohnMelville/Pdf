@@ -6,6 +6,7 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
+using Melville.StreamInterfaces;
 using Microsoft.VisualBasic;
 using SkiaSharp;
 

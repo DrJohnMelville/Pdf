@@ -13,6 +13,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Text.TrueType;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
+using Melville.StreamInterfaces;
 
 namespace Performance.Playground.Rendering;
 

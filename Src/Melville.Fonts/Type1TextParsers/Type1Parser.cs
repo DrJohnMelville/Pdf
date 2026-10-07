@@ -7,6 +7,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers;
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 

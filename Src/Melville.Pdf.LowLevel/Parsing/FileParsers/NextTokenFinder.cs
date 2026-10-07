@@ -6,6 +6,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Documents
 {

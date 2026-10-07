@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.FormReader.AcroForms;
 

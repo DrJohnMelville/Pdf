@@ -1,6 +1,7 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 

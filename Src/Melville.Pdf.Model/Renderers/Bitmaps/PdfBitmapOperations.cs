@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

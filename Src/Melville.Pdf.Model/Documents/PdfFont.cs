@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Documents;
 

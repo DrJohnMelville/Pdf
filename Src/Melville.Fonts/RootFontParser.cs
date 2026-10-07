@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts;
 

@@ -13,6 +13,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 

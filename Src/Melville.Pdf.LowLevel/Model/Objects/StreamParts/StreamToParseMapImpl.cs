@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ParserMapping;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 

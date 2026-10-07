@@ -11,6 +11,7 @@ using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.ComparingReader.Viewers.FormViewer;
 

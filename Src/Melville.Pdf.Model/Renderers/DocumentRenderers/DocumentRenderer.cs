@@ -12,6 +12,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 

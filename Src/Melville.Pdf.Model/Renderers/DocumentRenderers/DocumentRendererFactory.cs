@@ -4,6 +4,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 

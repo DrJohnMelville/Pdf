@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;

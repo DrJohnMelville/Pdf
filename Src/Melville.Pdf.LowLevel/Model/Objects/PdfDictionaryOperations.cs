@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
+using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.LinkedLists;
 

@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 

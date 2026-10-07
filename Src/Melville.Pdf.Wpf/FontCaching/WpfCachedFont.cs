@@ -9,6 +9,7 @@ using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Wpf.Rendering;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Wpf.FontCaching;
 

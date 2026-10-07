@@ -10,6 +10,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers;
 

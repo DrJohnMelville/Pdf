@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 

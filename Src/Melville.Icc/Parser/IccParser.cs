@@ -5,18 +5,17 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Parser;
 
 /// <summary>
 /// Parses an ICC profile from a pipereader;
 /// </summary>
-public readonly partial struct IccParser
+public readonly partial struct IccParser(IByteSource source)
 {
-    /// <summary>
-    /// Source of the information to parse.
-    /// </summary>
-    [FromConstructor] private readonly IByteSource source;
+    private readonly ParsingBuffer source2 = new(new IByteSourceToIAsyncReadStream(source));
     
     /// <summary>
     /// Parse an ICC profile from the PipeReader passed in the constructor.
@@ -24,10 +23,11 @@ public readonly partial struct IccParser
     /// <returns>ICC profile </returns>
     public async ValueTask<IccProfile> ParseAsync()
     {
-        var readResult = await GetMinSizeAsync(132).CA();
+        //var readResult = await GetMinSizeAsync(132).CA();
+        var block = await source2.TakeBytesAsync(132);
 
-        var (ret, tags) = ReadStaticBlock(readResult.Buffer);
-        source.AdvanceTo(readResult.Buffer.GetPosition(132));
+        var (ret, tags) = ReadStaticBlock(block.Span);
+        //source.AdvanceTo(readResult.Buffer.GetPosition(132));
         await ReadOffsetsAsync(tags).CA();
         Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
         for (int i = 0; i < tags.Length; i++)
@@ -53,67 +53,50 @@ public readonly partial struct IccParser
         return readResult;
     }
 
-    private (IccProfile, ProfileTag[]) ReadStaticBlock(ReadOnlySequence<byte> buffer)
+    private (IccProfile, ProfileTag[]) ReadStaticBlock(ReadOnlySpan<byte> buffer)
     {
-        var header = ReadHeader(buffer);
-        var items = new ProfileTag[ReadTagCount(buffer.Slice(128))];
+        var reader = new SpanParsingBuffer(buffer);
+        var header = ReadHeader(reader);
+        var items = new ProfileTag[reader.GetUInt32BigEndian()];
         return (new IccProfile(header, items), items);
     }
 
-    private static IccHeader ReadHeader(ReadOnlySequence<byte> buffer)
+    private static IccHeader ReadHeader(in SpanParsingBuffer reader)
     {
-        var reader = new SequenceReader<byte>(buffer);
+        
         var header = new IccHeader(
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            (ProfileClass)reader.ReadBigEndianUint32(),
-            (ColorSpace)reader.ReadBigEndianUint32(),
-            (ColorSpace)reader.ReadBigEndianUint32(),
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            (ProfileClass)reader.GetUInt32BigEndian(),
+            (ColorSpace)reader.GetUInt32BigEndian(),
+            (ColorSpace)reader.GetUInt32BigEndian(),
             reader.ReadDateTimeNumber(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            (ProfileFlags)reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            (DeviceAttributes)reader.ReadBigEndianUint64(),
-            (RenderIntent)reader.ReadBigEndianUint32(),
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            (ProfileFlags)reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            (DeviceAttributes)reader.GetUInt64BigEndian(),
+            (RenderIntent)reader.GetUInt32BigEndian(),
             reader.ReadXyzNumber(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint64(),
-            reader.ReadBigEndianUint64()
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt64BigEndian(),
+            reader.GetUInt64BigEndian()
         );
         return header;
     }
 
-    private uint ReadTagCount(ReadOnlySequence<byte> slice)
-    {
-        var reader = new SequenceReader<byte>(slice);
-        return reader.ReadBigEndianUint32();
-    }
-
     private async ValueTask ReadOffsetsAsync(ProfileTag[] tags)
     {
-        var result = await GetMinSizeAsync(12 * tags.Length).CA();
-        ReadOffsets(result.Buffer, tags);
-        source.AdvanceTo(result.Buffer.GetPosition(12*tags.Length));
-    }
 
-    private void ReadOffsets(ReadOnlySequence<byte> buffer, ProfileTag[] tags)
-    {
-        var reader = new SequenceReader<byte>(buffer);
         for (int i = 0; i < tags.Length; i++)
         {
-            tags[i] = ParseSingleOffset(ref reader);
+            tags[i] = new ProfileTag(
+                await source2.GetUInt32BigEndianAsync(),
+                await source2.GetUInt32BigEndianAsync(),
+                await source2.GetUInt32BigEndianAsync(),
+                null);
         }
-    }
-
-    private ProfileTag ParseSingleOffset(ref SequenceReader<byte> reader)
-    {
-        return new ProfileTag(
-            tag: reader.ReadBigEndianUint32(),
-            offset: reader.ReadBigEndianUint32(),
-            size: reader.ReadBigEndianUint32(), 
-            null);
     }
 }

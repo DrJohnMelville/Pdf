@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 

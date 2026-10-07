@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.TextExtractor;
 

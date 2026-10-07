@@ -11,6 +11,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding
 {

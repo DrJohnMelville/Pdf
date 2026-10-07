@@ -12,6 +12,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CmapsTest;

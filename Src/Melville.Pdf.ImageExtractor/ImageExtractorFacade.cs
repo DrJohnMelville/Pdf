@@ -2,6 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.ImageExtractor.ImageCollapsing;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.ImageExtractor;
 

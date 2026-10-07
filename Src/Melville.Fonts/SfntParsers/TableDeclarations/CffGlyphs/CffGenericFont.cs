@@ -6,6 +6,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ParserMapping;
+using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

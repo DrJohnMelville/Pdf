@@ -7,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.MultiplexSources;
 

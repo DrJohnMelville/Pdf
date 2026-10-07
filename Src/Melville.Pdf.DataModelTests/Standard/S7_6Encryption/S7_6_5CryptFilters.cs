@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.StreamInterfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
