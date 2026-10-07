@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.INPC;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -84,7 +85,7 @@ public partial class ParametricCurveTag : ICurveTag
         F = f;
     }
 
-    internal ParametricCurveTag(ref SequenceReader<byte> reader)
+    internal ParametricCurveTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var type = reader.GetUInt16BigEndian();
@@ -93,7 +94,7 @@ public partial class ParametricCurveTag : ICurveTag
     }
 
     private (float G, float A, float B, float C, float D, float E, float F) ReadParamsForType(
-        ref SequenceReader<byte> reader, ushort type) => type switch
+        ref SpanParsingBuffer reader, ushort type) => type switch
     {
         0 => ReadType0Function(ref reader),
         1 => ReadType1Function(ref reader),
@@ -104,10 +105,10 @@ public partial class ParametricCurveTag : ICurveTag
     };
 
     private static (float, float, float, float, float MinValue, float, float) ReadType0Function(
-        ref SequenceReader<byte> reader) => (reader.Reads15Fixed16(), 1f, 0f, 0f, float.MinValue, 0f, 0f);
+        ref SpanParsingBuffer reader) => (reader.Reads15Fixed16(), 1f, 0f, 0f, float.MinValue, 0f, 0f);
 
     private static (float G, float A, float B, float C, float D, float E, float F)
-        ReadType1Function(ref SequenceReader<byte> reader)
+        ReadType1Function(ref SpanParsingBuffer reader)
     {
         var g = reader.Reads15Fixed16();
         var a = reader.Reads15Fixed16();
@@ -116,11 +117,11 @@ public partial class ParametricCurveTag : ICurveTag
     }
 
     private static (float G, float A, float B, float C, float D, float E, float F)
-        ReadType2Function(ref SequenceReader<byte> reader) =>
+        ReadType2Function(ref SpanParsingBuffer reader) =>
         ReadType1Function(ref reader) with { C = reader.Reads15Fixed16() };
 
     private (float G, float A, float B, float C, float D, float E, float F) ReadType3Function(
-        ref SequenceReader<byte> reader)
+        ref SpanParsingBuffer reader)
     {
         // separate method because we need to read the arguments out of order
         var g = reader.Reads15Fixed16();
@@ -132,7 +133,7 @@ public partial class ParametricCurveTag : ICurveTag
     }
 
     private (float G, float A, float B, float C, float D, float E, float F) ReadType4Function(
-        ref SequenceReader<byte> reader) =>
+        ref SpanParsingBuffer reader) =>
         (reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16(),
             reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16());
 }

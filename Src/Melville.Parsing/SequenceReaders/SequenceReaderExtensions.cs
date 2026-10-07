@@ -191,6 +191,23 @@ public static  partial class SequenceReaderExtensions
     }
 
     /// <summary>
+    /// Read an array of unsigned 16 bit values values.
+    /// </summary>
+    /// <param name="reader">The reader to read from </param>
+    /// <param name="len">Number of values to read</param>
+    /// <returns>An array containing the read values.</returns>
+    public static ushort[] ReadUshortArray(this ref SpanParsingBuffer reader, int len)
+    {
+        if (len == 0) return Array.Empty<ushort>();
+        var ret = new ushort[len];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = reader.GetUInt16BigEndian();
+        }
+        return ret;
+    }
+
+    /// <summary>
     /// Reads an array of floats that are stored as uints scaled by a factor, which
     /// us stored first.  This format is unique to the ICC spec
     /// </summary>

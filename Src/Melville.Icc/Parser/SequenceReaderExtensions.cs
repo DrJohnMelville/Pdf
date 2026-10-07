@@ -18,7 +18,15 @@ internal static class IccSequenceReaderExtensions
             source.ReadUshortasFloat0To1(),
             source.ReadUshortasFloat0To1());
 
+    public static XyzNumber ReadXyzFromUint16s(this ref SpanParsingBuffer source) =>
+        new(source.ReadUshortasFloat0To1(),
+            source.ReadUshortasFloat0To1(),
+            source.ReadUshortasFloat0To1());
+
     public static float ReadUshortasFloat0To1(this ref SequenceReader<byte> source) => 
+        source.GetUInt16BigEndian() / ((float)ushort.MaxValue);
+
+    public static float ReadUshortasFloat0To1(this ref SpanParsingBuffer source) => 
         source.GetUInt16BigEndian() / ((float)ushort.MaxValue);
 
     [Obsolete("Get rid of this when IByteSource Goes away")]
