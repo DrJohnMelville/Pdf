@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -24,7 +25,7 @@ public class ProfileSequenceIdentifierTag
     /// </summary>
     public IReadOnlyList<ProfileIdentifier> Profiles { get;}
 
-    internal ProfileSequenceIdentifierTag(ref SequenceReader<byte> reader)
+    internal ProfileSequenceIdentifierTag(ref SpanParsingBuffer reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -36,7 +37,7 @@ public class ProfileSequenceIdentifierTag
         Profiles = profiles;
     }
 
-    private ProfileIdentifier ParseProfileIdentifier(SequenceReader<byte> reader)
+    private ProfileIdentifier ParseProfileIdentifier(SpanParsingBuffer reader)
     {
         return new ProfileIdentifier(reader.GetUInt64BigEndian(), reader.GetUInt64BigEndian(),
             MultiLocalizedUnicodeTag.ReadFromMiddleOfStream(ref reader));

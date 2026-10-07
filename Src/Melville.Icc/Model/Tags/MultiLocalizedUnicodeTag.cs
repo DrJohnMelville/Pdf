@@ -52,15 +52,11 @@ public class MultiLocalizedUnicodeTag
         Encodings = array;
     }
 
-    internal static MultiLocalizedUnicodeTag ReadFromMiddleOfStream(ref SequenceReader<byte> reader)
+    internal static MultiLocalizedUnicodeTag ReadFromMiddleOfStream(ref SpanParsingBuffer reader)
     {
         ResetCurrentPointToBeginningOfReader(ref reader);
         CheckForMultiUnicodeHeader(ref reader);
-        var r2 = reader.AsSpanParsingBuffer();
-        r2.RelativePosition = 4;
-        var ret =  new MultiLocalizedUnicodeTag(ref r2);
-        reader.Advance(reader.UnreadSequence.Length - r2.RemainingLength);
-        return ret;
+        return new MultiLocalizedUnicodeTag(ref reader);
     }
 
     private static void ResetCurrentPointToBeginningOfReader(ref SequenceReader<byte> reader)
@@ -72,6 +68,17 @@ public class MultiLocalizedUnicodeTag
     {
         if (reader.GetUInt32BigEndian() != IccTags.mluc)
             throw new InvalidDataException(
-                "Should have a MultiLocalizedUnicode record in profilesequencedescription");
+                "Should have a MultiLocalizedUnicode record in profile sequence description");
+    }
+    private static void ResetCurrentPointToBeginningOfReader(ref SpanParsingBuffer reader)
+    {
+        reader.RelativePosition = 0;
+    }
+
+    private static void CheckForMultiUnicodeHeader(ref SpanParsingBuffer reader)
+    {
+        if (reader.GetUInt32BigEndian() != IccTags.mluc)
+            throw new InvalidDataException(
+                "Should have a MultiLocalizedUnicode record in profile sequence description");
     }
 }

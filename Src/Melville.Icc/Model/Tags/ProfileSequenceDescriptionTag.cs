@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -22,7 +23,7 @@ public record struct ProfileSequenceDescriptionElement(
 );
 
 /// <summary>
-/// ICC tag class representing a serries of transforms combined to make the current ICC transform 
+/// ICC tag class representing a series of transforms combined to make the current ICC transform 
 /// </summary>
 public class ProfileSequenceDescriptionTag 
 {
@@ -30,7 +31,7 @@ public class ProfileSequenceDescriptionTag
     /// List of information about the profiles that were combined to make this profile.
     /// </summary>
     public IReadOnlyList<ProfileSequenceDescriptionElement> Profiles { get; }
-    internal ProfileSequenceDescriptionTag(ref SequenceReader<byte> reader)
+    internal ProfileSequenceDescriptionTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var profiles = new ProfileSequenceDescriptionElement[reader.GetUInt32BigEndian()];
@@ -41,7 +42,7 @@ public class ProfileSequenceDescriptionTag
         Profiles = profiles;
     }
 
-    private ProfileSequenceDescriptionElement ParseSingleProfile(ref SequenceReader<byte> reader)
+    private ProfileSequenceDescriptionElement ParseSingleProfile(ref SpanParsingBuffer reader)
     {
         var mfr = reader.GetUInt32BigEndian();
         var device = reader.GetUInt32BigEndian();
