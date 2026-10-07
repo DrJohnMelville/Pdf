@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -26,7 +27,7 @@ public class SampledCurveSegment : ICurveSegment
     {
         this.samples = samples;
     }
-    internal SampledCurveSegment(ref SequenceReader<byte> reader)
+    internal SampledCurveSegment(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         samples = reader.ReadIEEE754FloatArray((int)reader.GetUInt32BigEndian(), 1);

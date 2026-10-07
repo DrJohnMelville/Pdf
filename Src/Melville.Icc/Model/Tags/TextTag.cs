@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -12,9 +13,9 @@ public class TextTag
     /// Text contained in the ICC profile for this tag
     /// </summary>
     public string Text { get; }
-    internal TextTag(ref SequenceReader<byte> reader)
+    internal TextTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
-        Text = reader.ReadFixedAsciiString((int)(reader.Length - 8));
+        Text = reader.ReadFixedAsciiString((int)(reader.RemainingLength));
     }
 }

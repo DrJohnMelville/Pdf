@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -90,7 +91,7 @@ public class ResponseCurveSet16Tag
     /// </summary>
     public IReadOnlyList<ResponseCurve> Curves { get; }
 
-    internal ResponseCurveSet16Tag(ref SequenceReader<byte> reader)
+    internal ResponseCurveSet16Tag(ref SpanParsingBuffer reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -104,7 +105,7 @@ public class ResponseCurveSet16Tag
         Curves = curves;
     }
 
-    private ResponseCurve ParseResponseCurve(SequenceReader<byte> reader, ushort chanels)
+    private ResponseCurve ParseResponseCurve(SpanParsingBuffer reader, ushort chanels)
     {
         var unit = (CurveMeasurement)reader.GetUInt32BigEndian();
         var xyzReader = reader.ReaderAt((uint)(4 + (4 * chanels)));
@@ -122,7 +123,7 @@ public class ResponseCurveSet16Tag
     }
 
     private IReadOnlyList<Response16Number> ReadResponseNumbers(
-        uint count, ref SequenceReader<byte> reader)
+        uint count, ref SpanParsingBuffer reader)
     {
         var ret = new Response16Number[count];
         for (int i = 0; i < ret.Length; i++)
@@ -133,7 +134,7 @@ public class ResponseCurveSet16Tag
         return ret;
     }
 
-    private static Response16Number ReadSingleResponseNumber(ref SequenceReader<byte> reader)
+    private static Response16Number ReadSingleResponseNumber(ref SpanParsingBuffer reader)
     {
         var device = reader.GetUInt16BigEndian();
         reader.Skip16BitPad();

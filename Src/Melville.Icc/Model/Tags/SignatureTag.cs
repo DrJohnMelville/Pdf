@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -12,7 +13,7 @@ public class SignatureTag
     /// The signature data from the ICC profile.
     /// </summary>
     public uint Signature { get; }
-    internal SignatureTag(ref SequenceReader<byte> reader)
+    internal SignatureTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         Signature = reader.GetUInt32BigEndian();
