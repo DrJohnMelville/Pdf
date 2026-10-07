@@ -1,7 +1,9 @@
 ﻿using System.Buffers;
 using System.Text;
 using Melville.Icc.Parser;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -23,7 +25,7 @@ public class MultiLocalizedUnicodeTag
     /// </summary>
     public IReadOnlyList<SingleUincodeString> Encodings { get; }
 
-    internal MultiLocalizedUnicodeTag(ref SequenceReader<byte> reader)
+    internal MultiLocalizedUnicodeTag(ref SpanParsingBuffer reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -38,13 +40,15 @@ public class MultiLocalizedUnicodeTag
             var stringLength = reader.GetUInt32BigEndian();
             var offset = reader.GetUInt32BigEndian();
             max = Math.Max(max, offset + stringLength);
-            if (recordLen > 12) reader.Advance(recordLen - 12);
-            var stringSlice = reader.Sequence.Slice(offset, stringLength);
-            var str = Encoding.BigEndianUnicode.GetString(stringSlice);
+            if (recordLen > 12) reader.Advance((int)recordLen - 12);
+            var subReader = reader.ReaderAt(offset);
+
+            //var stringSlice = reader.Sequence.Slice(offset, stringLength);
+            var str = Encoding.BigEndianUnicode.GetString(subReader.Peek()[..(int)stringLength]);
             array[i] = new SingleUincodeString(language, country, str);
         }
 
-        reader = new SequenceReader<byte>(reader.Sequence.Slice(max));
+        reader.AdvanceToRelativePosition(max);
         Encodings = array;
     }
 
@@ -52,7 +56,11 @@ public class MultiLocalizedUnicodeTag
     {
         ResetCurrentPointToBeginningOfReader(ref reader);
         CheckForMultiUnicodeHeader(ref reader);
-        return new MultiLocalizedUnicodeTag(ref reader);
+        var r2 = reader.AsSpanParsingBuffer();
+        r2.RelativePosition = 4;
+        var ret =  new MultiLocalizedUnicodeTag(ref r2);
+        reader.Advance(reader.UnreadSequence.Length - r2.RemainingLength);
+        return ret;
     }
 
     private static void ResetCurrentPointToBeginningOfReader(ref SequenceReader<byte> reader)

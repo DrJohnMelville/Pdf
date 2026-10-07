@@ -52,7 +52,7 @@ internal static class TagParser
                 IccTags.mAB => new LutAToBTag(ref reader2),
                 IccTags.mBA => new LutBToATag(ref reader2),
                 IccTags.mpet => new MultiProcessTag(ref reader),
-                IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
+                IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader2),
                 IccTags.ncl2 => new NamedColorTag(ref reader),
                 IccTags.para => new ParametricCurveTag(ref reader),
                 IccTags.parf => ParseCurveSegment(ref reader),
