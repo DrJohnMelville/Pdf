@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Buffers;
 using Melville.Icc.Model.Tags;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class MultiProcessCurveSetTest
 {
-    public SequenceReader<byte> FloatToBytes(params float[] values)
+    public SpanParsingBuffer FloatToBytes(params float[] values)
     {
         var ret = new byte[values.Length * 4];
         for (int i = 0; i < values.Length; i++)
@@ -19,7 +20,7 @@ public class MultiProcessCurveSetTest
                 intVal >>= 8;
             }
         }
-        return new(new ReadOnlySequence<byte>(ret));
+        return new(ret);
     }
 
     [Fact]

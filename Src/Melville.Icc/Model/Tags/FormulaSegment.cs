@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -28,7 +29,7 @@ public class FormulaSegmentType0 : ICurveSegment
     /// </summary>
     public float C { get; }
 
-    internal FormulaSegmentType0(ref SequenceReader<byte> reader)
+    internal FormulaSegmentType0(ref SpanParsingBuffer reader)
     {
         Gamma = reader.ReadIEEE754Float();
         A = reader.ReadIEEE754Float();
@@ -75,7 +76,7 @@ public class FormulaSegmentType1 : ICurveSegment
     /// </summary>
     public float D { get; }
 
-    internal FormulaSegmentType1(ref SequenceReader<byte> reader)
+    internal FormulaSegmentType1(ref SpanParsingBuffer reader)
     {
         Gamma = reader.ReadIEEE754Float();
         A = reader.ReadIEEE754Float();
@@ -127,7 +128,7 @@ public class FormulaSegmentType2 : ICurveSegment
     /// Parse a formulasegment type 2 from a sequence reader.
     /// </summary>
     /// <param name="reader"></param>
-    public FormulaSegmentType2(ref SequenceReader<byte> reader)
+    public FormulaSegmentType2(ref SpanParsingBuffer reader)
     {
         A = reader.ReadIEEE754Float();
         B = reader.ReadIEEE754Float();

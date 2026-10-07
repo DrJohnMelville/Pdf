@@ -55,7 +55,7 @@ internal static class TagParser
                 IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader2),
                 IccTags.ncl2 => new NamedColorTag(ref reader2),
                 IccTags.para => new ParametricCurveTag(ref reader2),
-                IccTags.parf => ParseCurveSegment(ref reader),
+                IccTags.parf => ParseCurveSegment(ref reader2),
                 IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
                 IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
                 IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
@@ -91,7 +91,7 @@ internal static class TagParser
         return NullColorTransform.Instance(3);
     }
 
-    private static object ParseCurveSegment(ref SequenceReader<byte> reader)
+    private static object ParseCurveSegment(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var fType = reader.GetUInt16BigEndian();
