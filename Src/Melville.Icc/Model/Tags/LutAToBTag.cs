@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Icc.ColorTransforms;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -8,7 +9,7 @@ namespace Melville.Icc.Model.Tags;
 /// </summary>
 public class LutAToBTag : GenericLut
 {
-    internal LutAToBTag(ref SequenceReader<byte> reader): base(ref reader, false)
+    internal LutAToBTag(ref SpanParsingBuffer reader): base(ref reader, false)
     {
     }
 

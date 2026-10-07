@@ -4,6 +4,7 @@ using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -50,12 +51,12 @@ public abstract class GenericLut: IColorTransform
         LookupTable = lookupTable;
     }
 
-    private protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
+    private protected GenericLut(ref SpanParsingBuffer reader, bool bIsInput)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var inputs = new ICurveTag[reader.GetUInt8BigEndian()];
-        var outputs = new ICurveTag[reader.GetUInt8BigEndian()];
+        var inputs = new ICurveTag[reader.GetUInt8()];
+        var outputs = new ICurveTag[reader.GetUInt8()];
         var matrixCurves = new ICurveTag[3];
         inputCurves = inputs;
         this.matrixCurves = matrixCurves;
@@ -69,15 +70,15 @@ public abstract class GenericLut: IColorTransform
 
 
     }
-    private IColorTransform ParseClut(ref SequenceReader<byte> reader)
+    private IColorTransform ParseClut(ref SpanParsingBuffer reader)
     {
         var offset = reader.GetUInt32BigEndian(); // clut
         if (offset == 0) return NullColorTransform.Instance(InputCurves.Count);
-        var clutReader = reader.ReaderAt(offset).AsSpanParsingBuffer();
+        var clutReader = reader.ReaderAt(offset);
         return new MultidimensionalLookupTable(ref clutReader, OutputCurves.Count);
     }
 
-    private void ReadCurves(ICurveTag[] curves, ref SequenceReader<byte> reader)
+    private void ReadCurves(ICurveTag[] curves, ref SpanParsingBuffer reader)
     {
         var offset = reader.GetUInt32BigEndian();
         if (offset == 0)
@@ -89,7 +90,7 @@ public abstract class GenericLut: IColorTransform
         }    
     }
 
-    private void ParseCurve(ICurveTag[] curves, ref SequenceReader<byte> reader)
+    private void ParseCurve(ICurveTag[] curves, ref SpanParsingBuffer reader)
     {
         for (int i = 0; i < curves.Length; i++)
         {
@@ -97,7 +98,7 @@ public abstract class GenericLut: IColorTransform
         }
     }
 
-    private ICurveTag ParseSingleCurve(ref SequenceReader<byte> reader)
+    private ICurveTag ParseSingleCurve(ref SpanParsingBuffer reader)
     {
         return TagParser.Parse(ref reader) as ICurveTag ??
                throw new InvalidDataException("Expected an ICC CurveType or ParametricCurveType");
@@ -111,7 +112,7 @@ public abstract class GenericLut: IColorTransform
         }
     }
 
-    private AugmentedMatrix3x3 ReadMatrix(ref SequenceReader<byte> reader)
+    private AugmentedMatrix3x3 ReadMatrix(ref SpanParsingBuffer reader)
     {
         var offset = reader.GetUInt32BigEndian();
         if (offset < 1) return 

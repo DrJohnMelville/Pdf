@@ -27,7 +27,7 @@ internal static class VerifyJumpingPosition
         uint length = uint.MaxValue)
     {
         var delta = position - reader.RelativePosition;
-        var span = reader.Peek()[(int)position..];
+        var span = reader.Peek()[(int)delta..];
         if (length < span.Length) span = span[..(int)length];
         return new SpanParsingBuffer(span);
     }
