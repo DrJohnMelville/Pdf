@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
+using System.Text;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -32,26 +34,16 @@ public class DataTag{
     /// </summary>
     public IReadOnlyList<byte> Data => data;
 
-     internal DataTag(ref SequenceReader<byte> reader)
+     internal DataTag(ref SpanParsingBuffer reader)
      {
          reader.Skip32BitPad();
          Type = (DataType)reader.GetUInt32BigEndian();
-         data = new byte[reader.Length - 12];
-         for (int i = 0; i < data.Length; i++)
-         {
-             data[i] = reader.GetUInt8BigEndian();
-         }
+         data = reader.Peek().ToArray();
+         reader.Advance(reader.RemainingLength);
      }
 
-     /// <summary>
-     /// Display the data as an ascii formatted string.
-     /// </summary>
-     public String AsString() => String.Create(data.Length-1, data, CopyBytesToCharSpan );
-     private void CopyBytesToCharSpan(Span<char> span, byte[] bytes)
-     {
-         for (int i = 0; i < span.Length; i++)
-         {
-             span[i] = (char)bytes[i];
-         }
-     }
+    /// <summary>
+    /// Display the data as an ascii formatted string.
+    /// </summary>
+    public String AsString() => Encoding.ASCII.GetString(data.AsSpan()[..^1]);
 }

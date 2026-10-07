@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -14,13 +15,13 @@ public class ColorantOrderTag
     /// </summary>
     public IReadOnlyList<byte> Colors { get; }
 
-    internal ColorantOrderTag(ref SequenceReader<byte> data)
+    internal ColorantOrderTag(ref SpanParsingBuffer data)
     {
-        data.GetUInt32BigEndian(); // discard padding
+        data.Skip32BitPad();
         var cols = new byte[data.GetUInt32BigEndian()];
         for (int i = 0; i < cols.Length; i++)
         {
-            cols[i] = data.GetUInt8BigEndian();
+            cols[i] = data.GetUInt8();
         }
 
         Colors = cols;

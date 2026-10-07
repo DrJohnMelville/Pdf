@@ -1,6 +1,8 @@
 ﻿using System.Buffers;
 using Melville.Icc.ColorTransforms;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -35,7 +37,7 @@ public class MultidimensionalLookupTable: IColorTransform
         Inputs = DimensionLengths.Count;
     }
 
-    internal MultidimensionalLookupTable(ref SequenceReader<byte> reader)
+    internal MultidimensionalLookupTable(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         Inputs = reader.GetUInt16BigEndian();
@@ -43,11 +45,11 @@ public class MultidimensionalLookupTable: IColorTransform
         DimensionLengths = ParseDimensionList(ref reader);
         points = reader.ReadIEEE754FloatArray(TotalPoints());
     }
-    
-    internal MultidimensionalLookupTable(ref SequenceReader<byte> reader, int outputs)
-    { 
+
+    internal MultidimensionalLookupTable(ref SpanParsingBuffer reader, int outputs)
+    {
         DimensionLengths = ParseDimensionList(ref reader);
-        var dimensionSize = reader.GetUInt8BigEndian();
+        var dimensionSize = reader.GetUInt8();
         reader.Skip8BitPad();
         reader.Skip16BitPad();
         Outputs = outputs;
@@ -58,12 +60,12 @@ public class MultidimensionalLookupTable: IColorTransform
 
     private int TotalPoints() => DimensionLengths.Aggregate(Outputs, (agg, i) => agg * Math.Max(1, i));
 
-    private int[] ParseDimensionList(ref SequenceReader<byte> reader)
+    private int[] ParseDimensionList(ref SpanParsingBuffer reader)
     {
         var dimensions = new int[16];
         for (int i = 0; i < dimensions.Length; i++)
         {
-            dimensions[i] = reader.GetUInt8BigEndian();
+            dimensions[i] = reader.GetUInt8();
         }
         return dimensions;
     }

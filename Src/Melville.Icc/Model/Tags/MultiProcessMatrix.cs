@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.ColorTransforms;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -27,7 +28,7 @@ public class MultiProcessMatrix : IColorTransform
         Values = values;
     }
     
-    internal static MultiProcessMatrix Parse(ref SequenceReader<byte> reader)
+    internal static MultiProcessMatrix Parse(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var inputs = reader.GetUInt16BigEndian();

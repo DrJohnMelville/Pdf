@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -49,6 +50,14 @@ public readonly struct AugmentedMatrix3x3
     /// </summary>
     /// <param name="reader"></param>
     public AugmentedMatrix3x3(ref SequenceReader<byte> reader):
+        this (new Matrix3x3(ref reader),
+            reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}
+
+    /// <summary>
+    /// Read an augmentedMatrix from a sequence reader.
+    /// </summary>
+    /// <param name="reader"></param>
+    public AugmentedMatrix3x3(ref SpanParsingBuffer reader):
         this (new Matrix3x3(ref reader),
             reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}
 

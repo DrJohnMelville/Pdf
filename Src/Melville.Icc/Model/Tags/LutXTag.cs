@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.ColorTransforms;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -71,12 +72,12 @@ public class LutXTag: IColorTransform
         clutTransform = ComputeClutTransform();
     }
 
-    internal LutXTag(ref SequenceReader<byte> reader, int tablePrecisionInBytes)
+    internal LutXTag(ref SpanParsingBuffer reader, int tablePrecisionInBytes)
     {
         reader.Skip32BitPad();
-        Inputs = reader.GetUInt8BigEndian();
-        Outputs = reader.GetUInt8BigEndian();
-        GridPoints = reader.GetUInt8BigEndian();
+        Inputs = reader.GetUInt8();
+        Outputs = reader.GetUInt8();
+        GridPoints = reader.GetUInt8();
         reader.Skip8BitPad();
         Matrix = new Matrix3x3(ref reader);
 
@@ -90,7 +91,7 @@ public class LutXTag: IColorTransform
     }
 
     // the 16 bit version encodes the input and output table length but set to 256 in the 8 bit version
-    private ushort GetTableLength(int tablePrecisionInBytes, ref SequenceReader<byte> reader) =>
+    private ushort GetTableLength(int tablePrecisionInBytes, ref SpanParsingBuffer reader) =>
         tablePrecisionInBytes == 1 ? (ushort)256 : reader.GetUInt16BigEndian();
 
     private IColorTransform ComputeClutTransform()

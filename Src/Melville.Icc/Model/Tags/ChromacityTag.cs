@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -20,9 +21,9 @@ public class ChromacityTag
     /// The chromacity values for each channel
     /// </summary>
     public (float X, float Y)[] Coordinates { get; } 
-    internal ChromacityTag(ref SequenceReader<byte> reader)
+    internal ChromacityTag(ref SpanParsingBuffer reader)
     {
-        reader.GetUInt32BigEndian(); // throw away padding
+        reader.Skip32BitPad();
         Channels = reader.GetUInt16BigEndian();
         Colorant = (Colorant)reader.GetUInt16BigEndian();
         Coordinates = new (float, float)[Channels];

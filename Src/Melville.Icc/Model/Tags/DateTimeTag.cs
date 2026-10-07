@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -14,7 +15,7 @@ public class DateTimeTag
     /// </summary>
     public DateTime DateTime { get; }
 
-    internal DateTimeTag(ref SequenceReader<byte> reader)
+    internal DateTimeTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         DateTime = reader.ReadDateTimeNumber();

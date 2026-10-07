@@ -1,7 +1,10 @@
 ﻿using System.Buffers;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Melville.Icc.Model.Tags;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Parser;
 
@@ -12,47 +15,68 @@ internal static class TagParser
         var reader = new SequenceReader<byte>(input);
         return Parse(ref reader);
     }
-    
+
+    public static object Parse(ref SpanParsingBuffer reader)
+    { // this is a terrible transition hack
+        var buffer = reader.Peek().ToArray();
+        var inner = new SequenceReader<byte>(new ReadOnlySequence<byte>(buffer));
+        var ret = Parse(ref inner);
+        var consumed = buffer.Length - inner.Length;
+        reader.Advance((int)consumed);
+        return ret;
+    }
+   
     public static object Parse(ref SequenceReader<byte> reader)
     {
-        return reader.GetUInt32BigEndian() switch
+        var reader2 = reader.AsSpanParsingBuffer();
+        reader2.Skip32BitPad();
+        try
         {
-            IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader),
-            IccTags.chrm => new ChromacityTag(ref reader),
-            IccTags.clro => new ColorantOrderTag(ref reader),
-            IccTags.clrt => new ColorantTableTag(ref reader),
-            IccTags.clut => new MultidimensionalLookupTable(ref reader),
-            IccTags.curv => CurveTagParser.Parse(ref reader),
-            IccTags.curf => new MultiProcessCurve(ref reader),
-            IccTags.cvst => new MultiProcessCurveSet(ref reader),
-            IccTags.data => new DataTag(ref reader),
-            IccTags.dtim => new DateTimeTag(ref reader),
-            IccTags.matf => MultiProcessMatrix.Parse(ref reader),
-            IccTags.mft2 => new LutXTag(ref reader, 2),
-            IccTags.mft1 => new LutXTag(ref reader, 1),
-            IccTags.meas => new MeasurementTypeTag(ref reader),
-            IccTags.mAB => new LutAToBTag(ref reader),
-            IccTags.mBA => new LutBToATag(ref reader),
-            IccTags.mpet => new MultiProcessTag(ref reader),
-            IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
-            IccTags.ncl2 => new NamedColorTag(ref reader),
-            IccTags.para => new ParametricCurveTag(ref reader),
-            IccTags.parf => ParseCurveSegment(ref reader),
-            IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
-            IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
-            IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
-            IccTags.samf => new SampledCurveSegment(ref reader),
-            IccTags.sf32 => new S15Fixed16Array(ref reader),
-            IccTags.sig => new SignatureTag(ref reader),
-            IccTags.text => new TextTag(ref reader),
-            IccTags.uf32 => new U16Fixed16Array(ref reader),
-            IccTags.ui16 => new UInt16Array(ref reader),
-            IccTags.ui32 => new UInt32Array(ref reader),
-            IccTags.ui64 => new UInt64Array(ref reader),
-            IccTags.XYZ => new XyzArray(ref reader),
-            IccTags.view => new ViewingConditionsTag(ref reader),
-            var x => UnRecognizedTransform(x) // Some profiles have invalid tags that we do not care about.
-        };
+
+            return reader.GetUInt32BigEndian() switch
+            {
+                IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader2),
+                IccTags.chrm => new ChromacityTag(ref reader2),
+                IccTags.clro => new ColorantOrderTag(ref reader2),
+                IccTags.clrt => new ColorantTableTag(ref reader2),
+                IccTags.clut => new MultidimensionalLookupTable(ref reader2),
+                IccTags.curv => CurveTagParser.Parse(ref reader2),
+                IccTags.curf => new MultiProcessCurve(ref reader),
+                IccTags.cvst => new MultiProcessCurveSet(ref reader),
+                IccTags.data => new DataTag(ref reader2),
+                IccTags.dtim => new DateTimeTag(ref reader2),
+                IccTags.matf => MultiProcessMatrix.Parse(ref reader2),
+                IccTags.mft2 => new LutXTag(ref reader2, 2),
+                IccTags.mft1 => new LutXTag(ref reader2, 1),
+                IccTags.meas => new MeasurementTypeTag(ref reader2),
+                IccTags.mAB => new LutAToBTag(ref reader),
+                IccTags.mBA => new LutBToATag(ref reader),
+                IccTags.mpet => new MultiProcessTag(ref reader),
+                IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
+                IccTags.ncl2 => new NamedColorTag(ref reader),
+                IccTags.para => new ParametricCurveTag(ref reader),
+                IccTags.parf => ParseCurveSegment(ref reader),
+                IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
+                IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
+                IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
+                IccTags.samf => new SampledCurveSegment(ref reader),
+                IccTags.sf32 => new S15Fixed16Array(ref reader),
+                IccTags.sig => new SignatureTag(ref reader),
+                IccTags.text => new TextTag(ref reader),
+                IccTags.uf32 => new U16Fixed16Array(ref reader),
+                IccTags.ui16 => new UInt16Array(ref reader),
+                IccTags.ui32 => new UInt32Array(ref reader),
+                IccTags.ui64 => new UInt64Array(ref reader),
+                IccTags.XYZ => new XyzArray(ref reader),
+                IccTags.view => new ViewingConditionsTag(ref reader),
+                var x => UnRecognizedTransform(x) // Some profiles have invalid tags that we do not care about.
+            };
+        }
+        finally
+        {
+            if (reader2.RelativePosition > 4)
+                reader.Advance(reader2.RelativePosition -4);
+        }
     }
 
     private static NullColorTransform UnRecognizedTransform(uint u)

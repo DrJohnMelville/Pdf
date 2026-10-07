@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.ColorTransforms;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -29,11 +30,11 @@ internal class NullColorTransform : IColorTransform
     private static readonly NullColorTransform four = new(4);
     private static readonly NullColorTransform five = new(5);
 
-    public static NullColorTransform Parse(ref SequenceReader<byte> reader)
+    public static NullColorTransform Parse(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         return Instance(reader.GetUInt16BigEndian());
     }
-    
+
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output) => input.Slice(0, Inputs).CopyTo(output);
 }

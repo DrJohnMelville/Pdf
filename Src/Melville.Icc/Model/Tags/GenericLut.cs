@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
@@ -72,7 +73,7 @@ public abstract class GenericLut: IColorTransform
     {
         var offset = reader.GetUInt32BigEndian(); // clut
         if (offset == 0) return NullColorTransform.Instance(InputCurves.Count);
-        var clutReader = reader.ReaderAt(offset);
+        var clutReader = reader.ReaderAt(offset).AsSpanParsingBuffer();
         return new MultidimensionalLookupTable(ref clutReader, OutputCurves.Count);
     }
 

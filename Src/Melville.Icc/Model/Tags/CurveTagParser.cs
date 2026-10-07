@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
 internal static class CurveTagParser
 {
-    public static ICurveTag Parse(ref SequenceReader<byte> reader)
+    public static ICurveTag Parse(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var length = (int)reader.GetUInt32BigEndian();

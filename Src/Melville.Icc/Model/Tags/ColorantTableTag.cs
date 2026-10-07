@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -17,13 +18,13 @@ public record struct ColorantTableEntry(string Name, ushort X, ushort Y, ushort 
 public class ColorantTableTag 
 {
     /// <summary>
-    /// List of colorants used by the described device, not necessarially in the order they are used.
+    /// List of colorants used by the described device, not necessarily in the order they are used.
     /// </summary>
     public IReadOnlyList<ColorantTableEntry> Colorants;
 
-    internal ColorantTableTag(ref SequenceReader<byte> reader)
+    internal ColorantTableTag(ref SpanParsingBuffer reader)
     {
-        reader.GetUInt32BigEndian(); // pasdding
+        reader.Skip32BitPad();
         var cols = new ColorantTableEntry[reader.GetUInt32BigEndian()];
         for (int i = 0; i < cols.Length; i++)
         {
