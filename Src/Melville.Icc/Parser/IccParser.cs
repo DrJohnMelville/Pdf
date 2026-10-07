@@ -11,9 +11,9 @@ namespace Melville.Icc.Parser;
 /// <summary>
 /// Parses an ICC profile from a pipereader;
 /// </summary>
-public readonly partial struct IccParser(IByteSource source)
+public readonly partial struct IccParser(IAsyncReader src)
 {
-    private readonly ParsingBuffer source2 = new(new IByteSourceToIAsyncReadStream(source));
+    private readonly ParsingBuffer source = new(src);
     
     /// <summary>
     /// Parse an ICC profile from the PipeReader passed in the constructor.
@@ -21,23 +21,22 @@ public readonly partial struct IccParser(IByteSource source)
     /// <returns>ICC profile </returns>
     public async ValueTask<IccProfile> ParseAsync()
     {
-        //var readResult = await GetMinSizeAsync(132).CA();
-        var block = await source2.TakeBytesAsync(132);
+        var block = await source.TakeBytesAsync(132);
 
         var (ret, tags) = ReadStaticBlock(block.Span);
-        //source.AdvanceTo(readResult.Buffer.GetPosition(132));
+
         await ReadOffsetsAsync(tags).CA();
         Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
         for (int i = 0; i < tags.Length; i++)
         {
             var tag = tags[i];
-            await source2.AdvanceToRelativePositionAsync(tag.Offset);
-            await source2.EnsureBytesAsync((int)tag.Size);
-            var ros = new ReadOnlySequence<byte>(source2.PeekMemory()[..(int)tag.Size]);
+            await source.AdvanceToRelativePositionAsync(tag.Offset);
+            await source.EnsureBytesAsync((int)tag.Size);
+            var ros = new ReadOnlySequence<byte>(source.PeekMemory()[..(int)tag.Size]);
             tags[i] = tag with { Data = TagParser.Parse(ros) };
-            source2.Advance((int)tag.Size);
+            source.Advance((int)tag.Size);
         }
-
+        source.Dispose();
         return ret;
     }
 
@@ -78,9 +77,9 @@ public readonly partial struct IccParser(IByteSource source)
         for (int i = 0; i < tags.Length; i++)
         {
             tags[i] = new ProfileTag(
-                await source2.GetUInt32BigEndianAsync(),
-                await source2.GetUInt32BigEndianAsync(),
-                await source2.GetUInt32BigEndianAsync(),
+                await source.GetUInt32BigEndianAsync(),
+                await source.GetUInt32BigEndianAsync(),
+                await source.GetUInt32BigEndianAsync(),
                 null);
         }
     }

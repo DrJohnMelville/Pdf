@@ -7,6 +7,7 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.Model.Renderers.Colors.Profiles;
 
@@ -26,8 +27,8 @@ public static class CmykIccProfile
     
     private static async ValueTask<IccProfile> LoadProfileAsync()
     {
-        using var singleReaderForStream = MultiplexSourceFactory.SingleReaderForStream(GetCmykProfileStream());
-        return await new IccParser(singleReaderForStream).ParseAsync().CA();
+        using var singleReaderForStream = GetCmykProfileStream();
+        return await new IccParser(singleReaderForStream.AsSeekableStreamReader()).ParseAsync().CA();
     }
 
     /// <summary>

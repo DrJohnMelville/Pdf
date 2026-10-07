@@ -13,6 +13,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.StreamInterfaces.Streams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
@@ -23,8 +24,7 @@ public class ICCParserTest
     public async Task SizeFieldAsync()
     {
         var source = LoadSampleData();
-        using var singleReaderForStream = MultiplexSourceFactory.SingleReaderForStream(source, false);
-        var profile = await new IccParser( singleReaderForStream).ParseAsync();
+        var profile = await new IccParser( source.AsSeekableStreamReader()).ParseAsync();
 
         Assert.Equal(60960u, profile.Header.Size);
         Assert.Equal(0u, profile.Header.CmmType);

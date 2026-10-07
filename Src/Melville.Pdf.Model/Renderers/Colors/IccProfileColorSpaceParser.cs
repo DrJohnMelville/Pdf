@@ -12,6 +12,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -70,8 +71,8 @@ public static class IccProfileColorSpaceParser
     /// <returns>Colorspace using the ICC profile.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
-        using var reader = MultiplexSourceFactory.SingleReaderForStream(source, false);
-        var profile = await new IccParser(reader)
+        using var reader = source;
+        var profile = await new IccParser(reader.AsSeekableStreamReader())
             .ParseAsync().CA();
         return new IccColorSpace(profile.DeviceToSrgb());
     }
