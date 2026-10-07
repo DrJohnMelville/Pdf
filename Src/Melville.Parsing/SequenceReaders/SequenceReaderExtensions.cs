@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using Melville.INPC;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Parsing.SequenceReaders;
 
@@ -90,8 +91,17 @@ public static  partial class SequenceReaderExtensions
     /// </summary>
     /// <param name="source">Source to read from</param>
     /// <returns>The parsed number</returns>
+    [Obsolete("IByteSource is going away")]
     public static float Reads15Fixed16(this ref SequenceReader<byte> source) =>
         ((float)source.ReadBigEndianInt16()) + (((float)source.ReadBigEndianUint16()) / ((1 << 16) - 1));
+
+    /// <summary>
+    /// Reads a float encoded using the fixed 15/16 bit format from the ICC spec
+    /// </summary>
+    /// <param name="source">Source to read from</param>
+    /// <returns>The parsed number</returns>
+    public static float Reads15Fixed16(this ref SpanParsingBuffer source) =>
+        ((float)source.GetInt16BigEndian()) + (((float)source.GetUInt16BigEndian()) / ((1 << 16) - 1));
 
     /// <summary>
     /// Reads a positive float encoded using the fixed 16/16 bit format from the ICC spec

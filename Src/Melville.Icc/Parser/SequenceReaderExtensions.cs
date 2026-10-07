@@ -10,8 +10,8 @@ internal static class IccSequenceReaderExtensions
     [Obsolete("Get rid of this when IByteSource Goes away")]
     public static XyzNumber ReadXyzNumber(this ref SequenceReader<byte> source) =>
         new(source.Reads15Fixed16(), source.Reads15Fixed16(), source.Reads15Fixed16());
-    public static XyzNumber ReadXyzNumber(this in SpanParsingBuffer source) =>
-        new(source.GetUInt16BigEndian(), source.GetUInt16BigEndian(), source.GetUInt16BigEndian());
+    public static XyzNumber ReadXyzNumber(this ref SpanParsingBuffer source) =>
+        new(source.Reads15Fixed16(), source.Reads15Fixed16(), source.Reads15Fixed16());
 
     public static XyzNumber ReadXyzFromUint16s(this ref SequenceReader<byte> source) =>
         new(source.ReadUshortasFloat0To1(),
@@ -31,7 +31,7 @@ internal static class IccSequenceReaderExtensions
         reader.ReadBigEndianUint16(),
         0, DateTimeKind.Utc);
 
-    public static DateTime ReadDateTimeNumber(this in SpanParsingBuffer reader) => new(
+    public static DateTime ReadDateTimeNumber(this ref SpanParsingBuffer reader) => new(
         reader.GetUInt16BigEndian(),
         reader.GetUInt16BigEndian(),
         reader.GetUInt16BigEndian(),

@@ -10,6 +10,7 @@ namespace Melville.Parsing.CountingReaders;
 [Obsolete("This is a temporary shim for replacing the IByteSource with the ParsingBuffer")]
 public class IByteSourceToIAsyncReadStream(IByteSource source) : IAsyncReader
 {
+    ///<inheritdoc/>
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
     {
         var result = await source.ReadAsync();

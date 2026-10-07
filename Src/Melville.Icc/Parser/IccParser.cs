@@ -1,12 +1,10 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-using Melville.Icc.Model;
-using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+﻿using Melville.Icc.Model;
 using Melville.Parsing.CountingReaders;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
+using System.Buffers.Binary;
+using System.IO.Pipelines;
 
 namespace Melville.Icc.Parser;
 
@@ -33,38 +31,27 @@ public readonly partial struct IccParser(IByteSource source)
         for (int i = 0; i < tags.Length; i++)
         {
             var tag = tags[i];
-            await source.AdvanceToLocalPositionAsync(tag.Offset).CA();
-            var buffer = await GetMinSizeAsync((int)tag.Size).CA();
-            tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer.Slice(0, tag.Size)) };
+            await source2.AdvanceToRelativePositionAsync(tag.Offset);
+            await source2.EnsureBytesAsync((int)tag.Size);
+            var ros = new ReadOnlySequence<byte>(source2.PeekMemory()[..(int)tag.Size]);
+            tags[i] = tag with { Data = TagParser.Parse(ros) };
+            source2.Advance((int)tag.Size);
         }
 
         return ret;
     }
 
-    private async Task<ReadResult> GetMinSizeAsync(int minSize)
-    {
-        var readResult = await source.ReadAsync().CA(); 
-        while (readResult.Buffer.Length < minSize)
-        {
-            if (readResult.IsCompleted) throw new InvalidDataException("Too short for an ICC profile");
-            source.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
-            readResult = await source.ReadAsync().CA();
-        }
-        return readResult;
-    }
-
     private (IccProfile, ProfileTag[]) ReadStaticBlock(ReadOnlySpan<byte> buffer)
     {
         var reader = new SpanParsingBuffer(buffer);
-        var header = ReadHeader(reader);
+        var header = ReadHeader(ref reader);
+        reader.AdvanceToRelativePosition(128);
         var items = new ProfileTag[reader.GetUInt32BigEndian()];
         return (new IccProfile(header, items), items);
     }
 
-    private static IccHeader ReadHeader(in SpanParsingBuffer reader)
-    {
-        
-        var header = new IccHeader(
+    private static IccHeader ReadHeader(ref SpanParsingBuffer reader) =>
+        new IccHeader(
             reader.GetUInt32BigEndian(),
             reader.GetUInt32BigEndian(),
             reader.GetUInt32BigEndian(),
@@ -84,8 +71,6 @@ public readonly partial struct IccParser(IByteSource source)
             reader.GetUInt64BigEndian(),
             reader.GetUInt64BigEndian()
         );
-        return header;
-    }
 
     private async ValueTask ReadOffsetsAsync(ProfileTag[] tags)
     {
