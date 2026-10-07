@@ -23,12 +23,12 @@ public class ColorantTableTag
 
     internal ColorantTableTag(ref SequenceReader<byte> reader)
     {
-        reader.ReadBigEndianUint32(); // pasdding
-        var cols = new ColorantTableEntry[reader.ReadBigEndianUint32()];
+        reader.GetUInt32BigEndian(); // pasdding
+        var cols = new ColorantTableEntry[reader.GetUInt32BigEndian()];
         for (int i = 0; i < cols.Length; i++)
         {
             cols[i] = new ColorantTableEntry(reader.ReadFixedAsciiString(32),
-                reader.ReadBigEndianUint16(), reader.ReadBigEndianUint16(), reader.ReadBigEndianUint16());
+                reader.GetUInt16BigEndian(), reader.GetUInt16BigEndian(), reader.GetUInt16BigEndian());
         }
         Colorants = cols;
     }

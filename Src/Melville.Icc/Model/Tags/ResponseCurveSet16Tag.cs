@@ -94,11 +94,11 @@ public class ResponseCurveSet16Tag
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var channels = reader.ReadBigEndianUint16();
-        var curves = new ResponseCurve[reader.ReadBigEndianUint16()];
+        var channels = reader.GetUInt16BigEndian();
+        var curves = new ResponseCurve[reader.GetUInt16BigEndian()];
         for (int i = 0; i < curves.Length; i++)
         {
-            curves[i] = ParseResponseCurve(reader.ReaderAt(reader.ReadBigEndianUint32()), channels);
+            curves[i] = ParseResponseCurve(reader.ReaderAt(reader.GetUInt32BigEndian()), channels);
         }
 
         Curves = curves;
@@ -106,7 +106,7 @@ public class ResponseCurveSet16Tag
 
     private ResponseCurve ParseResponseCurve(SequenceReader<byte> reader, ushort chanels)
     {
-        var unit = (CurveMeasurement)reader.ReadBigEndianUint32();
+        var unit = (CurveMeasurement)reader.GetUInt32BigEndian();
         var xyzReader = reader.ReaderAt((uint)(4 + (4 * chanels)));
         var dataReader = reader.ReaderAt((uint)(4 + (16 * chanels)));
 
@@ -115,7 +115,7 @@ public class ResponseCurveSet16Tag
         {
             var xyzNumber = xyzReader.ReadXyzNumber();
             chanelArray[i] = new ResponseCurveChannel(xyzNumber,
-                ReadResponseNumbers(reader.ReadBigEndianUint32(), ref dataReader));
+                ReadResponseNumbers(reader.GetUInt32BigEndian(), ref dataReader));
         }
 
         return new ResponseCurve(unit, chanelArray);
@@ -135,7 +135,7 @@ public class ResponseCurveSet16Tag
 
     private static Response16Number ReadSingleResponseNumber(ref SequenceReader<byte> reader)
     {
-        var device = reader.ReadBigEndianUint16();
+        var device = reader.GetUInt16BigEndian();
         reader.Skip16BitPad();
         return new Response16Number(device, reader.Reads15Fixed16());
     }

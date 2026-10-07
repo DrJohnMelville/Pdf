@@ -19,16 +19,16 @@ internal static class IccSequenceReaderExtensions
             source.ReadUshortasFloat0To1());
 
     public static float ReadUshortasFloat0To1(this ref SequenceReader<byte> source) => 
-        source.ReadBigEndianUint16() / ((float)ushort.MaxValue);
+        source.GetUInt16BigEndian() / ((float)ushort.MaxValue);
 
     [Obsolete("Get rid of this when IByteSource Goes away")]
     public static DateTime ReadDateTimeNumber(this ref SequenceReader<byte> reader) => new(
-        reader.ReadBigEndianUint16(),
-        reader.ReadBigEndianUint16(),
-        reader.ReadBigEndianUint16(),
-        reader.ReadBigEndianUint16(),
-        reader.ReadBigEndianUint16(),
-        reader.ReadBigEndianUint16(),
+        reader.GetUInt16BigEndian(),
+        reader.GetUInt16BigEndian(),
+        reader.GetUInt16BigEndian(),
+        reader.GetUInt16BigEndian(),
+        reader.GetUInt16BigEndian(),
+        reader.GetUInt16BigEndian(),
         0, DateTimeKind.Utc);
 
     public static DateTime ReadDateTimeNumber(this ref SpanParsingBuffer reader) => new(

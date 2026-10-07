@@ -50,7 +50,7 @@ internal readonly struct CffEncodingReader(IByteSource source, GlyphFromSid sidD
         var reader = new SequenceReader<byte>(bufferBuffer);
         for (byte i = 1; i <= count; i++)
         {
-            var encoding = reader.ReadBigEndianUint8();
+            var encoding = reader.GetUInt8BigEndian();
             source.LogParsePosition($"{encoding} => {i}", (int)reader.Consumed);
             result[encoding] = i;
         }
@@ -73,8 +73,8 @@ internal readonly struct CffEncodingReader(IByteSource source, GlyphFromSid sidD
         byte glyph = 1;
         for (int i = 0; i < count; i++)
         {
-            var first = src.ReadBigEndianUint8();
-            var innerCount = src.ReadBigEndianUint8();
+            var first = src.GetUInt8BigEndian();
+            var innerCount = src.GetUInt8BigEndian();
             source.IndentParseMap($"Code Range Begin {first} Length {innerCount}");
             source.LogParsePosition($"{first} => {glyph}", (int)src.Consumed);
             for (int j = 0; j < innerCount; j++)
@@ -98,8 +98,8 @@ internal readonly struct CffEncodingReader(IByteSource source, GlyphFromSid sidD
     private void ReadSupplementalMappings(ReadOnlySequence<byte> slice)
     {
         var reader = new SequenceReader<byte>(slice);
-        while (reader.TryReadBigEndianInt8(out var code) &&
-               reader.TryReadBigEndianUint16(out var sid))
+        while (reader.TryGetInt8BigEndian(out var code) &&
+               reader.TryGetUInt16BigEndian(out var sid))
         {
             source.LogParsePosition($"Supplemental Mapping {code} => {sid}", (int)reader.Consumed);
 // I think the SID Decoder may be a mistake here.  see not 4 on page 21 of the CFF spec

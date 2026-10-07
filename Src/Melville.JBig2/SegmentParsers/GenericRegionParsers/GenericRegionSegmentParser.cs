@@ -37,7 +37,7 @@ internal static class GenericRegionSegmentParser
     public static GenericRegionSegment Parse(SequenceReader<byte> reader)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
-        var flags = new GenericRegionSegmentFlags(reader.ReadBigEndianUint8());
+        var flags = new GenericRegionSegmentFlags(reader.GetUInt8BigEndian());
 
         var bitmap = regionHead.CreateTargetBitmap();
         TryReadBitmap(reader, flags, bitmap);

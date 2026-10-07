@@ -44,13 +44,13 @@ internal static class HalftoneSegmentParser
     {
         var halfToneWriter = new HalftoneSegmentReader(
             RegionHeaderParser.Parse(ref reader),
-            new HalftoneRegionFlags(reader.ReadBigEndianUint8()),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianInt32(),
-            reader.ReadBigEndianInt32(),
-            reader.ReadBigEndianUint16(),
-            reader.ReadBigEndianUint16(),
+            new HalftoneRegionFlags(reader.GetUInt8BigEndian()),
+            reader.GetUInt32BigEndian(),
+            reader.GetUInt32BigEndian(),
+            reader.GetInt32BigEndian(),
+            reader.GetInt32BigEndian(),
+            reader.GetUInt16BigEndian(),
+            reader.GetUInt16BigEndian(),
             GetHalftoneDictionary(segs));
         var bitmap = halfToneWriter.Header.CreateTargetBitmap();
         try

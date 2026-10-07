@@ -29,9 +29,9 @@ public class NamedColorTag
     internal NamedColorTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        VendorSpecificFlag = reader.ReadBigEndianUint32();
-        var colors = new NamedColorElememt[reader.ReadBigEndianUint32()];
-        var colorElements = (int)reader.ReadBigEndianUint32();
+        VendorSpecificFlag = reader.GetUInt32BigEndian();
+        var colors = new NamedColorElememt[reader.GetUInt32BigEndian()];
+        var colorElements = (int)reader.GetUInt32BigEndian();
         var prefix = reader.ReadFixedAsciiString(32);
         var postFix = reader.ReadFixedAsciiString(32);
         for (int i = 0; i < colors.Length; i++)

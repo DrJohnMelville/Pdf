@@ -28,9 +28,9 @@ public class MultiProcessCurveSet : IColorTransform
     internal MultiProcessCurveSet(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var curves = new MultiProcessCurve[reader.ReadBigEndianUint16()];
+        var curves = new MultiProcessCurve[reader.GetUInt16BigEndian()];
         Curves = curves;
-        VerifyCorrectOutputNumber(reader.ReadBigEndianUint16());
+        VerifyCorrectOutputNumber(reader.GetUInt16BigEndian());
         for (int i = 0; i < curves.Length; i++)
         {
             var innerReader = reader.ReadPositionNumber();

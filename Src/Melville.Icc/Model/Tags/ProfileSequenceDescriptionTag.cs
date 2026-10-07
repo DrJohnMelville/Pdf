@@ -33,7 +33,7 @@ public class ProfileSequenceDescriptionTag
     internal ProfileSequenceDescriptionTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var profiles = new ProfileSequenceDescriptionElement[reader.ReadBigEndianUint32()];
+        var profiles = new ProfileSequenceDescriptionElement[reader.GetUInt32BigEndian()];
         for (int i = 0; i < profiles.Length; i++)
         {
             profiles[i] = ParseSingleProfile(ref reader);
@@ -43,10 +43,10 @@ public class ProfileSequenceDescriptionTag
 
     private ProfileSequenceDescriptionElement ParseSingleProfile(ref SequenceReader<byte> reader)
     {
-        var mfr = reader.ReadBigEndianUint32();
-        var device = reader.ReadBigEndianUint32();
-        var deviceAttr = (DeviceAttributes)reader.ReadBigEndianUint64();
-        var decTech = (DeviceTechnology)reader.ReadBigEndianUint32();
+        var mfr = reader.GetUInt32BigEndian();
+        var device = reader.GetUInt32BigEndian();
+        var deviceAttr = (DeviceAttributes)reader.GetUInt64BigEndian();
+        var decTech = (DeviceTechnology)reader.GetUInt32BigEndian();
         return new ProfileSequenceDescriptionElement(
             mfr,
             device,

@@ -34,10 +34,10 @@ public class MeasurementTypeTag
     {
 
         reader.Skip32BitPad();
-        Observer = (StandardObserver)reader.ReadBigEndianUint32();
+        Observer = (StandardObserver)reader.GetUInt32BigEndian();
         MeasurementBacking = reader.ReadXyzNumber();
-        Geometry = (MeasurmentGeomenty)reader.ReadBigEndianUint32();
-        Flare = (MeasurmentFlare) reader.ReadBigEndianUint32();
-        Illumination = (StandardIllumination)reader.ReadBigEndianUint32();
+        Geometry = (MeasurmentGeomenty)reader.GetUInt32BigEndian();
+        Flare = (MeasurmentFlare) reader.GetUInt32BigEndian();
+        Illumination = (StandardIllumination)reader.GetUInt32BigEndian();
     }
 }

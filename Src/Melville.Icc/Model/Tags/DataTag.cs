@@ -35,11 +35,11 @@ public class DataTag{
      internal DataTag(ref SequenceReader<byte> reader)
      {
          reader.Skip32BitPad();
-         Type = (DataType)reader.ReadBigEndianUint32();
+         Type = (DataType)reader.GetUInt32BigEndian();
          data = new byte[reader.Length - 12];
          for (int i = 0; i < data.Length; i++)
          {
-             data[i] = reader.ReadBigEndianUint8();
+             data[i] = reader.GetUInt8BigEndian();
          }
      }
 

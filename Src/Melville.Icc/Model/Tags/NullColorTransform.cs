@@ -32,7 +32,7 @@ internal class NullColorTransform : IColorTransform
     public static NullColorTransform Parse(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        return Instance(reader.ReadBigEndianUint16());
+        return Instance(reader.GetUInt16BigEndian());
     }
     
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output) => input.Slice(0, Inputs).CopyTo(output);

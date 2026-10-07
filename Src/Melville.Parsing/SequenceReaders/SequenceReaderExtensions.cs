@@ -7,14 +7,14 @@ namespace Melville.Parsing.SequenceReaders;
 
 /// <summary> Extension methods to read a variety of binary number formats from a SequenceReader.
 /// </summary>
-[MacroItem("byte", "Uint8", 1)]
+[MacroItem("byte", "UInt8", 1)]
 [MacroItem("sbyte", "Int8", 1)]
 [MacroItem("short", "Int16", 2)]
-[MacroItem("ushort", "Uint16", 2)]
+[MacroItem("ushort", "UInt16", 2)]
 [MacroItem("int", "Int32", 4)]
-[MacroItem("uint", "Uint32", 4)]
+[MacroItem("uint", "UInt32", 4)]
 [MacroItem("long", "Int64", 8)]
-[MacroItem("ulong", "Uint64", 8)]
+[MacroItem("ulong", "UInt64", 8)]
 [MacroCode("""
         /// <summary>
         /// Try to read a bug endian value from the reader
@@ -22,7 +22,7 @@ namespace Melville.Parsing.SequenceReaders;
         /// <param name="reader">Source of data to parse from</param>
         /// <returns>The number read from the reader</returns>
         /// <exception cref="InvalidDataException">If there is not enough bytes in the reader.</exception>
-        public static ~0~ ReadBigEndian~1~(this ref SequenceReader<byte> reader) => (~0~)reader.ReadBigEndianUint(~2~);
+        public static ~0~ Get~1~BigEndian(this ref SequenceReader<byte> reader) => (~0~)reader.ReadBigEndianUint(~2~);
         
         """)]
 [MacroCode("""
@@ -32,7 +32,7 @@ namespace Melville.Parsing.SequenceReaders;
         /// <param name="reader">The source of bytes for the data.</param>
         /// <param name="ret">Out parameter for the result of the parsing operation</param>
         /// <returns>True if there are enough bytes to read.  False otherwise.</returns>
-        public static bool TryReadBigEndian~1~(this ref SequenceReader<byte> reader, out ~0~ ret) 
+        public static bool TryGet~1~BigEndian(this ref SequenceReader<byte> reader, out ~0~ ret) 
         {
             return reader.TryReadBigEndian(out ret);
         }
@@ -93,7 +93,7 @@ public static  partial class SequenceReaderExtensions
     /// <returns>The parsed number</returns>
     [Obsolete("IByteSource is going away")]
     public static float Reads15Fixed16(this ref SequenceReader<byte> source) =>
-        ((float)source.ReadBigEndianInt16()) + (((float)source.ReadBigEndianUint16()) / ((1 << 16) - 1));
+        ((float)source.GetInt16BigEndian()) + (((float)source.GetUInt16BigEndian()) / ((1 << 16) - 1));
 
     /// <summary>
     /// Reads a float encoded using the fixed 15/16 bit format from the ICC spec
@@ -109,7 +109,7 @@ public static  partial class SequenceReaderExtensions
     /// <param name="source">Source to read from</param>
     /// <returns>The parsed number</returns>
     public static float Readu16Fixed16(this ref SequenceReader<byte> source) =>
-        ((float)source.ReadBigEndianUint16()) + (((float)source.ReadBigEndianUint16()) / ((1 << 16) - 1));
+        ((float)source.GetUInt16BigEndian()) + (((float)source.GetUInt16BigEndian()) / ((1 << 16) - 1));
 
     /// <summary>
     /// Reads a float encoded using the fixed 8/8 bit format from the ICC spec
@@ -117,7 +117,7 @@ public static  partial class SequenceReaderExtensions
     /// <param name="source">Source to read from</param>
     /// <returns>The parsed number</returns>
     public static float Readu8Fixed8(this ref SequenceReader<byte> source) =>
-        ((float)source.ReadBigEndianUint8()) + (((float)source.ReadBigEndianUint8()) / ((1 << 8) - 1));
+        ((float)source.GetUInt8BigEndian()) + (((float)source.GetUInt8BigEndian()) / ((1 << 8) - 1));
     
     /// <summary>
     /// Read a sequence of bytes as an ascii string.
@@ -131,7 +131,7 @@ public static  partial class SequenceReaderExtensions
         int endPoos = length;
         for (int i = 0; i < length; i++)
         {
-            buffer[i] = (char)reader.ReadBigEndianUint8();
+            buffer[i] = (char)reader.GetUInt8BigEndian();
             if (i < endPoos && buffer[i] == 0) endPoos = i;
         }
         return new string(buffer[..endPoos]);
@@ -149,7 +149,7 @@ public static  partial class SequenceReaderExtensions
         var ret = new ushort[len];
         for (int i = 0; i < ret.Length; i++)
         {
-            ret[i] = reader.ReadBigEndianUint16();
+            ret[i] = reader.GetUInt16BigEndian();
         }
         return ret;
     }
@@ -198,7 +198,7 @@ public static  partial class SequenceReaderExtensions
     /// <param name="reader">Source of data to= parse</param>
     /// <returns>The float value returned from the SequenceReader.</returns>
     public static float ReadIEEE754Float(this ref SequenceReader<byte> reader) => 
-        BitConverter.UInt32BitsToSingle(reader.ReadBigEndianUint32());
+        BitConverter.UInt32BitsToSingle(reader.GetUInt32BigEndian());
 
     /// <summary>
     /// Skip 4 bytes forward in the SequenceReader

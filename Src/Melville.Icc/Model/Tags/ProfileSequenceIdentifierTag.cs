@@ -28,7 +28,7 @@ public class ProfileSequenceIdentifierTag
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var profiles = new ProfileIdentifier[reader.ReadBigEndianUint32()];
+        var profiles = new ProfileIdentifier[reader.GetUInt32BigEndian()];
         for (int i = 0; i < profiles.Length; i++)
         {
             profiles[i] = ParseProfileIdentifier(reader.ReadPositionNumber());
@@ -38,7 +38,7 @@ public class ProfileSequenceIdentifierTag
 
     private ProfileIdentifier ParseProfileIdentifier(SequenceReader<byte> reader)
     {
-        return new ProfileIdentifier(reader.ReadBigEndianUint64(), reader.ReadBigEndianUint64(),
+        return new ProfileIdentifier(reader.GetUInt64BigEndian(), reader.GetUInt64BigEndian(),
             MultiLocalizedUnicodeTag.ReadFromMiddleOfStream(ref reader));
     }
 }

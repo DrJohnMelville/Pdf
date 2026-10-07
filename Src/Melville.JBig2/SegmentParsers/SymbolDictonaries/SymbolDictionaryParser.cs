@@ -20,7 +20,7 @@ internal ref struct SymbolDictionaryParser
     {
         this.reader = reader;
         this.referencedSegments = referencedSegments;
-        flags = new SymbolDictionaryFlags(this.reader.ReadBigEndianUint16());
+        flags = new SymbolDictionaryFlags(this.reader.GetUInt16BigEndian());
     }
 
     public SymbolDictionarySegment Parse()
@@ -82,8 +82,8 @@ internal ref struct SymbolDictionaryParser
 
     private SymbolDictionaryExportParser CreateSymbolDictionaryParser()
     {
-        var exportedSymbols = reader.ReadBigEndianUint32();
-        var newSymbols = reader.ReadBigEndianUint32();
+        var exportedSymbols = reader.GetUInt32BigEndian();
+        var newSymbols = reader.GetUInt32BigEndian();
         return new SymbolDictionaryExportParser(exportedSymbols, newSymbols);
     }
 }

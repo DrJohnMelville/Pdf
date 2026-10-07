@@ -19,7 +19,7 @@ internal ref struct TextRegionSegmentParser
     public static TextRegionSegment Parse(SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
-        var regionFlags = new TextRegionFlags(reader.ReadBigEndianUint16());
+        var regionFlags = new TextRegionFlags(reader.GetUInt16BigEndian());
 
         var parser = new TextRegionSegmentParser(reader, regionHead, regionFlags, referencedSegments);
         
@@ -44,13 +44,13 @@ internal ref struct TextRegionSegmentParser
     private BinaryBitmap CreateBitmap()
     {
         var huffmanFlags = new TextRegionHuffmanFlags(
-            regionFlags.UseHuffman ? reader.ReadBigEndianUint16():(int)0);
+            regionFlags.UseHuffman ? reader.GetUInt16BigEndian():(int)0);
 
         var refinementTemplate = regionFlags.UsesRefinement
             ? new RefinementTemplateSet(ref reader, regionFlags.RefinementTemplate)
             : new RefinementTemplateSet();
         
-        var charactersToRead = (int)reader.ReadBigEndianUint32();
+        var charactersToRead = (int)reader.GetUInt32BigEndian();
 
         IEncodedReader encodedReader = regionFlags.UseHuffman?
             ParseHuffmanDecoder(huffmanFlags):

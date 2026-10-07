@@ -8,7 +8,7 @@ internal static class CurveTagParser
     public static ICurveTag Parse(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var length = (int)reader.ReadBigEndianUint32();
+        var length = (int)reader.GetUInt32BigEndian();
         return length switch
         {
             0 => NullCurve.Instance,

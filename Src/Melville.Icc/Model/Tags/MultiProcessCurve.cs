@@ -29,8 +29,8 @@ public class MultiProcessCurve
 
     internal MultiProcessCurve(ref SequenceReader<byte> reader)
     {
-        reader.ReadBigEndianUint32();
-        var segmentCount = reader.ReadBigEndianUint16();
+        reader.GetUInt32BigEndian();
+        var segmentCount = reader.GetUInt16BigEndian();
         reader.Skip16BitPad();
         BreakPoints = reader.ReadIEEE754FloatArray(segmentCount - 1);
         segments = ReadSegments(ref reader, segmentCount);

@@ -29,7 +29,7 @@ public class SampledCurveSegment : ICurveSegment
     internal SampledCurveSegment(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        samples = reader.ReadIEEE754FloatArray((int)reader.ReadBigEndianUint32(), 1);
+        samples = reader.ReadIEEE754FloatArray((int)reader.GetUInt32BigEndian(), 1);
     }
 
     void ICurveSegment.Initialize(float minimum, float maximum, float valueAtMinimum)

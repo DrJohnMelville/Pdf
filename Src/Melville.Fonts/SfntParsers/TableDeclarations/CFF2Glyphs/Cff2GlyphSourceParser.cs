@@ -72,10 +72,10 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
         IByteSource pipe, ReadOnlySequence<byte> bytes)
     {
         var reader = new SequenceReader<byte>(bytes);
-        var majorVersion = reader.ReadBigEndianUint8();
-        var minorVersion = reader.ReadBigEndianUint8();
-        var headerSize = reader.ReadBigEndianUint8();
-        var topDictSize = reader.ReadBigEndianUint16();
+        var majorVersion = reader.GetUInt8BigEndian();
+        var minorVersion = reader.GetUInt8BigEndian();
+        var headerSize = reader.GetUInt8BigEndian();
+        var topDictSize = reader.GetUInt16BigEndian();
         pipe.AdvanceTo(reader.Position);
 
         Debug.Assert(majorVersion == 2);

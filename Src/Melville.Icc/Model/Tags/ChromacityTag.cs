@@ -22,9 +22,9 @@ public class ChromacityTag
     public (float X, float Y)[] Coordinates { get; } 
     internal ChromacityTag(ref SequenceReader<byte> reader)
     {
-        reader.ReadBigEndianUint32(); // throw away padding
-        Channels = reader.ReadBigEndianUint16();
-        Colorant = (Colorant)reader.ReadBigEndianUint16();
+        reader.GetUInt32BigEndian(); // throw away padding
+        Channels = reader.GetUInt16BigEndian();
+        Colorant = (Colorant)reader.GetUInt16BigEndian();
         Coordinates = new (float, float)[Channels];
         for (int i = 0; i < Channels; i++)
         {

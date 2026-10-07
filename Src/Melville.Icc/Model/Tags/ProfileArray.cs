@@ -39,7 +39,7 @@ internal class UInt16Array : ProfileArray<ushort>
     }
 
     protected override int ItemSizeInBytes() => 2;
-    protected override ushort GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint16();
+    protected override ushort GetItem(ref SequenceReader<byte> reader) => reader.GetUInt16BigEndian();
 }
 
 internal class UInt32Array : ProfileArray<uint>
@@ -49,7 +49,7 @@ internal class UInt32Array : ProfileArray<uint>
     }
 
     protected override int ItemSizeInBytes() => 4;
-    protected override uint GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint32();
+    protected override uint GetItem(ref SequenceReader<byte> reader) => reader.GetUInt32BigEndian();
 }
 
 internal class UInt64Array : ProfileArray<ulong>
@@ -59,7 +59,7 @@ internal class UInt64Array : ProfileArray<ulong>
     }
 
     protected override int ItemSizeInBytes() => 8;
-    protected override ulong GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint64();
+    protected override ulong GetItem(ref SequenceReader<byte> reader) => reader.GetUInt64BigEndian();
 }
 internal class XyzArray : ProfileArray<XyzNumber>
 {

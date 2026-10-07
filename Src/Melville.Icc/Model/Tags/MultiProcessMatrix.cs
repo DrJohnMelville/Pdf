@@ -30,8 +30,8 @@ public class MultiProcessMatrix : IColorTransform
     internal static MultiProcessMatrix Parse(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var inputs = reader.ReadBigEndianUint16();
-        var outputs = reader.ReadBigEndianUint16();
+        var inputs = reader.GetUInt16BigEndian();
+        var outputs = reader.GetUInt16BigEndian();
         return new MultiProcessMatrix(inputs, outputs,
          reader.ReadIEEE754FloatArray((inputs * outputs) + outputs));
     }

@@ -18,9 +18,9 @@ internal readonly struct MaxpParser(IByteSource source)
     private ParsedMaximums? TryReadShortForm(IByteSource source, ReadResult readResult)
     {
         var reader = new SequenceReader<byte>(readResult.Buffer);
-        if (reader.ReadBigEndianUint32() == 0x00005000)
+        if (reader.GetUInt32BigEndian() == 0x00005000)
         {
-            var ret = new ParsedMaximums(reader.ReadBigEndianUint16());
+            var ret = new ParsedMaximums(reader.GetUInt16BigEndian());
             source.AdvanceTo(reader.Position);
             return ret;
         }

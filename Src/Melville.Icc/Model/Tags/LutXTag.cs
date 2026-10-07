@@ -74,9 +74,9 @@ public class LutXTag: IColorTransform
     internal LutXTag(ref SequenceReader<byte> reader, int tablePrecisionInBytes)
     {
         reader.Skip32BitPad();
-        Inputs = reader.ReadBigEndianUint8();
-        Outputs = reader.ReadBigEndianUint8();
-        GridPoints = reader.ReadBigEndianUint8();
+        Inputs = reader.GetUInt8BigEndian();
+        Outputs = reader.GetUInt8BigEndian();
+        GridPoints = reader.GetUInt8BigEndian();
         reader.Skip8BitPad();
         Matrix = new Matrix3x3(ref reader);
 
@@ -91,7 +91,7 @@ public class LutXTag: IColorTransform
 
     // the 16 bit version encodes the input and output table length but set to 256 in the 8 bit version
     private ushort GetTableLength(int tablePrecisionInBytes, ref SequenceReader<byte> reader) =>
-        tablePrecisionInBytes == 1 ? (ushort)256 : reader.ReadBigEndianUint16();
+        tablePrecisionInBytes == 1 ? (ushort)256 : reader.GetUInt16BigEndian();
 
     private IColorTransform ComputeClutTransform()
     {

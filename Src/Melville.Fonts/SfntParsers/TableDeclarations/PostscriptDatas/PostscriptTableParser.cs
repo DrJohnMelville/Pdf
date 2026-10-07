@@ -66,7 +66,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             var reader = new SequenceReader<byte>(resultBuffer);
             for (int i = 0; i < ret.Length; i++)
             {
-                if (!reader.TryReadBigEndianUint16(out var index)) 
+                if (!reader.TryGetUInt16BigEndian(out var index)) 
                     throw new InvalidDataException("No glyph names in Post version 2.5 table");
                 if (index < 258)
                     ret[i] = DefaultNames[index];
@@ -114,7 +114,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
         private int ReadCount(ReadOnlySequence<byte> buffer)
         {
             var reader = new SequenceReader<byte>(buffer);
-            return reader.ReadBigEndianUint16();
+            return reader.GetUInt16BigEndian();
         }
 
         public static readonly string[] DefaultNames =

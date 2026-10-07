@@ -22,10 +22,10 @@ internal static class PatternDictionarySegmentParser
     }
     public static PatternDictionarySegment Parse(SequenceReader<byte> reader)
     {
-        var flags = new PatternDictionaryFlags(reader.ReadBigEndianUint8());
-        byte width = reader.ReadBigEndianUint8();
-        var height = reader.ReadBigEndianUint8();
-        var largestGrayScale = reader.ReadBigEndianUint32();
+        var flags = new PatternDictionaryFlags(reader.GetUInt8BigEndian());
+        byte width = reader.GetUInt8BigEndian();
+        var height = reader.GetUInt8BigEndian();
+        var largestGrayScale = reader.GetUInt32BigEndian();
 
         var innerBitmap = new BinaryBitmap(height, (int)( width * (largestGrayScale + 1)));
         ReadBitmap(reader, flags, innerBitmap, width);

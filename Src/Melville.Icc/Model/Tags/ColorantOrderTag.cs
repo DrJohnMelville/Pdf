@@ -16,11 +16,11 @@ public class ColorantOrderTag
 
     internal ColorantOrderTag(ref SequenceReader<byte> data)
     {
-        data.ReadBigEndianUint32(); // discard padding
-        var cols = new byte[data.ReadBigEndianUint32()];
+        data.GetUInt32BigEndian(); // discard padding
+        var cols = new byte[data.GetUInt32BigEndian()];
         for (int i = 0; i < cols.Length; i++)
         {
-            cols[i] = data.ReadBigEndianUint8();
+            cols[i] = data.GetUInt8BigEndian();
         }
 
         Colors = cols;

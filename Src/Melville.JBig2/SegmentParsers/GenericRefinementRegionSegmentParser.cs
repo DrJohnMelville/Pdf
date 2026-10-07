@@ -26,7 +26,7 @@ internal readonly struct GenericRefinementRegionSegmentParser
         SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
-        var flags = new GenericRefinementRegionFlags(reader.ReadBigEndianUint8());
+        var flags = new GenericRefinementRegionFlags(reader.GetUInt8BigEndian());
         var template = new RefinementTemplateSet(ref reader, flags.UseGrTemplate1);
 
         var bitmap = regionHead.CreateTargetBitmap();

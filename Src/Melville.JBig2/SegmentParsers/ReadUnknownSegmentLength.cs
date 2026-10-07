@@ -29,7 +29,7 @@ internal readonly struct ReadUnknownSegmentLength(PipeReader reader)
     {
         var reader = new SequenceReader<byte>(buffer);
         reader.Advance(4);
-        reader.TryReadBigEndianUint32(out height);
+        reader.TryGetUInt32BigEndian(out height);
         reader.Advance(8);
         reader.TryRead(out byte flag);
         isMMR = (flag & 0x01) == 0x01;
@@ -92,6 +92,6 @@ internal readonly struct ReadUnknownSegmentLength(PipeReader reader)
     private static bool HasValidRowField(ReadOnlySequence<byte> source, uint declaredHeight)
     {
         var r2 = new SequenceReader<byte>(source.Slice(source.Length - 4));
-        return declaredHeight == r2.ReadBigEndianUint32();
+        return declaredHeight == r2.GetUInt32BigEndian();
     }
 }

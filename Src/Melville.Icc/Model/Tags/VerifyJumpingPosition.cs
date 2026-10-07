@@ -19,5 +19,5 @@ internal static class VerifyJumpingPosition
         new(reader.Sequence.Slice(position));
 
     public static SequenceReader<byte> ReadPositionNumber(ref this SequenceReader<byte> reader) =>
-        reader.ReaderAt(reader.ReadBigEndianUint32(), reader.ReadBigEndianUint32());
+        reader.ReaderAt(reader.GetUInt32BigEndian(), reader.GetUInt32BigEndian());
 }

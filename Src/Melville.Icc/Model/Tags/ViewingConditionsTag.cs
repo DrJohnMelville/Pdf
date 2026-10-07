@@ -26,6 +26,6 @@ public class ViewingConditionsTag
         reader.Skip32BitPad();
         IlluminantValue = reader.ReadXyzNumber();
         SurroundValue = reader.ReadXyzNumber();
-        IlluminantType = (StandardIllumination)reader.ReadBigEndianUint32();
+        IlluminantType = (StandardIllumination)reader.GetUInt32BigEndian();
     }
 }

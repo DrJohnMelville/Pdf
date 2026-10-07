@@ -87,7 +87,7 @@ public partial class ParametricCurveTag : ICurveTag
     internal ParametricCurveTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var type = reader.ReadBigEndianUint16();
+        var type = reader.GetUInt16BigEndian();
         reader.Skip16BitPad();
         (G, A, B, C, D, E, F) = ReadParamsForType(ref reader, type);
     }

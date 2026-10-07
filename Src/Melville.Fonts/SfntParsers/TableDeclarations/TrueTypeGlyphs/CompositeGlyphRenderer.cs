@@ -19,8 +19,8 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         public ValueTask DrawAsync(ReadOnlySequence<byte> source)
         {
             var reader = new SequenceReader<byte>(source);
-            var flags = (CompositeGlyphFlags)reader.ReadBigEndianUint16();
-            var subGlyph = reader.ReadBigEndianUint16();
+            var flags = (CompositeGlyphFlags)reader.GetUInt16BigEndian();
+            var subGlyph = reader.GetUInt16BigEndian();
             var (xOffset, yOffset, parentPoint, childPoint) = ReadOffsets(ref reader, flags);
 
             var subGlyphTransform = ParseTransform(ref reader, flags, xOffset, yOffset);
@@ -45,20 +45,20 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             switch (flags.ArgsAreXYOffsets(), flags.ArgsAreWords() )
             {
                 case (true, false):
-                    x = reader.ReadBigEndianInt8();
-                    y = reader.ReadBigEndianInt8();
+                    x = reader.GetInt8BigEndian();
+                    y = reader.GetInt8BigEndian();
                     break;
                 case (true, true):
-                    x = reader.ReadBigEndianInt16();
-                    y = reader.ReadBigEndianInt16();
+                    x = reader.GetInt16BigEndian();
+                    y = reader.GetInt16BigEndian();
                     break;
                 case (false, false):
-                    parentPoint = reader.ReadBigEndianUint8();
-                    childPoint = reader.ReadBigEndianUint8();
+                    parentPoint = reader.GetUInt8BigEndian();
+                    childPoint = reader.GetUInt8BigEndian();
                     break;
                 case (false, true):
-                    parentPoint = reader.ReadBigEndianUint16();
-                    childPoint = reader.ReadBigEndianUint16();
+                    parentPoint = reader.GetUInt16BigEndian();
+                    childPoint = reader.GetUInt16BigEndian();
                     break;
             }
 
@@ -99,7 +99,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         private void TrySkipInstructions(ref SequenceReader<byte> reader, CompositeGlyphFlags flags)
         {
             if (!flags.HasInstructions()) return;
-            reader.Advance(reader.ReadBigEndianUint16());
+            reader.Advance(reader.GetUInt16BigEndian());
         }
 
 

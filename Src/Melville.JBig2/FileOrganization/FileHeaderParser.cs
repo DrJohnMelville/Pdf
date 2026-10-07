@@ -30,8 +30,8 @@ internal static class FileHeaderParser
     {
         var reader = new SequenceReader<byte>(inputSequence);
         reader.Advance(8);
-        var flags = new FileFlags(reader.ReadBigEndianUint8());
-        var pages = flags.UnknownPageCount ? 0 : reader.ReadBigEndianUint32();
+        var flags = new FileFlags(reader.GetUInt8BigEndian());
+        var pages = flags.UnknownPageCount ? 0 : reader.GetUInt32BigEndian();
         input.AdvanceTo(reader.Position);
         return flags.SequentialFileOrganization
             ? new ValueTask<SegmentHeaderReader>(

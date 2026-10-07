@@ -36,10 +36,10 @@ internal readonly struct RefinementTemplateSet
         ref SequenceReader<byte> source, ref BitmapTemplateFactory destinationFactory,
         ref BitmapTemplateFactory referenceFactory)
     {
-        var atX1 = source.ReadBigEndianInt8();
-        var atY1 = source.ReadBigEndianInt8();
-        var atX2 = source.ReadBigEndianInt8();
-        var atY2 = source.ReadBigEndianInt8();
+        var atX1 = source.GetInt8BigEndian();
+        var atY1 = source.GetInt8BigEndian();
+        var atX2 = source.GetInt8BigEndian();
+        var atY2 = source.GetInt8BigEndian();
         destinationFactory.AddPoint(atY1, atX1);
         referenceFactory.AddPoint(atY2, atX2);
     }

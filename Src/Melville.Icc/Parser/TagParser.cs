@@ -15,7 +15,7 @@ internal static class TagParser
     
     public static object Parse(ref SequenceReader<byte> reader)
     {
-        return reader.ReadBigEndianUint32() switch
+        return reader.GetUInt32BigEndian() switch
         {
             IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader),
             IccTags.chrm => new ChromacityTag(ref reader),
@@ -70,7 +70,7 @@ internal static class TagParser
     private static object ParseCurveSegment(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        var fType = reader.ReadBigEndianUint16();
+        var fType = reader.GetUInt16BigEndian();
         reader.Skip16BitPad();
         return fType switch
         {

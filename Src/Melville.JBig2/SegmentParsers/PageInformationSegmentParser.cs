@@ -8,12 +8,12 @@ internal static class PageInformationSegmentParser
 {
     public static PageInformationSegment Parse(ref SequenceReader<byte> reader)
     {
-        var width = reader.ReadBigEndianUint32();
-        var height = reader.ReadBigEndianUint32();
-        var xResolution = reader.ReadBigEndianUint32();
-        var yResolution = reader.ReadBigEndianUint32();
-        var flags = new PageInformationFlags(reader.ReadBigEndianUint8());
-        var striping = new PageStripingInformation(reader.ReadBigEndianUint16());
+        var width = reader.GetUInt32BigEndian();
+        var height = reader.GetUInt32BigEndian();
+        var xResolution = reader.GetUInt32BigEndian();
+        var yResolution = reader.GetUInt32BigEndian();
+        var flags = new PageInformationFlags(reader.GetUInt8BigEndian());
+        var striping = new PageStripingInformation(reader.GetUInt16BigEndian());
 
         return new (width, height, xResolution, yResolution,flags, striping);
     }

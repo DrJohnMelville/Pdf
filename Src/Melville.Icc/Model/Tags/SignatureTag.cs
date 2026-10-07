@@ -15,6 +15,6 @@ public class SignatureTag
     internal SignatureTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        Signature = reader.ReadBigEndianUint32();
+        Signature = reader.GetUInt32BigEndian();
     }
 }

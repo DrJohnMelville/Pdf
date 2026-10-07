@@ -38,8 +38,8 @@ public class MultidimensionalLookupTable: IColorTransform
     internal MultidimensionalLookupTable(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        Inputs = reader.ReadBigEndianUint16();
-        Outputs = reader.ReadBigEndianUint16();
+        Inputs = reader.GetUInt16BigEndian();
+        Outputs = reader.GetUInt16BigEndian();
         DimensionLengths = ParseDimensionList(ref reader);
         points = reader.ReadIEEE754FloatArray(TotalPoints());
     }
@@ -47,7 +47,7 @@ public class MultidimensionalLookupTable: IColorTransform
     internal MultidimensionalLookupTable(ref SequenceReader<byte> reader, int outputs)
     { 
         DimensionLengths = ParseDimensionList(ref reader);
-        var dimensionSize = reader.ReadBigEndianUint8();
+        var dimensionSize = reader.GetUInt8BigEndian();
         reader.Skip8BitPad();
         reader.Skip16BitPad();
         Outputs = outputs;
@@ -63,7 +63,7 @@ public class MultidimensionalLookupTable: IColorTransform
         var dimensions = new int[16];
         for (int i = 0; i < dimensions.Length; i++)
         {
-            dimensions[i] = reader.ReadBigEndianUint8();
+            dimensions[i] = reader.GetUInt8BigEndian();
         }
         return dimensions;
     }

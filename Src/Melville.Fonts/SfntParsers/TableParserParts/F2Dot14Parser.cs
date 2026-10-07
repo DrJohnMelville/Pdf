@@ -14,6 +14,6 @@ internal static class F2Dot14Parser
     }
 
     public static float ReadF2Dot14(this ref SequenceReader<byte> reader) =>
-        Convert(reader.ReadBigEndianInt16());
+        Convert(reader.GetInt16BigEndian());
 
 }

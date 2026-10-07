@@ -53,8 +53,8 @@ public abstract class GenericLut: IColorTransform
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var inputs = new ICurveTag[reader.ReadBigEndianUint8()];
-        var outputs = new ICurveTag[reader.ReadBigEndianUint8()];
+        var inputs = new ICurveTag[reader.GetUInt8BigEndian()];
+        var outputs = new ICurveTag[reader.GetUInt8BigEndian()];
         var matrixCurves = new ICurveTag[3];
         inputCurves = inputs;
         this.matrixCurves = matrixCurves;
@@ -70,7 +70,7 @@ public abstract class GenericLut: IColorTransform
     }
     private IColorTransform ParseClut(ref SequenceReader<byte> reader)
     {
-        var offset = reader.ReadBigEndianUint32(); // clut
+        var offset = reader.GetUInt32BigEndian(); // clut
         if (offset == 0) return NullColorTransform.Instance(InputCurves.Count);
         var clutReader = reader.ReaderAt(offset);
         return new MultidimensionalLookupTable(ref clutReader, OutputCurves.Count);
@@ -78,7 +78,7 @@ public abstract class GenericLut: IColorTransform
 
     private void ReadCurves(ICurveTag[] curves, ref SequenceReader<byte> reader)
     {
-        var offset = reader.ReadBigEndianUint32();
+        var offset = reader.GetUInt32BigEndian();
         if (offset == 0)
             SetNullCurve(curves);
         else
@@ -112,7 +112,7 @@ public abstract class GenericLut: IColorTransform
 
     private AugmentedMatrix3x3 ReadMatrix(ref SequenceReader<byte> reader)
     {
-        var offset = reader.ReadBigEndianUint32();
+        var offset = reader.GetUInt32BigEndian();
         if (offset < 1) return 
             new AugmentedMatrix3x3(new Matrix3x3(1f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f), 0f, 0f, 0f);
         var pos = reader.ReaderAt(offset);

@@ -15,11 +15,11 @@ internal static class RegionHeaderParser
 {
     public static RegionHeader Parse(ref SequenceReader<byte> reader)
     {
-        var width = reader.ReadBigEndianUint32();
-        var height = reader.ReadBigEndianUint32();
-        var x = reader.ReadBigEndianUint32();
-        var y = reader.ReadBigEndianUint32();
-        var combinationOperator = (CombinationOperator)reader.ReadBigEndianUint8();
+        var width = reader.GetUInt32BigEndian();
+        var height = reader.GetUInt32BigEndian();
+        var x = reader.GetUInt32BigEndian();
+        var y = reader.GetUInt32BigEndian();
+        var combinationOperator = (CombinationOperator)reader.GetUInt8BigEndian();
         return new RegionHeader(width, height, x, y, combinationOperator);
     }
 }

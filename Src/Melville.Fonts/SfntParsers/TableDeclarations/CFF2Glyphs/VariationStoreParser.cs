@@ -23,7 +23,7 @@ internal readonly struct VariationStoreParser(IByteSource pipe)
     private ushort ReadLength(ReadOnlySequence<byte> resultBuffer)
     {
         var reader = new SequenceReader<byte>(resultBuffer);
-        var ret = reader.ReadBigEndianUint16();
+        var ret = reader.GetUInt16BigEndian();
         pipe.AdvanceTo(reader.Position);
         return ret;
     }
@@ -31,20 +31,20 @@ internal readonly struct VariationStoreParser(IByteSource pipe)
     private  uint[] Parse(ReadOnlySequence<byte> buffer)
     {
         var reader = new SequenceReader<byte>(buffer);
-        var format = reader.ReadBigEndianUint16();
+        var format = reader.GetUInt16BigEndian();
         Debug.Assert(format == 1);
-        var variationRegionOffset = reader.ReadBigEndianUint32();
-        var variationDataCount = reader.ReadBigEndianUint16();
+        var variationRegionOffset = reader.GetUInt32BigEndian();
+        var variationDataCount = reader.GetUInt16BigEndian();
         var ret = new uint[variationDataCount];
         for (int i = 0; i < variationDataCount; i++)
         {
-            ret[i] = reader.ReadBigEndianUint32();
+            ret[i] = reader.GetUInt32BigEndian();
         }
 
         for (int i = 0; i < variationDataCount; i++)
         {
             reader = new SequenceReader<byte>(buffer.Slice(ret[i]+4));
-            ret[i] = reader.ReadBigEndianUint16();
+            ret[i] = reader.GetUInt16BigEndian();
         }
 
 

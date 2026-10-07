@@ -16,7 +16,7 @@ internal readonly struct TrueTypeGlyphParser<T>(
     public ValueTask DrawGlyphAsync()
     {
         var reader = new SequenceReader<byte>(slice);
-        int numberOfContours = reader.ReadBigEndianInt16();
+        int numberOfContours = reader.GetInt16BigEndian();
         PhantomPoints boundingBox = new();
         ReadBoundingBox(ref reader, ref boundingBox);
         if (numberOfContours < 0)
@@ -58,7 +58,7 @@ internal readonly struct TrueTypeGlyphParser<T>(
         Vector2.Transform(new Vector2(xPos, yPos), matrix);
 
     private static void SkipInstructions(ref SequenceReader<byte> reader) =>
-        reader.Advance(reader.ReadBigEndianUint16());
+        reader.Advance(reader.GetUInt16BigEndian());
 
     private void DrawPoints(ref SequenceReader<byte> reader, scoped ReadOnlySpan<ushort> contourEnds)
     {
@@ -132,7 +132,7 @@ internal readonly struct TrueTypeGlyphParser<T>(
 
     private static int ReadRepeatCount(ref SequenceReader<byte> instructions, GlyphFlags instruction) =>
         (instruction.Check(GlyphFlags.Repeat))
-            ? (1 + instructions.ReadBigEndianUint8())
+            ? (1 + instructions.GetUInt8BigEndian())
             : 1;
 
     private void ReportPoint(int xPos, int yPos, bool first, bool isEnd, bool onCurve) =>
@@ -148,9 +148,9 @@ internal readonly struct TrueTypeGlyphParser<T>(
     private int GetCoordinate(ref SequenceReader<byte> xs, int xOp) => xOp switch
     {
         0 => 0,
-        1 => xs.ReadBigEndianUint8(),
-        -1 => -xs.ReadBigEndianUint8(),
-        2 => xs.ReadBigEndianInt16(),
+        1 => xs.GetUInt8BigEndian(),
+        -1 => -xs.GetUInt8BigEndian(),
+        2 => xs.GetInt16BigEndian(),
         _ => throw new InvalidOperationException("Invalid xOp")
     };
 

@@ -26,9 +26,9 @@ public class MultiProcessTag: IColorTransform
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var inputs = reader.ReadBigEndianUint16();
-        var outputs = reader.ReadBigEndianUint16();
-        elements = new IColorTransform[reader.ReadBigEndianUint32()];
+        var inputs = reader.GetUInt16BigEndian();
+        var outputs = reader.GetUInt16BigEndian();
+        elements = new IColorTransform[reader.GetUInt32BigEndian()];
         for (int i = 0; i < elements.Length; i++)
         {
             var subReader = reader.ReadPositionNumber();

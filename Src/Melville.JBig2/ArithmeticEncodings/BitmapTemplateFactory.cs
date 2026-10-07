@@ -146,8 +146,8 @@ internal unsafe ref struct BitmapTemplateFactory
         var fact = new BitmapTemplateFactory(template);
         for (int i = 0; i < fact.ExpectedAdaptivePixels(); i++)
         {
-            var x = source.ReadBigEndianInt8();
-            var y = source.ReadBigEndianInt8();
+            var x = source.GetInt8BigEndian();
+            var y = source.GetInt8BigEndian();
             fact.AddPoint(y, x);
         }
 

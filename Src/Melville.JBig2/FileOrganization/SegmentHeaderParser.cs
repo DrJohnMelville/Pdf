@@ -16,11 +16,11 @@ internal static class SegmentHeaderParser
 
     public static bool TryParse(ref SequenceReader<byte> source, out SegmentHeader header)
     {
-        if (source.TryReadBigEndianUint32(out var number) &&
-            source.TryReadBigEndianUint8(out var flags) &&
+        if (source.TryGetUInt32BigEndian(out var number) &&
+            source.TryGetUInt8BigEndian(out var flags) &&
             ReadSegmentAssociationField(ref source, SegmentReferenceSize(number), out var references) &&
             source.TryReadBigEndian(out var pages, PageAssociationSize(flags)) &&
-            source.TryReadBigEndianUint32(out var dataLength))
+            source.TryGetUInt32BigEndian(out var dataLength))
         {
             header = new SegmentHeader(number, GetSegmentType(flags), (uint)pages, dataLength, references);
             return true;
@@ -68,7 +68,7 @@ internal static class SegmentHeaderParser
 
     private static bool ReadReferredSegmentCount(ref SequenceReader<byte> source, out uint referredSegments)
     {
-        if (!source.TryReadBigEndianUint8(out var firstByte))
+        if (!source.TryGetUInt8BigEndian(out var firstByte))
         {
             referredSegments = 0; 
             return false;
@@ -84,7 +84,7 @@ internal static class SegmentHeaderParser
         if (UseLongReferredSegmentFormat(referredSegments))
         {
             source.Rewind(1);
-            if (!source.TryReadBigEndianUint32(out referredSegments)) return false;
+            if (!source.TryGetUInt32BigEndian(out referredSegments)) return false;
             referredSegments &= ReferredSegmentCountMask;
         }
         return true;

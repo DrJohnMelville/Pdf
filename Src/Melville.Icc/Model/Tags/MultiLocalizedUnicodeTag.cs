@@ -27,16 +27,16 @@ public class MultiLocalizedUnicodeTag
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
-        var length = reader.ReadBigEndianUint32();
-        var recordLen = reader.ReadBigEndianUint32();
+        var length = reader.GetUInt32BigEndian();
+        var recordLen = reader.GetUInt32BigEndian();
         var array = new SingleUincodeString[length];
         long max = 0;
         for (int i = 0; i < length; i++)
         {
-            var language = reader.ReadBigEndianUint16();
-            var country = reader.ReadBigEndianUint16();
-            var stringLength = reader.ReadBigEndianUint32();
-            var offset = reader.ReadBigEndianUint32();
+            var language = reader.GetUInt16BigEndian();
+            var country = reader.GetUInt16BigEndian();
+            var stringLength = reader.GetUInt32BigEndian();
+            var offset = reader.GetUInt32BigEndian();
             max = Math.Max(max, offset + stringLength);
             if (recordLen > 12) reader.Advance(recordLen - 12);
             var stringSlice = reader.Sequence.Slice(offset, stringLength);
@@ -62,7 +62,7 @@ public class MultiLocalizedUnicodeTag
 
     private static void CheckForMultiUnicodeHeader(ref SequenceReader<byte> reader)
     {
-        if (reader.ReadBigEndianUint32() != IccTags.mluc)
+        if (reader.GetUInt32BigEndian() != IccTags.mluc)
             throw new InvalidDataException(
                 "Should have a MultiLocalizedUnicode record in profilesequencedescription");
     }
