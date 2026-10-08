@@ -2,6 +2,7 @@
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -25,7 +26,7 @@ public class MultiProcessCurveSet : IColorTransform
         Curves = curves;
     }
 
-    internal MultiProcessCurveSet(ref SequenceReader<byte> reader)
+    internal MultiProcessCurveSet(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         var curves = new MultiProcessCurve[reader.GetUInt16BigEndian()];

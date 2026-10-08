@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -21,7 +22,7 @@ public class ViewingConditionsTag
     /// The illuminant type for this viewing.
     /// </summary>
     public StandardIllumination IlluminantType { get; }
-    internal ViewingConditionsTag(ref SequenceReader<byte> reader)
+    internal ViewingConditionsTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
         IlluminantValue = reader.ReadXyzNumber();

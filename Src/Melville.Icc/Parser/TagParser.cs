@@ -41,8 +41,8 @@ internal static class TagParser
                 IccTags.clrt => new ColorantTableTag(ref reader2),
                 IccTags.clut => new MultidimensionalLookupTable(ref reader2),
                 IccTags.curv => CurveTagParser.Parse(ref reader2),
-                IccTags.curf => new MultiProcessCurve(ref reader),
-                IccTags.cvst => new MultiProcessCurveSet(ref reader),
+                IccTags.curf => new MultiProcessCurve(ref reader2),
+                IccTags.cvst => new MultiProcessCurveSet(ref reader2),
                 IccTags.data => new DataTag(ref reader2),
                 IccTags.dtim => new DateTimeTag(ref reader2),
                 IccTags.matf => MultiProcessMatrix.Parse(ref reader2),
@@ -68,7 +68,7 @@ internal static class TagParser
                 IccTags.ui32 => new UInt32Array(ref reader2),
                 IccTags.ui64 => new UInt64Array(ref reader2),
                 IccTags.XYZ => new XyzArray(ref reader2),
-                IccTags.view => new ViewingConditionsTag(ref reader),
+                IccTags.view => new ViewingConditionsTag(ref reader2),
                 var x => UnRecognizedTransform(x) // Some profiles have invalid tags that we do not care about.
             };
         }

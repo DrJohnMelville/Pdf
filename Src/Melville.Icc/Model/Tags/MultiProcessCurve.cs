@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -27,7 +28,7 @@ public class MultiProcessCurve
         InitializeSampledFunctions();
     }
 
-    internal MultiProcessCurve(ref SequenceReader<byte> reader)
+    internal MultiProcessCurve(ref SpanParsingBuffer reader)
     {
         reader.GetUInt32BigEndian();
         var segmentCount = reader.GetUInt16BigEndian();
@@ -37,7 +38,7 @@ public class MultiProcessCurve
         InitializeSampledFunctions();
     }
 
-    private static ICurveSegment[] ReadSegments(ref SequenceReader<byte> reader, int count)
+    private static ICurveSegment[] ReadSegments(ref SpanParsingBuffer reader, int count)
     {
         var segments = new ICurveSegment[count];
         for (int i = 0; i < segments.Length; i++)
