@@ -41,17 +41,6 @@ public record struct Matrix3x3(
     {
     }
 
-    internal Matrix3x3(ref SequenceReader<byte> reader): this(
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(),
-        reader.Reads15Fixed16()
-        ){}
     internal Matrix3x3(ref SpanParsingBuffer reader): this(
         reader.Reads15Fixed16(),
         reader.Reads15Fixed16(),

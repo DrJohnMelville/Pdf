@@ -59,17 +59,6 @@ public class MultiLocalizedUnicodeTag
         return new MultiLocalizedUnicodeTag(ref reader);
     }
 
-    private static void ResetCurrentPointToBeginningOfReader(ref SequenceReader<byte> reader)
-    {
-        reader = new SequenceReader<byte>(reader.Sequence.Slice(reader.Position));
-    }
-
-    private static void CheckForMultiUnicodeHeader(ref SequenceReader<byte> reader)
-    {
-        if (reader.GetUInt32BigEndian() != IccTags.mluc)
-            throw new InvalidDataException(
-                "Should have a MultiLocalizedUnicode record in profile sequence description");
-    }
     private static void ResetCurrentPointToBeginningOfReader(ref SpanParsingBuffer reader)
     {
         reader.RelativePosition = 0;
