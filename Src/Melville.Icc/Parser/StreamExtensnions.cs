@@ -7,7 +7,6 @@ namespace Melville.Icc.Parser
     {
         extension(ParsingBuffer pb)
         {
-
         }
     }
 }

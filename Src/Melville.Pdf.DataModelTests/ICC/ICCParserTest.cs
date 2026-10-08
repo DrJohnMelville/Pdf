@@ -13,6 +13,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.PipeReaders;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
 using Xunit;
 
@@ -74,8 +75,8 @@ public class ICCParserTest
     private static async Task<T> ParseTagAsync<T>(string source) 
     {
         var str = (await (source+">").ParseValueObjectAsync()).ForceTo<Memory<byte>>();
-        var reader = new ReadOnlySequence<byte>(str);
-        return (T)TagParser.Parse(reader);
+        var reader = new SpanParsingBuffer(str.Span);
+        return (T)TagParser.Parse(ref reader);
     }
 
     [Fact]

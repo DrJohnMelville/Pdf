@@ -2,6 +2,7 @@
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -22,7 +23,7 @@ public class MultiProcessTag: IColorTransform
         this.elements = elements;
     }
 
-    internal MultiProcessTag(ref SequenceReader<byte> reader)
+    internal MultiProcessTag(ref SpanParsingBuffer reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
