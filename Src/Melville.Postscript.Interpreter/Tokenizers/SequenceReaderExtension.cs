@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -16,5 +17,14 @@ internal static class SequenceReaderExtension
     {
         sequence.Rewind(count);
         return ref sequence;
+    }
+
+    extension (ref SpanParsingBuffer self)
+    {
+        public ref SpanParsingBuffer WithAdvance(int count = 1)
+        {
+            self.Advance(count);
+            return ref self;
+        }
     }
 }

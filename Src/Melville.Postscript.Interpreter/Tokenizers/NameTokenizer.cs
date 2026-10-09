@@ -2,29 +2,31 @@
 using System.Buffers;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
-internal readonly partial struct NameTokenizer
+internal readonly struct NameTokenizer(StringKind kind)
 {
-    [FromConstructor] private readonly StringKind kind;
-
-    public bool TryParse(ref SequenceReader<byte> input, out PostscriptValue value)
+    public bool TryParse(ref SpanParsingBuffer input, out PostscriptValue value)
     {
-        return TryGetNameByteSequence(ref input, out var buffer)
-            ? TryCreateNumber(buffer, out value)
-            : default(PostscriptValue).AsFalseValue(out value);
+        var end = input.Peek().IndexOfAny(CharacterClassifier.DelimiterChars());
+        return end switch
+        {
+            < 0 => default(PostscriptValue).AsFalseValue(out value),
+            0 => PostscriptValueFactory.CreateString("", kind).AsTrueValue(out value),
+            _ => CreateName(ref input, end, out value)
+        };
     }
 
-    private static bool TryGetNameByteSequence(ref SequenceReader<byte> input, out ReadOnlySpan<byte> buffer)
-        => input.TryReadToAny(out buffer, CharacterClassifier.DelimiterChars(), false);
-
-    private bool TryCreateNumber(
-        in ReadOnlySpan<byte> buffer, out PostscriptValue value)
+    private bool CreateName(ref SpanParsingBuffer input, int length, out PostscriptValue result)
     {
-        if (!(kind == StringKind.Name && buffer.Length > 0 &&
-              NumberTokenizer.TryDetectNumber(buffer, out value)))
-            value = PostscriptValueFactory.CreateString(buffer, kind);
-        return true;
+        var buffer = input.Peek()[..length];
+
+        var ret = (kind == StringKind.Name && NumberTokenizer.TryDetectNumber(buffer, out result)) ||
+            PostscriptValueFactory.CreateString(buffer, kind).AsTrueValue(out result);
+
+        input.Advance(length);
+        return ret;
     }
 }

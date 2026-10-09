@@ -3,6 +3,7 @@ using Melville.Postscript.Interpreter.Values;
 using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -13,58 +14,54 @@ internal static class SequenceTokenizer
     {
         if (!reader.TryPeekNextNonComment(out var firstChar))
             return default(PostscriptValue).AsFalseValue(out value);
-        return firstChar switch
+        var data = reader.UnreadSequence.ToArray();
+        var spb = new SpanParsingBuffer(data);
+
+        try
         {
-            (byte)'/' => new NameTokenizer(StringKind.LiteralName)
-                .TryParse(ref reader.WithAdvance(), out value),
-            (byte)'[' or (byte)']' or (byte)'{' or (byte)'}' =>
-                TryCopyLiteralName(1, ref reader, out value),
-            (byte)'<' => TryParseOpenWakka(ref reader.WithAdvance(), out value),
-            (byte)'>' => TryParseCloseWakka(ref reader.WithAdvance(), out value),
-            (byte)'(' => new StringTokenizer<SyntaxStringDecoder, int>()
-                            .Parse(ref reader.WithAdvance(), out value),
-            _ => new NameTokenizer(StringKind.Name).TryParse(ref reader, out value)
-        };
+            return spb.Peek() switch
+            {
+                [] or
+                [(byte)'<'] or
+                [(byte)'>'] => default(PostscriptValue).AsFalseValue(out value),
+
+                [(byte)'[', ..] or
+                [(byte)']', ..] or
+                [(byte)'{', ..] or
+                [(byte)'}', ..] => TryCopyLiteral(1, ref spb, out value),
+                [(byte)'<',(byte)'<', ..] or
+                [(byte)'>', (byte)'>', ..] => TryCopyLiteral(2, ref spb, out value),
+                [(byte)'>', _, ..] => throw new PostscriptNamedErrorException(">> expected.", "syntaxerror"),
+
+                [(byte)'(', ..] => ParseString<SyntaxStringDecoder, int>(ref reader.WithAdvance(1), out value),
+                [(byte)'<', (byte)'~', ..] => ParseString<Ascii85StringDecoder, byte>(ref reader.WithAdvance(2), out value) &&
+                                                 reader.TryAdvance(1),
+                [(byte)'<', ..] => ParseString<HexStringDecoder, byte>(ref reader.WithAdvance(1), out value),
+
+                [(byte)'/', ..] => new NameTokenizer(StringKind.LiteralName)
+                        .TryParse(ref spb.WithAdvance(), out value),
+                _ => new NameTokenizer(StringKind.Name).TryParse(ref spb, out value)
+
+            };
+        }
+        finally 
+        {
+            if (spb.RelativePosition > 0)
+            {
+                reader.Advance(spb.RelativePosition);
+            }
+        }
     }
 
-   private static bool TryCopyLiteralName(
-        int length, ref SequenceReader<byte> reader, out PostscriptValue value)
+   private static bool TryCopyLiteral(
+        int length, ref SpanParsingBuffer reader, out PostscriptValue value)
     {
-        Span<byte> name = stackalloc byte[length];
-        reader.TryCopyTo(name);
+        value = PostscriptValueFactory.CreateString(reader.Peek()[..length], StringKind.Name);
         reader.Advance(length);
-        value = PostscriptValueFactory.CreateString(name, StringKind.Name);
         return true;
     }
 
-    private static bool TryParseOpenWakka
-        (ref SequenceReader<byte> reader, out PostscriptValue value)
-    {
-        if (!reader.TryRead(out var secondChar)) 
-            return default(PostscriptValue).AsFalseValue(out value);
-        return secondChar switch
-        {
-            (byte)'<' => PostscriptValueFactory.CreateString("<<"u8, StringKind.Name)
-                .AsTrueValue(out value),
-            (byte)'~'=> DecodeAscii85String(ref reader, out value),
-            _ => new StringTokenizer<HexStringDecoder, byte>().Parse(ref reader.WithRewind(), out value),
-        };
-
-    }
-
-    private static bool DecodeAscii85String(ref SequenceReader<byte> reader, out PostscriptValue value) => 
-        new StringTokenizer<Ascii85StringDecoder, byte>().Parse(ref reader, out value) && reader.TryAdvance(1);
-
-    private static bool TryParseCloseWakka(
-        ref SequenceReader<byte> reader, out PostscriptValue value)
-    {
-        if (!reader.TryRead(out var secondChar))
-            return default(PostscriptValue).AsFalseValue(out value);
-        return secondChar is (byte)'>'
-            ? PostscriptValueFactory.CreateString(">>"u8, StringKind.Name)
-                .AsTrueValue(out value)
-            : throw new PostscriptNamedErrorException(">> expected.", "syntaxerror");
-    }
-
-
+    private static bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PostscriptValue value) where T : IStringDecoder<TState>, new()
+           where TState : new() =>
+        new StringTokenizer<T, TState>().Parse(ref reader, out value);
 }

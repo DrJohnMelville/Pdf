@@ -14,6 +14,7 @@ public static class StreamExtensnions
 
     extension(ref SpanParsingBuffer self)
     {
+ 
         /// <summary>
         /// Try to get a byte out of the buffer, and advance if successful.
         /// </summary>
