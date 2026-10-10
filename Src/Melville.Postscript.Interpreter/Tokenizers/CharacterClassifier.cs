@@ -47,6 +47,11 @@ public static class CharacterClassifier
     public static ReadOnlySpan<byte> WhiteSpaceChars() => "\x0\x09\x0A\x0C\x0d "u8;
 
     /// <summary>
+    /// All the whitespace characters
+    /// </summary>
+    public static readonly SearchValues<byte> WhiteSpaceSearchValues = SearchValues.Create(WhiteSpaceChars());
+
+    /// <summary>
     /// All the characters that might appear in a line end sequence.
     /// </summary>
     /// <returns></returns>

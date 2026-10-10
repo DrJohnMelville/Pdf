@@ -32,3 +32,6 @@ public partial class PostscriptNull :
     /// <inheritdoc />
     public bool IsExecutable => true;
 }
+
+[StaticSingleton]
+public partial class PostscriptTrivia { }

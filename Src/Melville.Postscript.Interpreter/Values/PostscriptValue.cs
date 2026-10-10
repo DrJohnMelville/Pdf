@@ -44,6 +44,12 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     public bool IsMark => ValueStrategy is PostscriptMark;
 
     /// <summary>
+    /// Thrue if this is trivia -- coments or whitespaces that should be filtered out
+    /// higher up in the tokenizer.
+    /// </summary>
+    public bool IsTrivia => ValueStrategy is PostscriptTrivia;
+
+    /// <summary>
     /// True if this is a number represented as an integer, false otherwise.
     /// </summary>
     public bool IsInteger => ValueStrategy is PostscriptInteger;

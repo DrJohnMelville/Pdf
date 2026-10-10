@@ -58,6 +58,12 @@ public static class PostscriptValueFactory
         PostscriptNull.Instance, PostscriptBuiltInOperations.PushArgument, default);
 
     /// <summary>
+    /// Create a PostScriptvalue with a Trivia value.
+    /// </summary>
+    public static PostscriptValue CreateTrivia() => new(
+        PostscriptTrivia.Instance, PostscriptBuiltInOperations.PushArgument, default);
+
+    /// <summary>
     /// Create a PostscriptValue for the Mark object.
     /// </summary>
     public static PostscriptValue CreateMark() =>

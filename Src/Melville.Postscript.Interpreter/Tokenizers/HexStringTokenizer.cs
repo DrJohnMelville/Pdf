@@ -10,7 +10,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers
 
         protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)
         {
-            length = source.IndexOf((byte)'>');
+            length = 1+source.IndexOf((byte)'>');
             return length > 0;
         }
         protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)

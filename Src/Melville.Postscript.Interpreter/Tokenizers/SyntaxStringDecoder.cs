@@ -18,11 +18,12 @@ internal class SyntaxStringTokenizer: SpanTokenizer
         {
             int nextPos = source[length..].IndexOfAny(parens);
             if (nextPos < 1) return (-1).AsFalseValue(out length);
-            balance += (source[length + nextPos - 1], source[length+nextPos]) switch
+            balance += (source[length + nextPos - 1], source[length + nextPos]) switch
             {
                 ((byte)'\\', _) => 0,
                 (_, (byte)'(') => 1,
-                (_, (byte)')') => -1
+                (_, (byte)')') => -1,
+                _ => throw new InvalidOperationException("This should be impossible")
             };
             length += nextPos + 1;
         }

@@ -11,6 +11,8 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -61,7 +63,7 @@ public partial class Tokenizer : ITokenSource
     {
         while (true)
         {
-            var buffer = await CodeSource.ReadAsync();
+            var buffer = await CodeSource.ReadAsync().CA();
             if (TryParseBuffer(buffer, out var postscriptValue)) return postscriptValue;
             CodeSource.MarkSequenceAsExamined();
         }
@@ -89,10 +91,10 @@ public partial class Tokenizer : ITokenSource
 
     private bool TryParse(ReadResult source, out PostscriptValue value)
     {
-        var reader = new SequenceReader<byte>(AppendCrIfFinal(source));
+        var reader = new SpanParsingBuffer(AppendCrIfFinal(source).ToArray());
         if (reader.TryGetPostscriptToken(out value))
         {
-            CodeSource.AdvanceTo(source.Buffer.GetPosition(reader.Consumed));
+            CodeSource.AdvanceTo(source.Buffer.GetPosition(reader.RelativePosition));
             return true;
         }
         else
@@ -108,9 +110,9 @@ public partial class Tokenizer : ITokenSource
     /// <inheritdoc/>
     public async IAsyncEnumerable<PostscriptValue> TokensAsync()
     {
-        while ((await NextTokenAsync()) is { IsNull: false } token)
+        while ((await NextTokenAsync().CA()) is { IsNull: false } token)
         {
-            yield return token;
+            if (!token.IsTrivia ) yield return token;
         }
     }
 
@@ -119,7 +121,7 @@ public partial class Tokenizer : ITokenSource
     {
         while (NextToken() is { IsNull: false } token)
         {
-            yield return token;
+            if (!token.IsTrivia) yield return token;
         }
     }
 }

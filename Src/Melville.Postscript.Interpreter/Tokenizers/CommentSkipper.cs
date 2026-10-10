@@ -1,10 +1,14 @@
-﻿using System.Buffers;
+﻿using Melville.Postscript.Interpreter.Values;
+using System;
+using System.Buffers;
+using System.Diagnostics;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 /// <summary>
 /// Methods to skip over whitespace and comments
 /// </summary>
+[Obsolete("Use CommentSkipTokenizer")]
 public static class CommentSkipper
 {
     /// <summary>
