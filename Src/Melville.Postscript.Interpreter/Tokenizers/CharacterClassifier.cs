@@ -37,6 +37,11 @@ public static class CharacterClassifier
     public static ReadOnlySpan<byte> DelimiterChars() => "\x0\x09\x0A\x0C\x0d ()<>[]{}/%"u8;
 
     /// <summary>
+    /// A searchValues that allows rapid searching for delimiter valuesa
+    /// </summary>
+    public static readonly SearchValues<byte> DelimiterSearchValues = SearchValues.Create(DelimiterChars());
+
+    /// <summary>
     /// All the whitespace characters
     /// </summary>
     public static ReadOnlySpan<byte> WhiteSpaceChars() => "\x0\x09\x0A\x0C\x0d "u8;
@@ -46,6 +51,11 @@ public static class CharacterClassifier
     /// </summary>
     /// <returns></returns>
     public static ReadOnlySpan<byte> LineEndChars() => "\r\n"u8;
+
+    /// <summary>
+    /// Search Values for a line end character 
+    /// </summary>
+    public static readonly SearchValues<byte> LineEndSearchValues = SearchValues.Create(LineEndChars());
 
     /// <summary>
     /// Compute the value for a given digit in a number system up to base 36

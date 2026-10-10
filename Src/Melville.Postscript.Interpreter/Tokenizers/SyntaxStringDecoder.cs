@@ -1,12 +1,85 @@
-﻿using System;
+﻿using Melville.Parsing;
+using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
+
+
+internal class SyntaxStringTokenizer: SpanTokenizer
+{
+    private static readonly SearchValues<byte> parens = SearchValues.Create("()"u8);
+    protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)
+    {
+        length = 1;
+        int balance = 1;
+        while (balance > 0)
+        {
+            int nextPos = source[length..].IndexOfAny(parens);
+            if (nextPos < 1) return (-1).AsFalseValue(out length);
+            balance += (source[length + nextPos - 1], source[length+nextPos]) switch
+            {
+                ((byte)'\\', _) => 0,
+                (_, (byte)'(') => 1,
+                (_, (byte)')') => -1
+            };
+            length += nextPos + 1;
+        }
+        return true;
+    }
+    protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)
+    {
+        var input = new SpanParsingBuffer(source[1..^1]);
+        using var output = new SpanWriter(input.RemainingLength);
+
+        while (input.RemainingLength > 0)
+        {
+            if (ReadCharacter(ref input) is { } charRead)
+                output.Push(charRead);
+        }
+        return PostscriptValueFactory.CreateString(output.Value, StringKind.String);
+    }
+    byte? ReadCharacter(ref SpanParsingBuffer input)
+    {
+        return input.GetUInt8() switch
+        {
+            (byte)'\\' => ReadSlashCharacter(ref input),
+            var other => other
+        };
+    }
+    byte? ReadSlashCharacter(ref SpanParsingBuffer input)
+    {
+        return input.GetUInt8() switch
+        {
+            (byte)'n' => (byte)'\n',
+            (byte)'r' => (byte)'\r',
+            (byte)'t' => (byte)'\t',
+            (byte)'b' => (byte)'\b',
+            (byte)'f' => (byte)'\f',
+            (byte)'\r' or (byte)'\n' => EatNewLine(ref input),
+            >= (byte)'0' and <= (byte)'7' and var first => OutputOctal(ref input, first),
+            var item => item
+        };
+    }
+    byte? EatNewLine(ref SpanParsingBuffer input)
+    {
+        while (input.Peek() is [(byte)'\r', ..] or [(byte)'\n']) input.Advance(1);
+        return null;
+    }
+    byte OutputOctal(ref SpanParsingBuffer input, byte first)
+    {
+        return (byte)((64 * CharacterClassifier.ValueFromDigit(first)) +
+                      (8 * CharacterClassifier.ValueFromDigit(input.GetUInt8())) +
+                          CharacterClassifier.ValueFromDigit(input.GetUInt8()));
+    }
+}
 
 /// <summary>
 /// Parses Postscript (and PDF) syntax strings.  This class uses an integer state parameter
 /// to track the current parenthesis nesting level.
 /// </summary>
+[Obsolete("Use SyntaxStringTokenizer -- its faster.")]
 public readonly struct SyntaxStringDecoder : IStringDecoder<int>
 {
     /// <inheritdoc />

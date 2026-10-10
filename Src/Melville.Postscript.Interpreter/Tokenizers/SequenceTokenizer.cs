@@ -4,11 +4,20 @@ using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.Parsing;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 internal static class SequenceTokenizer
 {
+    private static readonly FixedLengthOperatorTokenizer OneByteOperator = new (1);
+    private static readonly FixedLengthOperatorTokenizer TwoByteOperator = new(2);
+    private static readonly LiteralNameTokenizer LiteralName = new();
+    private static readonly NameOrNumberTokenizer NameOrNumber = new();
+    private static readonly SyntaxStringTokenizer SyntaxString = new();
+    private static readonly HexStringTokenizer HexString = new();
+    private static readonly Ascii85SpanTokenizer Ascii85 = new();
+
     public static bool TryGetPostscriptToken(
         this ref SequenceReader<byte> reader, out PostscriptValue value)
     {
@@ -28,19 +37,19 @@ internal static class SequenceTokenizer
                 [(byte)'[', ..] or
                 [(byte)']', ..] or
                 [(byte)'{', ..] or
-                [(byte)'}', ..] => TryCopyLiteral(1, ref spb, out value),
+                [(byte)'}', ..] => OneByteOperator.TryParse(ref spb, out value),
                 [(byte)'<',(byte)'<', ..] or
-                [(byte)'>', (byte)'>', ..] => TryCopyLiteral(2, ref spb, out value),
+                [(byte)'>', (byte)'>', ..] => TwoByteOperator.TryParse(ref spb, out value),
                 [(byte)'>', _, ..] => throw new PostscriptNamedErrorException(">> expected.", "syntaxerror"),
 
-                [(byte)'(', ..] => ParseString<SyntaxStringDecoder, int>(ref reader.WithAdvance(1), out value),
-                [(byte)'<', (byte)'~', ..] => ParseString<Ascii85StringDecoder, byte>(ref reader.WithAdvance(2), out value) &&
-                                                 reader.TryAdvance(1),
+                [(byte)'(', ..] => SyntaxString.TryParse(ref spb, out value),
+                [(byte)'<', (byte)'~', ..] => Ascii85.TryParse(ref spb, out value),
+                //[(byte)'`', (byte)'~', ..] => ParseString<Ascii85StringDecoder, byte>(ref reader.WithAdvance(2), out value) &&
+                //                                 reader.TryAdvance(1),
                 [(byte)'<', ..] => ParseString<HexStringDecoder, byte>(ref reader.WithAdvance(1), out value),
 
-                [(byte)'/', ..] => new NameTokenizer(StringKind.LiteralName)
-                        .TryParse(ref spb.WithAdvance(), out value),
-                _ => new NameTokenizer(StringKind.Name).TryParse(ref spb, out value)
+                [(byte)'/', ..] => LiteralName.TryParse(ref spb, out value),
+                _ => NameOrNumber.TryParse(ref spb, out value)
 
             };
         }
@@ -51,14 +60,6 @@ internal static class SequenceTokenizer
                 reader.Advance(spb.RelativePosition);
             }
         }
-    }
-
-   private static bool TryCopyLiteral(
-        int length, ref SpanParsingBuffer reader, out PostscriptValue value)
-    {
-        value = PostscriptValueFactory.CreateString(reader.Peek()[..length], StringKind.Name);
-        reader.Advance(length);
-        return true;
     }
 
     private static bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PostscriptValue value) where T : IStringDecoder<TState>, new()

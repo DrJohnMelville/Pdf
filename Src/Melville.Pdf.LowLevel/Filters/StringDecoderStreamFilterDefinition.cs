@@ -5,6 +5,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
+#warning when we get there the new SpanTokenizer variants will make this much more clear.
     internal abstract class StringDecoderStreamFilterDefinition<T, TState> : IStreamFilterDefinition
         where T : IStringDecoder<TState>, new() where TState : new()
     {

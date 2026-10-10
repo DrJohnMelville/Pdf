@@ -11,6 +11,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// </summary>
 /// <typeparam name="T">The type of string decoder to use</typeparam>
 /// <typeparam name="TState">The type of the string decoder's state.</typeparam>
+[Obsolete("The SpanTokenizer is faster")]
 public readonly struct StringTokenizer<T, TState>
     where T : IStringDecoder<TState>, new() where TState : new()
 {

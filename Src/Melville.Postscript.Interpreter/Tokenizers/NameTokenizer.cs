@@ -6,27 +6,29 @@ using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
-internal readonly struct NameTokenizer(StringKind kind)
+internal sealed class NameOrNumberTokenizer() : SpanTokenizer
 {
-    public bool TryParse(ref SpanParsingBuffer input, out PostscriptValue value)
+    protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)
     {
-        var end = input.Peek().IndexOfAny(CharacterClassifier.DelimiterChars());
-        return end switch
-        {
-            < 0 => default(PostscriptValue).AsFalseValue(out value),
-            0 => PostscriptValueFactory.CreateString("", kind).AsTrueValue(out value),
-            _ => CreateName(ref input, end, out value)
-        };
+        length = source.IndexOfAny(CharacterClassifier.DelimiterSearchValues);
+        return length > 0;
+    }
+    protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)
+    {
+        return NumberTokenizer.TryDetectNumber(source, out var ret) ? ret :
+            PostscriptValueFactory.CreateString(source, StringKind.Name);
     }
 
-    private bool CreateName(ref SpanParsingBuffer input, int length, out PostscriptValue result)
+}
+
+internal sealed class LiteralNameTokenizer : SpanTokenizer
+{
+    protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)
     {
-        var buffer = input.Peek()[..length];
-
-        var ret = (kind == StringKind.Name && NumberTokenizer.TryDetectNumber(buffer, out result)) ||
-            PostscriptValueFactory.CreateString(buffer, kind).AsTrueValue(out result);
-
-        input.Advance(length);
-        return ret;
+        length = 1+source[1..].IndexOfAny(CharacterClassifier.DelimiterSearchValues);
+        return length > 0;
     }
+    protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source) =>
+        PostscriptValueFactory.CreateString(source[1..], StringKind.LiteralName);
+
 }
