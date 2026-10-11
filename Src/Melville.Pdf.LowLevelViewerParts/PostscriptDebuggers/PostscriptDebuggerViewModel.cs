@@ -94,14 +94,14 @@ public partial class PostscriptDebuggerViewModel
 
     private void DisplayOnPause()
     {
-        SelectionLength = (int)tokens.CodeSource.Position - SelectionStart;
+        SelectionLength = (int)tokens.CodeSource.RelativePosition - SelectionStart;
         OperandStack = TextTreeViewModel.ReadOperandStack(engine.OperandStack);
         DictionaryStack = TextTreeViewModel.ReadDictionaryStack(engine.DictionaryStack);
     }
 
     private async Task InnerStepAsync()
     {
-        SelectionStart = (int)tokens.CodeSource.Position;
+        SelectionStart = (int)tokens.CodeSource.RelativePosition;
         CurrentToken = await pausedProgram.MoveNextAsync()
             ? pausedProgram.Current?.ToString() ?? ""
             : "End of Program";
@@ -109,9 +109,9 @@ public partial class PostscriptDebuggerViewModel
 
     public async void StepOver()
     {
-        var codeSourcePosition = (int)tokens.CodeSource.Position;
+        var codeSourcePosition = (int)tokens.CodeSource.RelativePosition;
         var next = Code.AsSpan(codeSourcePosition).IndexOfAny("\r\n") + codeSourcePosition;
-        while (tokens.CodeSource.Position is {} pos && pos <= next && pos < Code.Length-1 &&
+        while (tokens.CodeSource.RelativePosition is {} pos && pos <= next && pos < Code.Length-1 &&
                CurrentToken != "End of Program")
         {
             await InnerStepAsync();

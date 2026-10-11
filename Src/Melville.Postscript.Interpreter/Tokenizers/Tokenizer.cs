@@ -23,7 +23,8 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// </summary>
 public partial class Tokenizer : ITokenSource
 {
-    public IByteSource CodeSource => throw new NotImplementedException();
+#warning make auto property
+    public ParsingBuffer CodeSource => codeSource;
 
     private ParsingBuffer codeSource;
     private IAsyncReader reader;

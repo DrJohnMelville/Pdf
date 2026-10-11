@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -14,7 +15,7 @@ public interface ITokenSource: IDisposable
     /// <summary>
     /// The IByteSource reading bytes from
     /// </summary>
-    IByteSource CodeSource { get; }
+    ParsingBuffer CodeSource { get; }
 
     /// <summary>
     /// Get all the tokens as a syncronous enumerable.

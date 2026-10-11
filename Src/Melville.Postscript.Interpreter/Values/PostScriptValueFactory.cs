@@ -4,6 +4,7 @@ using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Numbers;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -16,7 +17,7 @@ public static class PostscriptValueFactory
     /// Create a PostscriptValue representing a long.
     /// </summary>
     /// <param name="value">The long to encode</param>
-    public static PostscriptValue Create(IByteSource value) =>
+    public static PostscriptValue Create(ParsingBuffer value) =>
         new(value, PostscriptBuiltInOperations.PushArgument, default);
     /// <summary>
     /// Create a PostscriptValue representing a long.

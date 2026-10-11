@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -16,8 +21,9 @@ public partial class PretokenizedSource : ITokenSource
     /// </summary>
     [FromConstructor] private IEnumerable<PostscriptValue> source;
 
+#warning need to do this more efficiently
     /// <inheritdoc/>
-    public IByteSource CodeSource => EmptyCodeSource.Instance;
+    public ParsingBuffer CodeSource => new ParsingBuffer(new EmptyAsyncReader());
 
     /// <inheritdoc/>
     public IEnumerable<PostscriptValue> Tokens() => source;
@@ -30,4 +36,12 @@ public partial class PretokenizedSource : ITokenSource
     public void Dispose()
     {
     }
+}
+
+internal class EmptyAsyncReader : IAsyncReader, ISyncReader
+{
+    public int Read(Span<byte> buffer) => 0;
+
+    public ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default) =>
+        ValueTask.FromResult(0);
 }

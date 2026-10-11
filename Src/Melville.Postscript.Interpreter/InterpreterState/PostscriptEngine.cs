@@ -46,7 +46,7 @@ public class PostscriptEngine
     /// <summary>
     /// Retrieves the current offset in the root script being executed.
     /// </summary>
-    public long CurrentProgramOffset => TokenSource?.CodeSource.Position ?? 0;
+    public long CurrentProgramOffset => TokenSource?.CodeSource.RelativePosition ?? 0;
 
     /// <summary>
     /// The postscript engine itself never touches this value.  Various Procsets can use this

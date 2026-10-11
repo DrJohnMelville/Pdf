@@ -42,18 +42,20 @@ internal readonly partial struct InlineImageParser
     {
         var reader = engine.TokenSource?.CodeSource ??
                      throw new PdfParseException("Did not have a token source to read from");
-        while (true)
-        {
-            var result = await reader.ReadAsync().CA();
-            if (strategy.SearchForEndSequence(
-                    new SequenceReader<byte>(result.Buffer), result.IsCompleted, out var endPos))
-            {
-                var ret = CopyDataToArray(result, endPos);
-                reader.AdvanceTo(endPos);
-                return ret;
-            }
-            reader.AdvanceTo(result.Buffer.Start, result.Buffer.End);
-        }
+#warning resolve all the NotImplementedExceptions in the codebase
+
+        //while (true)
+        //{
+        //    var result = await reader.ReadAsync().CA();
+        //    if (strategy.SearchForEndSequence(
+        //            new SequenceReader<byte>(result.Buffer), result.IsCompleted, out var endPos))
+        //    {
+        //        var ret = CopyDataToArray(result, endPos);
+        //        reader.AdvanceTo(endPos);
+        //        return ret;
+        //    }
+        //    reader.AdvanceTo(result.Buffer.Start, result.Buffer.End);
+        //}
     }
 
     private static byte[] CopyDataToArray(ReadResult result, SequencePosition endPos) => 
