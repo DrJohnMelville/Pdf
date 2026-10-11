@@ -82,7 +82,7 @@ internal class PdfObjectWriter
                 DictionaryWriter.Write(this, dict.RawItems);
                 break;
             default:
-                throw new NotImplementedException($"Cannot write value {item}");
+                throw new   NotImplementedException($"Cannot write value {item}");
         }
     }
 

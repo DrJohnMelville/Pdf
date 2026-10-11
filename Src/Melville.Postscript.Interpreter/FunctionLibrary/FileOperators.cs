@@ -7,6 +7,8 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
@@ -18,7 +20,7 @@ internal static partial class FileOperators
                                       throw new PostscriptException("Does not have a CodeSource in a currentfile operation"));
 
     [PostscriptMethod("closefile")]
-    private static void CloseFile(IByteSource file)
+    private static void CloseFile(ParsingBuffer file)
     {
         // right now the only file is the current stream so closefile is a no-op that
         // only has to honor the stack signature of the closefile operation.
@@ -26,28 +28,22 @@ internal static partial class FileOperators
 
     [PostscriptMethod("readstring")]
     private static async ValueTask ReadStringAsync(
-        IByteSource file, PostscriptLongString str, OperandStack stack)
+        ParsingBuffer file, PostscriptLongString str, OperandStack stack)
     {
-        var result = await file.ReadAtLeastAsync(str.Length+1);
-        if (TryHandleEmptyRead(file, str, stack, result)) return;
-        var start = TrySkipWhiteSpace(result);
-        var outputLen = (int)Math.Min(str.Length, result.Buffer.Length-start);
-        ReadStringSync(str, result.Buffer.Slice(start, outputLen));
+        await file.TryEnsureBytesAsync(str.Length + 1).CA();
+        
+        if (file.Peek() is [var possWs, ..] &&
+            CharacterClassifier.IsWhitespace(possWs)) file.Advance(1);
 
-        PushReadStringResults(stack, str, outputLen);
-        file.AdvanceTo(result.Buffer.GetPosition(start+outputLen));
-    }
-
-    private static void ReadStringSync(
-        PostscriptLongString str, ReadOnlySequence<byte> trimmedResult)
-    {
-        var destination = str.GetBytes(default,[])[..(int)trimmedResult.Length];
-        trimmedResult.CopyTo(destination);
+        var len = Math.Min(file.CurrentLength, str.Length);
+        file.Peek(len).CopyTo(str.GetBytes(default, []));
+        PushReadStringResults(stack, str, len);
     }
 
     private static void PushReadStringResults(
         OperandStack stack, PostscriptLongString str, int outputLen)
     {
+        // str.substring allocates, so we only want to call it if needed for correctness.
         if (outputLen >= str.Length)
             PushReadStringResult(stack, str, true);
         else
@@ -59,22 +55,5 @@ internal static partial class FileOperators
     {
         stack.Push(new PostscriptValue(str, str.StringKind.DefaultAction, default));
         stack.Push(PostscriptValueFactory.Create(wholeString));
-    }
-
-    private static int TrySkipWhiteSpace(ReadResult result) => 
-        CharacterClassifier.IsWhitespace(result.Buffer.FirstSpan[0]) ? 1 : 0;
-
-    private static bool TryHandleEmptyRead(IByteSource file, PostscriptLongString str, OperandStack stack,
-        ReadResult result)
-    {
-        if (result.Buffer.Length < 1)
-        {
-            stack.Push(PostscriptValueFactory.CreateString("", str.StringKind));
-            stack.Push(PostscriptValueFactory.Create(false));
-            file.AdvanceTo(result.Buffer.End);
-            return true;
-        }
-
-        return false;
     }
 }
