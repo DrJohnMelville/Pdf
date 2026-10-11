@@ -115,15 +115,13 @@ internal sealed partial class
 
     public void GetToken(OperandStack stack)
     {
-        using var multiplexSource = MultiplexSourceFactory.Create(value);
-        using var wrapper = multiplexSource.ReadPipeFrom(0);
-        using var tokenizer = new Tokenizer(wrapper);
+        using var tokenizer = new Tokenizer(value);
 
         using var enumerator = tokenizer.Tokens().GetEnumerator();
         if (enumerator.MoveNext()) 
         {
             stack.Push(PostscriptValueFactory.CreateLongString(
-                value[((int)wrapper.Position)..], StringKind));
+                value[((int)tokenizer.PositionInStream)..], StringKind));
             stack.Push(enumerator.Current);
             stack.Push(true);
         }

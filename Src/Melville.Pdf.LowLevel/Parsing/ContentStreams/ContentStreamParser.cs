@@ -35,7 +35,7 @@ public readonly partial struct ContentStreamParser
         var engine = new PostscriptEngine(contentStreamCommands);
         engine.Tag = target;
 
-        using var tokens = new Tokenizer(source);
+        using var tokens = new Tokenizer(new IByteSourceToIAsyncReadStream(source));
         await engine.ExecuteAsync(tokens).CA();
         
         if (engine.ErrorData.TryGetAs("newerror", out bool value) && value)

@@ -12,7 +12,9 @@ using Melville.Parsing.PipeReaders;
 using Melville.Parsing.Streams;
 using Melville.Postscript.Interpreter.Values;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
@@ -21,19 +23,38 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// </summary>
 public partial class Tokenizer : ITokenSource
 {
-    /// <inheritdoc />
-    [FromConstructor] public IByteSource CodeSource { get; }
+    public IByteSource CodeSource => throw new NotImplementedException();
+
+    private ParsingBuffer codeSource;
+    private IAsyncReader reader;
+    private IDisposable? source;
 
     /// <inheritdoc />
-    public void Dispose() => CodeSource.Dispose();
+    public void Dispose()
+    {
+        codeSource.Dispose();
+        (reader as IDisposable)?.Dispose();
+        source?.Dispose();
+    }
+
+    /// <summary>
+    /// Create a tokenizer from a stream.
+    /// </summary>
+    /// <param name="source">A stream containing the code to execute.</param>
+    public Tokenizer(IAsyncReader reader)
+    {
+        this.reader = reader;
+        codeSource = new ParsingBuffer(reader);
+    }
 
     /// <summary>
     /// Create a tokenizer from a stream.
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
-        this(MultiplexSourceFactory.SingleReaderForStream(source, false))
+        this(source.AsStreamReader())
     {
+        this.source = source;
     }
 
     /// <summary>
@@ -49,7 +70,7 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
     /// <param name="source">The code to execute.</param>
     public Tokenizer(Memory<byte> source) : this(
-        PipeFromMemory(source))
+        new MemoryReader(source))
     {
     }
 
@@ -61,51 +82,46 @@ public partial class Tokenizer : ITokenSource
 
     private async ValueTask<PostscriptValue> NextTokenAsync()
     {
-        while (true)
+        PostscriptValue value;
+        while (!TryParseBuffer(out value))
         {
-            var buffer = await CodeSource.ReadAsync().CA();
-            if (TryParseBuffer(buffer, out var postscriptValue)) return postscriptValue;
-            CodeSource.MarkSequenceAsExamined();
+            await codeSource.ReadBytesAsync(1).CA();
         }
+        return value;
     }
 
     private PostscriptValue NextToken()
     {
-        while (true)
+        PostscriptValue value;
+        while (!TryParseBuffer(out value))
         {
-            var buffer = CodeSource.Read();
-            if (TryParseBuffer(buffer, out var postscriptValue))
-            {
-                return postscriptValue;
-            }
+            codeSource.DangerousReadBytesSync();
         }
+        return value;
     }
 
-    private bool TryParseBuffer(ReadResult buffer, out PostscriptValue postscriptValue)
+    private bool TryParseBuffer(out PostscriptValue postscriptValue)
     {
-        if (TryParse(buffer, out postscriptValue)) return true;
-        if (!buffer.IsCompleted) return false;
+        EnsureTerminalCr();
+        var buffer = new SpanParsingBuffer(codeSource.Peek());
+        var parsed = (buffer.TryGetPostscriptToken(out postscriptValue));
+        codeSource.Advance((int)buffer.RelativePosition);
+        if (parsed) return true;
+        if (!codeSource.DoneReadingSource) return false;
         postscriptValue = PostscriptValueFactory.CreateNull();
         return true;
     }
 
-    private bool TryParse(ReadResult source, out PostscriptValue value)
+    private void EnsureTerminalCr()
     {
-        var reader = new SpanParsingBuffer(AppendCrIfFinal(source).ToArray());
-        if (reader.TryGetPostscriptToken(out value))
+        if (codeSource.DoneReadingSource && 
+            codeSource.Peek() is not ([] or [..,(byte)'\r']))
         {
-            CodeSource.AdvanceTo(source.Buffer.GetPosition(reader.RelativePosition));
-            return true;
+            codeSource.AppendBytes((byte)'\r');
         }
-        else
-        {
-            CodeSource.MarkSequenceAsExamined();
-        }
-        return false;
     }
 
-    private static ReadOnlySequence<byte> AppendCrIfFinal(ReadResult source) => 
-        source.IsCompleted?source.Buffer.AppendCR():source.Buffer;
+    public long PositionInStream => codeSource.RelativePosition;
 
     /// <inheritdoc/>
     public async IAsyncEnumerable<PostscriptValue> TokensAsync()

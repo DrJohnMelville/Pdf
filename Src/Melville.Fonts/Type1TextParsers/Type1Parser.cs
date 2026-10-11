@@ -25,9 +25,10 @@ public readonly struct Type1Parser(IMultiplexSource source)
         try
         {
             var parser = CreateEngine();
-            using var tokens = new Tokenizer(eexecDecryptingSource);
-            await parser.ExecuteAsync(tokens).CA();
-            return ExtractFont(parser);
+            throw new NotImplementedException("Need to handle exec switching to parse type 1 fonts");
+     //       using var tokens = new Tokenizer(eexecDecryptingSource);
+     //       await parser.ExecuteAsync(tokens).CA();
+      //      return ExtractFont(parser);
         }
         finally
         {
