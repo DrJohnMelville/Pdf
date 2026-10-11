@@ -9,11 +9,11 @@ public class InlineImageDEtectLengthTest
 {
     private long RunSearch(string item, EndSearchStrategy strategy)
     {
-        var src = new SequenceReader<byte>(new ReadOnlySequence<byte>(item.AsExtendedAsciiBytes()));
+        var src = item.AsExtendedAsciiBytes();
 
         Assert.True(strategy.SearchForEndSequence(src, true, out var endPos));
 
-        return src.Sequence.Slice(src.Sequence.Start, endPos).Length;
+        return endPos;
     }
 
 
