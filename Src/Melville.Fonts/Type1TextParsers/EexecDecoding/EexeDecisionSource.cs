@@ -15,6 +15,7 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding
 {
+    [Obsolete("I do not think I need to do anything")]
     internal sealed partial class EexeDecisionSource : IByteSource
     {
         [FromConstructor] [DelegateTo] private IByteSource inner;

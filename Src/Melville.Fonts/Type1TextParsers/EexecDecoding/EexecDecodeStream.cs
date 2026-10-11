@@ -5,6 +5,7 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
+[Obsolete("I think this should go away")]
 internal class EexecDecodeStream(Stream source, ushort pkey) 
     : DefaultBaseStream(true, false, true)
 {

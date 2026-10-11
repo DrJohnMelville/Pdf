@@ -23,7 +23,7 @@ public partial class PretokenizedSource : ITokenSource
 
 #warning need to do this more efficiently
     /// <inheritdoc/>
-    public ParsingBuffer CodeSource => new ParsingBuffer(new EmptyAsyncReader());
+    public ParsingBuffer CodeSource { get; set; } = new ParsingBuffer(new EmptyAsyncReader());
 
     /// <inheritdoc/>
     public IEnumerable<PostscriptValue> Tokens() => source;

@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using Melville.StreamInterfaces;
+using System.Reflection.Metadata;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
@@ -40,3 +41,4 @@ public static class DecodeType1Encoding
         return input[leadBytes..];
     }
 }
+

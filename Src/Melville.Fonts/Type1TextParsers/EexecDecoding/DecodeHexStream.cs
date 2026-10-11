@@ -4,6 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
 
+[Obsolete("Used in the old eeic ")]
 internal class DecodeHexStream(Stream readFrom) : DefaultBaseStream(true, false, false)
 {
     PipeReader reader = PipeReader.Create(readFrom);

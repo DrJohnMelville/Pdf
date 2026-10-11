@@ -16,24 +16,29 @@ namespace Melville.Fonts.Type1TextParsers;
 /// comparing reader can get the postscript interpreter for the debugger
 /// </summary>
 /// <param name="source"></param>
-public readonly struct Type1Parser(IMultiplexSource source)
+public readonly struct Type1Parser
 {
-    private readonly EexecDecryptingByteSource eexecDecryptingSource = new(source);
+    private readonly EexecDecryptingByteSource eexecDecryptingSource;
+    private readonly IAsyncReader reader;
+
+    public Type1Parser(IMultiplexSource source)
+    {
+        reader = source.ReaderFrom(0);
+        eexecDecryptingSource = new(reader);
+    }
 
     internal async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
     {
         try
         {
             var parser = CreateEngine();
-            throw new NotImplementedException("Need to handle exec switching to parse type 1 fonts");
-     //       using var tokens = new Tokenizer(eexecDecryptingSource);
-     //       await parser.ExecuteAsync(tokens).CA();
-      //      return ExtractFont(parser);
+            using var tokens = new Tokenizer(reader);
+            await parser.ExecuteAsync(tokens).CA();
+            return ExtractFont(parser);
         }
         finally
         {
-            eexecDecryptingSource.Dispose();
-            source.Dispose();
+            (reader as IDisposable)?.Dispose();
         }
     }
 

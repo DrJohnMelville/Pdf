@@ -24,16 +24,15 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public partial class Tokenizer : ITokenSource
 {
 #warning make auto property
-    public ParsingBuffer CodeSource => codeSource;
+   public ParsingBuffer CodeSource { get; set; }
 
-    private ParsingBuffer codeSource;
     private IAsyncReader reader;
     private IDisposable? source;
 
     /// <inheritdoc />
     public void Dispose()
     {
-        codeSource.Dispose();
+        CodeSource.Dispose();
         (reader as IDisposable)?.Dispose();
         source?.Dispose();
     }
@@ -45,7 +44,7 @@ public partial class Tokenizer : ITokenSource
     public Tokenizer(IAsyncReader reader)
     {
         this.reader = reader;
-        codeSource = new ParsingBuffer(reader);
+        CodeSource = new ParsingBuffer(reader);
     }
 
     /// <summary>
@@ -86,7 +85,7 @@ public partial class Tokenizer : ITokenSource
         PostscriptValue value;
         while (!TryParseBuffer(out value))
         {
-            await codeSource.ReadBytesAsync(1).CA();
+            await CodeSource.ReadBytesAsync(1).CA();
         }
         return value;
     }
@@ -96,7 +95,7 @@ public partial class Tokenizer : ITokenSource
         PostscriptValue value;
         while (!TryParseBuffer(out value))
         {
-            codeSource.DangerousReadBytesSync();
+            CodeSource.DangerousReadBytesSync();
         }
         return value;
     }
@@ -104,25 +103,25 @@ public partial class Tokenizer : ITokenSource
     private bool TryParseBuffer(out PostscriptValue postscriptValue)
     {
         EnsureTerminalCr();
-        var buffer = new SpanParsingBuffer(codeSource.Peek());
+        var buffer = new SpanParsingBuffer(CodeSource.Peek());
         var parsed = (buffer.TryGetPostscriptToken(out postscriptValue));
-        codeSource.Advance((int)buffer.RelativePosition);
+        CodeSource.Advance((int)buffer.RelativePosition);
         if (parsed) return true;
-        if (!codeSource.DoneReadingSource) return false;
+        if (!CodeSource.DoneReadingSource) return false;
         postscriptValue = PostscriptValueFactory.CreateNull();
         return true;
     }
 
     private void EnsureTerminalCr()
     {
-        if (codeSource.DoneReadingSource && 
-            codeSource.Peek() is not ([] or [..,(byte)'\r']))
+        if (CodeSource.DoneReadingSource && 
+            CodeSource.Peek() is not ([] or [..,(byte)'\r']))
         {
-            codeSource.AppendBytes((byte)'\r');
+            CodeSource.AppendBytes((byte)'\r');
         }
     }
 
-    public long PositionInStream => codeSource.RelativePosition;
+    public long PositionInStream => CodeSource.RelativePosition;
 
     /// <inheritdoc/>
     public async IAsyncEnumerable<PostscriptValue> TokensAsync()

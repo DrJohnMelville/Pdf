@@ -13,9 +13,9 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public interface ITokenSource: IDisposable
 {
     /// <summary>
-    /// The IByteSource reading bytes from
+    /// The POarsingBuffer reading bytes from
     /// </summary>
-    ParsingBuffer CodeSource { get; }
+    ParsingBuffer CodeSource { get; set; }
 
     /// <summary>
     /// Get all the tokens as a syncronous enumerable.

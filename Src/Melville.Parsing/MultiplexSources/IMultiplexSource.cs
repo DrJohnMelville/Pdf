@@ -1,5 +1,7 @@
 ﻿using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -13,8 +15,15 @@ public interface IMultiplexSource : IDisposable
     /// Create a multiplexed reader that begins at a given position.  The readers are threadsafe
     /// </summary>
     /// <param name="position"></param>
-    /// <returns></returns>
     Stream ReadFrom(long position);
+
+#warning this can become more efficient -- then we want to get rid of ReadPipeFrom
+    /// <summary>
+    /// Create a multiplexed reader that begins at a given position.  The readers are threadsafe
+    /// </summary>
+    /// <param name="position"></param>
+    IAsyncReader ReaderFrom(long position) =>
+        ReadFrom(position).AsStreamReader();
 
     /// <summary>
     /// Return a pipe reader starting at a given point in the stream.
