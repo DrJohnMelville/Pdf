@@ -6,6 +6,7 @@ using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.HuffmanTables;
 using Melville.JBig2.Segments;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
@@ -36,12 +37,11 @@ internal ref struct SymbolDictionaryParser
         if (flags.BitmapContextUsed)
             throw new NotImplementedException("Does not yet preserve bitmap context");
 
-        var imgBuffer = ArrayPool<IBinaryBitmap>.Shared.Rent((int)exportParser.NewSymbols);
+        using var imgBuffer = new PooledBuffer<IBinaryBitmap>((int)exportParser.NewSymbols);
         new SymbolParser(flags, intReader, imgBuffer.AsMemory(0,(int)exportParser.NewSymbols), 
             SelectHeightClassStrategy(), refinementReader, referencedSegments).ReadSymbols(ref reader);
         var ret = new SymbolDictionarySegment(exportParser.ParseExportedArray(ref reader, intReader,
             imgBuffer, referencedSegments));
-        ArrayPool<IBinaryBitmap>.Shared.Return(imgBuffer);
         return ret;
     }
 

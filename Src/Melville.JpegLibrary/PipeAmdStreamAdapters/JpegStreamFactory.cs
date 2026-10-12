@@ -5,6 +5,7 @@ using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.Decoder;
 
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
@@ -45,9 +46,10 @@ public readonly partial struct JpegStreamFactory
         decoder.SetInput(input);
         decoder.Identify();
         var bufferLength = decoder.Width * decoder.Height * decoder.NumberOfComponents;
-        var output = ArrayPool<byte>.Shared.Rent(bufferLength);
+        using var output = new PooledBuffer<byte>(bufferLength);
         var outputWriter =
-            new JpegBufferOutputWriter8Bit(decoder.Width, decoder.Height, decoder.NumberOfComponents, output);
+            new JpegBufferOutputWriter8Bit(
+                decoder.Width, decoder.Height, decoder.NumberOfComponents, output.AsMemory());
         decoder.SetOutputWriter(outputWriter);
         decoder.Decode();
 

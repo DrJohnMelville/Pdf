@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -50,7 +51,7 @@ public readonly struct ReplViewModelFactory
     private static async Task<string> ReadContentStringAsync(Stream source)
     {
         var sb = new StringBuilder();
-        var strBuffer = ArrayPool<byte>.Shared.Rent(4096);
+        using var strBuffer = new PooledBuffer<byte>(4096);
         int len = 0;
         do
         {
@@ -58,7 +59,6 @@ public readonly struct ReplViewModelFactory
             sb.Append(ExtendedAsciiEncoding.ExtendedAsciiString(strBuffer.AsSpan(0, len)));
         } while (len > 0);
 
-        ArrayPool<byte>.Shared.Return(strBuffer);
         var text = sb.ToString();
         return text;
     }

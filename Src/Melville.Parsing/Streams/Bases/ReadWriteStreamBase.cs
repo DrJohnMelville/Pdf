@@ -1,4 +1,5 @@
-﻿using Melville.StreamInterfaces.Adapters;
+﻿using Melville.Parsing.IStreamAdaptors;
+using Melville.StreamInterfaces.Adapters;
 using System.Buffers;
 
 namespace Melville.Parsing.Streams.Bases;
@@ -26,11 +27,10 @@ public abstract class ReadWriteStreamBase: Stream
     /// <inheritdoc />
     public override int Read(Span<byte> buffer)
     {
-        var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        using var rented = new PooledBuffer<byte>(buffer.Length);
         var capturedLength = buffer.Length;
         var ret = RunSynchronous.Do(() => ReadAsync(rented.AsMemory(0, capturedLength)));
         rented.AsSpan(0, ret).CopyTo(buffer);
-        ArrayPool<byte>.Shared.Return(rented);
         return ret;
     }
 
@@ -65,11 +65,10 @@ public abstract class ReadWriteStreamBase: Stream
     /// <inheritdoc />
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        using var rented = new PooledBuffer<byte>(buffer.Length);
         buffer.CopyTo(rented);
         var captureLength = buffer.Length;
         RunSynchronous.Do(() => WriteAsync(rented.AsMemory(0, captureLength)));
-        ArrayPool<byte>.Shared.Return(rented);
     }
 
     /// <inheritdoc />

@@ -1,7 +1,8 @@
-﻿using System;
-using System.Buffers;
+﻿using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.StreamFilters;
 using Melville.Postscript.Interpreter.Tokenizers;
+using System;
+using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
@@ -40,26 +41,20 @@ namespace Melville.Pdf.LowLevel.Filters
             in Span<byte> destination)
         {
             var seqLen = (int)source.Length + TerminatorSequence().Length;
-            var bufferArray = ArrayPool<byte>.Shared.Rent(seqLen);
+            using var bufferArray = new PooledBuffer<byte>(seqLen);
             var buffer = bufferArray.AsMemory(0, seqLen);
-            try
-            {
-                var bufferSpan = buffer.Span;
-                var terminatorLength = TerminatorSequence().Length;
-                source.TryCopyTo(bufferSpan[..^terminatorLength]);
-                TerminatorSequence().TryCopyTo(bufferSpan[^terminatorLength..]);
-                var buffSeq = new ReadOnlySequence<byte>(buffer);
-                var buffReader = new SequenceReader<byte>(buffSeq);
-                var (finalPos, bytesWritten, done) = Convert(ref buffReader, destination);
-                return (
-                    source.Sequence.GetPosition(Math.Min(source.Sequence.Length,
-                        buffSeq.Slice(buffSeq.Start, finalPos).Length)),
-                    bytesWritten, done);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(bufferArray);
-            }
+
+            var bufferSpan = buffer.Span;
+            var terminatorLength = TerminatorSequence().Length;
+            source.TryCopyTo(bufferSpan[..^terminatorLength]);
+            TerminatorSequence().TryCopyTo(bufferSpan[^terminatorLength..]);
+            var buffSeq = new ReadOnlySequence<byte>(buffer);
+            var buffReader = new SequenceReader<byte>(buffSeq);
+            var (finalPos, bytesWritten, done) = Convert(ref buffReader, destination);
+            return (
+                source.Sequence.GetPosition(Math.Min(source.Sequence.Length,
+                    buffSeq.Slice(buffSeq.Start, finalPos).Length)),
+                bytesWritten, done);
         }
     }
 }

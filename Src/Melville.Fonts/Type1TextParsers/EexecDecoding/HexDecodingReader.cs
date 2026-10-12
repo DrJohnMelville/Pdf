@@ -19,7 +19,7 @@ public class HexDecodingReader(IAsyncReader inner) : IAsyncReader
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
     {
         int maxDesired = buffer.Length * 2;
-        using var hexDigitBuff = new PooledByteBuffer(maxDesired);
+        using var hexDigitBuff = new PooledBuffer<byte>(maxDesired);
         var actualDigitLen = await GetDigitsAsync(hexDigitBuff.AsMemory()[..maxDesired]);
         return CopyHexData(hexDigitBuff.AsSpan()[..actualDigitLen], buffer.Span);
     }

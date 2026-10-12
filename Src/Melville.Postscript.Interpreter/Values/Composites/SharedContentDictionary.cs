@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Text;
 using Melville.INPC;
+using Melville.Parsing.IStreamAdaptors;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
@@ -71,11 +72,10 @@ internal sealed partial class SharedContentDictionary:
     private void WriteTo(in ForAllCursor curson, StringBuilder target)
     {
         var pos = 0;
-        var items = ArrayPool<PostscriptValue>.Shared.Rent(2);
+        using var items = new PooledBuffer<PostscriptValue>(2);
         while (curson.TryGetItr(items.AsSpan(), ref pos))
         {
             target.AppendLine($"    {items[0]}: {items[1]}");
         }
-        ArrayPool<PostscriptValue>.Shared.Return(items);
     }
 }

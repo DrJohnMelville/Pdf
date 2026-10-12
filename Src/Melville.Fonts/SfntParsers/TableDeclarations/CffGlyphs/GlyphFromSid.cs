@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,9 +17,9 @@ internal readonly struct GlyphFromSid(ushort[] glyphSids): IDisposable
     public static async ValueTask <GlyphFromSid> ParseAsync(
         int length, IByteSource pipe)
     {
-        var data = ArrayPool<ushort>.Shared.Rent(length);
+        using var data = new PooledBuffer<ushort>(length);
         data.AsSpan().Clear();
-        var target = new MemoryTarget(data);
+        var target = new MemoryTarget(data.AsMemory());
         await new CharSetReader<MemoryTarget>(pipe, target).ReadCharSetAsync().CA();
         return new GlyphFromSid(data);
     }

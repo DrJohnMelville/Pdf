@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melville.Parsing.IStreamAdaptors;
+using System;
 using System.Buffers;
 using System.Text;
 
@@ -42,7 +43,7 @@ internal abstract class PostscriptDictionary:
         PostscriptValue source, PostscriptValue target)
     {
         var src = source.Get<PostscriptDictionary>().CreateForAllCursor();
-        var buffer = ArrayPool<PostscriptValue>.Shared.Rent(2);
+        using var buffer = new PooledBuffer<PostscriptValue>(2);
         int position = 0;
         while (src.TryGetItr(buffer.AsSpan(0, 2), ref position))
         {

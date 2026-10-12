@@ -28,6 +28,9 @@ public class IByteSourceToIAsyncReadStream(IByteSource source) : IAsyncReader
     }
 }
 
+/// <summary>
+/// Transitional shim object
+/// </summary>
 public static class SequenceReaderShim
 {
     /// <summary>

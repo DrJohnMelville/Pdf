@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
 
@@ -44,18 +44,17 @@ internal class Rc4Stream : DefaultBaseStream
     
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        using var copy = new PooledBuffer<byte>(buffer.Length);
         encryptor.Transform(buffer, copy);
-        innerStream.Write(copy[..buffer.Length]);
+        innerStream.Write(copy.AsSpan(0,buffer.Length));
         ArrayPool<byte>.Shared.Return(copy);
     }
     
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        using var copy = new PooledBuffer<byte>(buffer.Length);
         encryptor.Transform(buffer.Span, copy);
         await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken).CA();
-        ArrayPool<byte>.Shared.Return(copy);
     }
 
     public override long Length => innerStream.Length;

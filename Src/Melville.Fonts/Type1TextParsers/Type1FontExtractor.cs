@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Numerics;
 using Melville.Fonts.Type1TextParsers.EexecDecoding;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 
@@ -51,7 +52,7 @@ internal ref struct Type1FontExtractor
         var charDefinitions = new Memory<byte>[length];
 
         int outerCount = 0;
-        var items = ArrayPool<PostscriptValue>.Shared.Rent(2);
+        using var items = new PooledBuffer<PostscriptValue>(2);
         var iterator = charStrings.CreateForAllCursor();
         for (int i = 0; iterator.TryGetItr(items, ref outerCount); i++)
         {
@@ -60,7 +61,6 @@ internal ref struct Type1FontExtractor
             charDefinitions[i] = ReadCharString(items[1]);
         }
 
-        ArrayPool<PostscriptValue>.Shared.Return(items);
         return (names, charDefinitions);
     }
 

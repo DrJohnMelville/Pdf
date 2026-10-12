@@ -1,5 +1,6 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
 using System.Buffers;
@@ -16,13 +17,13 @@ internal readonly struct PrivateCff2DictionaryParser(
         if (count == 0) return NullExecutorSelector.Instance;
         var offsetSize = (int)await pipe.ReadBigEndianUintAsync(1).CA();
 
-        int[] offsets = ArrayPool<int>.Shared.Rent(count*2);
+        using var offsets = new PooledBuffer<int>(count*2);
 
         var first = (int)await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         Debug.Assert(first == 1);
         for (int i = 0; i < count; i++)
         {
-            offsets[i] = (int)await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+            ((int[])offsets)[i] = (int)await pipe.ReadBigEndianUintAsync(offsetSize).CA();
         }
 
         for(int i = 0; i < count; i++)
@@ -44,25 +45,23 @@ internal readonly struct PrivateCff2DictionaryParser(
             p2.AdvanceTo(trimmed.End);
         }
 
-        var procIndexes = ArrayPool<CffIndex>.Shared.Rent(count);
+        using var procIndexes = new PooledBuffer<CffIndex>(count);
         for (int i = 0; i < count; i++)
         {
             if (offsets[i + count] == 0)
             {
-                procIndexes[i] = new CffIndex(source, 0, 0, null);
+                ((CffIndex[])procIndexes)[i] = new CffIndex(source, 0, 0, null);
                 continue;
             }
 
             var indexOffset = offsets[i]+offsets[i+count];
             using var  p2 = source.ReadPipeFrom(indexOffset);
-            procIndexes[i] = await new CFFIndexParser(source.OffsetFrom(
+            ((CffIndex[])procIndexes)[i] = await new CFFIndexParser(source.OffsetFrom(
                     (uint)indexOffset), p2)
                 .ParseCff2Async().CA();
         }
 
         var ret = RealizeSelector(selector, procIndexes.AsSpan(0, count));
-        ArrayPool<int>.Shared.Return(offsets);
-        ArrayPool<CffIndex>.Shared.Return(procIndexes);
         return ret;
     }
 

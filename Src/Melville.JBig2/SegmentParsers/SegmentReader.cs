@@ -11,7 +11,7 @@ using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.JBig2.SegmentParsers.SymbolDictonaries;
 using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
-
+using Melville.Parsing.IStreamAdaptors;
 using Melville.StreamInterfaces;
 
 namespace Melville.JBig2.SegmentParsers;
@@ -65,8 +65,8 @@ internal readonly struct SegmentReader
     private Segment ReadFrom(in ReadOnlySequence<byte> data)
     {
         var reader = new SequenceReader<byte>(data);
-        using var rentedSegmentSpan = new SpanRental<Segment>(Header.ReferencedSegmentNumbers.Length);
-        var referencedSegments = rentedSegmentSpan.Span;
+        using var rentedSegmentSpan = new PooledBuffer<Segment>(Header.ReferencedSegmentNumbers.Length);
+        var referencedSegments = rentedSegmentSpan.AsSpan(0, Header.ReferencedSegmentNumbers.Length);
         LookupSegments(referencedSegments);
         return Header.SegmentType switch
         {
@@ -104,24 +104,3 @@ internal readonly struct SegmentReader
         }
     }
 }
-
-internal readonly struct SpanRental<T> : IDisposable
-{
-    private readonly T[] items;
-    private readonly int length;
-    public readonly Span<T> Span => items.AsSpan(0, length);
-
-    public SpanRental(int length) : this()
-    {
-        this.length = length;
-        items = this.length <= 0? Array.Empty<T>(): ArrayPool<T>.Shared.Rent(length);
-    }
-
-
-    public void Dispose()
-    {
-        if (length <= 0) return;
-        Span.Clear();
-        ArrayPool<T>.Shared.Return(items);
-    }
-}      

@@ -6,6 +6,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
 
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 
@@ -34,13 +35,12 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
         private async ValueTask<string[]> ReadType20NamesAsync(IByteSource source)
         {
             var ret = await PrepareResultArrayAsync(source).CA();
-            var indexes = ArrayPool<int>.Shared.Rent(ret.Length);
+            using var indexes = new PooledBuffer<int>(ret.Length);
             indexes.AsSpan().Fill(-1);
             var result = await source.ReadAtLeastAsync(ret.Length*2).CA();
             source.AdvanceTo(Read20Differences(result.Buffer, ret, indexes));
             
             await ReadCustomNamesAsync(source, ret, indexes).CA();
-            ArrayPool<int>.Shared.Return(indexes);
             return ret;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
 
@@ -49,7 +50,7 @@ internal static class LoopSources
         IPostscriptComposite composite, PostscriptValue proc)
     {
         var values = composite.CreateForAllCursor();
-        var buffer = ArrayPool<PostscriptValue>.Shared.Rent(values.ItemsPer);
+        using var buffer = new PooledBuffer<PostscriptValue>(values.ItemsPer);
         var innerProc = WrapBody(proc);
         var position = 0;
         while (values.TryGetItr(buffer.AsSpan(0, values.ItemsPer), ref position))
@@ -60,7 +61,6 @@ internal static class LoopSources
             }
             yield return innerProc;
         }
-        ArrayPool<PostscriptValue>.Shared.Return(buffer);
     }
 }
 

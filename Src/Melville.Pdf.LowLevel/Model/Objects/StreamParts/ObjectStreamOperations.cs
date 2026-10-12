@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Threading.Tasks;
 
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -25,7 +26,7 @@ internal static class ObjectStreamOperations
         PdfStream stream, InternalObjectTargetForStream target, IByteSource bytes)
     {
         var firstObjectOffset = await stream.GetAsync<int>(KnownNames.First).CA();
-        var buffer = ArrayPool<byte>.Shared.Rent(firstObjectOffset);
+        using var buffer = new PooledBuffer<byte>(firstObjectOffset);
         var result = await bytes.ReadAtLeastAsync(firstObjectOffset).CA();
         result.Buffer.Slice(0, firstObjectOffset).CopyTo(buffer);
         bytes.AdvanceTo(result.Buffer.GetPosition(firstObjectOffset));

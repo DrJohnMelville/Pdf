@@ -1,6 +1,7 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
 using System.Buffers;
@@ -79,7 +80,7 @@ internal partial class CffGenericFont :
 
     protected virtual async Task<ICmapImplementation> ReadCmapAsync(ParseMapBookmark? parseMapAncestor)
     {
-        var data = ArrayPool<ushort>.Shared.Rent((int)charStringIndex.Length);
+        using var data = new PooledBuffer<ushort>((int)charStringIndex.Length);
         var target = new MemoryTarget(data.AsMemory(0,(int)charStringIndex.Length));
         await MapCharSetAsync(target).CA();
 
