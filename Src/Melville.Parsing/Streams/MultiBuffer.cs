@@ -94,9 +94,8 @@ internal class MultiBuffer
 
     private int CopyBytes(in ReadOnlySpan<byte> source, in Span<byte> destination)
     {
-        var readLen = Math.Min(source.Length, destination.Length);
-        source.Slice(0, readLen).CopyTo(destination);
-        return readLen;
+        source.TakeMax(destination.Length, out var len).CopyTo(destination);
+        return len;
     }
 
     public void SetLength(long value)

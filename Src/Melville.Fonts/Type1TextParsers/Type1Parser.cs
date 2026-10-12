@@ -15,12 +15,15 @@ namespace Melville.Fonts.Type1TextParsers;
 /// This is an internal class that parses type 1 ascii fonts.  it is public so the
 /// comparing reader can get the postscript interpreter for the debugger
 /// </summary>
-/// <param name="source"></param>
 public readonly struct Type1Parser
 {
     private readonly EexecCommand eexecDecryptingSource;
     private readonly IAsyncReader reader;
 
+    /// <summary>
+    /// Create a Type1 Parser
+    /// </summary>
+    /// <param name="source">An IMultiplexSource to read the font fron offset 0.</param>
     public Type1Parser(IMultiplexSource source)
     {
         reader = source.ReaderFrom(0);

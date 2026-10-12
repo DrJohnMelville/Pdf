@@ -37,7 +37,7 @@ public class DecryptText
 {
 
     [Fact]
-    public async Task DecryptEexec()
+    public async Task DecryptEexecAsync()
     {
         var reader = new DecodingReader(new MemoryReader("""
             10BF31704FAB5B1F03F9B68B1F39A66521B1841F14

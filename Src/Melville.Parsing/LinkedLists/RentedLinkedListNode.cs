@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces;
+using System.Buffers;
 
 namespace Melville.Parsing.LinkedLists;
 
@@ -26,8 +27,7 @@ internal class RentedLinkedListNode: LinkedListNode
     public override int FillFrom(ReadOnlySpan<byte> source, int index)
     {
         var target = buffer.AsSpan(index);
-        var length = Math.Min(target.Length, source.Length);
-        source[..length].CopyTo(target);
-        return length;
+        source.TakeMax(target.Length, out var len).CopyTo(target);
+        return len;
     }
 }

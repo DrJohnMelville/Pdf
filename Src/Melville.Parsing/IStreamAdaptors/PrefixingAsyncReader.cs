@@ -18,8 +18,7 @@ public class PrefixingAsyncReader(IAsyncReader inner, byte[] prefix) : IAsyncRea
     {
         if (prefix.Length > 0)
         {
-            var len = Math.Min(prefix.Length, buffer.Length);
-            prefix.Span[..len].CopyTo(buffer.Span);
+            prefix.Span.TakeMax(buffer.Length, out var len).CopyTo(buffer.Span);
             prefix = prefix[len..];
             return ValueTask.FromResult(len);
         }

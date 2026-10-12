@@ -44,21 +44,19 @@ internal class EndSearchStrategy
 
     private bool VerifyEndPos(SpanParsingBuffer copiedReader, bool isDone)
     {
-#warning rewrite with searchValues
-        var reader = copiedReader;
-        //If the EI we found is really the end of the image, then the text after the EI ought to 
-        // look like a content stream, which has a rather restricted syntax.  For right now we just check
-        // if the next 20 characters are legal characters in a content stream
-        for (int i = 0; i < 19; i++)
-        {
-            if (!reader.TryGetUInt8(out var current)) return isDone;
-            if (!IsLegalContentStreamChar(current, i)) return false;
-        }
-        return true;
+        if (!isDone && copiedReader.RemainingLength < 20) return false;
+        var length = Math.Min(copiedReader.RemainingLength, 20);
+        if (length is 0) return true;
+        if (!CharacterClassifier.IsWhitespace(copiedReader.Peek()[0])) return false;
+        return copiedReader.Peek(20)[1..].IndexOfAnyExcept(LegalContentStreamChars) == -1;
     }
 
+    private static SearchValues<byte> LegalContentStreamChars = SearchValues.Create(
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\0\x09\x0A\x0C\x0D\x20=-*/[]<>."u8);
+
     private bool IsLegalContentStreamChar(byte current, int position) =>
-        position == 0 ? CharClassifier.IsWhite(current) || current == 0 : IsLegalContentStreamChar(current);
+        position == 0 ? CharClassifier.IsWhite(current) || current == 0 :
+                        IsLegalContentStreamChar(current);
 
     private bool IsLegalContentStreamChar(byte current) =>
         (char)current  is

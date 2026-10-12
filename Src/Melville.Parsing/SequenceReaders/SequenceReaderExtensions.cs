@@ -265,7 +265,6 @@ public static  partial class SequenceReaderExtensions
         return ret;
     }
 
-    [Obsolete("Getting rid of sequenceReader.")]
     /// <summary>
     /// Read an array of floats in IEEE754 format.
     /// </summary>
@@ -273,6 +272,7 @@ public static  partial class SequenceReaderExtensions
     /// <param name="len">Length of the array</param>
     /// <param name="spaceInFront">Number of zeros to leave on the front of the array.</param>
     /// <returns>The parsed array of floats</returns>
+    [Obsolete("Getting rid of sequenceReader.")]
     public static float[] ReadIEEE754FloatArray(
         this ref SequenceReader<byte> reader, int len, int spaceInFront = 0)
     {

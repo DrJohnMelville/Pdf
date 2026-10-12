@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using CoreJ2K.Util;
 using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
@@ -50,8 +51,7 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
 
     public override int Read(Span<byte> buffer)
     {
-        var retLen = Math.Min(source.Length - position, buffer.Length);
-        source.Span.Slice(position, retLen).CopyTo(buffer);
+        source.Span.Slice(position).TakeMax(buffer.Length, out var retLen).CopyTo(buffer);
         position += retLen;
         return retLen;
     }

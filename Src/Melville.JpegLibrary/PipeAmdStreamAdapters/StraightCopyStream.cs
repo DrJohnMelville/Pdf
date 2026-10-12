@@ -1,4 +1,6 @@
-﻿namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
+﻿using Melville.StreamInterfaces;
+
+namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
 internal class StraightCopyStream : RentedArrayReadingStream
 {
@@ -8,8 +10,7 @@ internal class StraightCopyStream : RentedArrayReadingStream
 
     protected override int CopyBytes(Span<byte> source, Span<byte> destination)
     {
-        var bytesToCopy = Math.Min(source.Length, destination.Length);
-        source.Slice(0,bytesToCopy).CopyTo(destination);
-        return bytesToCopy;
+        source.TakeMax(destination.Length, out var len).CopyTo(destination);
+        return len;
     }
 }
