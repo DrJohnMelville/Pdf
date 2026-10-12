@@ -10,7 +10,7 @@ PostedContent/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-tunit-report.json
+*.tunit-report.json
 
 # Build results
 \.idea/
