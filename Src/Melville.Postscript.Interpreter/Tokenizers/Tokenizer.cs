@@ -24,7 +24,9 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// </summary>
 public partial class Tokenizer : ITokenSource
 {
-#warning make auto property
+    /// <summary>
+    /// The parsing buffer that the Tokenizer is reading from.
+    /// </summary>
    public ParsingBuffer CodeSource { get; set; }
 
     private IAsyncReader reader;
@@ -41,7 +43,7 @@ public partial class Tokenizer : ITokenSource
     /// <summary>
     /// Create a tokenizer from a stream.
     /// </summary>
-    /// <param name="source">A stream containing the code to execute.</param>
+    /// <param name="reader">An IAsyncReader containing the code to execute.</param>
     public Tokenizer(IAsyncReader reader)
     {
         this.reader = reader;
@@ -122,6 +124,9 @@ public partial class Tokenizer : ITokenSource
         }
     }
 
+    /// <summary>
+    /// The current location within the code being executed.
+    /// </summary>
     public long PositionInStream => CodeSource.RelativePosition;
 
     /// <inheritdoc/>

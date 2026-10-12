@@ -75,6 +75,12 @@ public static class CharacterClassifier
         _ => byte.MaxValue
     };
 
+    /// <summary>
+    /// Compose a byte from the character representation of two hex digits.
+    /// </summary>
+    /// <param name="char1">The high nibble like '1'</param>
+    /// <param name="char2">The low nibble like 'D'</param>
+
     public static byte ByteFromHexChars(byte char1, byte char2) =>
         (byte)((ValueFromDigit(char1)<<4) | ValueFromDigit(char2));
 

@@ -1,6 +1,8 @@
 ﻿using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 using System.Diagnostics;
 
@@ -14,7 +16,9 @@ internal partial class WhiteSpaceAndLengthSearchStrategy : WithLengthSearchStrat
         // the assertion is a deconstructed implication.
         Debug.Assert(!seqReader.TryPeekUInt8(out var assVar) || CharClassifier.IsWhite(assVar));
 
-        while (seqReader.TryPeekUInt8(out var value) && CharClassifier.IsWhite(value)) ;
+        var index = seqReader.Peek().IndexOfAnyExcept(CharacterClassifier.WhiteSpaceSearchValues);
+        if (index < 0) return false;
+        seqReader.Advance(index);
         return base.SkipBytes(ref seqReader);
     }
 }

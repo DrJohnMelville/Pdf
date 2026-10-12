@@ -33,5 +33,9 @@ public partial class PostscriptNull :
     public bool IsExecutable => true;
 }
 
+/// <summary>
+/// This is a sential class used to return trivia, that should be ignored, from
+/// one part of the tokenizer to another.
+/// </summary>
 [StaticSingleton]
 public partial class PostscriptTrivia { }

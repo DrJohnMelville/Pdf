@@ -27,6 +27,7 @@ public enum CharacterClass
 /// </summary>
 public static class CharClassifier
 {
+#warning This needs to go away and use Postscript.Interpreter.Toeknizers.CharacterClassifer
     /// <summary>
     /// Classifies a byte into one of 3 character classes.
     /// </summary>

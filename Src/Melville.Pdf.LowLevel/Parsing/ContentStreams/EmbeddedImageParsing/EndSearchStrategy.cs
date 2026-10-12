@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
@@ -12,65 +13,33 @@ internal class EndSearchStrategy
 
     public bool SearchForEndSequence(ReadOnlySpan<byte> data, bool doneReading, out int nextPos)
     {
-#warning rewrite with indexOf
         var seqReader = new SpanParsingBuffer(data);
         if (!SkipBytes(ref seqReader))
             return ((int)seqReader.RelativePosition).AsFalseValue(out nextPos);
 
-        int position = 0;
-
-        while (seqReader.TryGetUInt8(out var current))
+        while (seqReader.RemainingLength > 0)
         {
-            switch ((char)current, position)
-            {
-                case ('E', 0):
-                    position++;
-                    break;
-                case ('I', 1):
-                    nextPos  = (int)seqReader.RelativePosition;
-                    if (VerifyEndPos(seqReader, doneReading)) return true;
-                    goto default;
-                default:
-                    position = 0;
-                    break;
-            }
+            var index = seqReader.Peek().IndexOf("EI"u8);
+            if (index < 0) return 0.AsFalseValue(out nextPos);
+            seqReader.Advance(index + 2);
+            if (VerifyEndPos(seqReader, doneReading))
+                return ((int)seqReader.RelativePosition).AsTrueValue(out nextPos);
         }
-
-        return ((int)seqReader.RelativePosition).AsFalseValue(out nextPos);
+        return 0.AsFalseValue(out nextPos);
     }
 
     protected virtual bool SkipBytes(ref SpanParsingBuffer seqReader) => 
         seqReader.TryGetUInt8(out var _);
 
-    private bool VerifyEndPos(SpanParsingBuffer copiedReader, bool isDone)
-    {
-        if (!isDone && copiedReader.RemainingLength < 20) return false;
-        var length = Math.Min(copiedReader.RemainingLength, 20);
-        if (length is 0) return true;
-        if (!CharacterClassifier.IsWhitespace(copiedReader.Peek()[0])) return false;
-        return copiedReader.Peek(20)[1..].IndexOfAnyExcept(LegalContentStreamChars) == -1;
-    }
+    private bool VerifyEndPos(SpanParsingBuffer copiedReader, bool isDone) =>
+        copiedReader.Peek().TakeMax(20) switch
+        {
+            { Length: < 20 } when !isDone => false,
+            [] => true,
+            [var delimiter, .. var tail] => CharacterClassifier.IsWhitespace(delimiter) &&
+                          tail.IndexOfAnyExcept(LegalContentStreamChars) == -1
+        };
 
     private static SearchValues<byte> LegalContentStreamChars = SearchValues.Create(
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\0\x09\x0A\x0C\x0D\x20=-*/[]<>."u8);
-
-    private bool IsLegalContentStreamChar(byte current, int position) =>
-        position == 0 ? CharClassifier.IsWhite(current) || current == 0 :
-                        IsLegalContentStreamChar(current);
-
-    private bool IsLegalContentStreamChar(byte current) =>
-        (char)current  is
-            (>= 'A' and <= 'Z') or
-            (>= 'a' and <= 'z') or
-            (>= '0' and <= '9') or
-            '\0' or '\x09' or '\x0A' or '\x0C' or '\x0D' or '\x20' or
-            '+' or
-            '-' or
-            '*' or
-            '/' or
-            '[' or
-            ']' or
-            '<' or
-            '>' or
-            '.';
 }
