@@ -37,6 +37,7 @@ internal static partial class FileOperators
 
         var len = Math.Min(file.CurrentLength, str.Length);
         file.Peek(len).CopyTo(str.GetBytes(default, []));
+        file.Advance(len);
         PushReadStringResults(stack, str, len);
     }
 

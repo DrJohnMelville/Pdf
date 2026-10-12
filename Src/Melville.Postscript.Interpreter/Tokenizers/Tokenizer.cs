@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -128,7 +129,8 @@ public partial class Tokenizer : ITokenSource
     {
         while ((await NextTokenAsync().CA()) is { IsNull: false } token)
         {
-            if (!token.IsTrivia ) yield return token;
+            if (!token.IsTrivia)
+                yield return token;
         }
     }
 

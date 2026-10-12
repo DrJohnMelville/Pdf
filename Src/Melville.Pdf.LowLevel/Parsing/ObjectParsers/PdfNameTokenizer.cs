@@ -29,9 +29,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             {
                 if (nameText[srcPos] == (byte)'#' && srcPos + 2 < nameText.Length)
                 {
-                    var highByte = CharacterClassifier.ValueFromDigit(nameText[++srcPos]);
-                    var lowByte = CharacterClassifier.ValueFromDigit(nameText[++srcPos]);
-                    scratch[destPos++] = AssembleBytes(highByte, lowByte);
+                    scratch[destPos++] =
+                        CharacterClassifier.ByteFromHexChars(nameText[++srcPos], nameText[++srcPos]);
                 }
                 else
                     scratch[destPos++] = nameText[srcPos];
@@ -40,7 +39,5 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             return PdfDirectObject.CreateName(scratch[..destPos]);
         }
 
-        private static byte AssembleBytes(byte highNibble, byte lowNibble) => 
-            (byte)((highNibble << 4) | lowNibble);
     }
 }

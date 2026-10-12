@@ -75,6 +75,9 @@ public static class CharacterClassifier
         _ => byte.MaxValue
     };
 
+    public static byte ByteFromHexChars(byte char1, byte char2) =>
+        (byte)((ValueFromDigit(char1)<<4) | ValueFromDigit(char2));
+
     /// <summary>
     /// SearchValues that looks for a hex digit
     /// </summary>

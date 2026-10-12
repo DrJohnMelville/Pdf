@@ -19,22 +19,12 @@ public readonly struct HexStringDecoder : IStringDecoder<byte>
         if (!source.TryReadNextVisible(out var lowChar)) return -1;
         if (lowChar is (byte)'>')
         {
-            destination[0] = ByteFromChars(highChar,(byte)'0');
+            destination[0] = CharacterClassifier.ByteFromHexChars(highChar, (byte)'0');
             source.Rewind(1);
             return 1;
         }
-        destination[0] = ByteFromChars(highChar, lowChar);
+        destination[0] = CharacterClassifier.ByteFromHexChars(highChar, lowChar);
         return 1;
-    }
-
-    private static byte ByteFromChars(byte highChar, byte lowChar) => 
-        (byte)((ConvertByte(highChar) << 4) | ConvertByte(lowChar));
-
-    private static byte ConvertByte(byte hiByte)
-    {
-        var hiChar = CharacterClassifier.ValueFromDigit(hiByte);
-        if (hiChar > 15) throw new PostscriptNamedErrorException("Invalid char in hex string", "syntaxerror");
-        return hiChar;
     }
 
     /// <inheritdoc />

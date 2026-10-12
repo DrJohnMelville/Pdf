@@ -11,6 +11,9 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.Streams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
@@ -27,6 +30,17 @@ public class HexDecodeStreamTests
         var target = new MemoryStream();
         var stream = new DecodeHexStream(source);
         await stream.CopyToAsync(target, TestContext.Current.CancellationToken);
+        target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());
+    }
+    [Theory]
+    [InlineData("1234567890ABCDEF")]
+    [InlineData("1234567890\r\nABCDEF")]
+    [InlineData("1gk234567890\r\nABCDEF")]
+    public async Task DecodeHexReaderAsync(string input)
+    {
+        var source = new HexDecodingReader(new MemoryReader(Encoding.ASCII.GetBytes(input)));
+        var target = new MemoryStream();
+        await ((IAsyncReader)source).CopyToAsync(target.AsStreamWriter(), TestContext.Current.CancellationToken);
         target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());
     }
 }

@@ -22,7 +22,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers
                 if (!input.TryGetNext(CharacterClassifier.HexDigits, out var low))
                     low = (byte)'0';
 
-                output.Push((byte)(CharacterClassifier.ValueFromDigit(high) << 4 | CharacterClassifier.ValueFromDigit(low)));
+                output.Push(CharacterClassifier.ByteFromHexChars(high, low));
             }
             return PostscriptValueFactory.CreateString(output.Value, StringKind.String);
         }
