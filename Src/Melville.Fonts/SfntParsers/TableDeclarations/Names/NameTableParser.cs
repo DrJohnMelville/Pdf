@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Xml;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
 

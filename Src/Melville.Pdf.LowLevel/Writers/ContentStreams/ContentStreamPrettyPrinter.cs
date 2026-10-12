@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;

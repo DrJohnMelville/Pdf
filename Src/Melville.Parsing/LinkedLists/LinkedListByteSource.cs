@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
-using System.IO.Pipelines;
-using Melville.Hacks.Reflection;
-using Melville.Parsing.AwaitConfiguration;
+﻿using Melville.Hacks.Reflection;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
 using Melville.StreamInterfaces;
+using System.Diagnostics;
+using System.IO.Pipelines;
 
 namespace Melville.Parsing.LinkedLists;
 

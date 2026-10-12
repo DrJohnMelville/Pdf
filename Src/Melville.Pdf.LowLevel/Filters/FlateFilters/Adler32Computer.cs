@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
 

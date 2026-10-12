@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.FileSystem;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;

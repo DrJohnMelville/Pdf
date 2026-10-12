@@ -6,7 +6,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;

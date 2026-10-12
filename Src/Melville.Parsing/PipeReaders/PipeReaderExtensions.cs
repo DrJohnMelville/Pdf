@@ -1,7 +1,6 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces;
+using System.Buffers;
 using System.IO.Pipelines;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.PipeReaders;
 

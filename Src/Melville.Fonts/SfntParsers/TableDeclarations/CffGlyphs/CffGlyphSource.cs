@@ -2,7 +2,7 @@
 using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.ObjectRentals;
 using Melville.StreamInterfaces;
 

@@ -71,7 +71,7 @@ public readonly partial struct CodeGenerator
                             using Melville.Postscript.Interpreter.Values;
                             using Melville.Postscript.Interpreter.Values.Composites;
                             using System.Threading.Tasks;
-                            using Melville.Parsing.AwaitConfiguration;
+                            
                             
                             namespace {{classSymbol.ContainingNamespace}};
 

@@ -11,7 +11,7 @@ using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.JBig2.SegmentParsers.SymbolDictonaries;
 using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.StreamInterfaces;
 
 namespace Melville.JBig2.SegmentParsers;

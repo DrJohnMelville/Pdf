@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;

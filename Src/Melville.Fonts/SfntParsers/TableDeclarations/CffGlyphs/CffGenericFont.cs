@@ -1,12 +1,11 @@
-﻿using System.Buffers;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+﻿using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
+using System.Buffers;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

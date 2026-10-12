@@ -1,9 +1,8 @@
-﻿using System.Buffers;
+﻿using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.Streams.Bases;
-using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.StreamFilters;
 

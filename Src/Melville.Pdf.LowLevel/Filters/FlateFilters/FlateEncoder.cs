@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Melville.Hacks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;

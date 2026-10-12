@@ -1,6 +1,6 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
 

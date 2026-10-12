@@ -11,7 +11,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Hacks;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
 

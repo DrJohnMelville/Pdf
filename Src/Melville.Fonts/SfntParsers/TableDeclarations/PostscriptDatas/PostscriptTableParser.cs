@@ -4,7 +4,7 @@ using System.IO.Pipelines;
 using System.Text;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;

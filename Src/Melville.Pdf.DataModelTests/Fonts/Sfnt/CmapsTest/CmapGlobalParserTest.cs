@@ -8,7 +8,7 @@ using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Linq;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;

@@ -7,7 +7,7 @@ using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
-internal partial class EexecDecryptingByteSource(
+internal partial class EexecCommand(
     IAsyncReader source) :
     AsyncBuiltInFunction
 {
@@ -18,22 +18,28 @@ internal partial class EexecDecryptingByteSource(
     public async  ValueTask InnerExecuteAsync(PostscriptEngine engine, PostscriptValue value)
     {
         engine.OperandStack.Pop();
-        //source = new EexeDecisionSource(source, multiplexSource,
-        //    i => source = i, eexecDecodeKey);
+
+        if (engine.TokenSource is null)
+        {
+            throw new InvalidOperationException("No code source found to read from.");
+        }
         var oldCodeSource = engine.TokenSource.CodeSource;
 
-        await oldCodeSource.EnsureBytesAsync(6).CA();
-        TrySkipOneLineBreak(oldCodeSource);
-        var isHex = AllHex(oldCodeSource.Peek(4));
-
-        IAsyncReader newSource = new PrefixingReader(source, oldCodeSource.Peek().ToArray());
-        if (isHex) newSource = new HexDecodingReader(newSource);
-        newSource = new DecodingReader(newSource, eexecDecodeKey);
+        IAsyncReader newSource = await BuildNewCodeSource(oldCodeSource);
 
         var newCodeSource = new ParsingBuffer(newSource);
         await newCodeSource.AdvanceAsync(4).CA();
 
         engine.TokenSource.CodeSource = newCodeSource;
+    }
+
+    private async Task<IAsyncReader> BuildNewCodeSource(ParsingBuffer oldCodeSource)
+    {
+        await oldCodeSource.EnsureBytesAsync(6).CA();
+        TrySkipOneLineBreak(oldCodeSource);
+        IAsyncReader newSource = new PrefixingReader(source, oldCodeSource.Peek().ToArray());
+        if (AllHex(oldCodeSource.Peek(4))) newSource = new HexDecodingReader(newSource);
+        return new DecodingReader(newSource, eexecDecodeKey);
     }
 
     private static void TrySkipOneLineBreak(ParsingBuffer oldCodeSource)

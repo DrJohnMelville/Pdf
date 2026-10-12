@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using Melville.StreamInterfaces;

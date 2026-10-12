@@ -1,6 +1,6 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
 

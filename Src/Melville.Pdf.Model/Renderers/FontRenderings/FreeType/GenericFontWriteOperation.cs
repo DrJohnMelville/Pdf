@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Fonts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.StreamInterfaces;
 

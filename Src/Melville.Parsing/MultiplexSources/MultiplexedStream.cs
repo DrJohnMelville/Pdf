@@ -1,5 +1,4 @@
-﻿using Melville.Parsing.AwaitConfiguration;
-using Melville.StreamInterfaces;
+﻿using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.MultiplexSources;
 

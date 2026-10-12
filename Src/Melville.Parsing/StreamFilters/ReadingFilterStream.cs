@@ -1,8 +1,7 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.Streams.Bases;
+﻿using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
+using System.Buffers;
+using System.IO.Pipelines;
 
 namespace Melville.Parsing.StreamFilters;
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Toolchains;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.Pdf.Model.Documents;

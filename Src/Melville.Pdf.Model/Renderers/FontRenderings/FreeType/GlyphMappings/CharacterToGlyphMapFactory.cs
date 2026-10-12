@@ -4,7 +4,7 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;

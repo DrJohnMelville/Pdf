@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.Streams;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;

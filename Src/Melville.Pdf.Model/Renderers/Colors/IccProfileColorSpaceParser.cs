@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;

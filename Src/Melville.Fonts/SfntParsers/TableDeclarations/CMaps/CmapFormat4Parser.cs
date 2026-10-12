@@ -1,6 +1,6 @@
 ﻿using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
 

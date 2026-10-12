@@ -5,7 +5,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.JBig2.SegmentParsers;
 using Melville.JBig2.Segments;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 

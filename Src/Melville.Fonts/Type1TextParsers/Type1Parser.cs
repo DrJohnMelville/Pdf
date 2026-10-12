@@ -1,5 +1,5 @@
 ﻿using Melville.Fonts.Type1TextParsers.EexecDecoding;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.MultiplexSources;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -18,7 +18,7 @@ namespace Melville.Fonts.Type1TextParsers;
 /// <param name="source"></param>
 public readonly struct Type1Parser
 {
-    private readonly EexecDecryptingByteSource eexecDecryptingSource;
+    private readonly EexecCommand eexecDecryptingSource;
     private readonly IAsyncReader reader;
 
     public Type1Parser(IMultiplexSource source)

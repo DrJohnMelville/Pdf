@@ -1,9 +1,6 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.Streams.Bases;
+﻿using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Melville.Parsing.MultiplexSources;
 

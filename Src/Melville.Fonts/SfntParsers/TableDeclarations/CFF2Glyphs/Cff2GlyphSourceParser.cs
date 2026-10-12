@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;

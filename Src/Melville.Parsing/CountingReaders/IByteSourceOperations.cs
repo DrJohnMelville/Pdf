@@ -1,7 +1,6 @@
-﻿using System.IO.Pipelines;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.MultiplexSources;
+﻿using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using System.IO.Pipelines;
 
 namespace Melville.Parsing.CountingReaders;
 

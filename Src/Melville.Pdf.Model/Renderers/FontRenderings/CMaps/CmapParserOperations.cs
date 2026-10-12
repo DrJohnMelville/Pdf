@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;

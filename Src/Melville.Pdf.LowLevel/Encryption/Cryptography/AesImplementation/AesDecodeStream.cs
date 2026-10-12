@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
 

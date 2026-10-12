@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CoreJ2K;
 using Melville.Hacks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
 

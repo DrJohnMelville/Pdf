@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.CCITT;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;

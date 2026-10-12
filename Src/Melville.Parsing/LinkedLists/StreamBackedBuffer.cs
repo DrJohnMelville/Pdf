@@ -1,5 +1,4 @@
 ﻿using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
 using Melville.StreamInterfaces;
 
 namespace Melville.Parsing.LinkedLists

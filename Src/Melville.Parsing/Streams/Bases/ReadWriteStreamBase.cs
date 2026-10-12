@@ -1,5 +1,5 @@
-﻿using System.Buffers;
-using Melville.Parsing.AwaitConfiguration;
+﻿using Melville.StreamInterfaces.Adapters;
+using System.Buffers;
 
 namespace Melville.Parsing.Streams.Bases;
 

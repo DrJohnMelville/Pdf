@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Melville.JBig2;
 using Melville.JBig2.BinaryBitmaps;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;

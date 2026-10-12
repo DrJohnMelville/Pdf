@@ -1,4 +1,4 @@
-﻿using Melville.Parsing.AwaitConfiguration;
+﻿
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;

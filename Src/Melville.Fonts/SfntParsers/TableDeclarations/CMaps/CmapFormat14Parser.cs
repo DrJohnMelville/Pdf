@@ -1,7 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Security.AccessControl;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;

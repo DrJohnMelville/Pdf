@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;

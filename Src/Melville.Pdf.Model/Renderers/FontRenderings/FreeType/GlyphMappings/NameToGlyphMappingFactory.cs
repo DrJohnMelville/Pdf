@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;

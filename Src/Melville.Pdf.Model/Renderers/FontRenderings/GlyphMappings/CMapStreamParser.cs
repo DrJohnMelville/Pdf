@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
+
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
