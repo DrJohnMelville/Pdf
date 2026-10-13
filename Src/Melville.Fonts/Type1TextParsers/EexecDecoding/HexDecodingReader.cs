@@ -40,9 +40,9 @@ public class HexDecodingReader(IAsyncReader inner) : IAsyncReader
         Debug.Assert(source.Length <= (2 * target.Length));
         var digits = new SpanParsingBuffer(source);
         int nextOutput = 0;
-        while (digits.TryGetNext(CharacterClassifier.HexDigits, out var byte1))
+        while (digits.TryGetNext(CharacterClassifier.HexDigitSearchValues, out var byte1))
         {
-            if (digits.TryGetNext(CharacterClassifier.HexDigits, out byte byte2))
+            if (digits.TryGetNext(CharacterClassifier.HexDigitSearchValues, out byte byte2))
             {
                 target[nextOutput++] = CharacterClassifier.ByteFromHexChars(byte1, byte2);
             }

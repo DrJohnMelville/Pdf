@@ -156,7 +156,7 @@ public readonly struct SyntaxStringDecoder : IStringDecoder<int>
         do
         {
             if (!source.TryRead(out character)) return -1;
-        } while (CharacterClassifier.IsLineEndChar(character));
+        } while (CharacterClassifier.IsLineEnd(character));
 
         source.Rewind(1);
         return DecodeFrom(ref source, destination, ref state);

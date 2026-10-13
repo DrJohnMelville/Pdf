@@ -50,7 +50,7 @@ internal partial class EexecCommand(
     }
 
     bool AllHex(ReadOnlySpan<byte> bytes) =>
-        bytes.IndexOfAnyExcept(CharacterClassifier.HexDigits) < 0;
+        bytes.IndexOfAnyExcept(CharacterClassifier.HexDigitSearchValues) < 0;
 
 
     private const ushort eexecDecodeKey = 55665;

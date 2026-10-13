@@ -16,7 +16,7 @@ internal partial class WhiteSpaceAndLengthSearchStrategy : WithLengthSearchStrat
         // the assertion is a deconstructed implication.
         Debug.Assert(!seqReader.TryPeekUInt8(out var assVar) || CharClassifier.IsWhite(assVar));
 
-        var index = seqReader.Peek().IndexOfAnyExcept(CharacterClassifier.WhiteSpaceSearchValues);
+        var index = seqReader.Peek().IndexOfAnyExcept(CharacterClassifier.WhitespaceSearchValues);
         if (index < 0) return false;
         seqReader.Advance(index);
         return base.SkipBytes(ref seqReader);

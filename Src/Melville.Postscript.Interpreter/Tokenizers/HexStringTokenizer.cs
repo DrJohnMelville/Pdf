@@ -17,9 +17,9 @@ namespace Melville.Postscript.Interpreter.Tokenizers
         {
             var input = new SpanParsingBuffer(source[1..^1]);
             using var output = new SpanWriter(input.RemainingLength / 2);
-            while (input.TryGetNext(CharacterClassifier.HexDigits, out var high))
+            while (input.TryGetNext(CharacterClassifier.HexDigitSearchValues, out var high))
             {
-                if (!input.TryGetNext(CharacterClassifier.HexDigits, out var low))
+                if (!input.TryGetNext(CharacterClassifier.HexDigitSearchValues, out var low))
                     low = (byte)'0';
 
                 output.Push(CharacterClassifier.ByteFromHexChars(high, low));

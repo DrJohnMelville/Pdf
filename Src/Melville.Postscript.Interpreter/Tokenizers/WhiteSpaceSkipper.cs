@@ -9,7 +9,7 @@ internal class WhiteSpaceSkipper : SpanTokenizer
     protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)
     {
         Debug.Assert(CharacterClassifier.IsWhitespace(source[0]));
-        length = source.IndexOfAnyExcept(CharacterClassifier.WhiteSpaceSearchValues);
+        length = source.IndexOfAnyExcept(CharacterClassifier.WhitespaceSearchValues);
         if (length < 0) length = source.Length;
         return true;
         //A whitespace "token" is unique that you break it at any point and you get two whitespace tokens.

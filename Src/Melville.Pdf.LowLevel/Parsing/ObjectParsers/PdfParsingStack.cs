@@ -147,7 +147,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
 
     private void TryEatWhiteSpace(ref SequenceReader<byte> reader)
     {
-        while (reader.TryPeek(out byte character) && !CharacterClassifier.IsLineEndChar(character) &&
+        while (reader.TryPeek(out byte character) && !CharacterClassifier.IsLineEnd(character) &&
                CharacterClassifier.IsWhitespace(character))
         {
             reader.Advance(1);

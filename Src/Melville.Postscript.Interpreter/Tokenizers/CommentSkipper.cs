@@ -35,7 +35,7 @@ public static class CommentSkipper
     /// <returns>True if a first character exists, false otherwise.</returns>
     public static bool TryPeekNextVisible(this ref SequenceReader<byte> reader, out byte firstChar)
     {
-        reader.AdvancePastAny(CharacterClassifier.WhiteSpaceChars());
+        reader.AdvancePastAny(CharacterClassifier.WhitespaceChars());
         if (!reader.TryPeek(out firstChar)) return false;
         return true;
     }
@@ -48,7 +48,7 @@ public static class CommentSkipper
     /// <returns>True if a first character exists, false otherwise.</returns>
     public static bool TryReadNextVisible(this ref SequenceReader<byte> reader, out byte firstChar)
     {
-        reader.AdvancePastAny(CharacterClassifier.WhiteSpaceChars());
+        reader.AdvancePastAny(CharacterClassifier.WhitespaceChars());
         if (!reader.TryRead(out firstChar)) return false;
         return true;
     }
