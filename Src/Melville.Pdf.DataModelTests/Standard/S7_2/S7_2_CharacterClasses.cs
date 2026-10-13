@@ -9,27 +9,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_2;
 public class S7_2_CharacterClasses
 {
     [Theory]
-    [InlineData('\x0', CharacterClass.White)]
-    [InlineData('\x9', CharacterClass.White)]
-    [InlineData('\xA', CharacterClass.White)]
-    [InlineData('\xC', CharacterClass.White)]
-    [InlineData('\xD', CharacterClass.White)]
-    [InlineData('\x20', CharacterClass.White)]
-    [InlineData('(', CharacterClass.Delimiter)]
-    [InlineData(')', CharacterClass.Delimiter)]
-    [InlineData('<', CharacterClass.Delimiter)]
-    [InlineData('>', CharacterClass.Delimiter)]
-    [InlineData('[', CharacterClass.Delimiter)]
-    [InlineData(']', CharacterClass.Delimiter)]
-    [InlineData('{', CharacterClass.Delimiter)]
-    [InlineData('}', CharacterClass.Delimiter)]
-    [InlineData('/', CharacterClass.Delimiter)]
-    [InlineData('%', CharacterClass.Delimiter)]
-    [InlineData('J', CharacterClass.Regular)]
-    public void TestCharacterClass(char input, CharacterClass expected) => 
-        Assert.Equal(expected, CharClassifier.Classify((byte)input));
-
-    [Theory]
     [InlineData("[true false] 1")]
     [InlineData("[    true%this is a / % comment true\rfalse] 1")]
     [InlineData("[    true%t\nfalse ]1")]

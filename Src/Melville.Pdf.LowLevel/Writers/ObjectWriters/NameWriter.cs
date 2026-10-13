@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
@@ -69,6 +70,11 @@ internal static class NameWriter
         return ret;
     }
 
-    private static bool IsSpecialNameChar(byte item) =>
-        !CharClassifier.IsRegular(item) || item == (byte)'#';
+    private static bool IsSpecialNameChar(byte item) => item switch
+    {
+        (byte)'#' => true,
+        var x when CharacterClassifier.IsWhitespace(x) ||
+                   CharacterClassifier.IsDelimiter(x) => true,
+        _ => false
+    };
 }

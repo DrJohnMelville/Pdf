@@ -14,7 +14,8 @@ internal partial class WhiteSpaceAndLengthSearchStrategy : WithLengthSearchStrat
     protected override bool SkipBytes(ref SpanParsingBuffer seqReader)
     {
         // the assertion is a deconstructed implication.
-        Debug.Assert(!seqReader.TryPeekUInt8(out var assVar) || CharClassifier.IsWhite(assVar));
+        Debug.Assert(!seqReader.TryPeekUInt8(out var assVar) || 
+            CharacterClassifier.IsWhitespace(assVar));
 
         var index = seqReader.Peek().IndexOfAnyExcept(CharacterClassifier.WhitespaceSearchValues);
         if (index < 0) return false;

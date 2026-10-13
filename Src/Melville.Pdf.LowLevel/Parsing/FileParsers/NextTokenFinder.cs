@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -42,16 +43,13 @@ internal static class NextTokenFinder
         while (true)
         {
             if (!input.TryRead(out firstByte)) return false;
-            switch (CharClassifier.Classify(firstByte))
+            if (CharacterClassifier.IsWhitespace(firstByte)) continue;
+            if (firstByte is (byte)'%')
             {
-                case CharacterClass.White:
-                    break;
-                case CharacterClass.Delimiter when firstByte == (byte) '%':
-                    if (!input.TrySkipToEndOfLineMarker()) return false;
-                    break;
-                default:
-                    return true;
+                if (!input.TrySkipToEndOfLineMarker()) return false;
+                continue;
             }
+            return true;
         }
     }
 }

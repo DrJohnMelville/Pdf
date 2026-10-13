@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
@@ -10,7 +11,7 @@ internal static class WhiteSpaceSkipper
         while (true)
         {
             if (!source.TryRead(out item)) return false;
-            if (!CharClassifier.IsWhite(item))
+            if (!CharacterClassifier.IsWhitespace(item))
                 return true;
         }
             
