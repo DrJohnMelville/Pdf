@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Files;
+using Microsoft.Win32.SafeHandles;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -14,6 +16,12 @@ internal class FileMultiplexer(FileStream stream) : CountedMultiplexSource, IInd
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) => 
         new IndexedReaderStream(this, position, ticket);
+
+    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket)
+    {
+        return new IndexedReader(this, position, ticket);
+    }
+
 
     public override long Length => stream.Length;
 

@@ -65,4 +65,7 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) =>
         new IndexedReaderStream(this, position, ticket);
+    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket) =>
+        new IndexedReader(this, position, ticket);
+
 }

@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams.Bases;
+using Melville.StreamInterfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.MultiplexSource;
@@ -14,14 +18,21 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
 
     public override long Length => throw new System.NotSupportedException();
 
-    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
-    {
-        return new Wrapper(false,false, false, ticket);
-    }
+    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) =>
+        new Wrapper(false,false, false, ticket);
 
-    protected override void CleanUp()
+    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket) =>
+        new ReaderWrapper(ticket);
+
+    protected override void CleanUp() => CleanUps++;
+
+    private partial class ReaderWrapper(CountedSourceTicket ticket) : IAsyncReader, IDisposable
     {
-        CleanUps++;
+        public ValueTask<int> ReadAsync(
+            Memory<byte> buffer, CancellationToken cancellation = default) =>
+            ValueTask.FromResult(0);
+
+        public void Dispose() => ticket.TryRelease();
     }
 
     private partial class Wrapper : DefaultBaseStream

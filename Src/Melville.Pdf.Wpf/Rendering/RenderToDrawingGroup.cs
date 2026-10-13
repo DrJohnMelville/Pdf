@@ -96,7 +96,6 @@ public readonly struct RenderToDrawingGroup
 
     private  ValueTask RenderToAsync(DrawingContext dc, DependencyObject sizeTarget)
     {
-        #warning -- can I manualy marshal to the correct calls to the right thread to avoid needing to always go back to the UI thread.
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
         return doc.RenderPageToAsync(oneBasedPageNumber, (rect, preTransform) =>

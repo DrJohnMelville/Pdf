@@ -1,5 +1,6 @@
 ﻿using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -89,5 +90,47 @@ internal class IndexedReaderStream :
         source = null;
         sourceTicket.TryRelease();
         base.Dispose(disposing);
+    }
+}
+
+internal class IndexedReader(IIndexedReader inner, long basePosition, CountedSourceTicket ticket): 
+    IAsyncReader, ISyncReader, ISeekableStream, IStreamPosition, IDisposable, IStreamLength
+{
+    IIndexedReader inner = inner;
+    readonly long basePosition = basePosition;
+    long absolutePosition = basePosition;
+
+    int BumpPosition (int delta)
+    {
+        absolutePosition += delta;
+        return delta;
+    }
+
+    public async ValueTask<int> ReadAsync(
+        Memory<byte> buffer, CancellationToken cancellation = default) =>
+        BumpPosition(await inner.ReadAsync(absolutePosition, buffer, cancellation).CA());
+
+    public int Read(Span<byte> buffer) =>
+        BumpPosition(inner.Read(absolutePosition, buffer));
+
+    void ISeekableStream.Seek(long position) => Seek(position);
+
+    public long Seek(long position)
+    {
+        absolutePosition = basePosition + position;
+        if ((ulong)absolutePosition > (ulong)Length)
+            throw new InvalidOperationException("Invalid Reader Position");
+        return Position;
+    }
+
+    public long Position => absolutePosition - basePosition;
+
+    public long Length => inner.Length - basePosition;
+
+    public void Dispose()
+    {
+        if (inner is null) return; 
+        inner = null!;
+        ticket.TryRelease();
     }
 }

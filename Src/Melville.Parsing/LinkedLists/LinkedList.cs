@@ -4,6 +4,7 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 
 namespace Melville.Parsing.LinkedLists;
@@ -161,6 +162,10 @@ internal abstract class LinkedList: CountedMultiplexSource
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
+    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket) =>
+        ReadFromOverride(position, ticket).AsSeekableStreamReader();
+        // not the most efficient implementation, but I am hoping to get rid of this whole
+        // class as part of this retrofit.
 
     protected override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
     {

@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
-using Melville.Parsing.CountingReaders;
+﻿using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
+using System.Diagnostics;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -57,6 +58,11 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
     public Stream ReadFrom(long position) => 
         ReadFromOverride(position, CreateSourceTicket());
 
+    public IAsyncReader ReaderFrom(long position) =>
+        ReaderFromOverride(position, CreateSourceTicket());
+
+
+
     private CountedSourceTicket CreateSourceTicket()
     {
         Debug.Assert(state == CountedSourceState.Open);
@@ -95,6 +101,7 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
     public abstract long Length { get; }
 
     protected abstract Stream ReadFromOverride(long position, CountedSourceTicket ticket);
+    protected abstract IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket);
 
     protected virtual IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket) =>
         MultiplexSourceFactory.SingleReaderForStream(this.ReadFromOverride(position, ticket))

@@ -93,6 +93,8 @@ internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource
 
     Stream IMultiplexSource.ReadFrom(long position) => data.ReadFrom(position);
 
+    IAsyncReader IMultiplexSource.ReaderFrom(long position) => data.ReaderFrom(position);
+
     IByteSource IMultiplexSource.ReadPipeFrom(long position, long startingPosition) =>
         data.ReadPipeFrom(position, startingPosition);
 

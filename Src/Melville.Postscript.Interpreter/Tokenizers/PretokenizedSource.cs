@@ -21,7 +21,6 @@ public partial class PretokenizedSource : ITokenSource
     /// </summary>
     [FromConstructor] private IEnumerable<PostscriptValue> source;
 
-#warning need to do this more efficiently
     /// <inheritdoc/>
     public ParsingBuffer CodeSource { get; set; } = new ParsingBuffer(new EmptyAsyncReader());
 
