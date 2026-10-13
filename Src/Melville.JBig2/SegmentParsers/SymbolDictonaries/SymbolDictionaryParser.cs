@@ -35,7 +35,7 @@ internal ref struct SymbolDictionaryParser
                 referencedSegments.CountSourceBitmaps() + exportParser.NewSymbols);
 
         if (flags.BitmapContextUsed)
-            throw new NotImplementedException("Does not yet preserve bitmap context");
+            throw new NotSupportedException("Does not yet preserve bitmap context");
 
         using var imgBuffer = new PooledBuffer<IBinaryBitmap>((int)exportParser.NewSymbols);
         new SymbolParser(flags, intReader, imgBuffer.AsMemory(0,(int)exportParser.NewSymbols), 

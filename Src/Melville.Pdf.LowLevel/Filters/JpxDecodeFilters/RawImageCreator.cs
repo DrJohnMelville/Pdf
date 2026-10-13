@@ -22,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters
         /// <inheritdoc />
         public BlkImgDataSrc ToPortableImageSource(object imageObject)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

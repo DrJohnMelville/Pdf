@@ -42,7 +42,6 @@ internal readonly partial struct InlineImageParser
     {
         var reader = engine.TokenSource?.CodeSource ??
                      throw new PdfParseException("Did not have a token source to read from");
-#warning resolve all the NotImplementedExceptions in the codebase
 
         int arrayLength;
         while (!strategy.SearchForEndSequence(

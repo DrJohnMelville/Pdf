@@ -204,7 +204,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
             return LoadCffGlyphSourceAsync(cff);
         if (FindTable(SFntTableName.CFF2) is { } cff2)
             return LoadCff2GlyphSourceAsync(cff2);
-        throw new NotImplementedException("Cannot find Glyph Source");
+        throw new InvalidOperationException("Cannot find Glyph Source");
     }
 
     private async Task<IGlyphSource> LoadCff2GlyphSourceAsync(TableRecord cff)

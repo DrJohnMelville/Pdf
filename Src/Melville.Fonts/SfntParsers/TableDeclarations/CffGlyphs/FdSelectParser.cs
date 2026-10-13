@@ -23,7 +23,7 @@ internal class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int g
         };
         source.OutdentParseMap();
         if (subFonts.Length is not 1)
-            throw new NotImplementedException("FD Select fonts with multiple subfonts is not implemented");
+            throw new NotSupportedException("FD Select fonts with multiple subfonts is not implemented");
         return subFonts[0];
     }
 

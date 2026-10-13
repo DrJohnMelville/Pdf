@@ -12,7 +12,7 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
 {
     public int CleanUps {get; private set; }
 
-    public override long Length => throw new System.NotImplementedException();
+    public override long Length => throw new System.NotSupportedException();
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
     {

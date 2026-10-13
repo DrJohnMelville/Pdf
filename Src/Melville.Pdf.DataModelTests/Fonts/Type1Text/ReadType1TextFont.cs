@@ -38,7 +38,7 @@ public class ReadType1TextFont
     }
 
     [Fact]
-    public async Task DecodeEExec() 
+    public async Task DecodeEExecAsync() 
     {
         var data = File.ReadAllBytes(ConstructFileName("Type1Text.fon"));
 
