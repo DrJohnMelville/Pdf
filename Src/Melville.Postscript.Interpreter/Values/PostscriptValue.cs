@@ -118,6 +118,18 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
             _ => default(T).AsFalseValue(out value),
         };
 
+    /// <summary>
+    /// Unconditionally get a value.  Throw an exception if the value is the wrong type.
+    /// </summary>
+    /// <typeparam name="T">The desired type</typeparam>
+    /// <exception cref="InvalidOperationException">
+    /// If the value is not convertable to that type.</exception>
+    public T ForceGet<T>()
+    {
+        return TryGet(out T? ret) ? ret :
+            throw new InvalidOperationException("Type mismatch") ;
+    }
+
     /// <inheritdoc />
     public bool Equals(PostscriptValue other) => 
         ShallowEqual(other) || DeepEqual(other);

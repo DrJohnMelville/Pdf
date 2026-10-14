@@ -9,6 +9,7 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Features>$(Features);runtime-async=on</Features>
     </PropertyGroup>
 
 	<ItemGroup>

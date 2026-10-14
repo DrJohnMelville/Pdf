@@ -23,6 +23,6 @@ namespace Melville.Postscript.Interpreter.Tokenizers
             buffer = newBuffer;
         }
 
-        public ReadOnlySpan<byte> Value => buffer.AsSpan(0, length);
+        public Span<byte> Value => buffer.AsSpan(0, length);
     }
 }

@@ -11,12 +11,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 internal readonly struct RootObjectParser
 { 
     private readonly PdfParsingStack stack;
-    private readonly PdfTokenizer tokenizer;
+    private readonly PdfTokenizer2 tokenizer;
     
     public RootObjectParser(ParsingReader source)
     {
         stack = new PdfParsingStack(source);
-        tokenizer = new PdfTokenizer(source.Reader);
+        tokenizer = new PdfTokenizer2(source);
     }
 
     public async ValueTask<PdfDirectObject> ParseTopLevelObjectAsync()
