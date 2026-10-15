@@ -23,8 +23,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
         public PdfTokenizer2(ParsingReader reader)
         {
-            var asyncReader = new IByteSourceToIAsyncReadStream(reader.Reader);
-            postScriptTokenizer = new Tokenizer(asyncReader);
+//            var asyncReader = new IByteSourceToIAsyncReadStream(reader.Reader);
+            postScriptTokenizer = new Tokenizer(reader.Buffer);
             enumerator = postScriptTokenizer.TokensAsync().GetAsyncEnumerator();
         }
         public async ValueTask<PdfDirectObject> NextTokenAsync()

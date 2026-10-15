@@ -14,6 +14,7 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -120,41 +121,36 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
         Debug.Assert(Count == 2);
         Debug.Assert(Peek().TryGetEmbeddedDirectValue(
             out Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> _));
-       
-        AdvancePastWhiteSpace(await Source.Reader.ReadAtLeastAsync(10).CA());
+
+        await AdvancePastWhiteSpaceAsync(Source.Buffer);
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
-        Push(new PdfStream(new  PdfFileStreamSource(
-                Source.Reader.Position, Source.Owner, CryptoContext()), 
+        Push(new PdfStream(new PdfFileStreamSource(
+                Source.Buffer.RelativePosition, Source.Owner, CryptoContext()),
                 dv.Get<Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>>>()));
     }
 
-    private void AdvancePastWhiteSpace(ReadResult ca)
+    private async ValueTask AdvancePastWhiteSpaceAsync(ParsingBuffer pb)
     {
-        var reader = new SequenceReader<byte>(ca.Buffer);
-        TryEatWhiteSpace(ref reader);
-        TryAdvancePastChar(ref reader, (byte)'\r');
-        TryAdvancePastChar(ref reader, (byte)'\n');
-        Source.Reader.AdvanceTo(reader.Position);
-    }
-
-    private static void TryAdvancePastChar(ref SequenceReader<byte> reader, byte soughtCharacter)
-    {
-        if (reader.TryPeek(out var c1) && c1 == soughtCharacter)
+        while (true)
         {
-            reader.Advance(1);
+            await pb.EnsureBytesAsync(1);
+            if (!NonLineEndWhiteSpace(pb.Peek()[0])) break;
+            pb.Advance(1);
         }
+        await pb.EnsureBytesAsync(2);
+        TrySkipOver(pb, (byte)'\r');
+        TrySkipOver(pb, (byte)'\n');
     }
 
-    private void TryEatWhiteSpace(ref SequenceReader<byte> reader)
+    private static void TrySkipOver(ParsingBuffer pb, byte v)
     {
-        while (reader.TryPeek(out byte character) && !CharacterClassifier.IsLineEnd(character) &&
-               CharacterClassifier.IsWhitespace(character))
-        {
-            reader.Advance(1);
-        }
+        if (pb.Peek()[0] == v) pb.Advance(1);
     }
 
+    private bool NonLineEndWhiteSpace(byte character) =>
+        CharacterClassifier.IsWhitespace(character) && !CharacterClassifier.IsLineEnd(character);
+  
     public void EndObject()
     {
         Debug.Assert(Count == 2);
