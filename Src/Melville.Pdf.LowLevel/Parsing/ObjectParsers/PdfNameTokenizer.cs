@@ -7,6 +7,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     internal static class PdfNameTokenizer
     {
+#warning this method can go.
         public static bool Parse(ref SequenceReader<byte> reader, out PdfDirectObject result)
         {
             if (!reader.TryReadToAny(

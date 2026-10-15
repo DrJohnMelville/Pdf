@@ -36,11 +36,16 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         {
             return current switch
             {
+                { IsNull: true} or
                 { IsNumber: true} or 
-                { IsString: true} or
-                { IsLiteralName: true} => ToDirectValue(current),
+                { IsString: true} => ToDirectValue(current),
+                { IsLiteralName: true} => ParseDirectName(current),
                 { IsExecutedName: true} => ParseExecutedName(current)
             };
+        }
+        PdfDirectObject ParseDirectName(in PostscriptValue current)
+        {
+            return PdfNameTokenizer.Parse(current.ForceGet<StringSpanSource>().GetSpan());
         }
         private static PdfDirectObject ToDirectValue(PostscriptValue psNum) => 
             new(psNum.ValueStrategy, psNum.Memento);
@@ -53,6 +58,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             {
                 "true" => true,
                 "false" => false,
+                "obj" => PdfParsingCommand.ObjOperator,
+                "endobj" => PdfParsingCommand.EndObject,
+                "stream" => PdfParsingCommand.StreamOperator,
+                "endstream" => PdfParsingCommand.EndStreamOperator,
+                "<<" => PdfParsingCommand.PushMark,
+                ">>" => PdfParsingCommand.CreateDictionary,
+                "null" => PdfDirectObject.CreateNull(),
                 "[" => ((PdfDirectObject)PdfParsingCommand.PushMark),
                 "]" => ((PdfDirectObject)PdfParsingCommand.CreateArray),
                 var x => throw new PdfParseException($"Unknown token {x}")

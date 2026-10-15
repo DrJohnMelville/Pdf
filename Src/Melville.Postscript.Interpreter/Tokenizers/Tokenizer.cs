@@ -29,35 +29,34 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
    public ParsingBuffer CodeSource { get; set; }
 
-    private IAsyncReader reader;
-    private IDisposable? source;
-
     /// <inheritdoc />
     public void Dispose()
     {
         CodeSource.Dispose();
-        (reader as IDisposable)?.Dispose();
-        source?.Dispose();
     }
 
     /// <summary>
-    /// Create a tokenizer from a stream.
+    /// Create a tokenizer from a ParsingBuffer
+    /// </summary>
+    /// <param name="codeSource"></param>
+    public Tokenizer(ParsingBuffer codeSource) => CodeSource = codeSource;
+
+    /// <summary>
+    /// Create a tokenizer from an AsyncReader.
     /// </summary>
     /// <param name="reader">An IAsyncReader containing the code to execute.</param>
-    public Tokenizer(IAsyncReader reader)
+    public Tokenizer(IAsyncReader reader): this(new ParsingBuffer(reader))
     {
-        this.reader = reader;
-        CodeSource = new ParsingBuffer(reader);
     }
 
     /// <summary>
     /// Create a tokenizer from a stream.
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
+    [Obsolete("Prefer the IAsyncReader method for more efficency")]
     public Tokenizer(Stream source) :
         this(source.AsStreamReader())
     {
-        this.source = source;
     }
 
     /// <summary>
