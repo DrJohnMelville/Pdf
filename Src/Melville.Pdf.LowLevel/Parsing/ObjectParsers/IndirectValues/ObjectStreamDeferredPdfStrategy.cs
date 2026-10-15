@@ -32,10 +32,12 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource, 
         int sourceObjectNumber, PdfStream source, int desiredObjectNumber)
     {
 
-        using var parser = 
-            await ObjectStreamParser.CreateAsync(owner, sourceObjectNumber, source, desiredObjectNumber).CA();
+        //using var parser = 
+        //    await ObjectStreamParser.CreateAsync(owner, sourceObjectNumber, source, desiredObjectNumber).CA();
 
-        var ret = await parser.ParseAsync().CA();
+        //var ret = await parser.ParseAsync().CA();
+        var ret = await new ObjectStreamParser(owner, sourceObjectNumber, desiredObjectNumber, source)
+            .ParseAsync().CA();
         return ret.IsNull ? 
             await TryReadExtendsStreamAsync(sourceObjectNumber, source, desiredObjectNumber).CA() : 
             ret;

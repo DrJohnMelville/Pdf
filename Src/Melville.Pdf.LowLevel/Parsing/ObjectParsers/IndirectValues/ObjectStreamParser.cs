@@ -1,90 +1,82 @@
-﻿using System;
-using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
-using Melville.INPC;
-
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
+﻿using Melville.Parsing.IStreamAdaptors;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal partial class ObjectStreamParser: IInternalObjectTarget, IDisposable
+internal readonly struct ObjectStreamCostume(PdfStream inner)
 {
-    [FromConstructor] private readonly ParsingFileOwner owner;
-    [FromConstructor] private readonly int sourceObjectNumber;
-    [FromConstructor] private readonly SubsetByteSource subsetReader;
-    [FromConstructor] private readonly RootObjectParser parser;
-    [FromConstructor] private readonly int desiredObjectNumber;
-    [FromConstructor] private readonly PdfStream source;
+    public ValueTask<int> CountAsync() => inner.GetOrDefaultAsync<int>(KnownNames.N, 0);
+    public ValueTask<int> FirstValueOffsetAsync() => inner.GetOrDefaultAsync<int>(KnownNames.First, 0);
+    public ValueTask<Stream> StreamAsync() => inner.StreamContentAsync();
+}
+
+
+internal class ObjectStreamParser(
+    ParsingFileOwner owner, int sourceObjectNumber, int desiredObjectNumber, 
+    PdfStream sourceStream)
+{
+    private readonly ObjectStreamCostume source = new(sourceStream);
     private PdfDirectObject result = default;
-
-    public static async ValueTask<ObjectStreamParser> CreateAsync(
-        ParsingFileOwner owner, int sourceObjectNumber, PdfStream source, int desiredObjectNumber)
-    {
-        var sourceStream = await source.StreamContentAsync().CA();
-        var bytes = new SubsetByteSource( MultiplexSourceFactory.SingleReaderForStream(sourceStream));
-        var reader = new ParsingReader(owner, bytes);
-        var parser = new RootObjectParser(reader);
-
-        
-        return new(owner, sourceObjectNumber, bytes, parser, desiredObjectNumber, source);
-    }
-
-    
-    public void Dispose() => subsetReader.Dispose();
-
+#warning this needs to be cleaned up/
     public async ValueTask<PdfDirectObject> ParseAsync()
     {
-        await ObjectStreamOperations.ReportIncludedObjectsAsync(source,
-            new InternalObjectTargetForStream(this, -1), subsetReader).CA();
-        await DeclareObjectStreamObjectAsync(-1, -1, -1, int.MaxValue).CA();
-        return result;
-    }
+        var count = await source.CountAsync().CA();
+        var initialOffset = await source.FirstValueOffsetAsync().CA();
+        using var stream = await source.StreamAsync();
+        var limiter = new LimitedReader(stream.AsStreamReader());
+        using var buffer = new ParsingBuffer(limiter);
+        using var numbers = new PooledBuffer<int>((count * 2)+2);
 
-    private int priorObjectNumber = -1;
-    private int priorOffset = -1;
-    public async ValueTask DeclareObjectStreamObjectAsync(
-        int objectNumber, int streamObjectNumber, int streamOrdinal, int streamOffset)
-    {
-        if (priorObjectNumber >= 0)
+        // Read the object stream headder
+        limiter.LengthLimit = initialOffset;
+        await buffer.EnsureBytesAsync(initialOffset);
+        ReadNumbers(buffer.Peek(), count, numbers);
+        numbers[LengthIndex(count)] = int.MaxValue - initialOffset;
+
+        var parsingReader = new ParsingReader(owner, buffer, EmptyCodeSource.Instance);
+        var rootObjectParser = new RootObjectParser(parsingReader);
+
+        for (int i = 0; i < count; i++)
         {
-            await ParseSingleObjectAsync(streamOffset).CA();
+            limiter.LengthLimit = initialOffset+numbers[LengthIndex(i+1)];
+            await buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);
+            var value = await rootObjectParser.ParseAsync().CA();
+            if (!value.TryGetEmbeddedDirectValue(out var directValue))
+                throw new PdfParseException("Cannot have a bare reference in an object stream");
+            var objectNum = numbers[2 * i];
+            owner.NewIndirectResolver.TryRegisterFromObjectStream(
+                       sourceObjectNumber, objectNum, value);
+            if (objectNum == desiredObjectNumber)
+                result = directValue;
         }
 
-        priorObjectNumber = objectNumber;
-        priorOffset = streamOffset;
+        return result;
     }
+    private int LengthIndex(int i) => 1 + (2 * i);
 
-    private async ValueTask ParseSingleObjectAsync(int nextOffset)
+    void ReadNumbers(Span<byte> peek, int count, int[] numbers)
     {
-        var obj = await ReadSingleObjectAsync(priorOffset, nextOffset).CA();
-        if (priorObjectNumber == desiredObjectNumber) result = obj;
-        
-        owner.NewIndirectResolver.TryRegisterFromObjectStream(
-            sourceObjectNumber, priorObjectNumber, obj);
+        var reader = new SpanParsingBuffer(peek);
+        int i = 0;
+        while (i < count * 2)
+        {
+            if (!reader.TryGetPostscriptToken(out var token))
+                throw new PdfParseException("Insufficient numbers in an object stream");
+            if (token.TryGet<int>(out var number))
+                numbers[i++] = number;
+                
+        }
     }
 
-    private async Task<PdfDirectObject> ReadSingleObjectAsync(int objectOffset, int nextOffset)
-    {
-        await PositionForNextObjectAsync(objectOffset, nextOffset).CA();
-
-        var indirValue = await parser.ParseAsync().CA();
-        if (!indirValue.TryGetEmbeddedDirectValue(out var dirValue))
-            throw new PdfParseException("Object stream member may not be a reference");
-        return dirValue;
-    }
-
-    private ValueTask PositionForNextObjectAsync(int startLocation, int nextLocation)
-    {
-        subsetReader.ExclusiveEndPosition = nextLocation;
-        return subsetReader.AdvanceToLocalPositionAsync(startLocation);
-    }
 }

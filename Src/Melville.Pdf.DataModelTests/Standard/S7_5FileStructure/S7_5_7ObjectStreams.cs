@@ -25,7 +25,7 @@ public class S7_5_7ObjectStreams
     [Theory]
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
-    [InlineData("1 0 2 7 11111\n222222")]
+    [InlineData("1 0 2 7 11111\n922222")]
     public async Task RawLoadObjectStreamAsync(string streamText)
     {
         var os = new DictionaryBuilder()

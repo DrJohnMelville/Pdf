@@ -9,7 +9,10 @@ using Melville.Parsing;
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 
-internal static class BufferTokenizer
+/// <summary>
+/// Read postscript tokens from a SpanParsingBuffer
+/// </summary>
+public static class BufferTokenizer
 {
     private static readonly FixedLengthOperatorTokenizer OneByteOperator = new (1);
     private static readonly FixedLengthOperatorTokenizer TwoByteOperator = new(2);
@@ -48,5 +51,12 @@ internal static class BufferTokenizer
         _ => NameOrNumber
     };
 
-    public static bool TryGetPostscriptToken(this ref SpanParsingBuffer spb, out PostscriptValue value) => SelectTokenStrategy(spb.Peek()).TryParse(ref spb, out value);
+    /// <summary>
+    /// Read a postscript token from the reader
+    /// </summary>
+    /// <param name="spb">the source buffer</param>
+    /// <param name="value">the requested value</param>
+    /// <returns>True if the value is parsed, false if there are not enought characters</returns>
+    public static bool TryGetPostscriptToken(this ref SpanParsingBuffer spb, out PostscriptValue value) => 
+        SelectTokenStrategy(spb.Peek()).TryParse(ref spb, out value);
 }
