@@ -150,7 +150,7 @@ public class OperatorsTest
     [InlineData("(Hellobaabc) (Aa) search", "01: false\r\n02: (Hellobaabc)")]
     [InlineData("(123 x y) token", "01: true\r\n02: 123\r\n03: ( x y)")]
     [InlineData("(123) token", "01: true\r\n02: 123\r\n03: ()")]
-    [InlineData("((\\()) token", "")]
+    [InlineData("((\\()) token", "01: false")]
     public void WithStringOperators(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine(
             PostscriptOperatorCollections.Empty().WithBaseLanguage()));

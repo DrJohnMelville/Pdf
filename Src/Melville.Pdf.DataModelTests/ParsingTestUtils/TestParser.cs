@@ -49,7 +49,6 @@ public static class TestParser
     internal static ParsingFileOwner AsParsingSource(this string str) =>
         AsParsingSource(str.AsExtendedAsciiBytes());
 
-#warning check single bytes
     internal static ParsingFileOwner AsParsingSource(this byte[] bytes) =>
        new(MultiplexSourceFactory.Create(new OneCharAtATimeStream(bytes)), NullPasswordSource.Instance);
 
