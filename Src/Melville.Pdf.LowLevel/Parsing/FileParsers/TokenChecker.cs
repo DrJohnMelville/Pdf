@@ -8,6 +8,7 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
+[Obsolete("try to make this go away")]
 internal static class TokenChecker
 {
     public static async ValueTask<bool> CheckTokenAsync(IByteSource reader, byte[] template)

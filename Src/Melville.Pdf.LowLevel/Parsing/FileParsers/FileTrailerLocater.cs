@@ -2,83 +2,54 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-
+using Melville.Parsing;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.VisualBasic;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class FileTrailerLocater
 {
-    
     public static async Task<long> SearchAsync(ParsingFileOwner source, int fileTrailerSizeHint)
     {
-        var end = source.StreamLength;
-        var start = end;
-
-        while (true)
+        var blockLength = fileTrailerSizeHint + StartXRef.Length;
+        for (long i = source.StreamLength - blockLength; i > -blockLength; i -= fileTrailerSizeHint)
         {
-            (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            using var context = source.SubsetReader(start);
-            var reader = context.ObsoleteReader;
-            while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
-            {
-                if (!foundPos) continue;
-                if (await TokenChecker.CheckTokenAsync(context.ObsoleteReader, StartXRef).CA())
-                {
-                    await NextTokenFinder.SkipToNextTokenAsync(reader).CA();
-                    long xrefPosition = 0;
-                    do { } while (reader.ShouldContinue(GetLong(await reader.ReadAsync().CA(), out xrefPosition)));
-                    return xrefPosition;
-                }
-            }
+            if ((await SearchFromLocation(source, i, blockLength)) is >= 0 and var value)
+                return value;
         }
+        throw new PdfParseException("Could not find StartXref trailer");
     }
 
-    private static (long start, long end) ComputeSearchSegment(int fileTrailerSizeHint, long start, long end)
+    private static async Task<long> SearchFromLocation(
+        ParsingFileOwner source, long startingPosition, int blockLength)
     {
-        if (start <= 0)
-            throw new PdfParseException("Could not find trailer");
-        (start, end) = (Math.Max(0, end - fileTrailerSizeHint), start);
-        return (start, end);
+#warning IStream needs to become disposable, because many streams require destruction.
+        var reader = source.SubsetIAsyncReader(Math.Max(startingPosition, 0));
+        using var buffer = new ParsingBuffer(reader);
+        await buffer.TryEnsureBytesAsync(blockLength);
+
+        var position = buffer.Peek(blockLength).LastIndexOf(StartXRef);
+        if (position < 0) return -1;
+
+        return await FindXrefStartPosition(buffer, position);
     }
 
-    private static (bool Success, SequencePosition Position)
-        GetLong(ReadResult buffer, out long trailerPosition)
+    private static async Task<long> FindXrefStartPosition(ParsingBuffer buffer, int position)
     {
-        var reader = new SequenceReader<byte>(buffer.Buffer);
-        return (WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out trailerPosition, out _),
-            reader.Position);
-    }
-        
-
-    private static bool SearchForS(ReadResult readResult, IByteSource source, long max, out bool foundOne)
-    {
-        var reader = new SequenceReader<byte>(readResult.Buffer);
-        if (reader.TryAdvanceTo((byte) 's'))
-        {
-            source.AdvanceTo(reader.Position);
-            foundOne = true;
-            return true;
-        }
-            
-
-        foundOne = false;
-        source.AdvanceTo(readResult.Buffer.End);
-        return !(readResult.IsCompleted || source.Position > max);
+        buffer.Advance(position + StartXRef.Length); // skip the startxref
+        buffer.Advance(await buffer.EnsureHasChar(digits)); // skip any whitespace
+        var end = await buffer.EnsureHasNonChar(digits); // make sure we read the whole number
+        return long.Parse(buffer.Peek(end<0?buffer.CurrentLength:end));
     }
 
-    private static readonly byte[] StartXRef = "tartxref"u8.ToArray(); 
-
-    private static (bool Success, SequencePosition Position) VerifyTag(
-        ReadResult source, byte[] tag, out bool validPos)
-    {
-        var reader = new SequenceReader<byte>(source.Buffer);
-        return !reader.TryCheckToken(tag, source.IsCompleted, out validPos) ? 
-            (false, reader.Position) : 
-            (true, reader.Position);
-    }
+    private static readonly SearchValues<byte> digits = SearchValues.Create("0123456789"u8);
+    private static ReadOnlySpan<byte> StartXRef => "startxref"u8; 
 
 }

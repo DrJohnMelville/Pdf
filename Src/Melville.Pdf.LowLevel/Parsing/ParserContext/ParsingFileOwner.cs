@@ -35,6 +35,9 @@ internal sealed partial class ParsingFileOwner: IDisposable
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
+    public IAsyncReader SubsetIAsyncReader(long offset) =>
+        source.ReaderFrom(AdjustOffsetForPreHeaderBytes(offset));
+
     public ParsingReader SubsetReader(long offset, int objectNumber=-1, int generation = -1) =>
         new(this, 
             source.ReadPipeFrom(AdjustOffsetForPreHeaderBytes(offset), offset));
