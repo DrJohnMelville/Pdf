@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
@@ -28,12 +30,13 @@ internal class ObjectStreamBuilder
     }
     private bool IsLegalWrite(PdfDirectObject value) => ! value.TryGet(out PdfStream? _);
 
-    public async ValueTask<PdfDirectObject> CreateStreamAsync()
+    public async ValueTask<PdfDirectObject> CreateStreamAsync(int streamObjectNumber, XRefTable xrefTable)
     {
         var writer = new ObjectStreamWriter();
-        foreach (var member in members)
+        foreach (var (i,member) in members.Index())
         {
-            await  writer.TryAddRefAsync(member.Key, member.Value).CA();
+            await writer.TryAddRefAsync(member.Key, member.Value).CA();
+            await xrefTable.DeclareObjectStreamObjectAsync(member.Key, streamObjectNumber, i, -1);
         }
         return await writer.BuildAsync(streamDictionaryItems, members.Count).CA();
     }

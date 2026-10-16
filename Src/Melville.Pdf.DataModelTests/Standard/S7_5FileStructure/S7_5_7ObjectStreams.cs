@@ -133,22 +133,6 @@ public class S7_5_7ObjectStreams
     }
 
     [Fact]
-    public async Task ExtractIncludedObjectReferencesAsync()
-    {
-        var builder = new ObjectStreamBuilder();
-        builder.TryAddRef(1,PdfDirectObject.CreateString("One"u8));
-        builder.TryAddRef(2,PdfDirectObject.CreateString("Two"u8));
-        var str = (await builder.CreateStreamAsync()).Get<PdfStream>();
-
-        var target = new Mock<IInternalObjectTarget>();
-        await str.ReportIncludedObjectsAsync(new(target.Object, 15));
-
-        target.Verify(i=>i.DeclareObjectStreamObjectAsync(1, 15, 0, 8));
-        target.Verify(i=>i.DeclareObjectStreamObjectAsync(2, 15, 1, 14));
-        target.VerifyNoOtherCalls();
-    }
-
-    [Fact]
     public async Task DoNotEncryptStringsInContentStreamsAsync()
     {
         var ms = new MemoryStream();

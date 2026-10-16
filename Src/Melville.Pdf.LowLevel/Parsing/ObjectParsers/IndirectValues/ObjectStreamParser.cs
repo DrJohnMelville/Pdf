@@ -14,30 +14,12 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal readonly struct ObjectStreamCostume(PdfStream inner)
+internal readonly struct  OnjectStreamParsingMethod(
+    int count, int initialOffset, LimitedReader limiter, ParsingBuffer buffer, int[] numbers,
+    ParsingFileOwner owner, Action<int, PdfDirectObject> reportObj)
 {
-    public ValueTask<int> CountAsync() => inner.GetOrDefaultAsync<int>(KnownNames.N, 0);
-    public ValueTask<int> FirstValueOffsetAsync() => inner.GetOrDefaultAsync<int>(KnownNames.First, 0);
-    public ValueTask<Stream> StreamAsync() => inner.StreamContentAsync();
-}
-
-
-internal class ObjectStreamParser(
-    ParsingFileOwner owner, int sourceObjectNumber, int desiredObjectNumber, 
-    PdfStream sourceStream)
-{
-    private readonly ObjectStreamCostume source = new(sourceStream);
-    private PdfDirectObject result = default;
-#warning this needs to be cleaned up/
-    public async ValueTask<PdfDirectObject> ParseAsync()
+    public async ValueTask InnerParseAsync()
     {
-        var count = await source.CountAsync().CA();
-        var initialOffset = await source.FirstValueOffsetAsync().CA();
-        using var stream = await source.StreamAsync();
-        var limiter = new LimitedReader(stream.AsStreamReader());
-        using var buffer = new ParsingBuffer(limiter);
-        using var numbers = new PooledBuffer<int>((count * 2)+2);
-
         // Read the object stream headder
         limiter.LengthLimit = initialOffset;
         await buffer.EnsureBytesAsync(initialOffset);
@@ -49,19 +31,14 @@ internal class ObjectStreamParser(
 
         for (int i = 0; i < count; i++)
         {
-            limiter.LengthLimit = initialOffset+numbers[LengthIndex(i+1)];
+            limiter.LengthLimit = initialOffset + numbers[LengthIndex(i + 1)];
             await buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);
             var value = await rootObjectParser.ParseAsync().CA();
             if (!value.TryGetEmbeddedDirectValue(out var directValue))
                 throw new PdfParseException("Cannot have a bare reference in an object stream");
             var objectNum = numbers[2 * i];
-            owner.NewIndirectResolver.TryRegisterFromObjectStream(
-                       sourceObjectNumber, objectNum, value);
-            if (objectNum == desiredObjectNumber)
-                result = directValue;
-        }
-
-        return result;
+            reportObj(objectNum, directValue);
+         }
     }
     private int LengthIndex(int i) => 1 + (2 * i);
 
@@ -75,8 +52,40 @@ internal class ObjectStreamParser(
                 throw new PdfParseException("Insufficient numbers in an object stream");
             if (token.TryGet<int>(out var number))
                 numbers[i++] = number;
-                
+
         }
+    }
+}
+
+internal class ObjectStreamParser(
+    ParsingFileOwner owner, int sourceObjectNumber, int desiredObjectNumber, 
+    PdfStream sourceStream)
+{
+    private readonly ObjectStreamCostume source = new(sourceStream);
+    private PdfDirectObject result = default;
+
+    private void ReportItem(int objectNum, PdfDirectObject value)
+    {
+        owner.NewIndirectResolver.TryRegisterFromObjectStream(
+                    sourceObjectNumber, objectNum, value);
+        if (objectNum == desiredObjectNumber)
+            result = value;
+
+    }
+#warning this needs to be cleaned up
+    public async ValueTask<PdfDirectObject> ParseAsync()
+    {
+        var count = await source.CountAsync().CA();
+        var initialOffset = await source.FirstValueOffsetAsync().CA();
+        using var stream = await source.StreamAsync();
+        var limiter = new LimitedReader(stream.AsStreamReader());
+        using var buffer = new ParsingBuffer(limiter);
+        using var numbers = new PooledBuffer<int>((count * 2)+2);
+
+        await new OnjectStreamParsingMethod(count, initialOffset, limiter,
+            buffer, numbers, owner, ReportItem).InnerParseAsync();
+
+        return result;
     }
 
 }

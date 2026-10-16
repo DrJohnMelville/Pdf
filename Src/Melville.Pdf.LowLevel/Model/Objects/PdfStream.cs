@@ -17,7 +17,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// PDF streams are also dictionaries.  It has a few extra methods to retrieve the
 /// associated data strea,.
 /// </summary>
-public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
+public class PdfStream : PdfDictionary
 {
     private readonly IStreamDataSource source;
 
@@ -83,12 +83,5 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
             if ((await item.LoadValueAsync().CA()).Equals(filterType)) return true;
         }
         return false;
-    }
-
-    async ValueTask IHasInternalIndirectObjects.RegisterInternalObjectsAsync(
-        InternalObjectTargetForStream target)
-    {
-        if ((await this.GetOrNullAsync(KnownNames.Type).CA()).Equals(KnownNames.ObjStm))
-            await this.ReportIncludedObjectsAsync(target).CA();
     }
 }

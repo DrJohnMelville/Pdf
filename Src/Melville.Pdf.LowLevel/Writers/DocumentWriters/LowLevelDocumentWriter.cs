@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,23 +85,23 @@ public class LowLevelDocumentWriter
 
     private async Task<XRefTable> WriteObjectListAsync(PdfLowLevelDocument document)
     {
-        var positions= CreateIndexArray(document);
+        var xrefTable= this.CreateXrefTable(document);
         var objectWriter = new PdfObjectWriter(Target,
             await TrailerToDocumentCryptContext.CreateCryptContextAsync(
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects)
         {
             if (item.Value.IsNull) continue;
-            var value = await ResolveValueToWriteAsync(item).CA();
-            //await using var fakeReaderToKeepStreamAlive = await value.Get<PdfStream>().StreamContentAsync().CA();
+            var value = await ResolveValueToWriteAsync(item, xrefTable).CA();
+
             if (IsLinearizationDict(value)) continue;
-            positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
-            await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, positions).CA();
+            xrefTable.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
+            await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, xrefTable).CA();
             await objectWriter.WriteTopLevelDeclarationAsync(
                 item.Key.ObjectNumber, item.Key.GenerationNumber, value).CA();
             await Target.FlushAsync().CA();
         }
-        return positions;
+        return xrefTable;
     }
 
     private bool IsLinearizationDict(PdfDirectObject value)
@@ -109,12 +110,13 @@ public class LowLevelDocumentWriter
                dict.Any(i => i.Key.Equals(KnownNames.Linearized));
     }
 
-    private static async Task<PdfDirectObject> ResolveValueToWriteAsync(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item)
+    private static async Task<PdfDirectObject> ResolveValueToWriteAsync(
+        KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item, XRefTable xrefTable)
     {
         var value = await item.Value.LoadValueAsync().CA();
         if (value.TryGet(out ObjectStreamBuilder? osb))
         {
-            value = await osb.CreateStreamAsync().CA();
+            value = await osb.CreateStreamAsync(item.Key.ObjectNumber, xrefTable).CA();
         }
 
         return value;
@@ -123,14 +125,16 @@ public class LowLevelDocumentWriter
     private static async Task DeclareContainedObjectsAsync(int outerStreamNumber, PdfIndirectObject item,
         XRefTable positions)
     {
-        if ((await item.LoadValueAsync().CA()).TryGet(out IHasInternalIndirectObjects? hiid))
-        {
-            await hiid.RegisterInternalObjectsAsync(
-                new InternalObjectTargetForStream(positions, outerStreamNumber)).CA();
-        }
+//        throw new NotImplementedException();
+        // we need to add all the objects in the object stream to the XrefTavle
+        //if ((await item.LoadValueAsync().CA()).TryGet(out IHasInternalIndirectObjects? hiid))
+        //{
+        //    await hiid.RegisterInternalObjectsAsync(
+        //        new InternalObjectTargetForStream(positions, outerStreamNumber)).CA();
+        //}
     }
 
-    private XRefTable CreateIndexArray(PdfLowLevelDocument document)
+    private XRefTable CreateXrefTable(PdfLowLevelDocument document)
     {
         var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
         return new XRefTable(maxObject, ExtraSlotsNeeded());

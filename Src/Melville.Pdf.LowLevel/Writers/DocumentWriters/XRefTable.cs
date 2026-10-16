@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-internal class XRefTable: IInternalObjectTarget
+internal class XRefTable
 {
     private readonly int extraSlots;
     private XRefTableEntry[] entries;
@@ -19,6 +19,7 @@ internal class XRefTable: IInternalObjectTarget
     public void DeclareIndirectObject(int objNumber, long offset, long generation = 0) =>
         StoreObjectEntry(objNumber, XRefTableEntry.IndirectEntry(offset, generation));
 
+#warning I think that streamOffset is now unneeded -- and this does not need to be async
     public ValueTask DeclareObjectStreamObjectAsync(
         int objectNumber, int streamObjectNumber, int streamOrdinal, int streamOffset)
     {
