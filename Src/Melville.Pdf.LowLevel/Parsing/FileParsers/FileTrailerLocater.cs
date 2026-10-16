@@ -12,6 +12,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class FileTrailerLocater
 {
+    
     public static async Task<long> SearchAsync(ParsingFileOwner source, int fileTrailerSizeHint)
     {
         var end = source.StreamLength;
@@ -21,11 +22,11 @@ internal static class FileTrailerLocater
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
             using var context = source.SubsetReader(start);
-            var reader = context.Reader;
+            var reader = context.ObsoleteReader;
             while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
-                if (await TokenChecker.CheckTokenAsync(context.Reader, StartXRef).CA())
+                if (await TokenChecker.CheckTokenAsync(context.ObsoleteReader, StartXRef).CA())
                 {
                     await NextTokenFinder.SkipToNextTokenAsync(reader).CA();
                     long xrefPosition = 0;

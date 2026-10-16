@@ -36,7 +36,7 @@ internal class ObjectStreamBuilder
         foreach (var (i,member) in members.Index())
         {
             await writer.TryAddRefAsync(member.Key, member.Value).CA();
-            await xrefTable.DeclareObjectStreamObjectAsync(member.Key, streamObjectNumber, i, -1);
+            xrefTable.DeclareObjectStreamObject(member.Key, streamObjectNumber, i);
         }
         return await writer.BuildAsync(streamDictionaryItems, members.Count).CA();
     }

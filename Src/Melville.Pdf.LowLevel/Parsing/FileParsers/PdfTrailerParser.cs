@@ -56,11 +56,11 @@ internal static class PdfTrailerParser
 
     private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(ParsingReader context)
     {
-        if (!await TokenChecker.CheckTokenAsync(context.Reader, xrefTag).CA()) return null;
-        await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
-        await new CrossReferenceTableParser(context.Reader, context.Owner.NewIndirectResolver).ParseAsync().CA();
-        await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
-        if (!await TokenChecker.CheckTokenAsync(context.Reader, trailerTag).CA())
+        if (!await TokenChecker.CheckTokenAsync(context.ObsoleteReader, xrefTag).CA()) return null;
+        await NextTokenFinder.SkipToNextTokenAsync(context.ObsoleteReader).CA();
+        await new CrossReferenceTableParser(context.ObsoleteReader, context.Owner.NewIndirectResolver).ParseAsync().CA();
+        await NextTokenFinder.SkipToNextTokenAsync(context.ObsoleteReader).CA();
+        if (!await TokenChecker.CheckTokenAsync(context.ObsoleteReader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");
         var trailerIndirect = (await new RootObjectParser(context).ParseAsync().CA());
         if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))

@@ -13,8 +13,8 @@ internal static class RandomAccessFileParser
     {
         byte major, minor;
         using var context = owner.SubsetReader(0);
-        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffsetAsync(context.Reader).CA());
-        (major, minor) = await PdfHeaderParser.ParseHeadderAsync(context.Reader).CA();
+        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffsetAsync(context.ObsoleteReader).CA());
+        (major, minor) = await PdfHeaderParser.ParseHeadderAsync(context.ObsoleteReader).CA();
 
         var xrefPosition = await FileTrailerLocater.SearchAsync(owner, fileTrailerSizeHint).CA();
          var dictionary = await PdfTrailerParser.ParseXrefAndTrailerAsync(owner, xrefPosition).CA();

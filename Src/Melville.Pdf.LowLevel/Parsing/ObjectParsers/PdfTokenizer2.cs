@@ -37,7 +37,8 @@ internal readonly partial struct PdfTokenizer2
             { IsNumber: true } or
             { IsString: true } => ToDirectValue(current),
             { IsLiteralName: true } => ParseDirectName(current),
-            { IsExecutedName: true } => ParseExecutedName(current)
+            { IsExecutedName: true } => ParseExecutedName(current),
+            _ => throw new PdfParseException($"Unknown PDF content stream token {current}")
         };
     }
     PdfDirectObject ParseDirectName(in PostscriptValue current)

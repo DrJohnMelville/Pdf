@@ -14,32 +14,47 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal readonly struct  OnjectStreamParsingMethod(
+internal readonly struct  ObjectStreamParsingMethodObject(
     int count, int initialOffset, LimitedReader limiter, ParsingBuffer buffer, int[] numbers,
     ParsingFileOwner owner, Action<int, PdfDirectObject> reportObj)
 {
     public async ValueTask InnerParseAsync()
     {
-        // Read the object stream headder
-        limiter.LengthLimit = initialOffset;
-        await buffer.EnsureBytesAsync(initialOffset);
-        ReadNumbers(buffer.Peek(), count, numbers);
-        numbers[LengthIndex(count)] = int.MaxValue - initialOffset;
+        // Read the object stream header
+        await ReadHeader().CA();
 
-        var parsingReader = new ParsingReader(owner, buffer, EmptyCodeSource.Instance);
-        var rootObjectParser = new RootObjectParser(parsingReader);
+        var rootObjectParser = CreateRootParser();
 
         for (int i = 0; i < count; i++)
         {
-            limiter.LengthLimit = initialOffset + numbers[LengthIndex(i + 1)];
-            await buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);
-            var value = await rootObjectParser.ParseAsync().CA();
+            PdfIndirectObject value = await ReadValue(rootObjectParser, i).CA();
             if (!value.TryGetEmbeddedDirectValue(out var directValue))
                 throw new PdfParseException("Cannot have a bare reference in an object stream");
-            var objectNum = numbers[2 * i];
-            reportObj(objectNum, directValue);
-         }
+            reportObj(ObjectNumber(i), directValue);
+        }
     }
+
+    private async Task<PdfIndirectObject> ReadValue(RootObjectParser rootObjectParser, int i)
+    {
+        limiter.LengthLimit = initialOffset + numbers[LengthIndex(i + 1)];
+        await buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);
+        var value = await rootObjectParser.ParseAsync().CA();
+        return value;
+    }
+
+    private int ObjectNumber(int i) => numbers[2 * i];
+
+    private RootObjectParser CreateRootParser() =>
+        new RootObjectParser(new ParsingReader(owner, buffer, EmptyCodeSource.Instance));
+
+    private async Task ReadHeader()
+    {
+        limiter.LengthLimit = initialOffset;
+        await buffer.EnsureBytesAsync(initialOffset).CA(); ;
+        ReadNumbers(buffer.Peek(), count, numbers);
+        numbers[LengthIndex(count)] = int.MaxValue - initialOffset;
+    }
+
     private int LengthIndex(int i) => 1 + (2 * i);
 
     void ReadNumbers(Span<byte> peek, int count, int[] numbers)
@@ -72,18 +87,18 @@ internal class ObjectStreamParser(
             result = value;
 
     }
-#warning this needs to be cleaned up
+
     public async ValueTask<PdfDirectObject> ParseAsync()
     {
         var count = await source.CountAsync().CA();
         var initialOffset = await source.FirstValueOffsetAsync().CA();
-        using var stream = await source.StreamAsync();
+        using var stream = await source.StreamAsync().CA();
         var limiter = new LimitedReader(stream.AsStreamReader());
         using var buffer = new ParsingBuffer(limiter);
         using var numbers = new PooledBuffer<int>((count * 2)+2);
 
-        await new OnjectStreamParsingMethod(count, initialOffset, limiter,
-            buffer, numbers, owner, ReportItem).InnerParseAsync();
+        await new ObjectStreamParsingMethodObject(count, initialOffset, limiter,
+            buffer, numbers, owner, ReportItem).InnerParseAsync().CA();
 
         return result;
     }

@@ -4,6 +4,9 @@ using System.Buffers;
 
 namespace Melville.Parsing;
 
+/// <summary>
+/// This is a temporary bridge class
+/// </summary>
 [Obsolete("This needs to go into Melville.StreamInterfaces")]
 public static class StreamExtensnions
 {

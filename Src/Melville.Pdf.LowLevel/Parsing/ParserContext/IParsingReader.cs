@@ -16,11 +16,11 @@ internal partial class ParsingReader(ParsingFileOwner owner, ParsingBuffer buffe
     { }
 
     public ParsingFileOwner Owner { get; } = owner;
-    public IByteSource Reader { get; } = source;
+    public IByteSource ObsoleteReader { get; } = source;
     public ParsingBuffer Buffer { get; } = buffer;
 
     public void Dispose()
     {
-        Reader.Dispose();
+        ObsoleteReader.Dispose();
     }
 }

@@ -19,13 +19,10 @@ internal class XRefTable
     public void DeclareIndirectObject(int objNumber, long offset, long generation = 0) =>
         StoreObjectEntry(objNumber, XRefTableEntry.IndirectEntry(offset, generation));
 
-#warning I think that streamOffset is now unneeded -- and this does not need to be async
-    public ValueTask DeclareObjectStreamObjectAsync(
-        int objectNumber, int streamObjectNumber, int streamOrdinal, int streamOffset)
+    public void DeclareObjectStreamObject(int objectNumber, int streamObjectNumber, int streamOrdinal)
     {
         StoreObjectEntry(objectNumber,
             XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal));
-        return ValueTask.CompletedTask;
     }
 
     private void StoreObjectEntry(int objectNumber, XRefTableEntry item)

@@ -7,6 +7,7 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.StreamInterfaces.Memory;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Tokenizers;
@@ -138,9 +139,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
 
     private static Tokenizer CreateTokenizer(string code)
     {
-        return new Tokenizer(
-            new MemoryStream(
-                Encoding.ASCII.GetBytes(code)));
+        return new Tokenizer(new MemoryReader(Encoding.ASCII.GetBytes(code)));
     }
 
     private static Tokenizer CreateSyncTokenizer(string code)
