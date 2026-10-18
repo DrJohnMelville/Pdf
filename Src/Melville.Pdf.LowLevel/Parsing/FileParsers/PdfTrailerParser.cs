@@ -1,28 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Melville.Parsing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-internal static class PdfTrailerParser
+internal record SingleLinkedList<T>(T Value, SingleLinkedList<T>? Next) where T : IEquatable<T>;
+internal static class SingleLinkedListImpl
 {
-    public static Task<PdfDictionary> ParseXrefAndTrailerAsync(ParsingFileOwner source, long xrefPosition) => 
-        XrefAndTrailerAsync(source, xrefPosition, null);
+    public static bool Contains<T>(this SingleLinkedList<T>? items, T key) where T:IEquatable<T>
+    {
+        if (items is null) return false;
+        return items.Value.Equals(key) ||
+                items.Next.Contains(key);
+    }
+}
 
-    private static async Task<PdfDictionary> XrefAndTrailerAsync(
-        ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
+internal readonly struct PdfTrailerParser(
+    ParsingFileOwner source, long xrefPosition, SingleLinkedList<long>? priorPositions = null)
+{
+    public Task<PdfDictionary> ParseXrefAndTrailerAsync() => 
+        XrefAndTrailerAsync();
+
+    private async Task<PdfDictionary> XrefAndTrailerAsync()
     {
 
         if (xrefPosition >= source.StreamLength)
             throw new PdfParseException("Xref location is invalid");
-        using var context = source.SubsetReader(xrefPosition);
-        var trailerDictionary = await ReadSingleRefTrailerBlockAsync(context).CA();
+        var trailerDictionary = await ReadSingleRefTrailerBlockAsync().CA();
 
         if (trailerDictionary != null)
         {
@@ -33,29 +46,43 @@ internal static class PdfTrailerParser
             trailerDictionary = await CrossReferenceStreamParser.ReadAsync(source, xrefPosition).CA();
         }
 
-        if ((await trailerDictionary.GetOrDefaultAsync(KnownNames.Prev, -1L).CA()) is var offset && offset >= 0)
+        if ((await trailerDictionary.GetOrDefaultAsync(KnownNames.Prev, -1L).CA()) is var offset && 
+            offset >= 0 && !priorPositions.Contains(offset))
         {
-            AddToPriorPositions(xrefPosition, ref priorPositions);
-            await TryReadPriorTRailerAsync(source, priorPositions, offset).CA();
+            await new PdfTrailerParser(
+                source, offset, new SingleLinkedList<long>(xrefPosition, priorPositions))
+                .ParseXrefAndTrailerAsync().CA();
         }
         return  trailerDictionary;
     }
 
-    private static async Task TryReadPriorTRailerAsync(
-        ParsingFileOwner source, List<long>? priorPositions, long offsetVal)
+    private async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync()
     {
-        if (priorPositions?.Contains(offsetVal) ?? false) return;
-        await XrefAndTrailerAsync(source, offsetVal, priorPositions).CA();
-    }
+        using var _ = Force.Using(source.SubsetIAsyncReader(xrefPosition), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+        if (!await TrySkipToken(buffer, xrefTag)) return null;
+        await buffer.SkipOverAsync(CharacterClassifier.WhitespaceSearchValues);
+        await new XrefTableParser(buffer, source.NewIndirectResolver).Parse();
+        if (!await TrySkipToken(buffer, trailerTag))
+            throw new PdfParseException("Trailer does not follow xref");
 
-    private static void AddToPriorPositions(long xrefPosition, ref List<long>? priorPositions)
-    {
-        priorPositions ??= new List<long>();
-        priorPositions.Add(xrefPosition);
+        var trailerIndirect = (await new RootObjectParser(
+            new ParsingReader(source, buffer, null!)
+            ).ParseAsync().CA());
+        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))
+            throw new PdfParseException("Trailer dictionary is invalid");
+        return trailer;
     }
-
-    private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(ParsingReader context)
+    private async ValueTask<bool> TrySkipToken(ParsingBuffer buffer, byte[] token)
     {
+        await buffer.EnsureBytesAsync(token.Length);
+        if (!buffer.Peek().StartsWith(token)) return false;
+        buffer.Advance(token.Length);
+        return true;
+    }
+    private async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsyncOld ()
+    {
+        using var context = source.SubsetReader(xrefPosition);
         if (!await TokenChecker.CheckTokenAsync(context.ObsoleteReader, xrefTag).CA()) return null;
         await NextTokenFinder.SkipToNextTokenAsync(context.ObsoleteReader).CA();
         await new CrossReferenceTableParser(context.ObsoleteReader, context.Owner.NewIndirectResolver).ParseAsync().CA();

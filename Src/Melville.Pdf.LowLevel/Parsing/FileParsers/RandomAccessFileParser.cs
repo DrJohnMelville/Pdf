@@ -17,7 +17,7 @@ internal static class RandomAccessFileParser
         (major, minor) = await PdfHeaderParser.ParseHeadderAsync(context.ObsoleteReader).CA();
 
         var xrefPosition = await FileTrailerLocater.SearchAsync(owner, fileTrailerSizeHint).CA();
-         var dictionary = await PdfTrailerParser.ParseXrefAndTrailerAsync(owner, xrefPosition).CA();
+         var dictionary = await new PdfTrailerParser(owner, xrefPosition).ParseXrefAndTrailerAsync().CA();
 
          return new PdfLoadedLowLevelDocument(
             major, minor, dictionary, owner.NewIndirectResolver.GetObjects(), xrefPosition, owner);

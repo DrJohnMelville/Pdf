@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualBasic;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -30,8 +31,7 @@ internal static class FileTrailerLocater
     private static async Task<long> SearchFromLocation(
         ParsingFileOwner source, long startingPosition, int blockLength)
     {
-#warning IStream needs to become disposable, because many streams require destruction.
-        var reader = source.SubsetIAsyncReader(Math.Max(startingPosition, 0));
+        Force.Using(source.SubsetIAsyncReader(Math.Max(startingPosition, 0)), out var reader);
         using var buffer = new ParsingBuffer(reader);
         await buffer.TryEnsureBytesAsync(blockLength);
 
@@ -43,13 +43,29 @@ internal static class FileTrailerLocater
 
     private static async Task<long> FindXrefStartPosition(ParsingBuffer buffer, int position)
     {
+#warning updat to use ReadTextLong Below.
         buffer.Advance(position + StartXRef.Length); // skip the startxref
-        buffer.Advance(await buffer.EnsureHasChar(digits)); // skip any whitespace
-        var end = await buffer.EnsureHasNonChar(digits); // make sure we read the whole number
+        await buffer.SkipToAsync(CharacterClassifier.DecimalDigitSearchValues);// skip any whitespace
+        var end = await buffer.EnsureHasNonCharAsync(CharacterClassifier.DecimalDigitSearchValues); // make sure we read the whole number
         return long.Parse(buffer.Peek(end<0?buffer.CurrentLength:end));
     }
 
     private static readonly SearchValues<byte> digits = SearchValues.Create("0123456789"u8);
     private static ReadOnlySpan<byte> StartXRef => "startxref"u8; 
 
+}
+public static class FileParsingBufferExtensions
+{
+    extension(ParsingBuffer self) 
+    { 
+        public async ValueTask<long?> ReadTextLongAsync()
+        {
+            await self.SkipOverAsync(CharacterClassifier.WhitespaceSearchValues).CA();
+            if (!CharacterClassifier.IsDecimalDigit(self.Peek()[0])) return null;
+            var next = await self.EnsureHasNonCharAsync(CharacterClassifier.DecimalDigitSearchValues).CA();
+            if (!long.TryParse(self.Peek(next), out var ret)) return null;
+            self.Advance(next);
+            return ret;
+        }
+    }
 }

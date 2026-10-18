@@ -13,6 +13,7 @@ public static partial class CharacterClassifier
     [MacroItem("LineEnd", @"\r\n")]
     [MacroItem("Delimiter", @"\x0\x09\x0A\x0C\x0d ()<>[]{}/%")]
     [MacroItem("HexDigit", @"0123456789ABCDEFabcdef")]
+    [MacroItem("DecimalDigit", @"0123456789")]
     [MacroCode("""
        /// <summary>
        /// Decide if a character is ~0~
