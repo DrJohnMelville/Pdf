@@ -95,7 +95,7 @@ public class PartParserTest
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
-        using var parsedLowLevelDocument = await CreateParsedFileAsync(builder);
+        var parsedLowLevelDocument = await CreateParsedFileAsync(builder);
         return parsedLowLevelDocument.Root;
     }
 

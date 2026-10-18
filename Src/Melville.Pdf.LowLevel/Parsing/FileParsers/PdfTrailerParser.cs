@@ -58,8 +58,9 @@ internal readonly struct PdfTrailerParser(
 
     private async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync()
     {
-        using var _ = Force.Using(source.SubsetIAsyncReader(xrefPosition), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        var parsingReader = source.SubsetReader(xrefPosition);
+
+        using var buffer = parsingReader.Buffer;
 
         //if xref token then we need to read an xref table, otherwise it is an xref stream
         if (!await TrySkipToken(buffer, xrefTag)) return null;
@@ -70,9 +71,7 @@ internal readonly struct PdfTrailerParser(
         if (!await TrySkipToken(buffer, trailerTag))
             throw new PdfParseException("Trailer does not follow xref");
 
-        var trailerIndirect = (await new RootObjectParser(
-            new ParsingReader(source, buffer, null!)
-            ).ParseAsync().CA());
+        var trailerIndirect = (await new RootObjectParser(parsingReader).ParseAsync().CA());
         if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))
             throw new PdfParseException("Trailer dictionary is invalid");
         

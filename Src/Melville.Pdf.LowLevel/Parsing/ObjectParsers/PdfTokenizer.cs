@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 #warning make this Disposable or make sure that the ParsingBuffer gets disposed.
-internal readonly partial struct PdfTokenizer2
+internal readonly partial struct PdfTokenizer
 {
     private readonly Tokenizer postScriptTokenizer;
     private readonly IAsyncEnumerator<PostscriptValue> enumerator;
 
-    public PdfTokenizer2(ParsingReader reader)
+    public PdfTokenizer(ParsingReader reader)
     {
         //            var asyncReader = new IByteSourceToIAsyncReadStream(reader.Reader);
         postScriptTokenizer = new Tokenizer(reader.Buffer);

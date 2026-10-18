@@ -1,26 +1,34 @@
 ﻿using System;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-#warning eventually I want this to take an IMultiplexsource -- but right now I need to get tests to run
-internal partial class ParsingReader(ParsingFileOwner owner, ParsingBuffer buffer, IByteSource source): IDisposable
+internal partial class ParsingReader(ParsingFileOwner owner, ParsingBuffer buffer)
 {
-    public ParsingReader(ParsingFileOwner owner, IByteSource source) :
-        this(owner, new ParsingBuffer(new IByteSourceToIAsyncReadStream(source))
-        {
-            RelativePosition = source.Position
-        }, source)
-    { }
-
     public ParsingFileOwner Owner { get; } = owner;
-    public IByteSource ObsoleteReader { get; } = source;
     public ParsingBuffer Buffer { get; } = buffer;
+
+    public virtual void Dispose() => Buffer.Dispose();
+}
+
+internal partial class DisposableParsingReader:ParsingReader, IDisposable
+{
+    private IDisposable? source;
+    public DisposableParsingReader(ParsingFileOwner owner, ParsingBuffer buffer): base(owner, buffer)
+    {
+    }
+    public DisposableParsingReader(ParsingFileOwner owner, IAsyncReader reader): 
+        base(owner, new ParsingBuffer(reader))
+    {
+        source = reader as IDisposable;
+    }
 
     public void Dispose()
     {
-        ObsoleteReader.Dispose();
+        Buffer.Dispose();
+        source?.Dispose();
     }
 }

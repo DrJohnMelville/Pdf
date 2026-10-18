@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -45,6 +46,11 @@ public class PdfStream : PdfDictionary
     public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
         object? context = null) =>
         StreamEncryptedContentAsync(desiredFormat, null, context);
+
+#warning convert this to native readers.
+    public async ValueTask<IAsyncReader> ReaderForContentAsync(
+        StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
+            (await StreamContentAsync(desiredFormat, context)).AsStreamReader();
 
     internal async ValueTask<Stream> StreamEncryptedContentAsync(
         StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
