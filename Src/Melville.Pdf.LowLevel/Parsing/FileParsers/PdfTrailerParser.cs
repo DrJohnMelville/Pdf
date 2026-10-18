@@ -60,9 +60,13 @@ internal readonly struct PdfTrailerParser(
     {
         using var _ = Force.Using(source.SubsetIAsyncReader(xrefPosition), out var reader);
         using var buffer = new ParsingBuffer(reader);
+
+        //if xref token then we need to read an xref table, otherwise it is an xref stream
         if (!await TrySkipToken(buffer, xrefTag)) return null;
         await buffer.SkipOverAsync(CharacterClassifier.WhitespaceSearchValues);
-        await new XrefTableParser(buffer, source.NewIndirectResolver).Parse();
+        
+        await new XrefTableParser(buffer, source.NewIndirectResolver).ParseAsync();
+        
         if (!await TrySkipToken(buffer, trailerTag))
             throw new PdfParseException("Trailer does not follow xref");
 
@@ -71,6 +75,7 @@ internal readonly struct PdfTrailerParser(
             ).ParseAsync().CA());
         if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))
             throw new PdfParseException("Trailer dictionary is invalid");
+        
         return trailer;
     }
     private async ValueTask<bool> TrySkipToken(ParsingBuffer buffer, byte[] token)
@@ -79,20 +84,6 @@ internal readonly struct PdfTrailerParser(
         if (!buffer.Peek().StartsWith(token)) return false;
         buffer.Advance(token.Length);
         return true;
-    }
-    private async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsyncOld ()
-    {
-        using var context = source.SubsetReader(xrefPosition);
-        if (!await TokenChecker.CheckTokenAsync(context.ObsoleteReader, xrefTag).CA()) return null;
-        await NextTokenFinder.SkipToNextTokenAsync(context.ObsoleteReader).CA();
-        await new CrossReferenceTableParser(context.ObsoleteReader, context.Owner.NewIndirectResolver).ParseAsync().CA();
-        await NextTokenFinder.SkipToNextTokenAsync(context.ObsoleteReader).CA();
-        if (!await TokenChecker.CheckTokenAsync(context.ObsoleteReader, trailerTag).CA())
-            throw new PdfParseException("Trailer does not follow xref");
-        var trailerIndirect = (await new RootObjectParser(context).ParseAsync().CA());
-        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))
-            throw new PdfParseException("Trailer dictionary is invalid");
-        return trailer;
     }
 
     private static readonly byte[] xrefTag = {120, 114, 101, 102}; // xref;

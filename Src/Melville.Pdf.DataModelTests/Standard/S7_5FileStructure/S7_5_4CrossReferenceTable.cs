@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text;
+using System.Threading.Tasks;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.VisualBasic;
 using Moq;
 using Xunit;
 
@@ -14,10 +18,12 @@ public class S7_5_4CrossReferenceTable
 
     private async ValueTask<long> ReadTableAsync(string data)
     {
-        using var multiplexSource = MultiplexSourceFactory.Create(data.AsExtendedAsciiBytes());
-        using var reader = multiplexSource
-            .ReadPipeFrom(0);
-        var parser = new CrossReferenceTableParser(reader, resolver.Object);
+        //using var multiplexSource = MultiplexSourceFactory.Create(data.AsExtendedAsciiBytes());
+        //using var reader = multiplexSource
+        //    .ReadPipeFrom(0);
+        var reader = new MemoryReader(Encoding.ASCII.GetBytes(data));
+        using var buffer = new ParsingBuffer(reader);
+        var parser = new XrefTableParser(buffer, resolver.Object);
         await parser.ParseAsync();
         return reader.Position;
     }
