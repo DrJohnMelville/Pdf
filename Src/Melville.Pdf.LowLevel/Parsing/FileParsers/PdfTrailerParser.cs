@@ -65,7 +65,7 @@ internal readonly struct PdfTrailerParser(
         if (!await TrySkipToken(buffer, xrefTag)) return null;
         await buffer.SkipOverAsync(CharacterClassifier.WhitespaceSearchValues);
         
-        await new XrefTableParser(buffer, source.NewIndirectResolver).ParseAsync();
+        await new XrefTableParser(buffer, source.IndirectResolver).ParseAsync();
         
         if (!await TrySkipToken(buffer, trailerTag))
             throw new PdfParseException("Trailer does not follow xref");

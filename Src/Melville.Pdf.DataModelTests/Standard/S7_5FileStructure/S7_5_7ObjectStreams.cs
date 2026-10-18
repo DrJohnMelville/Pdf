@@ -35,7 +35,7 @@ public class S7_5_7ObjectStreams
             .AsStream(streamText);
 
         using var pfo = new ParsingFileOwner(MultiplexSourceFactory.Create(Array.Empty<byte>()), NullPasswordSource.Instance);
-        var res = pfo.NewIndirectResolver;
+        var res = pfo.IndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
         res.RegisterObjectStreamBlock(2, 10, 1);
         res.RegisterDirectObject(10, 0, os, false);
@@ -63,7 +63,7 @@ public class S7_5_7ObjectStreams
 
         using var multiplexSource = MultiplexSourceFactory.Create(Array.Empty<byte>());
         var pfo = new ParsingFileOwner(multiplexSource, NullPasswordSource.Instance);
-        var res = pfo.NewIndirectResolver;
+        var res = pfo.IndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
         res.RegisterDirectObject(10, 0, os, false);
 

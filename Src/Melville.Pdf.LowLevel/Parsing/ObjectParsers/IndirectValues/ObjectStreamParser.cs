@@ -81,7 +81,7 @@ internal class ObjectStreamParser(
 
     private void ReportItem(int objectNum, PdfDirectObject value)
     {
-        owner.NewIndirectResolver.TryRegisterFromObjectStream(
+        owner.IndirectResolver.TryRegisterFromObjectStream(
                     sourceObjectNumber, objectNum, value);
         if (objectNum == desiredObjectNumber)
             result = value;

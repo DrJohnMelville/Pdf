@@ -108,7 +108,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
     {
         var generation = PopNumber();
         var objNumber = PopNumber();
-        Push(Source.Owner.NewIndirectResolver.CreateReference(objNumber, generation));
+        Push(Source.Owner.IndirectResolver.CreateReference(objNumber, generation));
     }
 
     private int PopNumber() =>

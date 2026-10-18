@@ -21,7 +21,7 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource, 
 
     public async ValueTask<PdfDirectObject> LookupAsync(MementoUnion memento)
     {
-        var source = (await owner.NewIndirectResolver
+        var source = (await owner.IndirectResolver
             .LookupAsync(memento.Int32s[0], 0).CA()).Get<PdfStream>();
         int desiredOrdinal = (int)memento.Int64s[1];
 

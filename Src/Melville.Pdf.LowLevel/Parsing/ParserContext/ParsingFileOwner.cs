@@ -20,7 +20,7 @@ internal sealed partial class ParsingFileOwner: IDisposable
     private readonly IMultiplexSource source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
-    public IndirectObjectRegistry NewIndirectResolver { get; }
+    public IndirectObjectRegistry IndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
@@ -28,7 +28,7 @@ internal sealed partial class ParsingFileOwner: IDisposable
     {
         this.source = source;
         this.passwordSource = passwordSource;
-        NewIndirectResolver = new IndirectObjectRegistry(this);
+        IndirectResolver = new IndirectObjectRegistry(this);
     }
     
     public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;
