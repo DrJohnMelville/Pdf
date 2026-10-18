@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
-
+#warning get rid of this
 internal static class PdfHeaderParser
 {
     public static async ValueTask<(byte Major, byte Minor)> ParseHeadderAsync(IByteSource context)

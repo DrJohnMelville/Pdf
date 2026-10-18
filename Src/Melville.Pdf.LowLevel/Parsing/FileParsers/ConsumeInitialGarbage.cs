@@ -9,6 +9,7 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
+#warning get rid of this
 internal static class ConsumeInitialGarbage
 {
     public static async ValueTask<int> CheckForOffsetAsync(IByteSource context)
