@@ -44,19 +44,4 @@ internal static class RandomAccessFileParser
             throw new PdfParseException("Invalid pdf version number.");
         return (major, minor);
     }
-
-    public static async ValueTask<PdfLoadedLowLevelDocument> ParseAsync2(
-        ParsingFileOwner owner, int fileTrailerSizeHint = 30)
-    {
-        byte major, minor;
-        using var context = owner.SubsetReader(0);
-        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffsetAsync(context.ObsoleteReader).CA());
-        (major, minor) = await PdfHeaderParser.ParseHeadderAsync(context.ObsoleteReader).CA();
-
-        var xrefPosition = await FileTrailerLocater.SearchAsync(owner, fileTrailerSizeHint).CA();
-        var dictionary = await new PdfTrailerParser(owner, xrefPosition).ParseXrefAndTrailerAsync().CA();
-
-        return new PdfLoadedLowLevelDocument(
-           major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, owner);
-    }
 }
