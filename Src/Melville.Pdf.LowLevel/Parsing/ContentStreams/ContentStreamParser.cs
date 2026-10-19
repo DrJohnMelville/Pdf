@@ -30,12 +30,12 @@ public readonly partial struct ContentStreamParser
     /// Render the content stream operations in the given CodeSource pipereader.
     /// </summary>
     /// <param name="source">The content stream to parse.</param>
-    public async ValueTask ParseAsync(IByteSource source)
+    public async ValueTask ParseAsync(IAsyncReader source)
     {
         var engine = new PostscriptEngine(contentStreamCommands);
         engine.Tag = target;
 
-        using var tokens = new Tokenizer(new IByteSourceToIAsyncReadStream(source));
+        using var tokens = new Tokenizer(source);
         await engine.ExecuteAsync(tokens).CA();
         
         if (engine.ErrorData.TryGetAs("newerror", out bool value) && value)

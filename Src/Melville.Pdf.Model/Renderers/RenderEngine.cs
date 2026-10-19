@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Numerics;
-using System.Threading.Tasks;
-using Melville.INPC;
-
+﻿using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -20,6 +15,11 @@ using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
+using System;
+using System.IO;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -159,8 +159,8 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync(Func<IContentStreamOperations, IContentStreamOperations> wrapOutput)
     {
-        using var reader = MultiplexSourceFactory.SingleReaderForStream(
-            await page.GetContentBytesAsync().CA());
+        using var stream = (await page.GetContentBytesAsync().CA());
+        var reader = stream.AsStreamReader();
         await new ContentStreamParser(wrapOutput(this)).ParseAsync(
             reader).CA();
         await TryRenderAnnotationsAsync().CA();

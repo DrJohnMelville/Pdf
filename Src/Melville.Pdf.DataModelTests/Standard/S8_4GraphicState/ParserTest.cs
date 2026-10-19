@@ -2,12 +2,14 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.StreamInterfaces.Memory;
 using Moq;
 using Xunit;
 
@@ -21,7 +23,7 @@ public abstract class ParserTest
         string s, IContentStreamOperations? target = null)
     {
         var sut = new ContentStreamParser(target ?? Target.Object);
-        using var reader = PipeReaderFromString(s);
+        var reader = new MemoryReader(Encoding.ASCII.GetBytes(s));
         await sut.ParseAsync(reader);
     }
 
