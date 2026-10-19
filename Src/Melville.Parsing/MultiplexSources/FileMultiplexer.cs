@@ -1,18 +1,24 @@
 ﻿using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Files;
 using Microsoft.Win32.SafeHandles;
+using System.Collections.Concurrent;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal class FileMultiplexer(FileStream stream) : CountedMultiplexSource, IIndexedReader
+internal class FileMultiplexer : CountedMultiplexSource, IIndexedReader
 {
-    private readonly FileStream stream = stream; // hold onto the stream so it does not get prematurely disposed
-    private SafeFileHandle handle => stream.SafeFileHandle;
-
-    protected override void CleanUp()
+    private SafeFileHandle handle;
+   
+    public FileMultiplexer(FileStream stream)
     {
-        stream.Dispose();
+        handle = stream.SafeFileHandle;        
+        bool succeeded = false;
+        handle.DangerousAddRef(ref succeeded);
+        if (!succeeded)
+            throw new IOException("Failed to attach to file handle");
     }
+
+    protected override void CleanUp() => handle.DangerousRelease();
 
     protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) => 
         new IndexedReaderStream(this, position, ticket);
@@ -23,13 +29,11 @@ internal class FileMultiplexer(FileStream stream) : CountedMultiplexSource, IInd
     }
 
 
-    public override long Length => stream.Length;
+    public override long Length => RandomAccess.GetLength(handle);
 
     int IIndexedReader.Read(long position, in Span<byte> buffer) =>
         RandomAccess.Read(handle, buffer, position);
 
-    ValueTask<int> IIndexedReader.ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken)
-    {
-        return RandomAccess.ReadAsync(handle, buffer, position, cancellationToken);
-    }
+    ValueTask<int> IIndexedReader.ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken) =>
+        RandomAccess.ReadAsync(handle, buffer, position, cancellationToken);
 }
