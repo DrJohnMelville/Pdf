@@ -21,21 +21,27 @@ public readonly partial struct IccParser(IAsyncReader src)
     /// <returns>ICC profile </returns>
     public async ValueTask<IccProfile> ParseAsync()
     {
-        var block = await source.TakeBytesAsync(132);
-
-        var (ret, tags) = ReadStaticBlock(block.Span);
-
-        await ReadOffsetsAsync(tags).CA();
-        Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
-        for (int i = 0; i < tags.Length; i++)
+        try
         {
-            var tag = tags[i];
-            await source.AdvanceToRelativePositionAsync(tag.Offset);
-            var tagData = (await source.TakeBytesAsync((int)tag.Size)).AsSpanParsingBuffer();
-            tags[i] = tag with { Data = TagParser.Parse(ref tagData) };
+            var block = await source.TakeBytesAsync(132);
+
+            var (ret, tags) = ReadStaticBlock(block.Span);
+
+            await ReadOffsetsAsync(tags).CA();
+            Array.Sort(tags, (x, y) => x.Offset.CompareTo(y.Offset));
+            for (int i = 0; i < tags.Length; i++)
+            {
+                var tag = tags[i];
+                await source.AdvanceToRelativePositionAsync(tag.Offset);
+                var tagData = (await source.TakeBytesAsync((int)tag.Size)).AsSpanParsingBuffer();
+                tags[i] = tag with { Data = TagParser.Parse(ref tagData) };
+            }
+            return ret;
         }
-        source.Dispose();
-        return ret;
+        finally
+        {
+            source.Dispose();
+        }
     }
 
     private (IccProfile, ProfileTag[]) ReadStaticBlock(ReadOnlySpan<byte> buffer)
