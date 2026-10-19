@@ -83,12 +83,6 @@ public partial class Tokenizer : ITokenSource
     {
     }
 
-    private static IByteSource PipeFromMemory(Memory<byte> source)
-    {
-        using var multiplexSource = MultiplexSourceFactory.Create(source);
-        return multiplexSource.ReadPipeFrom(0);
-    }
-
     private async ValueTask<PostscriptValue> NextTokenAsync()
     {
         PostscriptValue value;
