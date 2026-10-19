@@ -27,7 +27,14 @@ public partial class Tokenizer : ITokenSource
     /// <summary>
     /// The parsing buffer that the Tokenizer is reading from.
     /// </summary>
-   public ParsingBuffer CodeSource { get; set; }
+   public ParsingBuffer CodeSource { 
+        get; 
+        set 
+        {
+            field?.Dispose();
+            field = value;
+        } 
+    }
 
     /// <inheritdoc />
     public void Dispose()
