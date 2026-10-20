@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
 using System.Numerics;
 
 namespace Melville.Parsing.SequenceReaders
@@ -7,6 +8,7 @@ namespace Melville.Parsing.SequenceReaders
     {
         private static readonly int byteCount = T.Zero.GetByteCount();
 
+        [Obsolete]
         public static bool TryReadBigEndian(ref SequenceReader<byte> reader, out T value)
         {
             if (reader.Remaining < byteCount)
@@ -23,6 +25,20 @@ namespace Melville.Parsing.SequenceReaders
             reader.Advance(byteCount);
             return true;
         }
+
+        public static bool TryReadBigEndian(ref SpanParsingBuffer reader, out T value)
+        {
+            if (reader.RemainingLength < byteCount)
+            {
+                value = T.Zero;
+                return false;
+            }
+
+            ReadFast(reader.Peek(), out value);
+            reader.Advance(byteCount);
+            return true;
+        }
+
 
         private static void ReadSlow(ref SequenceReader<byte> reader, out T value)
         {

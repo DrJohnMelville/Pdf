@@ -3,6 +3,7 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 
 using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -28,7 +29,7 @@ internal readonly partial struct CmapFormat4Parser
 
     private int SizePriorToGlyphArray() => (this.GetStaticSize() + 2 + (8*SegCount));
 
-    public static async ValueTask<ICmapImplementation> ParseAsync(IByteSource input) => 
+    public static async ValueTask<ICmapImplementation> ParseAsync(ParsingBuffer input) => 
             (await FieldParser.ReadFromAsync<CmapFormat4Parser>(input).CA())
             .CreateImplementation();
 

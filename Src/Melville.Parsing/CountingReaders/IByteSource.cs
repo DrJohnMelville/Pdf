@@ -2,6 +2,8 @@
 
 namespace Melville.Parsing.CountingReaders;
 
+//After we get rid of this get rid of SequenceReader<byte> references
+
 /// <summary>
 /// Represents a source of bytes to be parsed - a thin wrapper around PipeReader with a current position
 /// </summary>

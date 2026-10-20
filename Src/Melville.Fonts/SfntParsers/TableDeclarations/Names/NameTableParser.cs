@@ -5,6 +5,8 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.Names;
 
@@ -12,8 +14,7 @@ internal readonly struct NameTableParser(IMultiplexSource source)
 {
     public async ValueTask<ParsedNameTable> ParseAsync()
     {
-        using var pipe = source.ReadPipeFrom(0);
-        var header = await FieldParser.ReadFromAsync<NameTableHeader>(pipe).CA();
+        var header = await FieldParser.ReadFromAsync<NameTableHeader>(source).CA();
         return new ParsedNameTable(source, header);
     }
 }

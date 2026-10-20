@@ -40,7 +40,8 @@ public class TrueTypeGlyphParserTest
                 "0014 0001")] // 2 y values
     public async Task DrawGlyphAsync(string source)
     {
-        var parser = this.CreateParser(source, Matrix3x2.Identity);
+        var parser = CreateParser(source, Matrix3x2.Identity);
+
         await parser.DrawGlyphAsync();
 
         target.Verify(i=>i.AddPoint(new Vector2(10, 20), true, true, false));
@@ -86,7 +87,8 @@ public class TrueTypeGlyphParserTest
         var parser = this.CreateParser("0001" + 
                                        "0000 0000 0000 0000" +
                                        "0001" +
-                                       "0005 0000000000" +                                        "01 01" +  // two flags values on the point, long vectors 
+                                       "0005 0000000000" +                                        
+                                       "01 01" +  // two flags values on the point, long vectors 
                                        "000A 0000" + 
                                        "0014 0001", Matrix3x2.CreateScale(3,2));
         await parser.DrawGlyphAsync();

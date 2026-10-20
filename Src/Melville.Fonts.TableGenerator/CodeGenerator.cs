@@ -38,7 +38,7 @@ namespace Melville.Fonts.TableGenerator
         {
             output.AppendLine($"""
                 static global::{classSymbol} {InterfaceName()}.LoadStatic(
-                    ref global::System.Buffers.SequenceReader<byte> reader)=> new(ref reader);  
+                    ref global::Melville.StreamInterfaces.ParsingBuffers.SpanParsingBuffer reader)=> new(ref reader);  
             """);
         }
 
@@ -81,12 +81,12 @@ namespace Melville.Fonts.TableGenerator
         private void GenerateLoadAsyncHeader(string asyncDecl, string postfix) =>
             output.AppendLine($"""
                     {asyncDecl}global::System.Threading.Tasks.ValueTask {InterfaceName()}.LoadAsync(
-                    global::Melville.Parsing.CountingReaders.IByteSource reader) {postfix}
+                    global::Melville.StreamInterfaces.ParsingBuffers.ParsingBuffer reader) {postfix}
                 """);
         private void GenerateReaderConstructor()
         {
             output.AppendLine(
-                $"    private {ClassSyntax().Identifier} (ref global::System.Buffers.SequenceReader<byte> reader)");
+                $"    private {ClassSyntax().Identifier} (ref Melville.StreamInterfaces.ParsingBuffers.SpanParsingBuffer reader)");
             output.AppendLine("    {");
             foreach (var item in fields)
             {

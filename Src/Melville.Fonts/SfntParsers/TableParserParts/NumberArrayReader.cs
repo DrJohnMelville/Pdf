@@ -1,11 +1,12 @@
-﻿using System.Buffers;
+﻿using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO.Pipelines;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
-
-using Melville.Parsing.CountingReaders;
-using Melville.StreamInterfaces;
-using Microsoft.CodeAnalysis;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
@@ -30,15 +31,29 @@ internal static class NumberArrayReader
         var buffers = await reader.ReadAtLeastAsync(offsets.Length * GetSize<T>()).CA();
         ReadFrom(reader, buffers, MemoryMarshal.Cast<T, byte>(offsets.AsSpan()));
     }
+    internal static async ValueTask ReadAsBytesAsync<T>(ParsingBuffer reader, T[] offsets) where T : unmanaged
+    {
+        var byteLength = offsets.Length * GetSize<T>();
+        (await reader.TakeBytesAsync(byteLength).CA()).Span
+            .CopyTo(MemoryMarshal.Cast<T, byte>(offsets.AsSpan()));
+        
+    }
     private static unsafe int GetSize<T>() where T : unmanaged => sizeof(T);
 
+
+
     public const string NumberArrayImplementation = """
+        public static async ValueTask ReadAsync(ParsingBuffer reader, ~0~[] offsets)
+        {
+            await NumberArrayReader.ReadAsBytesAsync(reader, offsets).CA();
+            TryReverseEndianness(offsets);
+        }
         public static async ValueTask ReadAsync(IByteSource reader, ~0~[] offsets)
         {
             await NumberArrayReader.ReadAsBytesAsync(reader, offsets).CA();
             TryReverseEndianness(offsets);
         }
-        private static void TryReverseEndianness(Span<~0~> data)
+                private static void TryReverseEndianness(Span<~0~> data)
         {
             if (global::System.BitConverter.IsLittleEndian)
                 BinaryPrimitives.ReverseEndianness(data, data);

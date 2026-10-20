@@ -6,10 +6,27 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 
-internal readonly struct MaxpParser(IByteSource source)
+internal readonly struct MaxpParser(ParsingBuffer source)
+{
+    public async ValueTask<ParsedMaximums> ParseAsync()
+    {
+        await source.EnsureBytesAsync(6);
+        var spanReader = new SpanParsingBuffer(source.Peek(6));
+        if (spanReader.GetUInt32BigEndian() is 0x00005000)
+        {
+            var ret = new ParsedMaximums(spanReader.GetUInt16BigEndian());
+            source.Advance((int)spanReader.RelativePosition);
+            return ret;
+        }
+        return await FieldParser.ReadFromAsync<ParsedMaximums>(source);
+    }
+}
+
+/*internal readonly struct MaxpParser(IByteSource source)
 {
     public async ValueTask<ParsedMaximums> ParseAsync() =>
         TryReadShortForm(source, await source.ReadAtLeastAsync(6).CA()) 
@@ -30,4 +47,4 @@ internal readonly struct MaxpParser(IByteSource source)
 
     private ValueTask<ParsedMaximums> ReadLongFormAsync(IByteSource source) => 
         FieldParser.ReadFromAsync<ParsedMaximums>(source);
-}
+}*/

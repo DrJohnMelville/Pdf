@@ -1,7 +1,6 @@
-﻿using System.IO.Pipelines;
-
-using Melville.Parsing.MultiplexSources;
+﻿using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -17,7 +16,8 @@ internal class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables)
 
     private async ValueTask<ICmapImplementation> GetSubtableAsync(IMultiplexSource input)
     {
-        using var pipe = input.ReadPipeFrom(0);
+        using var _ = Force.Using(input.ReaderFrom(0), out var reader);
+        using var pipe = new StreamInterfaces.ParsingBuffers.ParsingBuffer(reader);
         var tag = await pipe.PeekTagAsync(2).CA();
         return tag switch
         {

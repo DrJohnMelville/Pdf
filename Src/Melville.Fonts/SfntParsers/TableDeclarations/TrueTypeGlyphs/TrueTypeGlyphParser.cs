@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;

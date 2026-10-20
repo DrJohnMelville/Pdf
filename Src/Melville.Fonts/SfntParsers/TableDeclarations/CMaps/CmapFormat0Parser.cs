@@ -3,6 +3,7 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 
 using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -13,7 +14,7 @@ internal readonly partial struct CmapFormat0Parser
     [SFntField] private readonly ushort language;
     [SFntField("256")] private readonly byte[] glyphIdArray;
 
-    public static async Task<ICmapImplementation> ParseAsync(IByteSource input)
+    public static async Task<ICmapImplementation> ParseAsync(ParsingBuffer input)
     {
         var parsed = await FieldParser.ReadFromAsync<CmapFormat0Parser>(input).CA();
         return new SingleArrayCmap<byte>(1, 0, parsed.glyphIdArray);

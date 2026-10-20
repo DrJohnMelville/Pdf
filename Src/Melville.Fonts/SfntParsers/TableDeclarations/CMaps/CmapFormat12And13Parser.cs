@@ -3,6 +3,7 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 
 using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -14,7 +15,7 @@ internal readonly partial struct CmapFormat12And13Parser
     [SFntField] private readonly uint language;
     [SFntField] private readonly uint numGroups;
     [SFntField(nameof(numGroups))] public readonly SequentialMapGroup[] mapGroups;
-    public static async ValueTask<ICmapImplementation> ParseAsync(IByteSource input)
+    public static async ValueTask<ICmapImplementation> ParseAsync(ParsingBuffer input)
     {
         var rec = await FieldParser.ReadFromAsync<CmapFormat12And13Parser>(input).CA();
         return new CmapFormat12or13Implementation(rec.mapGroups,

@@ -6,22 +6,30 @@ using System.Runtime.InteropServices.JavaScript;
 using Melville.INPC;
 
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
 internal static partial class FieldParser
 {
-    public static void Read<T>(ref SequenceReader<byte> reader, out T output) 
+    public static void Read<T>(ref SequenceReader<byte> reader, out T output)
         where T : IBinaryInteger<T> =>
         reader.TryReadBigEndian(out output);
 
-    public static void Read(ref SequenceReader<byte> reader, out UInt24 output) =>
+    public static void Read<T>(ref SpanParsingBuffer reader, out T output)
+        where T : IBinaryInteger<T> =>
+        reader.TryReadBigEndian(out output);
+
+    public static void Read(ref SpanParsingBuffer reader, out UInt24 output) =>
         UInt24.TryReadBigEndian(ref reader, out output);
 
     public static void Read<TStorage, TCompute, TConfig>(
-        ref SequenceReader<byte> reader, out FixedPoint<TStorage, TCompute, TConfig> output) where TStorage : IBinaryInteger<TStorage>
+        ref SpanParsingBuffer reader, out FixedPoint<TStorage, TCompute, TConfig> output) 
+        where TStorage : IBinaryInteger<TStorage>
         where TCompute : IBinaryInteger<TCompute>
         where TConfig : IFixedPointConfig<TStorage, TCompute>
     {
@@ -34,34 +42,34 @@ internal static partial class FieldParser
     [MacroItem("short")]
     [MacroItem("uint")]
     [MacroCode(NumberArrayReader.NumberArrayImplementation)]
-    public static  ValueTask ReadAsync(IByteSource reader, Memory<byte> offsets) =>
-        NumberArrayReader.ReadAsync(reader, offsets);
+    public static  ValueTask ReadAsync(ParsingBuffer reader, Memory<byte> offsets) =>
+        reader.FillExternalBufferAsync(offsets);
 
 
-    public static async ValueTask<T> ReadFromAsync<T>(IByteSource reader) where T : IGeneratedParsable<T>
+    public static async ValueTask<T> ReadFromAsync<T>(IMultiplexSource source, long offset = 0 ) where T : IGeneratedParsable<T>
     {
-        var result = await reader.ReadAtLeastAsync(T.StaticSize).CA();
-        LoadFrom(reader, result, out T ret); 
+        using var _ = Force.Using(source.ReaderFrom(offset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+        return await ReadFromAsync<T>(buffer);
+    }
+
+
+
+    public static async ValueTask<T> ReadFromAsync<T>(ParsingBuffer reader) where T : IGeneratedParsable<T>
+    {
+        var block = await reader.TakeBytesAsync(T.StaticSize);
+        var spanReader = new SpanParsingBuffer(block.Span);
+        var ret = T.LoadStatic(ref spanReader);
         await ret.LoadAsync(reader).CA();
         return ret;
     }
-    
-    private static void LoadFrom<T>(IByteSource reader, ReadResult readResult, out T result) 
-        where T : IGeneratedParsable<T>
-    {
-        var seqReader = new SequenceReader<byte>(readResult.Buffer);
-        result = T.LoadStatic(ref seqReader);
-        reader.AdvanceTo(seqReader.Position);
-    }
-
-    public static async ValueTask ReadAsync<T>(IByteSource reader, T[] records)
+ 
+    public static async ValueTask ReadAsync<T>(ParsingBuffer reader, T[] records)
     where T: IGeneratedParsable<T>
     {
         for (int i = 0; i < records.Length; i++)
         {
-            var segReader = await reader.ReadAtLeastAsync(T.StaticSize).CA();
-            LoadFrom(reader, segReader, out records[i]);
-            await records[i].LoadAsync(reader).CA();
+            records[i] = await ReadFromAsync<T>(reader).CA();
         }
     }
 }

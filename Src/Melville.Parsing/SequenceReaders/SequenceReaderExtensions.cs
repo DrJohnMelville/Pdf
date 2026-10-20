@@ -38,13 +38,13 @@ namespace Melville.Parsing.SequenceReaders;
         public static bool TryGet~1~BigEndian(this ref SequenceReader<byte> reader, out ~0~ ret) 
         {
             return reader.TryReadBigEndian(out ret);
-        }
-
+        }        
         """)]
 
 
 public static  partial class SequenceReaderExtensions
 {
+
     /// <summary>
     /// Read any Binary Integer type in big endian format
     /// </summary>
@@ -55,7 +55,18 @@ public static  partial class SequenceReaderExtensions
     public static bool TryReadBigEndian<T>(this ref SequenceReader<byte> reader, out T value)
         where T : IBinaryInteger<T> =>
         GenericIntReader<T>.TryReadBigEndian(ref reader, out value);
-    
+
+    /// <summary>
+    /// Read any Binary Integer type in big endian format
+    /// </summary>
+    /// <typeparam name="T">The type of number to read</typeparam>
+    /// <param name="reader">The sequence reader to take bytes from.</param>
+    /// <param name="value">Out variable that receives the output</param>
+    /// <returns>True if the read is successdful, false if there is not enough data.</returns>
+    public static bool TryReadBigEndian<T>(this ref SpanParsingBuffer reader, out T value)
+        where T : IBinaryInteger<T> =>
+        GenericIntReader<T>.TryReadBigEndian(ref reader, out value);
+
     /// <summary>
     /// Attempts to read a big endian value of a given number of bytes into a ulong. 
     /// </summary>
@@ -63,6 +74,7 @@ public static  partial class SequenceReaderExtensions
     /// <param name="value">Out parameter for the result of the parsing operation</param>
     /// <param name="byteCount">Number of bytes to read</param>
     /// <returns>True if there are enough bytes to read.  False otherwise.</returns>
+    [Obsolete()]
     public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, out ulong value, int byteCount)
     {
         value = 0;
@@ -70,6 +82,24 @@ public static  partial class SequenceReaderExtensions
         {
             value <<= 8;
             if (!reader.TryRead(out var oneByte)) return false;
+            value |= oneByte;
+        }
+        return true;
+    }
+    /// <summary>
+    /// Attempts to read a big endian value of a given number of bytes into a ulong. 
+    /// </summary>
+    /// <param name="reader">The source of bytes for the data.</param>
+    /// <param name="value">Out parameter for the result of the parsing operation</param>
+    /// <param name="byteCount">Number of bytes to read</param>
+    /// <returns>True if there are enough bytes to read.  False otherwise.</returns>
+    public static bool TryReadBigEndian(this ref SpanParsingBuffer reader, out ulong value, int byteCount)
+    {
+        value = 0;
+        for (int i = 0; i < byteCount; i++)
+        {
+            value <<= 8;
+            if (!reader.TryGetUInt8(out var oneByte)) return false;
             value |= oneByte;
         }
         return true;

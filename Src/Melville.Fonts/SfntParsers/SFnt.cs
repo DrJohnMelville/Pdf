@@ -14,6 +14,8 @@ using Melville.INPC;
 
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers;
 
@@ -89,9 +91,10 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<ICMapSource> LoadCmapSlowAsync(TableRecord table)
     {
-        using var pipe = source.ReadPipeFrom(table.Offset);
+        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
         return new ParsedCmap(source.OffsetFrom(table.Offset),
-            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
+            (await FieldParser.ReadFromAsync<CmapTable>(buffer).CA()).Tables);
     }
 
     /// <summary>
@@ -127,8 +130,10 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<ParsedMaximums> ParseMaxProfileAsync(TableRecord table)
     {
-        using var pipe = source.ReadPipeFrom(table.Offset);
-        return await new MaxpParser(pipe).ParseAsync().CA();
+
+        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+        return await new MaxpParser(buffer).ParseAsync().CA();
     }
 
     /// <inheritdoc />
@@ -252,8 +257,11 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<T> LoadTableSlowAsync<T>(TableRecord table) where T : IGeneratedParsable<T>, new()
     {
-        using var pipe = source.ReadPipeFrom(table.Offset);
-        return await FieldParser.ReadFromAsync<T>(pipe).CA();
+
+        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+
+        return await FieldParser.ReadFromAsync<T>(buffer).CA();
     }
 
     private TableRecord? FindTable(uint tag)
@@ -273,8 +281,9 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<PostscriptData> LoadPostscriptDataTableAsync(TableRecord table)
     {
-        using var readPipeFrom = source.ReadPipeFrom(table.Offset);
-        return await new PostscriptTableParser(readPipeFrom).ParseAsync().CA();
+        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+        return await new PostscriptTableParser(buffer).ParseAsync().CA();
     }
 
     /// <inheritdoc />

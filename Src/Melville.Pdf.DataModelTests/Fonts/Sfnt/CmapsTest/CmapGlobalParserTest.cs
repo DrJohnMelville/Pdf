@@ -13,6 +13,10 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.Files;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CmapsTest;
@@ -44,9 +48,8 @@ public class CmapGlobalParserTest: IDisposable
     private async ValueTask<ParsedCmap> ParseCmapAsync(string data)
     {
         source = MultiplexSourceFactory.Create(data.BitsFromHex());
-        using var pipe = source.ReadPipeFrom(0);
         return new ParsedCmap(source,
-            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
+            (await FieldParser.ReadFromAsync<CmapTable>(source).CA()).Tables);
     }
 
     [Fact]
@@ -219,11 +222,12 @@ public class CmapGlobalParserTest: IDisposable
     [Fact]
     public async Task ParseType14CmapAsync()
     {
-        await using var select = GetPeerFile("CmapFromCambriaFont.dat");
+        using var select = GetPeerFile("CmapFromCambriaFont.dat");
         IMultiplexSource source = MultiplexSourceFactory.Create(select);
-        using var pipe = source.ReadPipeFrom(0);
+        using var _ = Force.Using(source.ReaderFrom(0), out var reader);
+        using var buffer = new ParsingBuffer(reader);
         var cmap = (ICMapSource)new ParsedCmap(source,
-            (await FieldParser.ReadFromAsync<CmapTable>(pipe).CA()).Tables);
+            (await FieldParser.ReadFromAsync<CmapTable>(buffer).CA()).Tables);
         var subtable = await cmap.GetByIndexAsync(1);
 
         subtable.AllMappings().Should().AllSatisfy(i =>
@@ -234,5 +238,7 @@ public class CmapGlobalParserTest: IDisposable
 
     }
 
-    private Stream GetPeerFile(string file, [CallerFilePath] string inputPath = "") => File.OpenRead(Path.Join(Path.GetDirectoryName(inputPath), file));
+
+    private Stream GetPeerFile(string file, [CallerFilePath] string inputPath = "") => 
+        File.OpenRead(Path.Join(Path.GetDirectoryName(inputPath), file));
 }

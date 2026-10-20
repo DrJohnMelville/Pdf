@@ -8,6 +8,8 @@ using Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
@@ -16,8 +18,8 @@ public class PostTableReaderTest
 {
     private static async Task<PostscriptData> ReadPostscriptTableAsync(string data)
     {
-        using var multiplexSource = MultiplexSourceFactory.Create(data.BitsFromHex());
-        using var pipe = multiplexSource.ReadPipeFrom(0);
+        using var pipe = new ParsingBuffer(new MemoryReader(data.BitsFromHex()));
+
         return await new PostscriptTableParser(pipe).ParseAsync();
     }
 

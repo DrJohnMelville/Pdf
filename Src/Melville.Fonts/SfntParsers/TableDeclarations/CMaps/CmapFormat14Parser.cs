@@ -5,6 +5,9 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
@@ -16,9 +19,7 @@ internal readonly partial struct CmapFormat14Parser
     [SFntField("numVarSelectorRecords")] private readonly VariantSelectorRecord[] varSelectorRecords;
     public static async ValueTask<ICmapImplementation> ParseAsync(IMultiplexSource input)
     {
-        using var pipe = input.ReadPipeFrom(0);
-        var header = await FieldParser.ReadFromAsync<CmapFormat14Parser>(
-            pipe).CA();
+        var header = await FieldParser.ReadFromAsync<CmapFormat14Parser>(input).CA();
 
         return await header.CreateImplementationAsync(input).CA();
        
@@ -46,24 +47,24 @@ internal readonly partial struct VariantSelectorRecord
     public async ValueTask<VariantSelection> CreateVariantSelectionAsync(IMultiplexSource input)
     {
         var defaults = defaultUVSOffset is > 0?
-                await LoadDefaultTableAsync(input.ReadPipeFrom(defaultUVSOffset)).CA():[];
-        using var pipe = input.ReadPipeFrom(nonDefaultUVSOffset);
+                await LoadDefaultTableAsync(input,defaultUVSOffset).CA():[];
+
         var mappings = nonDefaultUVSOffset is > 0?
-                await LoadNonDefaultTableAsync(pipe).CA():[];
+                await LoadNonDefaultTableAsync(input,nonDefaultUVSOffset).CA():[];
         return new VariantSelection(
             varSelector, defaults, mappings);
     }
 
 
-    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTableAsync(IByteSource pipe)
+    private async ValueTask<UvsDefaultMapping[]> LoadDefaultTableAsync(IMultiplexSource input, long offset)
     {
-        var record = await FieldParser.ReadFromAsync<DefaultUvsTableRecord>(pipe).CA();
+        var record = await FieldParser.ReadFromAsync<DefaultUvsTableRecord>(input, offset).CA();
         return record.unicodeValueRanges;
     }
-    private async ValueTask<UvsMapping[]> LoadNonDefaultTableAsync(IByteSource readPipeFrom)
+
+    private async ValueTask<UvsMapping[]> LoadNonDefaultTableAsync(IMultiplexSource input, long offset)
     {
-        var record = await FieldParser.ReadFromAsync<NonDefaultUvsTableRecord>(
-            readPipeFrom).CA();
+        var record = await FieldParser.ReadFromAsync<NonDefaultUvsTableRecord>(input, offset).CA();
         return record.uvsMappings;
     }
 }

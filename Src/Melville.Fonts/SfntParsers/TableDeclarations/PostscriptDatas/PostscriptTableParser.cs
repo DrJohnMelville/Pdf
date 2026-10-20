@@ -9,10 +9,11 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
 {
-    internal readonly struct PostscriptTableParser(IByteSource source)
+    internal readonly struct PostscriptTableParser(ParsingBuffer source)
     {
         public async ValueTask<PostscriptData> ParseAsync()
         {
@@ -24,7 +25,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
         }
 
         private ValueTask<string[]> ReadGlyphNamesAsync(
-            IByteSource source, uint version) => version switch
+            ParsingBuffer source, uint version) => version switch
         {
             0x00010000 => new (DefaultNames),
             0x00020000 => ReadType20NamesAsync(source),
@@ -32,44 +33,68 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             _ => new ValueTask<string[]>([])
         };
 
-        private async ValueTask<string[]> ReadType20NamesAsync(IByteSource source)
+        private async ValueTask<string[]> ReadType20NamesAsync(ParsingBuffer source)
         {
             var ret = await PrepareResultArrayAsync(source).CA();
             using var indexes = new PooledBuffer<int>(ret.Length);
             indexes.AsSpan().Fill(-1);
-            var result = await source.ReadAtLeastAsync(ret.Length*2).CA();
-            source.AdvanceTo(Read20Differences(result.Buffer, ret, indexes));
-            
+
+            var bytes = await source.TakeBytesAsync(ret.Length * 2).CA();
+            Read20Differences(new SpanParsingBuffer(bytes.Span), ret, indexes);
+                
             await ReadCustomNamesAsync(source, ret, indexes).CA();
             return ret;
         }
+        //private async ValueTask<string[]> ReadType20NamesAsync(IByteSource source)
+        //{
+        //    var ret = await PrepareResultArrayAsync(source).CA();
+        //    using var indexes = new PooledBuffer<int>(ret.Length);
+        //    indexes.AsSpan().Fill(-1);
+        //    var result = await source.ReadAtLeastAsync(ret.Length*2).CA();
+        //    source.AdvanceTo(Read20Differences(result.Buffer, ret, indexes));
+            
+        //    await ReadCustomNamesAsync(source, ret, indexes).CA();
+        //    return ret;
+        //}
 
         private async ValueTask ReadCustomNamesAsync(
-            IByteSource source, string[] ret, int[] indexes)
+            ParsingBuffer source, string[] ret, int[] indexes)
         {
             var count = indexes.AsSpan().LastIndexOfAnyExcept(-1);
+
             for (int i = 0; i <= count; i++)
             {
-                var result = await source.ReadAsync().CA();
-                var strLen = result.Buffer.FirstSpan[0];
-                source.AdvanceTo(result.Buffer.GetPosition(1));
-                result = await source.ReadAtLeastAsync(strLen).CA();
-                ret[indexes[i]] = Encoding.ASCII.GetString(result.Buffer.Slice(0, strLen));
-                source.AdvanceTo(result.Buffer.GetPosition(strLen));
+                var len = await source.GetUInt8();
+                var stringBytes = await source.TakeBytesAsync(len);
+                ret[indexes[i]] = Encoding.ASCII.GetString(stringBytes.Span);
             }
         }
+        //private async ValueTask ReadCustomNamesAsync(
+        //    IByteSource source, string[] ret, int[] indexes)
+        //{
+        //    var count = indexes.AsSpan().LastIndexOfAnyExcept(-1);
+        //    for (int i = 0; i <= count; i++)
+        //    {
+        //        var result = await source.ReadAsync().CA();
+        //        var strLen = result.Buffer.FirstSpan[0];
+        //        source.AdvanceTo(result.Buffer.GetPosition(1));
+        //        result = await source.ReadAtLeastAsync(strLen).CA();
+        //        ret[indexes[i]] = Encoding.ASCII.GetString(result.Buffer.Slice(0, strLen));
+        //        source.AdvanceTo(result.Buffer.GetPosition(strLen));
+        //    }
+        //}
 
-        private SequencePosition Read20Differences(
-            ReadOnlySequence<byte> resultBuffer, string[] ret, int[] indexes)
+        private void Read20Differences(
+            SpanParsingBuffer reader, string[] ret, int[] indexes)
         {
             var topString = -1;
-            var reader = new SequenceReader<byte>(resultBuffer);
             for (int i = 0; i < ret.Length; i++)
             {
-                if (!reader.TryGetUInt16BigEndian(out var index)) 
-                    throw new InvalidDataException("No glyph names in Post version 2.5 table");
+                var index = reader.GetUInt16BigEndian();
                 if (index < 258)
+                {
                     ret[i] = DefaultNames[index];
+                }
                 else
                 {
                     index -= 258;
@@ -78,16 +103,50 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
                 }
             }
 
-            return reader.Position;
         }
+        //private SequencePosition Read20Differences(
+        //    ReadOnlySequence<byte> resultBuffer, string[] ret, int[] indexes)
+        //{
+        //    var topString = -1;
+        //    var reader = new SequenceReader<byte>(resultBuffer);
+        //    for (int i = 0; i < ret.Length; i++)
+        //    {
+        //        if (!reader.TryGetUInt16BigEndian(out var index)) 
+        //            throw new InvalidDataException("No glyph names in Post version 2.5 table");
+        //        if (index < 258)
+        //            ret[i] = DefaultNames[index];
+        //        else
+        //        {
+        //            index -= 258;
+        //            indexes[index] = i;
+        //            topString = Math.Max(topString, index);
+        //        }
+        //    }
 
-        private async ValueTask<string[]> ReadType25NamesAsync(IByteSource source)
+        //    return reader.Position;
+        //}
+
+        private async ValueTask<string[]> ReadType25NamesAsync(ParsingBuffer source)
         {
             var ret = await PrepareResultArrayAsync(source).CA();
-            var result2 = await source.ReadAtLeastAsync(ret.Length).CA();
-            source.AdvanceTo(ReadDifferences(result2.Buffer, ret));
+            var results = await source.TakeBytesAsync(ret.Length);
+            ReadDifferences(new SpanParsingBuffer(results.Span), ret);
             return ret;
         }
+        //private async ValueTask<string[]> ReadType25NamesAsync(IByteSource source)
+        //{
+        //    var ret = await PrepareResultArrayAsync(source).CA();
+        //    var result2 = await source.ReadAtLeastAsync(ret.Length).CA();
+        //    source.AdvanceTo(ReadDifferences(result2.Buffer, ret));
+        //    return ret;
+        //}
+
+        private async ValueTask<string[]> PrepareResultArrayAsync(ParsingBuffer source)
+        {
+            var count = await source.GetUInt16BigEndianAsync().CA();
+            return new string[count];
+        }
+
 
         private async ValueTask<string[]> PrepareResultArrayAsync(IByteSource source)
         {
@@ -97,19 +156,29 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
             return new string[count];
         }
 
-        private SequencePosition ReadDifferences(
-            ReadOnlySequence<byte> resultBuffer, string[] ret)
+        private void ReadDifferences( SpanParsingBuffer reader, string[] ret)
         {
-            var reader = new SequenceReader<byte>(resultBuffer);
+            
             for (int i = 0; i < ret.Length; i++)
             {
-                if (!reader.TryRead(out byte firstByte)) 
-                    throw new InvalidDataException("No glyph names in Post version 2.5 table");
+                var firstByte = reader.GetUInt8();
                 ret[i] = DefaultNames[firstByte];
             }
 
-            return reader.Position;
         }
+        //private SequencePosition ReadDifferences(
+        //    ReadOnlySequence<byte> resultBuffer, string[] ret)
+        //{
+        //    var reader = new SequenceReader<byte>(resultBuffer);
+        //    for (int i = 0; i < ret.Length; i++)
+        //    {
+        //        if (!reader.TryRead(out byte firstByte)) 
+        //            throw new InvalidDataException("No glyph names in Post version 2.5 table");
+        //        ret[i] = DefaultNames[firstByte];
+        //    }
+
+        //    return reader.Position;
+        //}
 
         private int ReadCount(ReadOnlySequence<byte> buffer)
         {

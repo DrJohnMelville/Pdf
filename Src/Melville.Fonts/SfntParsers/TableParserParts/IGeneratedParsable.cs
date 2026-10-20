@@ -1,14 +1,15 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.Parsing.CountingReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
 internal interface IGeneratedParsable<T> where T:IGeneratedParsable<T>
 {
     static abstract int StaticSize { get; }
-    static abstract T LoadStatic(ref SequenceReader<byte> source);
-    ValueTask LoadAsync(IByteSource reader);
+    static abstract T LoadStatic(ref SpanParsingBuffer source);
+    ValueTask LoadAsync(ParsingBuffer reader);
 }
 
 internal static class GeneratedParsableExtensions

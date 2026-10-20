@@ -7,6 +7,8 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Maximums;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
@@ -15,8 +17,9 @@ public class MaximumProfileReaderTest
 {
     private static async Task<ParsedMaximums> ReadMaximumTableAsync(string data)
     {
-        using var multiplexSource = MultiplexSourceFactory.Create(data.BitsFromHex());
-        using var pipe = multiplexSource.ReadPipeFrom(0);
+        var reader = new MemoryReader(data.BitsFromHex());
+        using var pipe = new ParsingBuffer(reader);
+
         return await new MaxpParser(
                 pipe)
             .ParseAsync();
