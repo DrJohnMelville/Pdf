@@ -1,35 +1,28 @@
 ﻿using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Diagnostics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
-internal readonly struct VariationStoreParser(IByteSource pipe)
+internal readonly struct VariationStoreParser(ParsingBuffer buffer)
 {
     public async ValueTask<uint[]> ParseAsync()
     {
-        var result = await pipe.ReadAtLeastAsync(2).CA();
-        var count = ReadLength(result.Buffer);
-        var tableresult = await pipe.ReadAtLeastAsync(count).CA();
-        return Parse(tableresult.Buffer);
+        var size = await buffer.GetUInt16BigEndianAsync().CA();
+
+        return Parse((await buffer.TakeBytesAsync(size).CA()).Span);
     }
 
-
-    private ushort ReadLength(ReadOnlySequence<byte> resultBuffer)
+    private  uint[] Parse(Span<byte> buffer)
     {
-        var reader = new SequenceReader<byte>(resultBuffer);
-        var ret = reader.GetUInt16BigEndian();
-        pipe.AdvanceTo(reader.Position);
-        return ret;
-    }
-
-    private  uint[] Parse(ReadOnlySequence<byte> buffer)
-    {
-        var reader = new SequenceReader<byte>(buffer);
+        var reader = new SpanParsingBuffer(buffer);
         var format = reader.GetUInt16BigEndian();
         Debug.Assert(format == 1);
+
         var variationRegionOffset = reader.GetUInt32BigEndian();
         var variationDataCount = reader.GetUInt16BigEndian();
         var ret = new uint[variationDataCount];
@@ -40,8 +33,7 @@ internal readonly struct VariationStoreParser(IByteSource pipe)
 
         for (int i = 0; i < variationDataCount; i++)
         {
-            reader = new SequenceReader<byte>(buffer.Slice(ret[i]+4));
-            ret[i] = reader.GetUInt16BigEndian();
+            ret[i] = BinaryPrimitives.ReadUInt16BigEndian(buffer[(i + 4)..]);
         }
 
 

@@ -7,6 +7,8 @@ using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
@@ -46,9 +48,9 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 
     private async ValueTask<uint[]> ParseVariationStoreAsync(TopDict topDict)
     {
-        using var pipe = source.ReadPipeFrom(topDict.VariationStoreOffset);
-        return await new VariationStoreParser(
-            pipe).ParseAsync().CA();
+        using var _ = Force.Using(source.ReaderFrom(topDict.VariationStoreOffset), out var reader);
+        using var buffer = new ParsingBuffer(reader);
+        return await new VariationStoreParser(buffer).ParseAsync().CA();
     }
 
     private static async ValueTask<TopDict> ParseTopDictAsync(

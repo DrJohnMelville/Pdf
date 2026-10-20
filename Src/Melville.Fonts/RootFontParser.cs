@@ -1,13 +1,16 @@
 ﻿using System.Buffers;
+using System.Buffers.Binary;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
+using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.Type1TextParsers;
-
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 
 namespace Melville.Fonts;
 
@@ -23,8 +26,14 @@ public static class RootFontParser
     /// <returns>A readonly list of IGenericFonts that represent the font</returns>
     public static async Task<IReadOnlyList<IGenericFont>> ParseAsync(IMultiplexSource src)
     {
-        using var pipe = src.ReadPipeFrom(0);
-        var tag = await pipe.PeekTagAsync(4).CA();
+        uint tag;
+        {
+            using var _ = Force.Using(src.ReaderFrom(0), out var reader);
+            using var buffer = new PooledBuffer<byte>(4);
+            await reader.ReadExactAsync(buffer.AsMemory(0, 4));
+            tag = BinaryPrimitives.ReadUInt32BigEndian(buffer.AsSpan(0, 4));
+        }
+
         return await ParseFontTypeAsync(src, tag).CA();
     }
 
