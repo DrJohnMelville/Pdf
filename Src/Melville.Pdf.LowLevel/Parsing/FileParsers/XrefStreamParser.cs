@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
@@ -66,7 +68,7 @@ internal readonly struct XrefStreamParser
             throw new PdfParseException("Index of an xrefstream must have even number of elements");
     }
 
-    public async ValueTask ParseAsync(IByteSource source)
+    public async ValueTask ParseAsync(ParsingBuffer source)
     {
         for (int i = 0; i < index.Count; i+=2)
         {
@@ -76,26 +78,33 @@ internal readonly struct XrefStreamParser
         }
     }
 
-    private async ValueTask ParseSectionAsync(IByteSource source, int baseNum, int length)
+    private async ValueTask ParseSectionAsync(ParsingBuffer source, int baseNum, int length)
     {
+        var pos2 = col0Size + col1Size;
         for (int i = 0; i < length; i++)
         {
-            var readResult = await source.ReadAtLeastAsync(itemSize).CA();
-            if (!HasEnoughDataForOneRow(readResult.Buffer)) return;
-            ReadOne(new SequenceReader<byte>(readResult.Buffer), baseNum + i);
-            source.AdvanceTo(readResult.Buffer.GetPosition(itemSize));
+            await source.TryEnsureBytesAsync(itemSize).CA();
+            if (source.CurrentLength < itemSize) return;
+            var buffer = source.Peek(itemSize);
+            ProcessLine(baseNum + i,
+                IntFromSpan(buffer[..col0Size]),
+                IntFromSpan(buffer[col0Size..pos2]),
+                IntFromSpan(buffer[pos2..])
+                );
+            source.Advance(itemSize);
         }
     }
 
-    private void ReadOne(SequenceReader<byte> input, int index)
+    private static ulong IntFromSpan(ReadOnlySpan<byte> bytes)
     {
-        var c0 = input.ReadBigEndianUint(col0Size);
-        var c1 = input.ReadBigEndianUint(col1Size);
-        var c2 = input.ReadBigEndianUint(col2Size);
-        ProcessLine(index, c0, c1, c2);
+        ulong ret = 0;
+        foreach (var b in bytes )
+        {
+            ret = (ret << 8) | b;
+        }
+        return ret;
     }
 
-    private bool HasEnoughDataForOneRow(in ReadOnlySequence<byte> input) => input.Length >= itemSize;
 
     private void ProcessLine(int index, ulong c0, ulong c1, ulong c2)
     {
