@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
 using System.Buffers;

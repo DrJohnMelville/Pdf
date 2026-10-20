@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-#warning make this Disposable or make sure that the ParsingBuffer gets disposed.
 internal readonly partial struct PdfTokenizer
 {
     private readonly Tokenizer postScriptTokenizer;
@@ -20,7 +19,6 @@ internal readonly partial struct PdfTokenizer
 
     public PdfTokenizer(ParsingReader reader)
     {
-        //            var asyncReader = new IByteSourceToIAsyncReadStream(reader.Reader);
         postScriptTokenizer = new Tokenizer(reader.Buffer);
         enumerator = postScriptTokenizer.TokensAsync().GetAsyncEnumerator();
     }

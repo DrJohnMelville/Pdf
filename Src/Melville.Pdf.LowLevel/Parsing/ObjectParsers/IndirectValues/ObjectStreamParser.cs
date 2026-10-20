@@ -1,16 +1,12 @@
-﻿using Melville.Parsing;
-using Melville.Parsing.IStreamAdaptors;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Melville.StreamInterfaces.Streams;
 using System;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;

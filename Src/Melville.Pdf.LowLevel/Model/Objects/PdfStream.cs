@@ -47,11 +47,17 @@ public class PdfStream : PdfDictionary
         object? context = null) =>
         StreamEncryptedContentAsync(desiredFormat, null, context);
 
-#warning convert this to native readers.
+    /// <summary>
+    /// Retrieve an IAsyncReader that reads the value od the sream decoded to the desired format.
+    /// </summary>
+    /// <param name="desiredFormat">The decoding level that is requested.</param>
+    /// <param name="context">An optional context objext for the filters.</param>
+    /// <returns></returns>
     public async ValueTask<IAsyncReader> ReaderForContentAsync(
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
             (await StreamContentAsync(desiredFormat, context)).AsStreamReader();
 
+#warning convert this to native readers.
     internal async ValueTask<Stream> StreamEncryptedContentAsync(
         StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
     {

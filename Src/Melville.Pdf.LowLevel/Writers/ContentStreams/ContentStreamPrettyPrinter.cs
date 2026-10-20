@@ -8,6 +8,8 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 

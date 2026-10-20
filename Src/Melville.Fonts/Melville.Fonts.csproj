@@ -11,6 +11,12 @@
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="RawCffParsers\**" />
+    <EmbeddedResource Remove="RawCffParsers\**" />
+    <None Remove="RawCffParsers\**" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -22,10 +28,6 @@
 
 		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
 		<ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="RawCffParsers\" />
 	</ItemGroup>
 
 </Project>

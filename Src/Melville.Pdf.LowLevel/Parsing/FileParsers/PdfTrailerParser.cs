@@ -63,12 +63,12 @@ internal readonly struct PdfTrailerParser(
         using var buffer = parsingReader.Buffer;
 
         //if xref token then we need to read an xref table, otherwise it is an xref stream
-        if (!await TrySkipToken(buffer, xrefTag)) return null;
+        if (!await TrySkipTokenAsync(buffer, xrefTag)) return null;
         await buffer.SkipOverAsync(CharacterClassifier.WhitespaceSearchValues);
         
         await new XrefTableParser(buffer, source.IndirectResolver).ParseAsync();
         
-        if (!await TrySkipToken(buffer, trailerTag))
+        if (!await TrySkipTokenAsync(buffer, trailerTag))
             throw new PdfParseException("Trailer does not follow xref");
 
         var trailerIndirect = (await new RootObjectParser(parsingReader).ParseAsync().CA());
@@ -77,7 +77,7 @@ internal readonly struct PdfTrailerParser(
         
         return trailer;
     }
-    private async ValueTask<bool> TrySkipToken(ParsingBuffer buffer, byte[] token)
+    private async ValueTask<bool> TrySkipTokenAsync(ParsingBuffer buffer, byte[] token)
     {
         await buffer.EnsureBytesAsync(token.Length);
         if (!buffer.Peek().StartsWith(token)) return false;

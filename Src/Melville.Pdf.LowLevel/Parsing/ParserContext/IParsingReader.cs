@@ -26,7 +26,7 @@ internal partial class DisposableParsingReader:ParsingReader, IDisposable
         source = reader as IDisposable;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         Buffer.Dispose();
         source?.Dispose();

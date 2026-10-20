@@ -9,7 +9,9 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualBasic;
 
@@ -43,18 +45,16 @@ internal static class FileTrailerLocater
 
     private static async Task<long> FindXrefStartPosition(ParsingBuffer buffer, int position)
     {
-#warning updat to use ReadTextLong Below.
         buffer.Advance(position + StartXRef.Length); // skip the startxref
-        await buffer.SkipToAsync(CharacterClassifier.DecimalDigitSearchValues);// skip any whitespace
-        var end = await buffer.EnsureHasNonCharAsync(CharacterClassifier.DecimalDigitSearchValues); // make sure we read the whole number
-        return long.Parse(buffer.Peek(end<0?buffer.CurrentLength:end));
+        return await buffer.ReadTextLongAsync().CA() ??
+            throw new PdfParseException("No xref position found.");
     }
 
     private static readonly SearchValues<byte> digits = SearchValues.Create("0123456789"u8);
     private static ReadOnlySpan<byte> StartXRef => "startxref"u8; 
 
 }
-public static class FileParsingBufferExtensions
+internal static class FileParsingBufferExtensions
 {
     extension(ParsingBuffer self) 
     { 

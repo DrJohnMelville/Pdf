@@ -19,10 +19,10 @@ internal readonly struct XrefTableParser(ParsingBuffer buffer, IIndirectObjectRe
             if (!blockLength.HasValue) throw new PdfParseException("Invalid Xref Table");
             if (blockLength is 0) continue;
             await buffer.SkipToAsync(CharacterClassifier.DecimalDigitSearchValues).CA();
-            await ReadTableValues((int)first, (int)blockLength.Value).CA();
+            await ReadTableValuesAsync((int)first, (int)blockLength.Value).CA();
         }
     }
-    async ValueTask ReadTableValues(int first, int blockLength)
+    async ValueTask ReadTableValuesAsync(int first, int blockLength)
     {
         for (int i = 0; i < blockLength; i++)
         {

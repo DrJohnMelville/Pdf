@@ -83,8 +83,8 @@ internal readonly struct XrefStreamParser
         var pos2 = col0Size + col1Size;
         for (int i = 0; i < length; i++)
         {
-            await source.TryEnsureBytesAsync(itemSize).CA();
-            if (source.CurrentLength < itemSize) return;
+            ;
+            if (!await source.TryEnsureBytesAsync(itemSize).CA()) return;
             var buffer = source.Peek(itemSize);
             ProcessLine(baseNum + i,
                 IntFromSpan(buffer[..col0Size]),
