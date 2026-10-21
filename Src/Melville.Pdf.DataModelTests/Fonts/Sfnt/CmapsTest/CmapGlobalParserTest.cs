@@ -224,8 +224,7 @@ public class CmapGlobalParserTest: IDisposable
     {
         using var select = GetPeerFile("CmapFromCambriaFont.dat");
         IMultiplexSource source = MultiplexSourceFactory.Create(select);
-        using var _ = Force.Using(source.ReaderFrom(0), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(0);
         var cmap = (ICMapSource)new ParsedCmap(source,
             (await FieldParser.ReadFromAsync<CmapTable>(buffer).CA()).Tables);
         var subtable = await cmap.GetByIndexAsync(1);

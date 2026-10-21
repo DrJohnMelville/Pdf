@@ -91,8 +91,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<ICMapSource> LoadCmapSlowAsync(TableRecord table)
     {
-        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(table.Offset);
         return new ParsedCmap(source.OffsetFrom(table.Offset),
             (await FieldParser.ReadFromAsync<CmapTable>(buffer).CA()).Tables);
     }
@@ -131,8 +130,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private async Task<ParsedMaximums> ParseMaxProfileAsync(TableRecord table)
     {
 
-        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(table.Offset);
         return await new MaxpParser(buffer).ParseAsync().CA();
     }
 
@@ -258,8 +256,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private async Task<T> LoadTableSlowAsync<T>(TableRecord table) where T : IGeneratedParsable<T>, new()
     {
 
-        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(table.Offset);
 
         return await FieldParser.ReadFromAsync<T>(buffer).CA();
     }
@@ -281,8 +278,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
 
     private async Task<PostscriptData> LoadPostscriptDataTableAsync(TableRecord table)
     {
-        using var _ = Force.Using(source.ReaderFrom(table.Offset), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(table.Offset);
         return await new PostscriptTableParser(buffer).ParseAsync().CA();
     }
 

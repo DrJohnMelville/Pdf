@@ -48,8 +48,7 @@ internal static partial class FieldParser
 
     public static async ValueTask<T> ReadFromAsync<T>(IMultiplexSource source, long offset = 0 ) where T : IGeneratedParsable<T>
     {
-        using var _ = Force.Using(source.ReaderFrom(offset), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = source.ParsingBufferFrom(offset);
         return await ReadFromAsync<T>(buffer);
     }
 

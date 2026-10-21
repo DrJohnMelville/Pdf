@@ -12,8 +12,7 @@ internal readonly struct SfntParser(IMultiplexSource src)
 {
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync(ulong rootPosition)
     {
-        using var _ = Force.Using(src.ReaderFrom((long)rootPosition), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = src.ParsingBufferFrom((long)rootPosition);
         var rec = await FieldParser.ReadFromAsync<TableDirectory>(buffer).CA();
         return rec.Parse(src);
     }
@@ -23,8 +22,7 @@ internal readonly struct FontCollectionParser(IMultiplexSource src)
 {
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
     {
-        using var _ = Force.Using(src.ReaderFrom(0), out var reader);
-        using var buffer = new ParsingBuffer(reader);
+        using var buffer = src.ParsingBufferFrom(0);
         return await (
                 await FieldParser.ReadFromAsync<FontCollectionHeader>(buffer).CA())
             .ParseAsync(src).CA();

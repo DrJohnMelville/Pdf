@@ -46,6 +46,7 @@ internal readonly struct CharSetReader<T>(
 {
     public async ValueTask<T> ReadCharSetAsync()
     {
+        throw new NotImplementedException();
         var type = await charsetPipe.ReadBigEndianUintAsync(1).CA();
         charsetPipe.LogParsePosition($"Charset Type {type}");
         switch (type)

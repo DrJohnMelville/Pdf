@@ -1,6 +1,7 @@
 ﻿using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -24,6 +25,19 @@ public interface IMultiplexSource : IDisposable
     /// <param name="position"></param>
     IAsyncReader ReaderFrom(long position) =>
         ReadFrom(position).AsStreamReader();
+
+    /// <summary>
+    /// Create a parsing buffer starting at the given location.  The buffer disposes 
+    /// of its underlying reader if needed
+    /// </summary>
+    /// <param name="position">Starting position to be read from.</param>
+    /// <param name="bufferSize">Desired starting size of the buffer, or 0 for default.</param>
+    /// <returns>A parsing buffer initialized to the given position</returns>
+    ParsingBuffer ParsingBufferFrom(long position, int bufferSize = 0)
+    {
+        var reader = ReaderFrom(position);
+        return new ParsingBuffer(reader, bufferSize).WithDisposedDependency(reader);
+    }
 
     /// <summary>
     /// Return a pipe reader starting at a given point in the stream.
