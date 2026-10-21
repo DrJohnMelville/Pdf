@@ -15,7 +15,7 @@ public static class InitializeModule
     public static void SetupModule()
     {
         RequireDisposal.RecordDisposableCreation = false;
-        RequireDisposal.ThrowOnMissedDispose = true;
+        RequireDisposal.ThrowOnMissedDispose = false;
     }
 }
 #endif

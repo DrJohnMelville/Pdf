@@ -17,7 +17,7 @@ public class IByteSourceToIAsyncReadStream(IByteSource source) : IAsyncReader
     {
         var result = await source.ReadAsync();
         var ret = TransferBuffer(result.Buffer, buffer.Span);
-        source.AdvanceTo(result.Buffer.GetPosition(ret));
+        source.AdvanceTo(result.Buffer.Start, result.Buffer.GetPosition(ret));
         return (int)ret;
     }
     long TransferBuffer(ReadOnlySequence<byte> buffer, Span<byte> span)

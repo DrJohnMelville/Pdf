@@ -118,7 +118,7 @@ internal class IndexedReader(IIndexedReader inner, long basePosition, CountedSou
     public long Seek(long position)
     {
         absolutePosition = basePosition + position;
-        if ((ulong)absolutePosition > (ulong)Length)
+        if ((ulong)absolutePosition > (ulong)inner.Length)
             throw new InvalidOperationException("Invalid Reader Position");
         return Position;
     }
