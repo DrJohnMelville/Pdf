@@ -58,7 +58,8 @@ internal class SyntaxStringTokenizer: SpanTokenizer
     }
     byte? ReadSlashCharacter(ref SpanParsingBuffer input)
     {
-        return input.GetUInt8() switch
+        if (!input.TryGetUInt8(out var second)) return null;
+        return second switch
         {
             (byte)'n' => (byte)'\n',
             (byte)'r' => (byte)'\r',

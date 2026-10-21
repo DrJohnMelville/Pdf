@@ -189,7 +189,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     private async ValueTask<IGlyphLocationSource> ReadLocationTableAsync(
         TableRecord table, ParsedMaximums maximums, ParsedHead head)
     {
-        using var pipe = source.ReadPipeFrom(table.Offset);
+        using var pipe = source.ParsingBufferFrom(table.Offset);
         return await new LocationTableParser(
                 pipe, maximums.NumGlyphs, head.IndexToLocFormat)
             .ParseAsync().CA();
