@@ -152,7 +152,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
         var horizontalHeader = await HorizontalHeaderTableAsync().CA();
         var maximums = await MaximumProfileTableAsync().CA();
         var head = await HeadTableAsync().CA();
-        using var pipe = source.ReadPipeFrom(table.Offset);
+        using var pipe = source.ParsingBufferFrom(table.Offset);
         return await new HorizontalMetricsParser(pipe,
             HMetricsCountBugFix(horizontalHeader, maximums), maximums.NumGlyphs, head.UnitsPerEm)
             .ParseAsync().CA();

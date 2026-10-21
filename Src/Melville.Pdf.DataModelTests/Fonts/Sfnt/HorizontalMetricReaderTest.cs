@@ -23,7 +23,7 @@ public class HorizontalMetricReaderTest
             0008
             """.BitsFromHex());
 
-        using var pipe = data.ReadPipeFrom(0);
+        using var pipe = data.ParsingBufferFrom(0);
         var metrics = await new HorizontalMetricsParser(pipe, 3, 5, 1)
             .ParseAsync();
 

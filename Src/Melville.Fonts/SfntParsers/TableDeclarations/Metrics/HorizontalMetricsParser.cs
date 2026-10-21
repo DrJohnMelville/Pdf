@@ -7,12 +7,13 @@ using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.CodeAnalysis;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 
 internal class HorizontalMetricsParser(
-    IByteSource source,
+    ParsingBuffer source,
     ushort numberOfHMetrics,
     ushort numGlyphs,
     ushort unitsPerEM)
