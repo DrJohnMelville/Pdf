@@ -3,6 +3,7 @@
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -15,7 +16,7 @@ internal readonly struct GlyphFromSid(ushort[] glyphSids): IDisposable
     }
 
     public static async ValueTask <GlyphFromSid> ParseAsync(
-        int length, IByteSource pipe)
+        int length, ParsingBuffer pipe)
     {
         using var data = new PooledBuffer<ushort>(length);
         data.AsSpan().Clear();

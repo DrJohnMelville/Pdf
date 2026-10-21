@@ -63,7 +63,7 @@ internal partial class CffGenericFont :
             return await new StandardCharsetFactory<T>(target)
                 .FromByteAsync(topDictData.CharsetOffset).CA();
         
-        using var charsetPipe = topDictData.CharsetPipe();
+        using var charsetPipe = topDictData.CharsetBuffer();
         return await new CharSetReader<T>(charsetPipe, target).ReadCharSetAsync().CA();
     }
 

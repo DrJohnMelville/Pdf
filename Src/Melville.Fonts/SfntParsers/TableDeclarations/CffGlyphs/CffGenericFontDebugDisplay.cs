@@ -3,6 +3,7 @@
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -72,14 +73,14 @@ internal partial class CffGenericFont
     {
         bookMark.IndentParseMap("Custom Char Map");
         bookMark.JumpToParseMap(0);
-        using var charsetPipe = topDictData.CharsetPipe();
+        using var charsetPipe = topDictData.CharsetBuffer();
         bookMark.AddParseMapAlias(charsetPipe);
         await new CharSetReader<FakeCharsetTarget>(charsetPipe, new FakeCharsetTarget(charsetPipe, 
             charStringIndex.Length)).ReadCharSetAsync().CA();
         bookMark.OutdentParseMap();
     }
 
-    internal readonly struct FakeCharsetTarget(IByteSource charsetPipe, uint length) : ICharSetTarget
+    internal readonly struct FakeCharsetTarget(ParsingBuffer charsetPipe, uint length) : ICharSetTarget
     {
         public long Count => length;
         public ValueTask SetGlyphNameAsync(int index, ushort SID)

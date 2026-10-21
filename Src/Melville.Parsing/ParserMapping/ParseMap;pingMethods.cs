@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Parsing.ParserMapping;
 
@@ -22,6 +24,12 @@ public static partial class ParseMappingMethods
     /// </summary>
     /// <param name="source">The item to monitor for parsing</param>
     public static ParseMap MonitorParsing(this IByteSource source) => ParseMapRegistry.NewMap(source);
+
+    /// <summary>
+    /// Creates a new parse map for the given source.
+    /// </summary>
+    /// <param name="source">The item to monitor for parsing</param>
+    public static ParseMap MonitorParsing(this ParsingBuffer source) => ParseMapRegistry.NewMap(source);
 #else
     private static ParseMap flyweightMap = CreateFlyweight();
     private static ParseMap CreateFlyweight ()
@@ -51,6 +59,7 @@ public static partial class ParseMappingMethods
     /// <param name="s">An existing alias to the parsemap.</param>
     /// <param name="alias">The new alias to be added</param>
     [MacroItem("Stream")]
+    [MacroItem("ParsingBuffer")]
     [MacroItem("IByteSource")]
     [MacroItem("ParseMapBookmark?")]
     [MacroCode("""
@@ -170,5 +179,17 @@ public static partial class ParseMappingMethods
         var ret = src.ReadPipeFrom(position, internalPosition);
         src.AddParseMapAlias(ret);
         return ret;
+    }
+}
+
+/// <summary>
+///  add an extension property to make the codegen for ParseMapping work
+/// </summary>
+internal static class ParsingBufferPosition
+{
+    extension (ParsingBuffer pb)
+    {
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public long Position => pb.RelativePosition;
     }
 }

@@ -28,7 +28,7 @@ public class CharSetReaderTest
     private async ValueTask<string[]> ReadTableAsync(string hexBytes, int length)
     {
         using var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ParsingBufferFrom(0);
 
         var target = new StringTarget(new CffStringIndex(await NamesIndexAsync()), 
             length);
@@ -47,7 +47,7 @@ public class CharSetReaderTest
     public async Task ReadType0toIntsAsync()
     {
         using var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ParsingBufferFrom(0);
 
         var target = new MemoryTarget(new ushort[4]);
         (await new CharSetReader<MemoryTarget>(pipe, target)

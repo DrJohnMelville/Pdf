@@ -1,10 +1,10 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-
-using Melville.Parsing.CountingReaders;
+﻿using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
+using System.IO.Pipelines;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -135,6 +135,13 @@ internal class TopDictData: IDisposable
     {
         using var stringsPipe = source.ReadPipeFrom(StringIndexOffset, StringIndexOffset);
         return await  new CFFIndexParser(source, stringsPipe).ParseCff1Async().CA();
+    }
+
+    public ParsingBuffer CharsetBuffer()
+    {
+        ParsingBuffer ret = source.ParsingBufferFrom(CharsetOffset);
+        ret.RelativePosition = CharsetOffset;
+        return ret;
     }
 
     public IByteSource CharsetPipe() => source.ReadPipeFrom(CharsetOffset, CharsetOffset);

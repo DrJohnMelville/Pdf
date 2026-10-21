@@ -2,6 +2,7 @@
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -41,14 +42,12 @@ internal readonly struct MemoryTarget(Memory<ushort> target) : ICharSetTarget
 }
 
 internal readonly struct CharSetReader<T>(
-    IByteSource charsetPipe,
-    T target) where T : ICharSetTarget
+    ParsingBuffer sourceBuffer,T target) where T : ICharSetTarget
 {
     public async ValueTask<T> ReadCharSetAsync()
     {
-        throw new NotImplementedException();
-        var type = await charsetPipe.ReadBigEndianUintAsync(1).CA();
-        charsetPipe.LogParsePosition($"Charset Type {type}");
+        var type = await sourceBuffer.GetUInt8Async().CA();
+        sourceBuffer.LogParsePosition($"Charset Type {type}");
         switch (type)
         {
             case 0:
@@ -71,7 +70,7 @@ internal readonly struct CharSetReader<T>(
     {
         for (int i = 1; i < target.Count; i++)
         {
-            var character = (ushort)await charsetPipe.ReadBigEndianUintAsync(2).CA();
+            var character = (ushort)await sourceBuffer.GetUInt16BigEndianAsync().CA();
             await target.SetGlyphNameAsync(i, character).CA();
         }
     }
@@ -80,14 +79,14 @@ internal readonly struct CharSetReader<T>(
     {
         for (int position = 1;position < target.Count;)
         {
-            var first = (int)await charsetPipe.ReadBigEndianUintAsync(2).CA();
-            var count = (int)await charsetPipe.ReadBigEndianUintAsync(nLength).CA();
-            charsetPipe.IndentParseMap($"First {first} Count {count}");
+            var first = (int)await sourceBuffer.GetUInt16BigEndianAsync().CA();
+            var count = (int)await sourceBuffer.GetUIntBigEndianAsync(nLength).CA();
+            sourceBuffer.IndentParseMap($"First {first} Count {count}");
             for (int i = 0; i < count + 1; i++)
             {
                 await target.SetGlyphNameAsync(position++, (ushort)(first + i)).CA();
             }
-            charsetPipe.OutdentParseMap();
+            sourceBuffer.OutdentParseMap();
         }
     }
 }
