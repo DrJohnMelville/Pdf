@@ -180,6 +180,21 @@ public static partial class ParseMappingMethods
         src.AddParseMapAlias(ret);
         return ret;
     }
+
+    /// <summary>
+    /// Create a pipe from a multiplex source and add it to the parsemap
+    /// </summary>
+    /// <param name="src">The source to get a pipe from</param>
+    /// <param name="position">Desired starting position of the pipe</param>
+    /// <param name="internalPosition">Position the pipe should report as the position of the first byte.</param>
+    /// <returns></returns>
+    public static ParsingBuffer ReadLoggedBufferFrom(this IMultiplexSource src, int position, int internalPosition = 0)
+    {
+        var ret = src.ParsingBufferFrom(position);
+        ret.RelativePosition = internalPosition;
+        src.AddParseMapAlias(ret);
+        return ret;
+    }
 }
 
 /// <summary>

@@ -180,4 +180,6 @@ internal class TopDictData: IDisposable
 
     public IByteSource FdSelectPipe() =>
         source.ReadLoggedPipeFrom((int)FDSelectOffset, (int)FDSelectOffset);
+    public ParsingBuffer FdSelectBuffer() =>
+        source.ReadLoggedBufferFrom((int)FDSelectOffset, (int)FDSelectOffset);
 }

@@ -5,15 +5,16 @@ using System.Diagnostics;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.ParserMapping;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int glyphs)
+internal class FdSelectParser(ParsingBuffer source, IGenericFont[] subFonts, int glyphs)
 {
     public async Task<IGenericFont> ParseFdSelectAsync()
     {
         source.IndentParseMap("FD Select");
-        var type = await source.ReadBigEndianUintAsync(1).CA();
+        var type = await source.GetUInt8Async().CA();
         source.LogParsePosition($"FDSelect Type {type}");
         var data = type switch
         {
@@ -29,8 +30,8 @@ internal class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int g
 
     private async Task<byte[]> ParseType0Async()
     {
-        var data = await source.ReadAtLeastAsync(glyphs).CA();
-        var ret = data.Buffer.Slice(0, glyphs).ToArray();
+        var ret = new byte[glyphs];
+        await source.FillExternalBufferAsync(ret);
 #if DEBUG
         for (int i = 0; i < ret.Length; i++)
         {
@@ -43,15 +44,15 @@ internal class FdSelectParser(IByteSource source, IGenericFont[] subFonts, int g
     private async Task<byte[]> ParseType3Async()
     {
         var ret = new byte[glyphs];
-        var rangeCount = (int)await source.ReadBigEndianUintAsync(2).CA();
+        var rangeCount = (int)await source.GetUInt16BigEndianAsync().CA();
         source.LogParsePosition($"Range Count {rangeCount}");
-        var currentGlyph = (int) await source.ReadBigEndianUintAsync(2).CA();
+        var currentGlyph = (int) await source.GetUInt16BigEndianAsync().CA();
         Debug.Assert(currentGlyph == 0);
         source.LogParsePosition($"First range Start should be 0: {currentGlyph}");
         for (int i = 0; i < rangeCount; i++)
         {
-            var selector = await source.ReadBigEndianUintAsync(1).CA();
-            var next = (int)await source.ReadBigEndianUintAsync(2).CA();
+            var selector = await source.GetUInt8Async().CA();
+            var next = (int)await source.GetUInt16BigEndianAsync().CA();
             source.IndentParseMap($"Range {i} Selector {selector} Next {next}");
             while (currentGlyph < next)
             {

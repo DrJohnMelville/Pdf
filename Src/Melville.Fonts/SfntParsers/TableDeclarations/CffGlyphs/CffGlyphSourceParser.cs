@@ -74,7 +74,7 @@ internal readonly struct CffGlyphSourceParser(
         {
             var subFonts = await ParseSubFontsAsync(
                 stringIndexOffset, globalSubroutineExecutor, fontName, topDict, topData).CA();
-            using var fdSelectSource = topData.FdSelectPipe();
+            using var fdSelectSource = topData.FdSelectBuffer();
             return await new FdSelectParser(fdSelectSource, subFonts,
                 (int)(await topData.ReadCharStringIndexAsync().CA()).Length).ParseFdSelectAsync().CA();
         }
