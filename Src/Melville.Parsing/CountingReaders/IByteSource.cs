@@ -13,7 +13,7 @@ public interface IByteSource: IDisposable
     /// fill a read result with bytes to parse iff it can be done without blocking.
     /// </summary>
     /// <param name="result">A read result structure that receives the bytes to be parsed</param>
-    /// <returns>True if there are bytes to parse, false if blockingis required.</returns>
+    /// <returns>True if there are bytes to parse, false if blocking is required.</returns>
     bool TryRead(out ReadResult result);
 
     /// <summary>
@@ -34,13 +34,13 @@ public interface IByteSource: IDisposable
         throw new NotSupportedException("Must use an AsyncParser.");
 
     /// <summary>
-    /// Mark the next unconsumed and unexamined byte in the source.
+    /// Mark the next unused and unexamined byte in the source.
     /// </summary>
-    /// <param name="consumed">A single position for both the next byte to examine and the next uncounsumed byte.</param>
+    /// <param name="consumed">A single position for both the next byte to examine and the next unused byte.</param>
     void AdvanceTo(SequencePosition consumed);
     
     /// <summary>
-    /// Mark the next unconsumed and unexamined bytes separately.
+    /// Mark the next unused and unexamined bytes separately.
     /// </summary>
     /// <param name="consumed">The first byte that has not been completely consumed.  The next ReadAsync will begin at
     /// this byte.</param>

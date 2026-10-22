@@ -10,6 +10,7 @@ using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -51,7 +52,7 @@ internal readonly partial struct CffIndex
         await buffer.AdvanceToRelativePositionAsync((long)startOfData).CA();
 
         
-        var result = await buffer.EnsureBytesAsync(length).CA();
+        await buffer.EnsureBytesAsync(length).CA();
         return new(buffer, new ReadOnlySequence<byte>(buffer.PeekMemory(length)),
             bookmark.CreateParseMapBookmark((int)startOfData));
     }
@@ -75,27 +76,17 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, ParsingBuffer buf
     {
         try
         {
-            if (pipe is not null)
-            {
-                Debug.Assert(pipe.Position == buffer.RelativePosition);
-            }
             return await InnerInnerParseAsync(sizeWidth);
         }
         finally
         {
-            if (pipe is not null )
+            if (pipe is not null)
             {
                 await pipe.AdvanceToLocalPositionAsync(buffer.RelativePosition).CA();
             }
-            if (pipe is not null)
-            {
-                Debug.Assert(pipe.Position == buffer.RelativePosition);
-            }
-
         }
     }
 
-#if true
     private async ValueTask<CffIndex> InnerInnerParseAsync(int sizeWidth)
     {
         var count = (uint)await buffer.GetUIntBigEndianAsync(sizeWidth).CA();
@@ -129,55 +120,12 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, ParsingBuffer buf
 
         }
 #else
-        await buffer.AdvanceToRelativePositionAsync((int)count * offsetSize).CA();
+        await buffer.AdvanceAsync((int)count * offsetSize).CA();
         var dataLength = await buffer.GetUIntBigEndianAsync(offsetSize).CA();
         await buffer.AdvanceAsync((int)(dataLength - 1)).CA();
 #endif
         return new CffIndex(rootSource, count, offsetSize, bookmark);
     }
-
-#else
-
-        private async ValueTask<CffIndex> InnerInnerParseAsync(int sizeWidth)
-        {
-            var count = (uint)await pipe.ReadBigEndianUintAsync(sizeWidth).CA();
-            pipe.LogParsePosition($"Index Length: {count} (0x{count:X})");
-            if (count == 0) return new CffIndex(root, 0, 0, null);
-            var offsetSize = (byte)await pipe.ReadBigEndianUintAsync(1).CA();
-            pipe.LogParsePosition($"Offset Size {offsetSize}");
-            var rootSource = root.OffsetFrom((uint)pipe.Position);
-            pipe.AddParseMapAlias(rootSource);
-            ParseMapBookmark? bookmark = null;
-    #if DEBUG
-            bookmark = pipe.CreateParseMapBookmark();
-            ulong dataLength = 0;
-            pipe.IndentParseMap("OffsetArray");
-            var offsets = new ulong[count + 1];
-            for (int i = 0; i < count + 1; i++)
-            {
-                var current = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
-                Debug.Assert(current >= dataLength);
-                pipe.LogParsePosition($"Offset {i}: {current} (0x{current:X})");
-                offsets[i] = dataLength = current;
-            }
-
-            var startLoc = pipe.Position;
-            pipe.OutdentParseMap();
-            for (int i = 0; i < count + 1; i++)
-            {
-                await pipe.SkipForwardToAsync(startLoc + (long)offsets[i] - 1).CA();
-                if (i > 0)
-                    pipe.LogParsePosition($"Entry #{i}");
-
-            }
-    #else
-            await pipe.SkipOverAsync((int)count * offsetSize).CA();
-            var dataLength = await pipe.ReadBigEndianUintAsync(offsetSize).CA();
-            await pipe.SkipOverAsync((int)(dataLength - 1)).CA();
-    #endif
-            return new CffIndex(rootSource, count, offsetSize, bookmark);
-        }
-#endif
 }
 
 internal static class NumberFromByteSourceImpl

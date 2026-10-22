@@ -12,18 +12,21 @@ namespace Melville.Parsing.CountingReaders;
 [Obsolete("This is a temporary shim for replacing the IByteSource with the ParsingBuffer")]
 public class IByteSourceToIAsyncReadStream(IByteSource source) : IAsyncReader
 {
+    long startPos = source.Position;
     ///<inheritdoc/>
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
     {
+        var positionDelta = startPos - source.Position;
         var result = await source.ReadAsync();
-        var ret = TransferBuffer(result.Buffer, buffer.Span);
-        source.AdvanceTo(result.Buffer.Start, result.Buffer.GetPosition(ret));
+        var ret = TransferBuffer(result.Buffer.Slice(positionDelta), buffer.Span);
+        source.AdvanceTo(result.Buffer.Start, result.Buffer.GetPosition(startPos - source.Position));
         return (int)ret;
     }
     long TransferBuffer(ReadOnlySequence<byte> buffer, Span<byte> span)
     {
         var retLen = Math.Min(buffer.Length, span.Length);
         buffer.Slice(0, retLen).CopyTo(span);
+        startPos += retLen;
         return retLen;
     }
 }
