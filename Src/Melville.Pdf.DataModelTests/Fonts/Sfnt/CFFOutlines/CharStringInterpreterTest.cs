@@ -52,7 +52,7 @@ public class CharStringInterpreterTest: IDisposable
         byte[] buffer = [00, 01, 01, 01, (byte)(1+bytes.Length),
             ..bytes];
         source = MultiplexSourceFactory.Create(buffer);
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ParsingBufferFrom(0);
         var index = await new CFFIndexParser(source, 
                 pipe)
             .ParseCff1Async();

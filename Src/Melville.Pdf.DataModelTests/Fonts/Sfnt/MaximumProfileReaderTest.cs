@@ -20,9 +20,7 @@ public class MaximumProfileReaderTest
         var reader = new MemoryReader(data.BitsFromHex());
         using var pipe = new ParsingBuffer(reader);
 
-        return await new MaxpParser(
-                pipe)
-            .ParseAsync();
+        return await new MaxpParser(pipe).ParseAsync();
     }
 
     [Fact]

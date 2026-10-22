@@ -1,13 +1,15 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Numerics;
-using System.Text;
-
-using Melville.Parsing.CountingReaders;
+﻿using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
+using System.Diagnostics;
+using System.IO.Pipelines;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
+using System.Text;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -16,17 +18,17 @@ internal readonly struct CffGlyphSourceParser(
 {
     public async ValueTask<IReadOnlyList<IGenericFont>> ParseGenericFontAsync()
     {
-        using var pipe = source.ReadLoggedPipeFrom(0);
+        using var pipe = source.ReadLoggedBufferFrom(0);
         pipe.LogParsePosition("Parse CFF Font File");
         pipe.IndentParseMap("Header");
         var (headerSize, offsetSize) = await ReadHeaderAsync(pipe).CA();
-        await pipe.SkipForwardToAsync(headerSize).CA();
+        await pipe.AdvanceToRelativePositionAsync(headerSize).CA();
         pipe.LogParsePosition($"Skipped Space after the Header");
         pipe.PeerIndentParseMap("Name Index");
         var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         pipe.PeerIndentParseMap("Top Index");
         var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
-        var stringIndexOffset = pipe.Position;
+        var stringIndexOffset = pipe.RelativePosition;
         pipe.PeerIndentParseMap("String Index");
         var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         pipe.PeerIndentParseMap("Global Subr Index");
@@ -114,25 +116,17 @@ internal readonly struct CffGlyphSourceParser(
         return subFonts;
     }
 
-    private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(IByteSource pipe)
+    private async ValueTask<(byte headerSize, byte offetSize)> ReadHeaderAsync(ParsingBuffer pipe)
     {
-        var results = await pipe.ReadAtLeastAsync(4).CA();
-        return ParseHeader(pipe, results.Buffer);
-    }
+        var majorVersion = await pipe.GetUInt8Async().CA();
+        pipe.LogParsePosition($"Major Version: {majorVersion}");
+        var minorVersion = await pipe.GetUInt8Async().CA();
+        pipe.LogParsePosition($"Minor Version: {minorVersion}");
+        var headerSize = await pipe.GetUInt8Async().CA();
+        pipe.LogParsePosition($"Header Size: {headerSize}");
+        var offSize = await pipe.GetUInt8Async().CA();
+        pipe.LogParsePosition($"Offset Size: {offSize}");
 
-    private (byte headerSize, byte offetSize) ParseHeader(IByteSource pipe, ReadOnlySequence<byte> buffer)
-    {
-        var reader = new SequenceReader<byte>(buffer);
-        var majorVersion = reader.GetUInt8BigEndian();
-        pipe.LogParsePosition($"Major Version: {majorVersion}", (int)reader.Consumed);
-        var minorVersion = reader.GetUInt8BigEndian();
-        pipe.LogParsePosition($"Minor Version: {minorVersion}", (int)reader.Consumed);
-        var headerSize = reader.GetUInt8BigEndian();
-        pipe.LogParsePosition($"Header Size: {headerSize}", (int)reader.Consumed);
-        var offSize = reader.GetUInt8BigEndian();
-        pipe.LogParsePosition($"Offset Size: {offSize}", (int)reader.Consumed);
-
-        pipe.AdvanceTo(reader.Position);
         Debug.Assert(majorVersion == 1);
         Debug.Assert(minorVersion == 0);
         return (headerSize, offSize);

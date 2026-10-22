@@ -105,7 +105,8 @@ internal class TopDictData: IDisposable
 
     public async ValueTask<CffIndex> ReadCharStringIndexAsync()
     {
-        using var pipe = source.ReadPipeFrom(CharStringOffset, CharStringOffset);
+        using var pipe = source.ParsingBufferFrom(CharStringOffset);
+        pipe.RelativePosition = CharStringOffset;
         source.AddParseMapAlias(pipe);
         pipe.IndentParseMap("Character Strings");
         pipe.JumpToParseMap(0);
@@ -123,7 +124,7 @@ internal class TopDictData: IDisposable
 
     public async Task<CffIndex> GetFdArrayAsync()
     {
-        using var pipe = source.ReadLoggedPipeFrom((int)FDArrayOffset, (int)FDArrayOffset);
+        using var pipe = source.ReadLoggedBufferFrom((int)FDArrayOffset, (int)FDArrayOffset);
         pipe.IndentParseMap("Index");
         pipe.JumpToParseMap(0);
         var index = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
@@ -133,7 +134,8 @@ internal class TopDictData: IDisposable
 
     public async ValueTask<CffIndex> StringIndexAsync()
     {
-        using var stringsPipe = source.ReadPipeFrom(StringIndexOffset, StringIndexOffset);
+        using var stringsPipe = source.ParsingBufferFrom(StringIndexOffset);
+        stringsPipe.RelativePosition = StringIndexOffset;
         return await  new CFFIndexParser(source, stringsPipe).ParseCff1Async().CA();
     }
 
@@ -161,7 +163,8 @@ internal class TopDictData: IDisposable
         if (privateSubrsOffset == 0) return EmptyIndex();
 
         var pipe2Position = privateSubrsOffset + PrivateOffset;
-        using var pipe2 = source.ReadPipeFrom(pipe2Position, pipe2Position);
+        using var pipe2 = source.ParsingBufferFrom(pipe2Position);
+        pipe2.RelativePosition = pipe2Position;
         return await new CFFIndexParser(source, pipe2).ParseCff1Async().CA();
     }
 

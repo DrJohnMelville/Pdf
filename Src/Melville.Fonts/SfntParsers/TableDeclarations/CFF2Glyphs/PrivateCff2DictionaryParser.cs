@@ -55,7 +55,7 @@ internal readonly struct PrivateCff2DictionaryParser(
             }
 
             var indexOffset = offsets[i]+offsets[i+count];
-            using var  p2 = source.ReadPipeFrom(indexOffset);
+            using var  p2 = source.ParsingBufferFrom(indexOffset);
             ((CffIndex[])procIndexes)[i] = await new CFFIndexParser(source.OffsetFrom(
                     (uint)indexOffset), p2)
                 .ParseCff2Async().CA();

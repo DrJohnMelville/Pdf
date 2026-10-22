@@ -24,7 +24,7 @@ public class CffStringIndexTest: IDisposable
 
     private async ValueTask<CffIndex> NamesIndexAsync()
     {
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ParsingBufferFrom(0);
         var ret = await new CFFIndexParser(source, pipe).ParseCff1Async();
         return ret;
     }
