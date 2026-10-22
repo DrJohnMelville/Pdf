@@ -19,5 +19,15 @@ public static class StreamExtensnions
 
     extension(ref SpanParsingBuffer self)
     {
+        public bool TryGetUInt16BigEndian(out ushort value)
+        {
+            if (self.RemainingLength < 2)
+            {
+                value = 0;
+                return false;
+            }
+            value = self.GetUInt16BigEndian();
+            return true;
+        }
     }
 }

@@ -98,7 +98,7 @@ internal partial class CffGenericFont :
     private ConfiguredValueTaskAwaitable<byte[]> ReadCustomEncoding(GlyphFromSid sidDecoder,
         ParseMapBookmark? mapAncestor)
     {
-        var readPipeFrom = topDictData.EncodingPipe();
+        using var readPipeFrom = topDictData.EncodingBuffer();
         mapAncestor.AddParseMapAlias(readPipeFrom);
         return new CffEncodingReader(
             readPipeFrom, sidDecoder).ParseAsync().CA();

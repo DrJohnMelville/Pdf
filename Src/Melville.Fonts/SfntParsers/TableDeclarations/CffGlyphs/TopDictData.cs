@@ -146,7 +146,12 @@ internal class TopDictData: IDisposable
 
     public IByteSource CharsetPipe() => source.ReadPipeFrom(CharsetOffset, CharsetOffset);
 
-    public IByteSource EncodingPipe() => source.ReadPipeFrom(EncodingOffset, EncodingOffset);
+    public ParsingBuffer EncodingBuffer()
+    {
+        ParsingBuffer ret = source.ParsingBufferFrom(EncodingOffset);
+        ret.RelativePosition = EncodingOffset;
+        return ret;
+    }
 
     public async ValueTask<CffIndex> GetPrivateSubrsAsync()
     {

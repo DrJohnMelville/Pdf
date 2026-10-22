@@ -14,8 +14,9 @@ public class EncodingReaderTest
     private ValueTask<byte[]> ParseAsync(string hexBits)
     {
         using var multiplexSource = MultiplexSourceFactory.Create(hexBits.BitsFromHex());
+        using var source= multiplexSource.ParsingBufferFrom(0);
         return new CffEncodingReader(
-                multiplexSource.ReadPipeFrom(0),
+                source,
                 new GlyphFromSid([
                     0, 256, 257, 258
                 ]))
