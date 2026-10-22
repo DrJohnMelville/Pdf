@@ -7,6 +7,7 @@ using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
@@ -43,15 +44,13 @@ internal readonly struct FontDictSelectParser(
     public async ValueTask<IFontDictSelector> ParseAsync()
     {
         if (offset == 0) return SingleDictSelector.Instance;
-        using var pipe = source.ReadPipeFrom(offset);
+        using var pipe = source.ParsingBufferFrom(offset);
         return await ParseAsync(pipe).CA();
     }
 
-    private async ValueTask<IFontDictSelector> ParseAsync(IByteSource pipe)
+    private async ValueTask<IFontDictSelector> ParseAsync(ParsingBuffer pipe)
     {
-        var result = await pipe.ReadAsync().CA();
-        var type = result.Buffer.First.Span[0];
-        pipe.AdvanceTo(result.Buffer.GetPosition(1));
+        var type = await pipe.GetUInt8Async().CA();
         return type switch
         {
             0 => await ReadType0SelectorAsync(pipe).CA(),
@@ -61,12 +60,10 @@ internal readonly struct FontDictSelectParser(
         };
     }
 
-    private async ValueTask<IFontDictSelector> ReadType0SelectorAsync(IByteSource pipe)
+    private async ValueTask<IFontDictSelector> ReadType0SelectorAsync(ParsingBuffer pipe)
     {
         var data = new byte[(int)glyphCount];
-        var result = await pipe.ReadAtLeastAsync(data.Length).CA();
-        result.Buffer.CopyTo(data);
-        pipe.AdvanceTo(result.Buffer.GetPosition(data.Length));
+        await pipe.FillExternalBufferAsync(data).CA();
         return new Type0FontDictSelector(data);
 
     }

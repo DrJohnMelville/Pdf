@@ -4,36 +4,29 @@ using System.IO.Pipelines;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
 internal readonly struct Type34FontSelectorParser(
-    IByteSource reader, int glyphSize, int tableSize)
+    ParsingBuffer reader, int glyphSize, int tableSize)
 {
     public async ValueTask<IFontDictSelector> ParseAsync()
     {
-        var result = await reader.ReadAtLeastAsync(glyphSize).CA();
-        var count = ReadUInt16(result.Buffer);
-        result = await reader.ReadAtLeastAsync((int)(count * (glyphSize+tableSize)) + glyphSize).CA();
-        return ParseTable(result.Buffer, count);
+        var count =(uint) await reader.GetUIntBigEndianAsync(glyphSize).CA();
+        var buffer = await reader.TakeBytesAsync((int)(count * (glyphSize + tableSize)) + glyphSize);
+        return ParseTable(buffer.Span, count);
     }
 
-    private uint ReadUInt16(ReadOnlySequence<byte> input)
-    {
-        var seqReader = new SequenceReader<byte>(input);
-        var ret = (uint)seqReader.ReadBigEndianUint(glyphSize);
-        reader.AdvanceTo(seqReader.Position);
-        return ret;
-    }
-    private IFontDictSelector ParseTable(ReadOnlySequence<byte> data, uint count)
+    private IFontDictSelector ParseTable(Span<byte> data, uint count)
     {
         var entries = new Type3Entry[count];
-        var seqReader = new SequenceReader<byte>(data);
-        seqReader.ReadBigEndianUint(glyphSize); // throw awaqy the lower bound
+        var SpanReader = new SpanParsingBuffer(data);
+        SpanReader.ReadBigEndianUint(glyphSize); // throw away the lower bound
         for (int i = 0; i < count; i++)
         {
-            var table = seqReader.ReadBigEndianUint(tableSize);
-            var max = seqReader.ReadBigEndianUint(glyphSize);
+            var table = SpanReader.ReadBigEndianUint(tableSize);
+            var max = SpanReader.ReadBigEndianUint(glyphSize);
             entries[i] = new Type3Entry((uint)max, (ushort)table);
         } return new Type3FontDictSelector(entries);
     }

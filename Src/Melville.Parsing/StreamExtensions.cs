@@ -19,6 +19,11 @@ public static class StreamExtensnions
 
     extension(ref SpanParsingBuffer self)
     {
+        /// <summary>
+        /// Attempt to read a big endian UInt16 from the buffer 
+        /// </summary>
+        /// <param name="value">The read value</param>
+        /// <returns>True if a value was read, false otherwise.</returns>
         public bool TryGetUInt16BigEndian(out ushort value)
         {
             if (self.RemainingLength < 2)
