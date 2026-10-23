@@ -1,14 +1,14 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Numerics;
-using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-
+﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
+using System.Diagnostics;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
@@ -16,10 +16,10 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
 {
     public async ValueTask<IGlyphSource> ParseAsync()
     {
-        using var pipe = source.ReadPipeFrom(0);
+        using var pipe = source.ParsingBufferFrom(0);
         var topDictSize = await ParseHeaderAsync(pipe).CA();
         var topDict = await ParseTopDictAsync(pipe, topDictSize).CA();
-        await pipe.AdvanceToLocalPositionAsync(topDictSize+5).CA();
+        await pipe.AdvanceToRelativePositionAsync(topDictSize+5).CA();
         var globalSubrs = await new CFFIndexParser(source, pipe).ParseCff2Async().CA();
 
 
@@ -33,7 +33,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
                     glyphs.Length)
                 .ParseAsync().CA();
 
-        await pipe.AdvanceToLocalPositionAsync(topDict.FontDictIndexOffset).CA();
+        await pipe.AdvanceToRelativePositionAsync(topDict.FontDictIndexOffset).CA();
         var dicts = await new PrivateCff2DictionaryParser(source, pipe, fdSelector)
             .ParseAsync().CA();
 
@@ -53,35 +53,25 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
     }
 
     private static async ValueTask<TopDict> ParseTopDictAsync(
-        IByteSource pipe, ushort topDictSize)
+        ParsingBuffer pipe, ushort topDictSize)
     {
-        var topDictData = await pipe.ReadAtLeastAsync(topDictSize).CA();
-        var topDictSequence = topDictData.Buffer.Slice(0,topDictSize);
-        var ret = new TopDict(topDictSequence);
-        pipe.AdvanceTo(topDictSequence.End);
-        return ret;
+        var bytes = await pipe.TakeBytesAsync(topDictSize);
+        var topDictSequence = new ReadOnlySequence<byte>(bytes);
+        return new TopDict(topDictSequence);
     }
 
-    private async Task<ushort> ParseHeaderAsync(IByteSource pipe)
+    private async Task<ushort> ParseHeaderAsync(ParsingBuffer pipe)
     {
-        var (headerSize, topDictSize) = ParseHeader(pipe, (await pipe.ReadAtLeastAsync(5).CA()).Buffer);
-        await pipe.AdvanceToLocalPositionAsync(headerSize).CA();
-        return topDictSize;
-    }
 
-    private (byte headerSize, ushort topDictSize) ParseHeader(
-        IByteSource pipe, ReadOnlySequence<byte> bytes)
-    {
-        var reader = new SequenceReader<byte>(bytes);
-        var majorVersion = reader.GetUInt8BigEndian();
-        var minorVersion = reader.GetUInt8BigEndian();
-        var headerSize = reader.GetUInt8BigEndian();
-        var topDictSize = reader.GetUInt16BigEndian();
-        pipe.AdvanceTo(reader.Position);
+        var majorVersion = await pipe.GetUInt8Async().CA();
+        var minorVersion = await pipe.GetUInt8Async().CA();
+        var headerSize = await pipe.GetUInt8Async().CA();
+        var topDictSize = await pipe.GetUInt16BigEndianAsync().CA();
 
         Debug.Assert(majorVersion == 2);
         Debug.Assert(minorVersion == 0);
 
-        return (headerSize, topDictSize);
+        await pipe.AdvanceToRelativePositionAsync(headerSize).CA();
+        return topDictSize;
     }
 }

@@ -12,6 +12,7 @@ internal readonly struct TopDict
     public readonly int VariationStoreOffset;
     public readonly Matrix3x2 FontMatrix;
 
+#warning this needs to take a span, not a sequence
     public TopDict(ReadOnlySequence<byte> source)
     {
         FontMatrix = Matrix3x2.CreateScale(0.001f);

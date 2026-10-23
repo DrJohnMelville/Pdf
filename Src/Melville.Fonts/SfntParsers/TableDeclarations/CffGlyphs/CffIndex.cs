@@ -64,30 +64,8 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, ParsingBuffer buf
 {
     public ValueTask<CffIndex> ParseCff1Async() => InnerParseAsync(2);
     public ValueTask<CffIndex> ParseCff2Async() => InnerParseAsync(4);
-    private readonly IByteSource? pipe;
-
-    public CFFIndexParser(IMultiplexSource root, IByteSource pipe): this (root, 
-        new ParsingBuffer(new IByteSourceToIAsyncReadStream(pipe)) { RelativePosition = pipe.Position })
-    {
-        this.pipe = pipe;
-    }
-
+ 
     private async ValueTask<CffIndex> InnerParseAsync(int sizeWidth)
-    {
-        try
-        {
-            return await InnerInnerParseAsync(sizeWidth);
-        }
-        finally
-        {
-            if (pipe is not null)
-            {
-                await pipe.AdvanceToLocalPositionAsync(buffer.RelativePosition).CA();
-            }
-        }
-    }
-
-    private async ValueTask<CffIndex> InnerInnerParseAsync(int sizeWidth)
     {
         var count = (uint)await buffer.GetUIntBigEndianAsync(sizeWidth).CA();
         buffer.LogParsePosition($"Index Length: {count} (0x{count:X})");
