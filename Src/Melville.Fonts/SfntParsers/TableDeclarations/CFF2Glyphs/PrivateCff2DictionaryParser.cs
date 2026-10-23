@@ -1,48 +1,67 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
+using Melville.Hacks.Reflection;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
 using System.Diagnostics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 
 internal readonly struct PrivateCff2DictionaryParser(
-    IMultiplexSource source, IByteSource pipe, IFontDictSelector selector)
+    IMultiplexSource source, ParsingBuffer buffer, IFontDictSelector selector)
 {
+    private readonly IByteSource? pipe;
+    [Obsolete("Use ParsingBuffer")]
+    public PrivateCff2DictionaryParser(IMultiplexSource source, IByteSource pipe, IFontDictSelector selector):
+        this (source, new ParsingBuffer(new IByteSourceToIAsyncReadStream(pipe)), selector)
+    {
+        this.pipe = pipe;
+    }
+
     public async ValueTask<IFontDictExecutorSelector> ParseAsync()
     {
-        var count = (int) await pipe.ReadBigEndianUintAsync(4).CA();
+        try
+        {
+            return await InnerParseAsync();
+        }
+        finally
+        {
+            if (pipe is not null && buffer.RelativePosition > pipe.Position)
+                await pipe.AdvanceToLocalPositionAsync(buffer.RelativePosition).CA();
+        }
+    }
+    private  async ValueTask<IFontDictExecutorSelector> InnerParseAsync()
+    {
+        var count = (int) await buffer.GetUInt32BigEndianAsync();
         if (count == 0) return NullExecutorSelector.Instance;
-        var offsetSize = (int)await pipe.ReadBigEndianUintAsync(1).CA();
+        var offsetSize = (int)await buffer.GetUInt8Async().CA();
 
         using var offsets = new PooledBuffer<int>(count*2);
 
-        var first = (int)await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+        var first = (int)await buffer.GetUIntBigEndianAsync(offsetSize).CA();
         Debug.Assert(first == 1);
         for (int i = 0; i < count; i++)
         {
-            ((int[])offsets)[i] = (int)await pipe.ReadBigEndianUintAsync(offsetSize).CA();
+            ((int[])offsets)[i] = (int)await buffer.GetUIntBigEndianAsync(offsetSize).CA();
         }
 
         for(int i = 0; i < count; i++)
         {
             var length = offsets[i] - first;
             first = offsets[i];
-            var sequence = await pipe.ReadAtLeastAsync(length).CA();
-            var trimmed = sequence.Buffer.Slice(0, length);
+
+            var trimmed = await buffer.TakeBytesAsync(length).CA();
             (offsets[i + count], offsets[i]) = ParseFontDict(trimmed);
-            pipe.AdvanceTo(trimmed.End);
         }
 
         for (int i = 0; i < count; i++)
         {
-            using var p2 = source.ReadPipeFrom((uint)offsets[i]);
-            var result = await p2.ReadAtLeastAsync(offsets[count+ i]).CA();
-            var trimmed = result.Buffer.Slice(0, offsets[count + i]);
-            offsets[i+count] = ReadPrivateDict(trimmed);
-            p2.AdvanceTo(trimmed.End);
+            using var r2 = source.ParsingBufferFrom(offsets[i]);
+            var trimmed = await r2.TakeBytesAsync(offsets[i]);
+            offsets[i + count] = ReadPrivateDict(trimmed);
         }
 
         using var procIndexes = new PooledBuffer<CffIndex>(count);
@@ -80,22 +99,20 @@ internal readonly struct PrivateCff2DictionaryParser(
         return ret;
     }
 
-    private int ReadPrivateDict(ReadOnlySequence<byte> trimmed)
+    private int ReadPrivateDict(Memory<byte> trimmed)
     {
-        var reader = new SequenceReader<byte>(trimmed);
         Span<DictValue> operands = stackalloc DictValue[1];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            reader, null, operands);
+            trimmed, null, operands);
         if (!dictReader.TryFindEntry(0x13)) return 0;
         return operands[0].IntValue;
     }
 
-    private (int, int) ParseFontDict(ReadOnlySequence<byte> source)
+    private (int, int) ParseFontDict(Memory<byte> source)
     {
-        var reader = new SequenceReader<byte>(source);
         Span<DictValue> operands = stackalloc DictValue[2];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            reader, null, operands);
+            source, null, operands);
         if (!dictReader.TryFindEntry(0x12)) return (0, 0);
         return (operands[0].IntValue, operands[1].IntValue);
     }

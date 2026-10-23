@@ -35,7 +35,7 @@ internal readonly partial struct CffIndex
     /// </summary>
     /// <param name="index">The ZERO BASED index of the item to remove.  This differs from the
     /// CFF spec which indicates that indexes use 1 based indexing.</param>
-    /// <returns>The requested item from the index.</returns
+    /// <returns>The requested item from the index.</returns>
        public async ValueTask<DisposableSequence> ItemDataAsync(int index)
     {
         if ((uint)index >= Length)

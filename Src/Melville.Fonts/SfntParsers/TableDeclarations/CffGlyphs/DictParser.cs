@@ -9,6 +9,14 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     [FromConstructor] private SequenceReader<byte> source;
     [FromConstructor] private readonly ParseMapBookmark? bookmark;
     [FromConstructor] private readonly Span<DictValue> operands;
+
+#warning use spans not sequences here
+    public DictParser(Memory<byte> source, ParseMapBookmark? bookmark, Span<DictValue> operands):
+        this(new SequenceReader<byte>(new ReadOnlySequence<byte>(source)), bookmark, operands)
+    {
+
+    }
+
     public int OperandPosition { get; private set; } = 0;
     public ReadOnlySequence<byte> UnreadSequence => source.UnreadSequence;
 
