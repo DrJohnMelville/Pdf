@@ -101,7 +101,7 @@ internal partial class CffInstructionExecutor<T>:
 
     private bool ReadInstruction(ref Memory<byte> source, out int instruction)
     {
-        var parser = new DictParser<CharString2Definition>(source, null, Stack);
+        var parser = new DictParser<CharString2Definition>(source.Span, null, Stack);
         instruction = parser.ReadNextInstruction(StackSize);
         StackSize = parser.OperandPosition;
         source = source.Slice(parser.ConsumedBytes);

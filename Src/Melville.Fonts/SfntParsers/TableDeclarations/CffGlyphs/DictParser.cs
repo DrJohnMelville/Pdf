@@ -1,25 +1,19 @@
 ﻿using System.Buffers;
 using Melville.INPC;
 using Melville.Parsing.ParserMapping;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-#warning -- reqrite to use a memory -- perhaps even a parsingbuffer
-internal ref partial struct DictParser<T> where T: IDictionaryDefinition
+internal ref partial struct DictParser<T>(
+    ReadOnlySpan<byte> source, ParseMapBookmark? bookmark, Span<DictValue> operands
+    ) where T: IDictionaryDefinition
 {
-    [FromConstructor] private SequenceReader<byte> source;
-    [FromConstructor] private readonly ParseMapBookmark? bookmark;
-    [FromConstructor] private readonly Span<DictValue> operands;
-
-#warning use spans not sequences here
-    public DictParser(Memory<byte> source, ParseMapBookmark? bookmark, Span<DictValue> operands):
-        this(new SequenceReader<byte>(new ReadOnlySequence<byte>(source)), bookmark, operands)
-    {
-
-    }
+    private SpanParsingBuffer source = new (source);
+    private readonly Span<DictValue> operands = operands;
 
     public int OperandPosition { get; private set; } = 0;
-    public int ConsumedBytes => (int)source.Consumed;
+    public int ConsumedBytes => (int)source.RelativePosition;
 
     public ReadOnlySpan<DictValue> Operands => operands[..OperandPosition];
 
@@ -36,7 +30,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     public int ReadNextInstruction(int startingStackSize = 0)
     {
         OperandPosition = startingStackSize;
-        while (source.TryRead(out var value))
+        while (source.TryGetUInt8(out var value))
         {
             switch (T.ClassifyEntry(value))
             {
@@ -75,18 +69,18 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 
     private int LogInstruction(int instruction)
     {
-        bookmark.LogParsePosition($"{DictionaryOperatorNamer.Title(instruction)}", (int)source.Consumed);
+        bookmark.LogParsePosition($"{DictionaryOperatorNamer.Title(instruction)}", (int)source.RelativePosition);
         return instruction;
     }
 
     private int ReadTwoByteInstruction() => 
-        source.TryRead(out var b1) ? (12<<8) | b1 :0xFF;
+        source.TryGetUInt8(out var b1) ? (12<<8) | b1 :0xFF;
 
     private void ReadSingle()
     {
         Span<char> stringValue = stackalloc char[25];
         int pos = 0;
-        while (source.TryRead(out var b) &&
+        while (source.TryGetUInt8(out var b) &&
                AddNibble(b >> 4, stringValue, ref pos) &&
                AddNibble(b & 0xF, stringValue, ref pos)
               ) ; // do nothing in loop
@@ -119,12 +113,13 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
              PushOperand(new DictValue(intValue));
     }
 
+#warning make this more efficient
     private bool TryRead5ByteInt(out int intValue)
     {
         intValue = 0;
         for (int i = 0; i < 4; i++)
         {
-            if (!source.TryRead(out var b)) return false;
+            if (!source.TryGetUInt8(out var b)) return false;
             intValue <<= 8;
             intValue |= b;
         }
@@ -141,29 +136,30 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     private bool IsOperator(byte b) => b < 22;
     private const byte PrefixOperator = 12;
 
+#warning use a faster parsing primative
     private void ReadRawTwoByteInteger()
     {
-        if (!(source.TryRead(out var b1) && source.TryRead(out var b2))) return;
+        if (!(source.TryGetUInt8(out var b1) && source.TryGetUInt8(out var b2))) return;
         PushOperand(new DictValue((short)((b1 << 8) + b2)));
     }
 
     private void ParseNegativeTwoByteInteger(byte value)
     {
-        if (!source.TryRead(out var b1))
+        if (!source.TryGetUInt8(out var b1))
             return;
         PushOperand(new DictValue((251-value) * 256 - b1 - 108));
     }
 
     private void Parse2ByteInteger(byte value)
     {
-        if (!source.TryRead(out var second)) return;
+        if (!source.TryGetUInt8(out var second)) return;
         PushOperand(new DictValue((value - 247) * 256 + second + 108));
     }
 
     private void PushOperand(DictValue value)
     {
         operands[OperandPosition] = value;
-        bookmark.LogParsePosition($"{OperandPosition}: {value}", (int)source.Consumed);
+        bookmark.LogParsePosition($"{OperandPosition}: {value}", (int)source.RelativePosition);
         OperandPosition++;
         OperandPosition %= operands.Length;
     }

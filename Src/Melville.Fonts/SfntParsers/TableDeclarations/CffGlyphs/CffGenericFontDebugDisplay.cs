@@ -39,7 +39,7 @@ internal partial class CffGenericFont
         await topDictData.HandlePrivateDictBytesAsync(pb =>
         {
             var dictParser = new DictParser<CffDictionaryDefinition>(
-                new SequenceReader<byte>(pb),
+                pb.Span,
                 bookmark, stackalloc DictValue[1]);
             while (dictParser.ReadNextInstruction(0) is not 0xFF)
             {

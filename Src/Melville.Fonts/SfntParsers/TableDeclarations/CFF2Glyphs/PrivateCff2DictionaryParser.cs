@@ -83,7 +83,7 @@ internal readonly struct PrivateCff2DictionaryParser(
     {
         Span<DictValue> operands = stackalloc DictValue[1];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            trimmed, null, operands);
+            trimmed.Span, null, operands);
         if (!dictReader.TryFindEntry(0x13)) return 0;
         return operands[0].IntValue;
     }
@@ -92,7 +92,7 @@ internal readonly struct PrivateCff2DictionaryParser(
     {
         Span<DictValue> operands = stackalloc DictValue[2];
         var dictReader = new DictParser<CffDictionaryDefinition>(
-            source, null, operands);
+            source.Span, null, operands);
         if (!dictReader.TryFindEntry(0x12)) return (0, 0);
         return (operands[0].IntValue, operands[1].IntValue);
     }

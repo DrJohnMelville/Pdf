@@ -68,7 +68,7 @@ internal class TopDictData: IDisposable
     {
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(
-            sourceData.SourceData, sourceData.Bookmark, result);
+            sourceData.SourceData.Span, sourceData.Bookmark, result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             CaptureDesiredValue(instr, result);
@@ -115,11 +115,12 @@ internal class TopDictData: IDisposable
         return charStringsIndex;
     }
 
-    public async ValueTask<T> HandlePrivateDictBytesAsync<T>(Func<ReadOnlySequence<byte>,T> operation)
+    public async ValueTask<T> HandlePrivateDictBytesAsync<T>(Func<Memory<byte>,T> operation)
     {
-        using var pipe = source.ReadPipeFrom(PrivateOffset, PrivateOffset);
-        var privateDictBytes = await pipe.ReadAtLeastAsync((int)PrivateSize).CA();
-        return operation(privateDictBytes.Buffer.Slice(0, (int)PrivateSize));
+        using var pipe = source.ParsingBufferFrom(PrivateOffset);
+        pipe.RelativePosition = PrivateOffset;
+        await pipe.EnsureBytesAsync((int)PrivateSize).CA();
+        return operation(pipe.PeekMemory((int)PrivateSize));
     }
 
     public async Task<CffIndex> GetFdArrayAsync()
@@ -171,11 +172,10 @@ internal class TopDictData: IDisposable
     // Per Adobe Technical Note 5176 page 24
     private const int subrsInstruction = 19;
 
-    private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlySequence<byte> slice)
+    private long FindPrivateSubrsOffsetFromPrivateDictionary(Memory<byte> slice)
     {
         Span<DictValue> result = stackalloc DictValue[1];
-        return new DictParser<CffDictionaryDefinition>(
-                new SequenceReader<byte>(slice), null, result)
+        return new DictParser<CffDictionaryDefinition>(slice.Span, null, result)
             .TryFindEntry(subrsInstruction)
             ? result[0].IntValue
             : 0;

@@ -17,9 +17,10 @@ internal readonly struct TopDict
     {
         FontMatrix = Matrix3x2.CreateScale(0.001f);
 
+#warning memory inefficient remove ToArray once I get a memory
         var reader = new SequenceReader<byte>(source);
         var parser = new DictParser<CffDictionaryDefinition>(
-            reader, null, stackalloc DictValue[6]);
+            source.ToArray(), null, stackalloc DictValue[6]);
 
         while (parser.ReadNextInstruction(0) is var instr and not 255)
         {

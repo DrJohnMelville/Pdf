@@ -13,8 +13,7 @@ public class DictParserTest
         string bytes, Span<DictValue> operands)
     {
         return new DictParser<CffDictionaryDefinition>(
-            new SequenceReader<byte>(new ReadOnlySequence<byte>(bytes.BitsFromHex())),
-            null, operands);
+            bytes.BitsFromHex(), null, operands);
     }
     [Fact]
     public void ScanEmptyDict()
