@@ -4,6 +4,7 @@ using Melville.Parsing.ParserMapping;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
+#warning -- reqrite to use a memory -- perhaps even a parsingbuffer
 internal ref partial struct DictParser<T> where T: IDictionaryDefinition
 {
     [FromConstructor] private SequenceReader<byte> source;

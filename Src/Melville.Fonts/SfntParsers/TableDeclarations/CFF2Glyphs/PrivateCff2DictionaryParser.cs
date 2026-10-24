@@ -13,27 +13,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 internal readonly struct PrivateCff2DictionaryParser(
     IMultiplexSource source, ParsingBuffer buffer, IFontDictSelector selector)
 {
-    private readonly IByteSource? pipe;
-    [Obsolete("Use ParsingBuffer")]
-    public PrivateCff2DictionaryParser(IMultiplexSource source, IByteSource pipe, IFontDictSelector selector):
-        this (source, new ParsingBuffer(new IByteSourceToIAsyncReadStream(pipe)), selector)
-    {
-        this.pipe = pipe;
-    }
-
     public async ValueTask<IFontDictExecutorSelector> ParseAsync()
-    {
-        try
-        {
-            return await InnerParseAsync();
-        }
-        finally
-        {
-            if (pipe is not null && buffer.RelativePosition > pipe.Position)
-                await pipe.AdvanceToLocalPositionAsync(buffer.RelativePosition).CA();
-        }
-    }
-    private  async ValueTask<IFontDictExecutorSelector> InnerParseAsync()
     {
         var count = (int) await buffer.GetUInt32BigEndianAsync();
         if (count == 0) return NullExecutorSelector.Instance;
