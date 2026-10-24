@@ -32,8 +32,10 @@ public readonly partial struct IccParser(IAsyncReader src)
             for (int i = 0; i < tags.Length; i++)
             {
                 var tag = tags[i];
+                // can only advance here because subsequent block can use the same data./
                 await source.AdvanceToRelativePositionAsync(tag.Offset);
-                var tagData = (await source.TakeBytesAsync((int)tag.Size)).AsSpanParsingBuffer();
+                await source.EnsureBytesAsync((int)tag.Size);
+                var tagData = source.Peek((int)tag.Size).AsSpanParsingBuffer();
                 tags[i] = tag with { Data = TagParser.Parse(ref tagData) };
             }
             return ret;
