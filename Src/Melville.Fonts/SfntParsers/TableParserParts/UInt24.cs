@@ -18,7 +18,7 @@ internal struct UInt24
     public static bool TryReadBigEndian(ref SpanParsingBuffer reader, out UInt24 output)
     {
 
-        if (reader.RemainingLength >= 3)
+        if (reader.CurrentLength >= 3)
         {
             var span = reader.Peek();
             output = new(((uint)span[0] << 16) | ((uint)span[1] << 8) | span[2]);

@@ -39,7 +39,7 @@ public class DataTag{
          reader.Skip32BitPad();
          Type = (DataType)reader.GetUInt32BigEndian();
          data = reader.Peek().ToArray();
-         reader.Advance(reader.RemainingLength);
+         reader.Advance(reader.CurrentLength);
      }
 
     /// <summary>

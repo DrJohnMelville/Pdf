@@ -19,7 +19,7 @@ internal ref partial struct DictParser<T> where T: IDictionaryDefinition
     }
 
     public int OperandPosition { get; private set; } = 0;
-    public ReadOnlySequence<byte> UnreadSequence => source.UnreadSequence;
+    public int ConsumedBytes => (int)source.Consumed;
 
     public ReadOnlySpan<DictValue> Operands => operands[..OperandPosition];
 

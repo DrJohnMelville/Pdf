@@ -31,7 +31,7 @@ internal readonly struct XrefTableParser(ParsingBuffer buffer, IIndirectObjectRe
             buffer.Advance(20);
         }  
     }
-    void ParseSingleLine(Span<byte> peek, int objectNumber) => 
+    void ParseSingleLine(ReadOnlySpan<byte> peek, int objectNumber) => 
         HandleXrefLine(long.Parse(peek[..10]), int.Parse(peek[11..16]), peek[17], objectNumber);
     
     private void HandleXrefLine(long first, int second, byte operation, int objectNumber)

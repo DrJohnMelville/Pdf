@@ -16,7 +16,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers
         protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)
         {
             var input = new SpanParsingBuffer(source[1..^1]);
-            using var output = new SpanWriter(input.RemainingLength / 2);
+            using var output = new SpanWriter(input.CurrentLength / 2);
             while (input.TryGetNext(CharacterClassifier.HexDigitSearchValues, out var high))
             {
                 if (!input.TryGetNext(CharacterClassifier.HexDigitSearchValues, out var low))

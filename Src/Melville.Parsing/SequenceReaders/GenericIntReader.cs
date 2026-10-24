@@ -28,7 +28,7 @@ namespace Melville.Parsing.SequenceReaders
 
         public static bool TryReadBigEndian(ref SpanParsingBuffer reader, out T value)
         {
-            if (reader.RemainingLength < byteCount)
+            if (reader.CurrentLength < byteCount)
             {
                 value = T.Zero;
                 return false;

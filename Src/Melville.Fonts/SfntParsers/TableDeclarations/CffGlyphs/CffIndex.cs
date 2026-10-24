@@ -17,8 +17,10 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal readonly partial struct DisposableSequence : IDisposable
 {
     [FromConstructor] private readonly IDisposable holder;
-    [FromConstructor] public ReadOnlySequence<byte> Sequence { get; }
+    [FromConstructor] public Memory<byte> SourceData { get; }
     [FromConstructor] public ParseMapBookmark? Bookmark { get; }
+    [Obsolete("Not needed -- we have the memory")]
+    public ReadOnlySequence<byte> Sequence => new ReadOnlySequence<byte>(SourceData);
 
     public void Dispose() => holder.Dispose();
 }
@@ -53,7 +55,7 @@ internal readonly partial struct CffIndex
 
         
         await buffer.EnsureBytesAsync(length).CA();
-        return new(buffer, new ReadOnlySequence<byte>(buffer.PeekMemory(length)),
+        return new(buffer, buffer.PeekMemory(length),
             bookmark.CreateParseMapBookmark((int)startOfData));
     }
 

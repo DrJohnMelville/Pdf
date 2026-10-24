@@ -10,7 +10,7 @@ internal class S15Fixed16Array
     public S15Fixed16Array(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
-        var values = new float[(reader.RemainingLength) / 4];
+        var values = new float[(reader.CurrentLength) / 4];
         for (int i = 0; i < values.Length; i++)
         {
             values[i] = reader.Reads15Fixed16();

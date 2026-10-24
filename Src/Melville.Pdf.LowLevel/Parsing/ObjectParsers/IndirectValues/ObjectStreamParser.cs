@@ -87,7 +87,7 @@ internal class ObjectStreamParser(
 
         private int LengthIndex(int i) => 1 + (2 * i);
 
-        void ReadNumbers(Span<byte> peek, int count, int[] numbers)
+        void ReadNumbers(ReadOnlySpan<byte> peek, int count, int[] numbers)
         {
             var reader = new SpanParsingBuffer(peek);
             int i = 0;

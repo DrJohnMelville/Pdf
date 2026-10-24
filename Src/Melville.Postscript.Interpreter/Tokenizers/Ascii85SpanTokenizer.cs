@@ -15,7 +15,7 @@ internal sealed class Ascii85SpanTokenizer : SpanTokenizer
     protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)
     {
         var input = new SpanParsingBuffer(source[2..^2]);
-        var output = new SpanWriter(input.RemainingLength);
+        var output = new SpanWriter(input.CurrentLength);
 
         ReadBytes(ref input, ref output);
         return PostscriptValueFactory.CreateString(output.Value, StringKind.String);

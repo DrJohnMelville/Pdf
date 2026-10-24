@@ -11,7 +11,7 @@ internal partial class WithLengthSearchStrategy: EndSearchStrategy
     protected override bool SkipBytes(ref SpanParsingBuffer seqReader)
     {
         if (!base.SkipBytes(ref seqReader)) return false;
-        if (seqReader.RemainingLength < length) return false;
+        if (seqReader.CurrentLength< length) return false;
         seqReader.Advance(length);
         return true;
     }

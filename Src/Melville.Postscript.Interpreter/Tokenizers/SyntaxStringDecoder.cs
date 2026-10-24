@@ -37,9 +37,9 @@ internal class SyntaxStringTokenizer: SpanTokenizer
     protected override PostscriptValue DecodeSpan(ReadOnlySpan<byte> source)
     {
         var input = new SpanParsingBuffer(source[1..^1]);
-        using var output = new SpanWriter(input.RemainingLength);
+        using var output = new SpanWriter(input.CurrentLength);
 
-        while (input.RemainingLength > 0)
+        while (input.CurrentLength > 0)
         {
             if (ReadCharacter(ref input) is { } charRead)
                 output.Push(charRead);

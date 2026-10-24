@@ -26,7 +26,7 @@ public static class StreamExtensnions
         /// <returns>True if a value was read, false otherwise.</returns>
         public bool TryGetUInt16BigEndian(out ushort value)
         {
-            if (self.RemainingLength < 2)
+            if (self.CurrentLength < 2)
             {
                 value = 0;
                 return false;

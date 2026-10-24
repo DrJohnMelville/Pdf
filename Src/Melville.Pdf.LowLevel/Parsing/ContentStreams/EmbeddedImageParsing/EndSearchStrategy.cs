@@ -17,7 +17,7 @@ internal class EndSearchStrategy
         if (!SkipBytes(ref seqReader))
             return ((int)seqReader.RelativePosition).AsFalseValue(out nextPos);
 
-        while (seqReader.RemainingLength > 0)
+        while (seqReader.CurrentLength> 0)
         {
             var index = seqReader.Peek().IndexOf("EI"u8);
             if (index < 0) return 0.AsFalseValue(out nextPos);

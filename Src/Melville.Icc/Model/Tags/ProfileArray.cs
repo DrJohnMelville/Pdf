@@ -11,7 +11,7 @@ internal abstract class ProfileArray<T>
     protected ProfileArray(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
-        var values = new T[(reader.RemainingLength) / ItemSizeInBytes()];
+        var values = new T[(reader.CurrentLength) / ItemSizeInBytes()];
         for (int i = 0; i < values.Length; i++)
         {
             values[i] = GetItem(ref reader);

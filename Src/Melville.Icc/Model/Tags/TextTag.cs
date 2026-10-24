@@ -16,6 +16,6 @@ public class TextTag
     internal TextTag(ref SpanParsingBuffer reader)
     {
         reader.Skip32BitPad();
-        Text = reader.ReadFixedAsciiString((int)(reader.RemainingLength));
+        Text = reader.ReadFixedAsciiString((int)(reader.CurrentLength));
     }
 }
