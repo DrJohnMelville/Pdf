@@ -19,8 +19,6 @@ internal readonly partial struct DisposableSequence : IDisposable
     [FromConstructor] private readonly IDisposable holder;
     [FromConstructor] public Memory<byte> SourceData { get; }
     [FromConstructor] public ParseMapBookmark? Bookmark { get; }
-    [Obsolete("Not needed -- we have the memory")]
-    public ReadOnlySequence<byte> Sequence => new ReadOnlySequence<byte>(SourceData);
 
     public void Dispose() => holder.Dispose();
 }

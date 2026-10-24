@@ -101,8 +101,7 @@ public partial class Type1GenericFont: ListOf1GenericFont,
         var executor = ObjectPool<CffInstructionExecutor<T>>.Shared.Rent().With(
             targetWrapper, glyphTransform*transform,
             subroutines, subroutines, []);
-        await executor.ExecuteInstructionSequenceAsync(
-            new ReadOnlySequence<byte>(charStrings[glyph])).CA();
+        await executor.ExecuteInstructionSequenceAsync(charStrings[glyph]).CA();
         ObjectPool<CffInstructionExecutor<T>>.Shared.Return(executor);
     }
 

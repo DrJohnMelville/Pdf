@@ -68,7 +68,7 @@ internal class TopDictData: IDisposable
     {
         Span<DictValue> result = stackalloc DictValue[2];
         var dictParser = new DictParser<CffDictionaryDefinition>(
-            new SequenceReader<byte>(sourceData.Sequence), sourceData.Bookmark, result);
+            sourceData.SourceData, sourceData.Bookmark, result);
         while (dictParser.ReadNextInstruction() is var instr and not 255)
         {
             CaptureDesiredValue(instr, result);

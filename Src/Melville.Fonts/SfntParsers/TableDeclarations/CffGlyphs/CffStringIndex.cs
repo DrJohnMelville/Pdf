@@ -16,8 +16,7 @@ internal readonly struct CffStringIndex(CffIndex customStrings)
         if (localIndex >= customStrings.Length)
             return ".notdef";
         using var data = await customStrings.ItemDataAsync(localIndex).CA();
-        return Encoding.UTF8.GetString(
-            data.Sequence);
+        return Encoding.UTF8.GetString(data.SourceData.Span);
     }
 }
 

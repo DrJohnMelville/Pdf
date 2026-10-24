@@ -22,7 +22,7 @@ internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
         if ((uint)index >= subroutines.Length)
             return; // silently ignore calls to nonexistant subroutines
         using var data = await subroutines.ItemDataAsync(index).CA();
-        await executor.ExecuteInstructionSequenceAsync(data.Sequence).CA();
+        await executor.ExecuteInstructionSequenceAsync(data.SourceData).CA();
     }
 
     private int Bias() => subroutines.Length switch

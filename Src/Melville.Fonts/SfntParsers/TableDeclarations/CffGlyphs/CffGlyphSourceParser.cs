@@ -58,7 +58,7 @@ internal readonly struct CffGlyphSourceParser(
     private async ValueTask<string> GetNameAsync(CffIndex nameIndex, int item)
     {
         using var bits = await nameIndex.ItemDataAsync(item).CA();
-        return Encoding.UTF8.GetString(bits.Sequence);
+        return Encoding.UTF8.GetString(bits.SourceData.Span);
     }
 
     private async Task<IGenericFont> CreateSingleFontAsync(CffIndex topIndex, long stringIndexOffset,

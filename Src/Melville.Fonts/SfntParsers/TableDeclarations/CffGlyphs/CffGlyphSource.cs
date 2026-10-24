@@ -64,7 +64,7 @@ public class CffGlyphSource : IGlyphSource
             localSubrs.GetExecutor(glyph), variatons);
 
         using var sourceSequence = await glyphs.ItemDataAsync((int)glyph).CA();
-        await engine.ExecuteInstructionSequenceAsync(sourceSequence.Sequence).CA();
+        await engine.ExecuteInstructionSequenceAsync(sourceSequence.SourceData).CA();
         ObjectPool<CffInstructionExecutor<T>>.Shared.Return(engine);
    }
 }

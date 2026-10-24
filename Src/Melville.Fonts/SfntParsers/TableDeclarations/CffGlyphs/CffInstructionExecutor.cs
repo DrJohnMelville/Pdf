@@ -14,7 +14,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
 internal interface ICffInstructionExecutor
 {
-    ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence);
+    ValueTask ExecuteInstructionSequenceAsync(Memory<byte> sourceSequence);
 }
 
 internal partial class CffInstructionExecutor<T>:
@@ -78,7 +78,7 @@ internal partial class CffInstructionExecutor<T>:
 
     #region Intstruction Sequence Execution
 
-    public async ValueTask ExecuteInstructionSequenceAsync(ReadOnlySequence<byte> sourceSequence)    {
+    public async ValueTask ExecuteInstructionSequenceAsync(Memory<byte> sourceSequence)    {
         try
         {
             while (ReadInstruction(ref sourceSequence, out var instruction))
@@ -99,9 +99,9 @@ internal partial class CffInstructionExecutor<T>:
         }
     }
 
-    private bool ReadInstruction(ref ReadOnlySequence<byte> source, out int instruction)
+    private bool ReadInstruction(ref Memory<byte> source, out int instruction)
     {
-        var parser = new DictParser<CharString2Definition>(new SequenceReader<byte>(source), null, Stack);
+        var parser = new DictParser<CharString2Definition>(source, null, Stack);
         instruction = parser.ReadNextInstruction(StackSize);
         StackSize = parser.OperandPosition;
         source = source.Slice(parser.ConsumedBytes);

@@ -11,6 +11,5 @@ internal sealed partial class Type1SubrExecutor:IGlyphSubroutineExecutor
     public IGlyphSubroutineExecutor GetExecutor(uint glyph) => this;
 
     public ValueTask CallAsync(int subroutine, ICffInstructionExecutor executor) => 
-        executor.ExecuteInstructionSequenceAsync(
-            new ReadOnlySequence<byte>(subRoutines[subroutine]));
+        executor.ExecuteInstructionSequenceAsync(subRoutines[subroutine]);
 }
