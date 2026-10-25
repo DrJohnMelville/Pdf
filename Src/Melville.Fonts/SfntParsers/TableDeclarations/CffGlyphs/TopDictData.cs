@@ -147,8 +147,6 @@ internal class TopDictData: IDisposable
         return ret;
     }
 
-    public IByteSource CharsetPipe() => source.ReadPipeFrom(CharsetOffset, CharsetOffset);
-
     public ParsingBuffer EncodingBuffer()
     {
         ParsingBuffer ret = source.ParsingBufferFrom(EncodingOffset);
@@ -186,8 +184,6 @@ internal class TopDictData: IDisposable
     public bool IsLoggingParseMap() => source.IsLoggingParseMap();
     public ParseMapBookmark? BookmarkAt(long location) => source.CreateParseMapBookmark((int)location);
 
-    public IByteSource FdSelectPipe() =>
-        source.ReadLoggedPipeFrom((int)FDSelectOffset, (int)FDSelectOffset);
     public ParsingBuffer FdSelectBuffer() =>
         source.ReadLoggedBufferFrom((int)FDSelectOffset, (int)FDSelectOffset);
 }

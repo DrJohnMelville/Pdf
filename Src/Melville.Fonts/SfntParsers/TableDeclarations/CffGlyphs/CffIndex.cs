@@ -105,20 +105,3 @@ internal readonly struct CFFIndexParser(IMultiplexSource root, ParsingBuffer buf
         return new CffIndex(rootSource, count, offsetSize, bookmark);
     }
 }
-
-internal static class NumberFromByteSourceImpl
-{
-    public static async ValueTask<ulong> ReadBigEndianUintAsync(this IByteSource source, int bytes)
-    {
-        var result = await source.ReadAtLeastAsync(bytes).CA();
-        return ReadBigEndianUint(source, result, bytes);
-    }
-
-    private static ulong ReadBigEndianUint(IByteSource source, ReadResult result, int bytes)
-    {
-        var reader = new SequenceReader<byte>(result.Buffer);
-        var ret = reader.ReadBigEndianUint(bytes);
-        source.AdvanceTo(reader.Position);
-        return ret;
-    }
-}
