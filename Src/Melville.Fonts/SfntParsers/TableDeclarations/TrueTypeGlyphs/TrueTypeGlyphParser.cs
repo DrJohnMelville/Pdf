@@ -4,6 +4,7 @@ using System.Numerics;
 using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
@@ -15,18 +16,17 @@ internal readonly struct TrueTypeGlyphParser<T>(
     HorizontalMetric horizontalMetric) where T: ITrueTypePointTarget
 {
 
-    private readonly ReadOnlySequence<byte> slice = new ReadOnlySequence<byte>(slice1);
-
     public ValueTask DrawGlyphAsync()
     {
-        var reader = new SequenceReader<byte>(slice);
+        Debugger.Break();
+        var reader = new SpanParsingBuffer(slice1.Span);
         int numberOfContours = reader.GetInt16BigEndian();
         PhantomPoints boundingBox = new();
         ReadBoundingBox(ref reader, ref boundingBox);
         if (numberOfContours < 0)
         {
             return new CompositeGlyphRenderer(innerRenderer, target, boundingBox, matrix)
-                .DrawAsync(reader.UnreadSequence);
+                .DrawAsync(new ReadOnlySequence<byte>(slice1[(int)reader.RelativePosition..]));
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
@@ -36,7 +36,8 @@ internal readonly struct TrueTypeGlyphParser<T>(
 
     #region Simple Glyph Rendering
 
-    private void DrawSimpleGlyph(ref SequenceReader<byte> reader, int numberOfContours)
+#warning number of conturs is always 1
+    private void DrawSimpleGlyph(ref SpanParsingBuffer reader, int numberOfContours)
     {
         Span<ushort> contourEnds = stackalloc ushort[numberOfContours];
         FieldParser.Read(ref reader, contourEnds);
@@ -44,7 +45,7 @@ internal readonly struct TrueTypeGlyphParser<T>(
         DrawPoints(ref reader, contourEnds);
     }
 
-    private void ReadBoundingBox(ref SequenceReader<byte> reader, ref PhantomPoints points)
+    private void ReadBoundingBox(ref SpanParsingBuffer reader, ref PhantomPoints points)
     {
         Span<short> boundingBox = stackalloc short[4];
         FieldParser.Read(ref reader, boundingBox);
@@ -61,23 +62,23 @@ internal readonly struct TrueTypeGlyphParser<T>(
     private Vector2 TransformPoint(int xPos, int yPos) =>
         Vector2.Transform(new Vector2(xPos, yPos), matrix);
 
-    private static void SkipInstructions(ref SequenceReader<byte> reader) =>
+    private static void SkipInstructions(ref SpanParsingBuffer reader) =>
         reader.Advance(reader.GetUInt16BigEndian());
 
-    private void DrawPoints(ref SequenceReader<byte> reader, scoped ReadOnlySpan<ushort> contourEnds)
+    private void DrawPoints(ref SpanParsingBuffer reader, scoped ReadOnlySpan<ushort> contourEnds)
     {
         // notice that we copy the reader each time below to get three different readers
         var (instructionBytes, xBytes) = CountDataBytes(reader, contourEnds[^1]);
         ExecuteInstructionSequence(reader,
-            reader.Slice(instructionBytes, xBytes),
-            reader.Slice(instructionBytes + xBytes),
+            new SpanParsingBuffer(reader.Peek().Slice(instructionBytes, xBytes)),
+            new SpanParsingBuffer(reader.Peek().Slice(instructionBytes + xBytes)),
             contourEnds);
     }
 
     private (int instructionBytes, int xBytes) CountDataBytes(
-        SequenceReader<byte> reader, ushort contourEnd)
+        SpanParsingBuffer reader, ushort contourEnd)
     {
-        var initialPosition = reader.Position;
+        var initialPosition = reader.RelativePosition;
         int pointsSimulated = 0;
         int xBytesConsumed = 0;
         while (pointsSimulated <= contourEnd)
@@ -91,12 +92,13 @@ internal readonly struct TrueTypeGlyphParser<T>(
             pointsSimulated += repeat;
         }
 
-        return ((int)
-            reader.Sequence.Slice(initialPosition, reader.Position).Length, xBytesConsumed);
+        return ((int)(reader.RelativePosition - initialPosition), xBytesConsumed);
     }
 
     private void ExecuteInstructionSequence(
-        SequenceReader<byte> instructions, SequenceReader<byte> xs, SequenceReader<byte> ys,
+        SpanParsingBuffer instructions, 
+        SpanParsingBuffer xs, 
+        SpanParsingBuffer ys,
         ReadOnlySpan<ushort> contourEnds)
     {
         int xPos = 0;
@@ -134,26 +136,26 @@ internal readonly struct TrueTypeGlyphParser<T>(
         }
     }
 
-    private static int ReadRepeatCount(ref SequenceReader<byte> instructions, GlyphFlags instruction) =>
+    private static int ReadRepeatCount(ref SpanParsingBuffer instructions, GlyphFlags instruction) =>
         (instruction.Check(GlyphFlags.Repeat))
-            ? (1 + instructions.GetUInt8BigEndian())
+            ? (1 + instructions.GetUInt8())
             : 1;
 
     private void ReportPoint(int xPos, int yPos, bool first, bool isEnd, bool onCurve) =>
         target.AddPoint(TransformPoint(xPos, yPos), onCurve, first, isEnd);
 
-    private static GlyphFlags ReadFlag(ref SequenceReader<byte> reader)
+    private static GlyphFlags ReadFlag(ref SpanParsingBuffer reader)
     {
-        reader.TryRead(out byte flagByte);
-        var flag = (GlyphFlags)flagByte;
+
+        var flag = (GlyphFlags)reader.GetUInt8();
         return flag;
     }
 
-    private int GetCoordinate(ref SequenceReader<byte> xs, int xOp) => xOp switch
+    private int GetCoordinate(ref SpanParsingBuffer xs, int xOp) => xOp switch
     {
         0 => 0,
-        1 => xs.GetUInt8BigEndian(),
-        -1 => -xs.GetUInt8BigEndian(),
+        1 => xs.GetUInt8(),
+        -1 => -xs.GetUInt8(),
         2 => xs.GetInt16BigEndian(),
         _ => throw new InvalidOperationException("Invalid xOp")
     };
