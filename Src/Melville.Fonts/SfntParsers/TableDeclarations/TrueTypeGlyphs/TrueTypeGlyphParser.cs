@@ -9,11 +9,14 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 internal readonly struct TrueTypeGlyphParser<T>(
     ISubGlyphRenderer innerRenderer,
-    ReadOnlySequence<byte> slice,
+    Memory<byte> slice1,
     T target,
     Matrix3x2 matrix,
     HorizontalMetric horizontalMetric) where T: ITrueTypePointTarget
 {
+
+    private readonly ReadOnlySequence<byte> slice = new ReadOnlySequence<byte>(slice1);
+
     public ValueTask DrawGlyphAsync()
     {
         var reader = new SequenceReader<byte>(slice);

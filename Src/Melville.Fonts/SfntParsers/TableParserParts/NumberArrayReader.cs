@@ -40,5 +40,13 @@ internal static class NumberArrayReader
             reader.Advance(span.Length);
             TryReverseEndianness(data);
         }
+
+        public static void Read(ref SpanParsingBuffer reader, scoped Span<~0~> data)
+        {
+            var span = global::System.Runtime.InteropServices.MemoryMarshal.Cast<~0~, byte>(data);
+            reader.Peek().TryCopyTo(span);
+            reader.Advance(span.Length);
+            TryReverseEndianness(data);
+        }
         """;
 }

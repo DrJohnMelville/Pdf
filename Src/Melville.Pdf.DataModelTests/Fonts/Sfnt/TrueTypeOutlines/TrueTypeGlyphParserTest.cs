@@ -27,7 +27,7 @@ public class TrueTypeGlyphParserTest
     }
 
     private TrueTypeGlyphParser<ITrueTypePointTarget> CreateParser(string hex, Matrix3x2 matrix) =>
-        new(glyphSource.Object, new ReadOnlySequence<byte>(hex.BitsFromHex()),
+        new(glyphSource.Object, hex.BitsFromHex(),
             target.Object, matrix, new HorizontalMetric(514, 17));
 
     [Theory]
