@@ -56,8 +56,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
         ParsingBuffer pipe, ushort topDictSize)
     {
         var bytes = await pipe.TakeBytesAsync(topDictSize);
-        var topDictSequence = new ReadOnlySequence<byte>(bytes);
-        return new TopDict(topDictSequence);
+        return new TopDict(bytes.Span);
     }
 
     private async Task<ushort> ParseHeaderAsync(ParsingBuffer pipe)

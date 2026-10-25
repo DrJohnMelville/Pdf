@@ -12,15 +12,12 @@ internal readonly struct TopDict
     public readonly int VariationStoreOffset;
     public readonly Matrix3x2 FontMatrix;
 
-#warning this needs to take a span, not a sequence
-    public TopDict(ReadOnlySequence<byte> source)
+    public TopDict(ReadOnlySpan<byte> source)
     {
         FontMatrix = Matrix3x2.CreateScale(0.001f);
 
-#warning memory inefficient remove ToArray once I get a memory
-        var reader = new SequenceReader<byte>(source);
         var parser = new DictParser<CffDictionaryDefinition>(
-            source.ToArray(), null, stackalloc DictValue[6]);
+            source, null, stackalloc DictValue[6]);
 
         while (parser.ReadNextInstruction(0) is var instr and not 255)
         {
