@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Melville.INPC;
 using Melville.Parsing.ParserMapping;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
@@ -113,22 +114,16 @@ internal ref partial struct DictParser<T>(
              PushOperand(new DictValue(intValue));
     }
 
-#warning make this more efficient
-    private bool TryRead5ByteInt(out int intValue)
-    {
-        intValue = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            if (!source.TryGetUInt8(out var b)) return false;
-            intValue <<= 8;
-            intValue |= b;
-        }
-        return true;
-    }
+    private bool TryRead5ByteInt(out int intValue) =>
+        source.CurrentLength >= 4 ? 
+            source.GetInt32BigEndian().AsTrueValue(out intValue) :
+            0.AsFalseValue(out intValue);
 
     private const float fixedFactor = 1.0f / 0x10000;
     private void ReadFiveByteFixed()
     {
+        // a "five byte" fixes number has four data bytes because
+        // the first byte was the opcode that got us here.
         if (TryRead5ByteInt(out var intValue)) 
             PushOperand(new DictValue(intValue*fixedFactor));
     }
@@ -136,11 +131,10 @@ internal ref partial struct DictParser<T>(
     private bool IsOperator(byte b) => b < 22;
     private const byte PrefixOperator = 12;
 
-#warning use a faster parsing primative
-    private void ReadRawTwoByteInteger()
+   private void ReadRawTwoByteInteger()
     {
-        if (!(source.TryGetUInt8(out var b1) && source.TryGetUInt8(out var b2))) return;
-        PushOperand(new DictValue((short)((b1 << 8) + b2)));
+        if (source.CurrentLength < 2) return;
+        PushOperand(new DictValue(source.GetInt16BigEndian()));
     }
 
     private void ParseNegativeTwoByteInteger(byte value)
