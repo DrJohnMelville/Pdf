@@ -7,14 +7,12 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// <summary>
 /// Classify Characters for postscript and PDF parsing
 /// </summary>
-public static partial class CharacterClassifier
-{
-    [MacroItem("Whitespace", @"\x0\x09\x0A\x0C\x0d ")]
-    [MacroItem("LineEnd", @"\r\n")]
-    [MacroItem("Delimiter", @"\x0\x09\x0A\x0C\x0d ()<>[]{}/%")]
-    [MacroItem("HexDigit", @"0123456789ABCDEFabcdef")]
-    [MacroItem("DecimalDigit", @"0123456789")]
-    [MacroCode("""
+[MacroItem("Whitespace", @"\x0\x09\x0A\x0C\x0d ")]
+[MacroItem("LineEnd", @"\r\n")]
+[MacroItem("Delimiter", @"\x0\x09\x0A\x0C\x0d ()<>[]{}/%")]
+[MacroItem("HexDigit", @"0123456789ABCDEFabcdef")]
+[MacroItem("DecimalDigit", @"0123456789")]
+[MacroCode("""
        /// <summary>
        /// Decide if a character is ~0~
        /// </summary>
@@ -33,7 +31,8 @@ public static partial class CharacterClassifier
        public static readonly SearchValues<byte> ~0~SearchValues = 
        SearchValues.Create(~0~Chars());
     """)]
-
+public static partial class CharacterClassifier
+{
     /// <summary>
     /// Decide if a character begins a comment
     /// </summary>

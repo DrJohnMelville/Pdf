@@ -6,7 +6,9 @@ using Melville.JpegLibrary.Decoder;
 
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
+using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
 
@@ -23,7 +25,7 @@ public readonly partial struct JpegStreamFactory
     /// YCbCr -> RGB and 4 element values are transformed from YCrCbK -> CMYK.  This
     /// parameter can be overridden, either way, by an App14 block in the JPEG file.
     [FromConstructor] private readonly long colorTransformFromPdf;
-    
+
     /// <summary>
     /// Create a JPegDecoder stream from a stream
     /// </summary>
@@ -31,10 +33,14 @@ public readonly partial struct JpegStreamFactory
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
     public async ValueTask<Stream> FromStreamAsync(Stream s)
     {
-#warning this shim is very inefficient
-        using var parsingBuffer = new ParsingBuffer(s.AsStreamReader());
-        while (!parsingBuffer.DoneReadingSource) await parsingBuffer.ReadBytesAsync();
-        return FromReadOnlySequence(new ReadOnlySequence<byte>(parsingBuffer.PeekMemory()));
+        using var buffer = new MultiMemoryBuffer();
+        using(var writer = buffer.CreateWriter())
+        {
+            await s.AsStreamReader().CopyToAsync(writer).CA();
+        }
+        // Melville.Jpeg is really designed around ReadOnlySequence so there is no
+        // need for a unitary buffer
+        return FromReadOnlySequence(buffer.AsSequence());
     }
 
     private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)

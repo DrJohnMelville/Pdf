@@ -1,5 +1,6 @@
 ﻿using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Mixins;
 using System.Diagnostics;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -12,32 +13,15 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
 
     protected void ResetState()
     {
+        RequireDisposal.ReportCreation(this);
         serialNumber = ICountedSource.NextNonce();
         state = CountedSourceState.Open;
     }
 
-    // this helps me debug mismatched disposes.  If the assert in CreateSourceTicket throws, I can
-    // enable this code to record the stack traces where I am getting destroyed.  This is a major
-    // memory and perf hog because it does a stack trace on every dispose, thus I have the conditional
-    // compilation to make sure I do not pay the price when I am not specifically debugging this feature.
-
-#if FALSE
-    private List<string> disposeStackTrace = [];
-    private void RecordDisposalTrace()
-    {
-        disposeStackTrace.Add(new StackTrace().ToString());
-    }
-    #warning Included debug code will cause performance problems
-#else
-    private void RecordDisposalTrace()
-    {
-    }
-#endif
-
+#warning -- I need to fix a few missed dispose bugs.
     public void Dispose()
     {
         if (state == CountedSourceState.Closed) return;
-        RecordDisposalTrace();
         state = CountedSourceState.WaitingForPendingReaders;
         TryCleanUp();
     }
@@ -48,7 +32,10 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         if (ShouldStayOpen()) return;
         CleanUp();
         state = CountedSourceState.Closed;
+        GC.SuppressFinalize(this);
     }
+
+    ~CountedMultiplexSource() => RequireDisposal.ReportMissedDispose(this);
 
     private bool ShouldStayOpen()
     {
@@ -63,7 +50,7 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
 
 
 
-    private CountedSourceTicket CreateSourceTicket()
+    public CountedSourceTicket CreateSourceTicket()
     {
         Debug.Assert(state == CountedSourceState.Open);
         pendingReaders++;
