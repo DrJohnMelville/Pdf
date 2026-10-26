@@ -31,18 +31,9 @@ public readonly partial struct JpegStreamFactory
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
     public async ValueTask<Stream> FromStreamAsync(Stream s)
     {
-        //        using var pipe = MultiplexSourceFactory.SingleReaderForStream(s);
-
 #warning this shim is very inefficient
         using var parsingBuffer = new ParsingBuffer(s.AsStreamReader());
         while (!parsingBuffer.DoneReadingSource) await parsingBuffer.ReadBytesAsync();
-
-        //var seq = await pipe.ReadAsync();
-        //while (!seq.IsCompleted)
-        //{
-        //    pipe.MarkSequenceAsExamined();
-        //    seq = await pipe.ReadAsync();
-        //}
         return FromReadOnlySequence(new ReadOnlySequence<byte>(parsingBuffer.PeekMemory()));
     }
 
