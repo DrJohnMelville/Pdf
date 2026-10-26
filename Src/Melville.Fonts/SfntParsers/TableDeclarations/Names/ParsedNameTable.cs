@@ -58,18 +58,9 @@ internal class ParsedNameTable(IMultiplexSource source, NameTableHeader header):
 
     private async Task<string> StringForItemAsync(NameRecord item)
     {
-        using var pipe = source.ReadPipeFrom(item.Offset + header.StorageOffset);
-        var result = await pipe.ReadAtLeastAsync(item.Length).CA();
-        return DecodeString(item.PlatformId, result.Buffer.Slice(0, item.Length));
-    }
-
-    private string DecodeString(int platform, ReadOnlySequence<byte> slice)
-    {
-        if (slice.IsSingleSegment)
-            return DecodeString(platform, slice.First.Span);
-        Span<byte> buffer = stackalloc byte[(int)slice.Length];
-        new SequenceReader<byte>(slice).TryCopyTo(buffer);
-        return DecodeString(platform, buffer);
+        using var pipe = source.ParsingBufferFrom(item.Offset + header.StorageOffset);
+        var result = await pipe.TakeBytesAsync(item.Length).CA();
+        return DecodeString(item.PlatformId, result.Span);
     }
 
     private string DecodeString(int platform, ReadOnlySpan<byte> input) =>
