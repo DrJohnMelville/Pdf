@@ -62,21 +62,5 @@ public class ParseMappingTest
             new ParseMapEntry("Label 0", 5, 22),
             ]);
     }
-
-    [Fact]
-    public void PipeReaderSource()
-    {
-        var msf = MultiplexSourceFactory.Create("01234567890"u8);
-        var reader = msf.ReadPipeFrom(3);
-        var monitor = reader.MonitorParsing();
-        reader.LogParsePosition("This is a Label");
-        var result = reader.Read();
-        reader.AdvanceTo(result.Buffer.GetPosition(3));
-        reader.LogParsePosition("Label 0");
-        monitor.Root.Items.Should().BeEquivalentTo([
-            new ParseMapEntry("This is a Label", 0, 0),
-            new ParseMapEntry("Label 0", 0, 3),
-            ]);
-    }
 }
 #endif

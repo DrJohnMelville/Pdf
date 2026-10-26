@@ -1,16 +1,11 @@
-﻿using System;
-using System.IO;
-using System.IO.Pipelines;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.StreamInterfaces.Memory;
 using Moq;
+using System;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
@@ -25,12 +20,6 @@ public abstract class ParserTest
         var sut = new ContentStreamParser(target ?? Target.Object);
         var reader = new MemoryReader(Encoding.ASCII.GetBytes(s));
         await sut.ParseAsync(reader);
-    }
-
-    private static IByteSource PipeReaderFromString(string s)
-    {
-        using var multiplexSource = MultiplexSourceFactory.Create(s.AsExtendedAsciiBytes());
-        return multiplexSource.ReadPipeFrom(0);
     }
 
     protected async Task TestInputAsync(
