@@ -35,8 +35,6 @@ internal readonly struct TrueTypeGlyphParser<T>(
     }
 
     #region Simple Glyph Rendering
-
-#warning number of conturs is always 1
     private void DrawSimpleGlyph(ref SpanParsingBuffer reader, int numberOfContours)
     {
         Span<ushort> contourEnds = stackalloc ushort[numberOfContours];

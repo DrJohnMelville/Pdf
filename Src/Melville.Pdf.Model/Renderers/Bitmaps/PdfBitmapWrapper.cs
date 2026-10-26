@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -32,16 +33,17 @@ internal class PdfBitmapWrapper(
 
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
-        using var source = MultiplexSourceFactory.SingleReaderForStream(
-            await attr.Stream.StreamContentAsync(context:this).CA());
+        using var source = await attr.Stream.StreamContentAsync(context:this).CA();
+#warning this is inefficient
+        using var memStr = new MemoryStream();
+        await source.CopyToAsync(memStr);
+        var seq = new SequenceReader<byte>(new ReadOnlySequence<byte>(memStr.ToArray()));
         var row = 0;
         var column = 0;
         var writer = byteWriter(finalColorSpace);
-        while (true)
+      //  while (true)
         {
-            var seq = await source.ReadAsync().CA();
-            if (!c.LoadLPixels(seq, ref row, ref column, writer, out var readTo)) return;
-            source.AdvanceTo(readTo, seq.Buffer.End);
+            if (!c.LoadLPixels(ref seq, ref row, ref column, writer, out var readTo)) return;
         }
     }
 
@@ -68,14 +70,12 @@ internal readonly unsafe partial struct BitmapWriter
     [FromConstructor]private readonly byte* buffer;
     [FromConstructor]private readonly int width;
     [FromConstructor]private readonly int height;
-
-    public bool LoadLPixels(ReadResult readResult, ref int row, ref int col,
+    public bool LoadLPixels(ref SequenceReader<byte> seq, ref int row, ref int col,
         IByteWriter writer, out SequencePosition sp)
     {
         sp = default;
-        if (readResult.IsCompleted && !EnoughBytesToRead(readResult.Buffer.Length, writer.MinimumInputSize))
+        if (!EnoughBytesToRead(seq.Length, writer.MinimumInputSize))
             return false;
-        var seq = new SequenceReader<byte>(readResult.Buffer);
         LoadBytes(ref row, ref col, writer, ref seq);
         sp = seq.Position;
         return row < height;

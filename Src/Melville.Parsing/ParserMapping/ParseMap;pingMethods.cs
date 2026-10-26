@@ -19,11 +19,6 @@ public static partial class ParseMappingMethods
     /// </summary>
     /// <param name="source">The item to monitor for parsing</param>
     public static ParseMap MonitorParsing(this Stream source) => ParseMapRegistry.NewMap(source);
-    /// <summary>
-    /// Creates a new parse map for the given source.
-    /// </summary>
-    /// <param name="source">The item to monitor for parsing</param>
-    public static ParseMap MonitorParsing(this IByteSource source) => ParseMapRegistry.NewMap(source);
 
     /// <summary>
     /// Creates a new parse map for the given source.
