@@ -7,6 +7,8 @@ using Melville.JpegLibrary.Decoder;
 using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
@@ -29,15 +31,19 @@ public readonly partial struct JpegStreamFactory
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
     public async ValueTask<Stream> FromStreamAsync(Stream s)
     {
-        using var pipe = MultiplexSourceFactory.SingleReaderForStream(s);
+        //        using var pipe = MultiplexSourceFactory.SingleReaderForStream(s);
 
-        var seq = await pipe.ReadAsync();
-        while (!seq.IsCompleted)
-        {
-            pipe.MarkSequenceAsExamined();
-            seq = await pipe.ReadAsync();
-        }
-        return FromReadOnlySequence(seq.Buffer);
+#warning this shim is very inefficient
+        using var parsingBuffer = new ParsingBuffer(s.AsStreamReader());
+        while (!parsingBuffer.DoneReadingSource) await parsingBuffer.ReadBytesAsync();
+
+        //var seq = await pipe.ReadAsync();
+        //while (!seq.IsCompleted)
+        //{
+        //    pipe.MarkSequenceAsExamined();
+        //    seq = await pipe.ReadAsync();
+        //}
+        return FromReadOnlySequence(new ReadOnlySequence<byte>(parsingBuffer.PeekMemory()));
     }
 
     private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
