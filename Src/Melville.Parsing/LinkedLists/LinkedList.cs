@@ -167,18 +167,6 @@ internal abstract class LinkedList: CountedMultiplexSource
         // not the most efficient implementation, but I am hoping to get rid of this whole
         // class as part of this retrofit.
 
-    protected override IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket)
-    {
-        var ret = new LinkedListByteSource(this, ticket);
-        if (position > 0)
-        {
-            var initial = PositionAt(position);
-            ret.AdvanceTo(initial);
-        }
-
-        return ret.WithCurrentPosition(startingPosition);
-    }
-
     protected override void CleanUp()
     {
         StartPosition.ClearTo(LinkedListPosition.NullPosition);

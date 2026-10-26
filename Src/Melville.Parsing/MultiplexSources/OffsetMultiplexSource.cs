@@ -27,10 +27,6 @@ public partial class OffsetMultiplexSource : IMultiplexSource
 
     /// <inheritdoc/>
     public IAsyncReader ReaderFrom(long position) => inner.ReaderFrom(position + offset);
-
-    /// <inheritdoc />
-    public IByteSource ReadPipeFrom(long position, long startingPosition = 0) =>
-       inner.ReadPipeFrom(position + offset, startingPosition);
     
     /// <inheritdoc />
       public long Length => inner.Length - offset;

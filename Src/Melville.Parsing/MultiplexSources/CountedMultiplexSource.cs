@@ -90,22 +90,12 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         TryCleanUp();
     }
 
-    public IByteSource ReadPipeFrom(long position, long startingPosition = 0) => 
-        ReadFromPipeOverride(position, startingPosition, CreateSourceTicket());
-
-    public IMultiplexSource  OffsetFrom(uint offset)
-    {
-        return new OffsetMultiplexSource(this, offset);
-    }
+    public IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
 
     public abstract long Length { get; }
 
     protected abstract Stream ReadFromOverride(long position, CountedSourceTicket ticket);
     protected abstract IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket);
-
-    protected virtual IByteSource ReadFromPipeOverride(long position, long startingPosition, CountedSourceTicket ticket) =>
-        MultiplexSourceFactory.SingleReaderForStream(this.ReadFromOverride(position, ticket))
-            .WithCurrentPosition(startingPosition);
 
     protected abstract void CleanUp();
 

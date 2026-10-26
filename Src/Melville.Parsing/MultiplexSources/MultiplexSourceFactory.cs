@@ -82,17 +82,4 @@ public static class MultiplexSourceFactory
         }
         return Create(buffer);
     }
-
-    /// <summary>
-    /// Create an IByteSource that reads its values from a stream
-    /// </summary>
-    /// <param name="input">The stream to read from.</param>
-    /// <param name="leaveOpen">If false, then the source stream will be closed when
-    /// the reader is closed</param>
-    /// <returns>an IByteSource that reads the given stream</returns>
-    public static IByteSource SingleReaderForStream(Stream input, bool leaveOpen = false)
-    {
-        using var buffer = SingleReadStreamBuffer.Create(input, leaveOpen);
-        return buffer.ReadPipeFrom(0);
-    }
 }

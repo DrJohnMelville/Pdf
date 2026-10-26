@@ -40,14 +40,6 @@ public interface IMultiplexSource : IDisposable
     }
 
     /// <summary>
-    /// Return a pipe reader starting at a given point in the stream.
-    /// This may be optimized to reuse buffers
-    /// </summary>
-    /// <param name="position">index into the source to start reading from</param>
-    /// <param name="startingPosition">Sets the initial position of the ByteSource to the given position</param>
-    IByteSource ReadPipeFrom(long position, long startingPosition = 0);
-
-    /// <summary>
     /// The length of the represented data.
     /// </summary>
     long Length { get; }
