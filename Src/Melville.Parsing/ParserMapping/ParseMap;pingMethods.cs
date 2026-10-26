@@ -55,7 +55,6 @@ public static partial class ParseMappingMethods
     /// <param name="alias">The new alias to be added</param>
     [MacroItem("Stream")]
     [MacroItem("ParsingBuffer")]
-    [MacroItem("IByteSource")]
     [MacroItem("ParseMapBookmark?")]
     [MacroCode("""
                /// <summary>
