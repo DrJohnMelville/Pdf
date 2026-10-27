@@ -18,7 +18,7 @@ public class S7_5_2FileHeader
     [InlineData( 1, 7)]
     public async Task RecognizeFileVersionAsync(int major, int minor)
     {
-        var doc = await (await MinimalPdfParser.MinimalPdf((byte)major, (byte)minor)
+        using var doc = await (await MinimalPdfParser.MinimalPdf((byte)major, (byte)minor)
             .AsStringAsync()).ParseDocumentAsync();
         Assert.Equal(major, doc.MajorVersion);
         Assert.Equal(minor, doc.MinorVersion);
@@ -30,7 +30,7 @@ public class S7_5_2FileHeader
     {
         var docString = "   \r\n" + (await MinimalPdfParser.MinimalPdf()
             .AsStringAsync());
-        var doc = await docString.ParseDocumentAsync();
+        using var doc = await docString.ParseDocumentAsync();
         Assert.Equal(1, doc.MajorVersion);
         Assert.Equal(7, doc.MinorVersion);
     }

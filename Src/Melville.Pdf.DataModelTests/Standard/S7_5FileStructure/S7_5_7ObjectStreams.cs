@@ -89,7 +89,7 @@ public class S7_5_7ObjectStreams
     [Fact]
     public async Task RoundTripAsync()
     {
-        var doc = await (await DocWithObjectStreamAsync()).ParseDocumentAsync();
+        using var doc = await (await DocWithObjectStreamAsync()).ParseDocumentAsync();
         Assert.Equal("One", (await doc.Objects[(1,0)].LoadValueAsync()).ToString());
             
     }

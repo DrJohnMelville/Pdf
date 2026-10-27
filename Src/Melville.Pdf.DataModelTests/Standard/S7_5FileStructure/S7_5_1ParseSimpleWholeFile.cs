@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.ObjectRentals;
@@ -36,7 +37,7 @@ public class S7_5_1ParseSimpleWholeFile
 
     private async Task RoundTripPdfAsync(string pdf)
     {
-        var doc = await pdf.ParseDocumentAsync();
+        using var doc = await pdf.ParseDocumentAsync();
         var newPdf = await WriteAsync(doc);
         Assert.Equal(pdf, newPdf);
             
@@ -50,7 +51,7 @@ public class S7_5_1ParseSimpleWholeFile
         builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
         builder.Reassign(pointer, 10);
         var doc = await WriteAsync(builder.CreateDocument());
-        var doc2 = await doc.ParseDocumentAsync();
+        using var doc2 = await doc.ParseDocumentAsync();
         var rootDic = await doc2.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
         Assert.Equal(10, (await rootDic[KnownNames.Width]).Get<int>());
     }
@@ -64,7 +65,7 @@ public class S7_5_1ParseSimpleWholeFile
         var doc = builder.CreateDocument();
         var serialized = await WriteAsync(doc);
         Assert.Contains("Stream data", serialized);
-        var doc2 = await serialized.ParseDocumentAsync();
+        using var doc2 = await serialized.ParseDocumentAsync();
         var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.Root);
         await using var contentStream = await stream.StreamContentAsync(StreamFormat.DiskRepresentation);
         var value = await new StreamReader(
