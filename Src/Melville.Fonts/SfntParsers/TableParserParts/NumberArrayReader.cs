@@ -33,14 +33,6 @@ internal static class NumberArrayReader
                 BinaryPrimitives.ReverseEndianness(data, data);
         }
         
-        public static void Read(ref SequenceReader<byte> reader, scoped Span<~0~> data)
-        {
-            var span = global::System.Runtime.InteropServices.MemoryMarshal.Cast<~0~, byte>(data);
-            reader.TryCopyTo(span);
-            reader.Advance(span.Length);
-            TryReverseEndianness(data);
-        }
-
         public static void Read(ref SpanParsingBuffer reader, scoped Span<~0~> data)
         {
             var span = global::System.Runtime.InteropServices.MemoryMarshal.Cast<~0~, byte>(data);
