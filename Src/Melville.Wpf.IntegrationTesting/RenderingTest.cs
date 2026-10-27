@@ -41,11 +41,18 @@ public class RenderingTest
         var rtdg = new RenderToDrawingGroup(documentRenderer, 0);
         return rtdg.RenderToPngStreamAsync(target);
     }
-    
+
     [Test]
     [MethodDataSource(nameof(GeneratorTests))]
-    public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator) => 
-        hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia"+shortName);
+    public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator)
+    {
+        hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia" + shortName);
+#warning get rid of this
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
 
     private static Task<string> ComputeSkiaHashAsync(IPdfGenerator generator) =>
         ComputeGenericHashAsync(generator, (documentRenderer, target) => 

@@ -4,12 +4,13 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
-
+using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -34,10 +35,11 @@ internal class PdfBitmapWrapper(
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
         using var source = await attr.Stream.StreamContentAsync(context:this).CA();
-#warning this is inefficient
-        using var memStr = new MemoryStream();
-        await source.CopyToAsync(memStr);
-        var seq = new SequenceReader<byte>(new ReadOnlySequence<byte>(memStr.ToArray()));
+#warning this is inefficient  -- also need a shortcut if a buffer is already out there.
+        var buffer = new MultiMemoryBuffer();
+        using var memStr = buffer.CreateWriter();
+        await source.AsStreamReader().CopyToAsync(memStr);
+        var seq = new SequenceReader<byte>(buffer.AsSequence());
         var row = 0;
         var column = 0;
         var writer = byteWriter(finalColorSpace);

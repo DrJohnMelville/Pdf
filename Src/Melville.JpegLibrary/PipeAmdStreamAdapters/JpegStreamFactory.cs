@@ -38,6 +38,7 @@ public readonly partial struct JpegStreamFactory
         {
             await s.AsStreamReader().CopyToAsync(writer).CA();
         }
+        s.Dispose();
         // Melville.Jpeg is really designed around ReadOnlySequence so there is no
         // need for a unitary buffer
         return FromReadOnlySequence(buffer.AsSequence());

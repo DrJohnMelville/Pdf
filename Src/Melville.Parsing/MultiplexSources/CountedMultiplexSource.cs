@@ -10,8 +10,15 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
     private CountedSourceState state;
     private volatile int pendingReaders;
     private int serialNumber = ICountedSource.NextNonce();
-    private ProductionCountingStrategy counter = ProductionCounter;
 
+#if DEBUG
+    private static readonly LightDebugCountingStrategy ProductionCounter = new();
+    private ProductionCountingStrategy counter = new HeavyDebugCountingStrategy();
+
+#else
+    private static readonly ProductionCountingStrategy ProductionCounter = new();
+    private ProductionCountingStrategy counter = ProductionCounter;
+#endif
     protected CountedMultiplexSource()
     {
         ;
