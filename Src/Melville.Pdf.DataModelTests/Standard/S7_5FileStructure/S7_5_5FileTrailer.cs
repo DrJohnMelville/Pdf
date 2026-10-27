@@ -29,15 +29,8 @@ public class S7_5_5FileTrailer
     [InlineData("%PDF-1.5\r\nHas no t%railer")]
     [InlineData("%PDF-1.5\r\nHas the word trailer but not a valid dictonary")]
     [InlineData("%PDF-1.5\r\nHas the word trailer")]
-    public async Task MalformedPDFFilesAsync(string text)
+    public Task MalformedPDFFilesAsync(string text)
     {
-        return await Assert.ThrowsAsync<PdfParseException>(() => text.ParseDocumentAsync().AsTask());
-
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-
+        return Assert.ThrowsAsync<PdfParseException>(() => text.ParseDocumentAsync().AsTask());
     }
 }

@@ -52,9 +52,12 @@ public static class TestParser
     internal static ParsingFileOwner AsParsingSource(this byte[] bytes) =>
        new(MultiplexSourceFactory.Create(new OneCharAtATimeStream(bytes)), NullPasswordSource.Instance);
 
-    public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
-        RandomAccessFileParser.ParseAsync(str.AsParsingSource(), sizeHint);
-    
+    public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024)
+    {
+        using var owner = str.AsParsingSource();
+        return RandomAccessFileParser.ParseAsync(owner, sizeHint);
+    }
+
     public static ValueTask<PdfLoadedLowLevelDocument> ParseWithPasswordAsync(
         this string str, string password, PasswordType type) =>
         new PdfLowLevelReader(new ConstantPasswordSource(type, password)).ReadFromAsync(str.AsExtendedAsciiBytes());
