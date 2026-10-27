@@ -1,4 +1,5 @@
 ﻿using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using System.Buffers;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace Melville.Parsing.LinkedLists;
 /// It maintains its state as a linked list of buffers.  It does not reallocate to
 /// grow.
 /// </summary>
-public readonly struct MultiMemoryBuffer : IDisposable
+public readonly struct MultiMemoryBuffer : IDisposable, ISequenceSource
 {
     private readonly MultiBufferStreamList data;
 

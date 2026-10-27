@@ -1,10 +1,11 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using Melville.Parsing.SequenceReaders;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-internal abstract class RentedArrayReadingStream : DefaultBaseStream
+internal abstract class RentedArrayReadingStream : DefaultBaseStream, ISequenceSource
 {
     private readonly byte[] data;
     private int length;
@@ -15,6 +16,8 @@ internal abstract class RentedArrayReadingStream : DefaultBaseStream
         this.length = length;
         Debug.Assert(this.data.Length >= this.length);
     }
+
+    public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(data.AsMemory(0, length));
 
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -34,19 +35,23 @@ internal class PdfBitmapWrapper(
 
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
-        using var source = await attr.Stream.StreamContentAsync(context:this).CA();
-#warning this is inefficient  -- also need a shortcut if a buffer is already out there.
-        var buffer = new MultiMemoryBuffer();
-        using var memStr = buffer.CreateWriter();
-        await source.AsStreamReader().CopyToAsync(memStr);
-        var seq = new SequenceReader<byte>(buffer.AsSequence());
+        using var source = await attr.Stream.StreamContentAsync(context: this).CA();
+#warning this is inefficient  we can use a buffer if it is there, but would like to stream partial values.
+
         var row = 0;
         var column = 0;
         var writer = byteWriter(finalColorSpace);
-      //  while (true)
-        {
-            if (!c.LoadLPixels(ref seq, ref row, ref column, writer, out var readTo)) return;
-        }
+        ISequenceSource seq = source as ISequenceSource ?? await FillBuffer(source);
+        var src = new SequenceReader<byte>(seq.AsSequence());
+        c.LoadLPixels(ref src, ref row, ref column, writer, out var readTo);
+        if (seq is IDisposable disp && seq != source) disp.Dispose();
+    }
+    async Task<ISequenceSource> FillBuffer(Stream source)
+    {
+        var buffer = new MultiMemoryBuffer();
+        using var memStr = buffer.CreateWriter();
+        await source.AsStreamReader().CopyToAsync(memStr);
+        return buffer;
     }
 
     /// <inheritdoc />
