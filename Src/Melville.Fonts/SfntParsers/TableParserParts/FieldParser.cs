@@ -1,24 +1,16 @@
-﻿using System.Buffers;
-using System.Buffers.Binary;
-using System.IO.Pipelines;
-using System.Numerics;
-using System.Runtime.InteropServices.JavaScript;
-using Melville.INPC;
-
-using Melville.Parsing.CountingReaders;
+﻿using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
-using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
+using System.Buffers.Binary;
+using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
 internal static partial class FieldParser
 {
-    public static void Read<T>(ref SequenceReader<byte> reader, out T output)
-        where T : IBinaryInteger<T> =>
-        reader.TryReadBigEndian(out output);
 
     public static void Read<T>(ref SpanParsingBuffer reader, out T output)
         where T : IBinaryInteger<T> =>
@@ -38,7 +30,7 @@ internal static partial class FieldParser
     }
 
 
-    [MacroItem("ushort")]
+    [MacroItem("ushort", typeof(BinaryPrimitives))]
     [MacroItem("short")]
     [MacroItem("uint")]
     [MacroCode(NumberArrayReader.NumberArrayImplementation)]
