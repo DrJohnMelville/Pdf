@@ -1,19 +1,12 @@
-﻿using System;
-using System.Buffers;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
-using Melville.Parsing;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.IStreamAdaptors;
-using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualBasic;
+using System;
+using System.Buffers;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
@@ -33,7 +26,7 @@ internal static class FileTrailerLocater
     private static async Task<long> SearchFromLocation(
         ParsingFileOwner source, long startingPosition, int blockLength)
     {
-        Force.Using(source.SubsetIAsyncReader(Math.Max(startingPosition, 0)), out var reader);
+        using var  _ =Force.Using(source.SubsetIAsyncReader(Math.Max(startingPosition, 0)), out var reader);
         using var buffer = new ParsingBuffer(reader);
         await buffer.TryEnsureBytesAsync(blockLength);
 

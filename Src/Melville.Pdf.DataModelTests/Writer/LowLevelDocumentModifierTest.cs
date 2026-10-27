@@ -12,6 +12,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Melville.Pdf.DataModelTests.Writer;
 
@@ -33,7 +34,7 @@ public class LowLevelDocumentModifierTest
         using var ms = WritableBuffer.Create();
         await using var writer = ms.WritingStream();
         await doc.WriteToAsync(writer);
-        await using var readFrom = ms.ReadFrom(0);
+        using var readFrom = ms.ReadFrom(0);
         return await new PdfLowLevelReader().ReadFromAsync(readFrom);
     }
 
@@ -42,7 +43,7 @@ public class LowLevelDocumentModifierTest
         PdfLowLevelDocument originalDoc, long offset = 0)
     {
         using var target = new TestWriter();
-        var doc = await LoadedDocumentAsync(originalDoc);
+        using var doc = await LoadedDocumentAsync(originalDoc);
         var sut = new LowLevelDocumentModifier(doc);
         modifications(doc, sut);
         await sut.WriteModificationTrailerAsync(target.Writer, offset);
@@ -52,16 +53,22 @@ public class LowLevelDocumentModifierTest
     [Theory]
     [InlineData(0)]
     [InlineData(1234)]
-    public Task NullModificationAsync(long offset) => 
-        DoDocumentModificationTestsAsync($"xref\n0 0\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n{offset}\n%%EOF",
+    public async Task NullModificationAsync(long offset)
+    {
+        // this test causes a disposal error because the writable stream is creates one more reader than it disposes.
+        await DoDocumentModificationTestsAsync($"xref\n0 0\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n{offset}\n%%EOF",
             (doc, mod) => { }, baseDoc,
             offset);
+    }
 
     [Fact]
-    public Task AddOneObjectAsync() =>
-        DoDocumentModificationTestsAsync($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
+    public Task AddOneObjectAsync()
+    {
+        return DoDocumentModificationTestsAsync($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
             (doc, mod) => mod.Add(false), baseDoc,
             1234);
+    }
+
     [Fact]
     public Task ReplaceOneObjectAsync() =>
         DoDocumentModificationTestsAsync($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1255\n%%EOF",

@@ -31,6 +31,10 @@ public class ReplViewModelTest
     public async Task PrintIndentedContentStreamAsync(string source, string dest)
     {
         Assert.Equal(dest, await ContentStreamPrettyPrinter.PrettyPrintAsync(source));
-        
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
     }
 }

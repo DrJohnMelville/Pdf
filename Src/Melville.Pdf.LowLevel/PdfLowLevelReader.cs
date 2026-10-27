@@ -64,8 +64,10 @@ public readonly struct PdfLowLevelReader
     /// </summary>
     /// <param name="input">The stream to read from</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
-    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(Stream input) =>
-            ReadFromAsync(MultiplexSourceFactory.Create(input));
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(Stream input)
+    {
+        return ReadFromAsync(MultiplexSourceFactory.Create(input));
+    }
 
     /// <summary>
     /// Load a PdfLowLevelDocument from a stream.  After the call, the PdfLowLevelDocument
