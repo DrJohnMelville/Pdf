@@ -1,11 +1,9 @@
-﻿using System.Buffers;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using Melville.Fonts.SfntParsers.TableParserParts;
-
+﻿using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+
+using System.Buffers;
+using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 {

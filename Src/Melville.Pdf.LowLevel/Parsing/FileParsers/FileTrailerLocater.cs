@@ -17,13 +17,13 @@ internal static class FileTrailerLocater
         var blockLength = fileTrailerSizeHint + StartXRef.Length;
         for (long i = source.StreamLength - blockLength; i > -blockLength; i -= fileTrailerSizeHint)
         {
-            if ((await SearchFromLocation(source, i, blockLength)) is >= 0 and var value)
+            if ((await SearchFromLocationAsync(source, i, blockLength)) is >= 0 and var value)
                 return value;
         }
         throw new PdfParseException("Could not find StartXref trailer");
     }
 
-    private static async Task<long> SearchFromLocation(
+    private static async Task<long> SearchFromLocationAsync(
         ParsingFileOwner source, long startingPosition, int blockLength)
     {
         using var  _ =Force.Using(source.SubsetIAsyncReader(Math.Max(startingPosition, 0)), out var reader);

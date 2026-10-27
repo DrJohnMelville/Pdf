@@ -1,14 +1,8 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
-using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
-using System.Buffers;
 using System.Diagnostics;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 

@@ -12,20 +12,19 @@ namespace Melville.Parsing.MultiplexSources;
 /// </summary>
 public interface IMultiplexSource : IDisposable
 {
+#warning eventually I would like to get rid of this -- but the stream filters have to come first.
     /// <summary>
     /// Create a multiplexed reader that begins at a given position.  The readers are threadsafe
     /// </summary>
     /// <param name="position"></param>
     Stream ReadFrom(long position);
 
-#warning this can become more efficient -- then we want to get rid of ReadPipeFrom
     /// <summary>
     /// Create a multiplexed reader that begins at a given position.  The readers are threadsafe
     /// </summary>
     /// <param name="position"></param>
-    IAsyncReader ReaderFrom(long position) =>
-        ReadFrom(position).AsStreamReader();
-
+    IAsyncReader ReaderFrom(long position);
+ 
     /// <summary>
     /// Create a parsing buffer starting at the given location.  The buffer disposes 
     /// of its underlying reader if needed

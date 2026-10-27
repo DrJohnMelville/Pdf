@@ -1,16 +1,9 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
-using Melville.INPC;
-
-using Melville.Parsing.CountingReaders;
+﻿using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Microsoft.CodeAnalysis.Operations;
+using System.Diagnostics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 

@@ -1,15 +1,8 @@
-﻿using System.Buffers;
-using System.ComponentModel.Design.Serialization;
-using System.IO.Pipelines;
-using System.Text;
-using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
-using Melville.Fonts.SfntParsers.TableParserParts;
-
-using Melville.Parsing.CountingReaders;
+﻿using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.IStreamAdaptors;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Text;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.PostscriptDatas
 {

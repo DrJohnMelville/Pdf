@@ -28,7 +28,8 @@ internal abstract partial class CountedMultiplexSource
 
         public virtual T IssueTicket<T>(CountedMultiplexSource parent, T rawItem)
         {
-            var item = ((IHasSourceTicket)rawItem);
+            Debug.Assert(rawItem is IHasSourceTicket);
+            if (rawItem is not IHasSourceTicket item) return rawItem;
             Debug.Assert(parent.state is CountedSourceState.Open);
             Interlocked.Increment(ref parent.pendingReaders);
             item.SourceTicket = new CountedSourceTicket(parent, parent.serialNumber);
@@ -59,6 +60,7 @@ internal abstract partial class CountedMultiplexSource
 
         public override T IssueTicket<T>(CountedMultiplexSource parent, T rawItem)
         {
+            if (rawItem is null) return rawItem;
             if (!readers.TryAdd(rawItem, new StackTrace()))
                 throw new InvalidOperationException("Inserted the same reader twice.");
             return base.IssueTicket(parent, rawItem);

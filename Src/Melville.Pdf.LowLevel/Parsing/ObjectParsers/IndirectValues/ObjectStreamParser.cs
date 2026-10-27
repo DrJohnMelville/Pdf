@@ -51,7 +51,7 @@ internal class ObjectStreamParser(
         public async ValueTask InnerParseAsync()
         {
             // Read the object stream header
-            await ReadHeader().CA();
+            await ReadHeaderAsync().CA();
 
             var rootObjectParser = CreateRootParser();
 
@@ -77,7 +77,7 @@ internal class ObjectStreamParser(
         private RootObjectParser CreateRootParser() =>
             new RootObjectParser(pr);
 
-        private async Task ReadHeader()
+        private async Task ReadHeaderAsync()
         {
             limiter.LengthLimit = initialOffset;
             await pr.Buffer.EnsureBytesAsync(initialOffset).CA(); ;

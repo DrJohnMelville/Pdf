@@ -1,16 +1,11 @@
-﻿using System.Buffers;
-using System.Buffers.Binary;
-using Melville.Fonts.SfntParsers;
+﻿using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
-using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Fonts.Type1TextParsers;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ParserMapping;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Adapters;
+using System.Buffers.Binary;
 
 namespace Melville.Fonts;
 

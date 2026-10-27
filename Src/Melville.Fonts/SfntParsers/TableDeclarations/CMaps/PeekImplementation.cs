@@ -1,9 +1,4 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.SequenceReaders;
-using Melville.StreamInterfaces;
+﻿using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CMaps;

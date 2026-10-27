@@ -5,6 +5,9 @@ using System.Runtime.CompilerServices;
 namespace Melville.Parsing;
 
 #if DEBUG
+/// <summary>
+/// This is the class to setup disposal tracking for the ParsingBuffers.
+/// </summary>
 public static class InitializeModule
 {
     /// <summary>
@@ -14,8 +17,7 @@ public static class InitializeModule
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "<Pending>")]
     public static void SetupModule()
     {
-#warning make this a per class option
-        RequireDisposal.RecordDisposableCreation = true;
+        RequireDisposal.RecordDisposableCreation = false;
         RequireDisposal.ThrowOnMissedDispose = true;
     }
 }
