@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Reflection.Metadata;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
@@ -12,8 +13,9 @@ internal static class F2Dot14Parser
     {
         return value * Factor;
     }
+#warning eliminate this SequenceReader
 
-    public static float ReadF2Dot14(this ref SequenceReader<byte> reader) =>
+    public static float ReadF2Dot14(this ref SpanParsingBuffer reader) =>
         Convert(reader.GetInt16BigEndian());
 
 }

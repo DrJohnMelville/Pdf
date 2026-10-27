@@ -1,7 +1,7 @@
 ﻿using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
-
+using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
 using System.Numerics;
 
@@ -14,9 +14,9 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         Matrix3x2 transform)
     {
         private readonly GlyphRecorder scratchRecorder = GlyphRecorderFactory.Shared.Rent();
-        public ValueTask DrawAsync(ReadOnlySequence<byte> source)
+        public ValueTask DrawAsync(Memory<byte> source)
         {
-            var reader = new SequenceReader<byte>(source);
+            var reader = new SpanParsingBuffer(source.Span);
             var flags = (CompositeGlyphFlags)reader.GetUInt16BigEndian();
             var subGlyph = reader.GetUInt16BigEndian();
             var (xOffset, yOffset, parentPoint, childPoint) = ReadOffsets(ref reader, flags);
@@ -25,16 +25,17 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 
             TrySkipInstructions(ref reader, flags);
 
-            var nextGlyphSequence = NextGlyphSequence(flags, reader);
+            var nextGlyphSequence = NextGlyphSequence(flags, reader, source);
 
             if (parentPoint is 0xFFFF && childPoint is 0xFFFF )
+
             return DrawUnalignedGlyphAsync(subGlyph, subGlyphTransform, nextGlyphSequence);
             return DrawAlignedGlyphAsync(subGlyph, subGlyphTransform, nextGlyphSequence,
                 parentPoint, childPoint);
         }
 
         private (int xOffset, int yOffset, ushort parentpoint, ushort childpoint) ReadOffsets(
-            ref SequenceReader<byte> reader, CompositeGlyphFlags flags)
+            ref SpanParsingBuffer reader, CompositeGlyphFlags flags)
         {
             int x = 0;
             int y = 0;
@@ -43,16 +44,16 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             switch (flags.ArgsAreXYOffsets(), flags.ArgsAreWords() )
             {
                 case (true, false):
-                    x = reader.GetInt8BigEndian();
-                    y = reader.GetInt8BigEndian();
+                    x = reader.GetInt8();
+                    y = reader.GetInt8();
                     break;
                 case (true, true):
                     x = reader.GetInt16BigEndian();
                     y = reader.GetInt16BigEndian();
                     break;
                 case (false, false):
-                    parentPoint = reader.GetUInt8BigEndian();
-                    childPoint = reader.GetUInt8BigEndian();
+                    parentPoint = reader.GetUInt8();
+                    childPoint = reader.GetUInt8();
                     break;
                 case (false, true):
                     parentPoint = reader.GetUInt16BigEndian();
@@ -63,7 +64,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             return (x,y,parentPoint, childPoint);
         }
 
-        private Matrix3x2 ParseTransform(ref SequenceReader<byte> reader, CompositeGlyphFlags flags, int xOffset, int yOffset)
+        private Matrix3x2 ParseTransform(ref SpanParsingBuffer reader, CompositeGlyphFlags flags, int xOffset, int yOffset)
         {
             var scaleTransform = ReadScaleTramsform(ref reader, flags);
             var translateTransform = Matrix3x2.CreateTranslation(xOffset, yOffset);
@@ -73,7 +74,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         }
 
         private Matrix3x2 ReadScaleTramsform(
-            ref SequenceReader<byte> reader, CompositeGlyphFlags flags) =>
+            ref SpanParsingBuffer reader, CompositeGlyphFlags flags) =>
             flags.ScaleSelector() switch
             {
                 CompositeGlyphFlags.WeHaveAScale =>
@@ -87,14 +88,10 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             };
 
 
-        private static ReadOnlySequence<byte> NextGlyphSequence(
-            CompositeGlyphFlags flags, SequenceReader<byte> reader)
-        {
-            return flags.HasMoreGlyphs()?reader.UnreadSequence:
-                new ReadOnlySequence<byte>([]);
-        }
+        private static Memory<byte> NextGlyphSequence(
+            CompositeGlyphFlags flags, SpanParsingBuffer reader, Memory<byte> source) => flags.HasMoreGlyphs() ? source[(int)reader.RelativePosition..] :Memory<byte>.Empty;
 
-        private void TrySkipInstructions(ref SequenceReader<byte> reader, CompositeGlyphFlags flags)
+        private void TrySkipInstructions(ref SpanParsingBuffer reader, CompositeGlyphFlags flags)
         {
             if (!flags.HasInstructions()) return;
             reader.Advance(reader.GetUInt16BigEndian());
@@ -102,14 +99,14 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 
 
         private async ValueTask DrawUnalignedGlyphAsync(
-            ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlySequence<byte> nextBytes)
+            ushort subGlyph, Matrix3x2 subGlyphTransform, Memory<byte> nextBytes)
         {
             await subGlyphRenderer.RenderGlyphInFontUnitsAsync(
                 subGlyph, scratchRecorder, subGlyphTransform*transform).CA();
             await FinishSubglyphAsync(nextBytes).CA();
         }
 
-        private ValueTask FinishSubglyphAsync(ReadOnlySequence<byte> nextBytes)
+        private ValueTask FinishSubglyphAsync(Memory<byte> nextBytes)
         {
             if (nextBytes.Length > 0)
                 return DrawAsync(nextBytes);
@@ -126,7 +123,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         }
 
         private async ValueTask DrawAlignedGlyphAsync(
-            ushort subGlyph, Matrix3x2 transform, ReadOnlySequence<byte> next, 
+            ushort subGlyph, Matrix3x2 transform, Memory<byte> next, 
             ushort parentIndex, ushort childIndex)
         {
             var childTarget = GlyphRecorderFactory.Shared.Rent();

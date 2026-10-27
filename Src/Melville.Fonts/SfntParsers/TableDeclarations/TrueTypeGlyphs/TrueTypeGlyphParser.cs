@@ -25,7 +25,7 @@ internal readonly struct TrueTypeGlyphParser<T>(
         if (numberOfContours < 0)
         {
             return new CompositeGlyphRenderer(innerRenderer, target, boundingBox, matrix)
-                .DrawAsync(new ReadOnlySequence<byte>(slice1[(int)reader.RelativePosition..]));
+                .DrawAsync(slice1[(int)reader.RelativePosition..]);
         }
 
         DrawSimpleGlyph(ref reader, numberOfContours);
