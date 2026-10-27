@@ -18,7 +18,6 @@ internal readonly struct TrueTypeGlyphParser<T>(
 
     public ValueTask DrawGlyphAsync()
     {
-        Debugger.Break();
         var reader = new SpanParsingBuffer(slice1.Span);
         int numberOfContours = reader.GetInt16BigEndian();
         PhantomPoints boundingBox = new();

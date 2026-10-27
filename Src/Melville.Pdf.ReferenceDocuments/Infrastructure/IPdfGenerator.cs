@@ -24,7 +24,7 @@ public static class RenderTestHelpers
         await using var writer = src.WritingStream();
         await generator.WritePdfAsync(writer);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFromAsync((src));
+            .ReadFromAsync(src);
     }
 }
 
