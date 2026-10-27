@@ -49,6 +49,7 @@ internal readonly struct CffGlyphSourceParser(
                 await GetNameAsync(nameIndex, i).CA(), null).CA();
         }
 
+        source.Dispose();
         return ret;
     }
 

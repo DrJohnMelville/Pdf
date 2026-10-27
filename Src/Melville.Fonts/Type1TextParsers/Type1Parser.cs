@@ -27,6 +27,7 @@ public readonly struct Type1Parser
     public Type1Parser(IMultiplexSource source)
     {
         reader = source.ReaderFrom(0);
+        source.Dispose(); // the reader will hold the multiplex source open until it is done
         eexecDecryptingSource = new(reader);
     }
 

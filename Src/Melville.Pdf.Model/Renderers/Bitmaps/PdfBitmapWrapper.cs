@@ -36,7 +36,7 @@ internal class PdfBitmapWrapper(
     private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
-#warning this is inefficient  we can use a buffer if it is there, but would like to stream partial values.
+#warning this is inefficient  we do use a buffer if it is there, but would like to stream partial values.
 
         var row = 0;
         var column = 0;

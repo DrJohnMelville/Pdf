@@ -47,11 +47,6 @@ public class RenderingTest
     public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator)
     {
         hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia" + shortName);
-#warning get rid of this
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     private static Task<string> ComputeSkiaHashAsync(IPdfGenerator generator) =>

@@ -61,9 +61,9 @@ public class PartParserTest
     [Fact]
     public async Task ParseArrayAsync()
     {
-        var model = await BuildSingleElementFileAsync(_=>
+        using var model = await BuildSingleElementFileAsync(_=>
             new PdfArray(new PdfIndirectObject[]{true, false, KnownNames.Max}));
-        var array = model[1];
+        var array = model.Root[1];
         Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
         Assert.Equal("[1]: false", array.Children[1].Title);
@@ -72,9 +72,9 @@ public class PartParserTest
     [Fact]
     public async Task ParseSteamAsync()
     {
-        var model = await BuildSingleElementFileAsync(i=>
+        using var model = await BuildSingleElementFileAsync(i=>
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.C1).AsStream("The Stream Data"));
-        var stream = (StreamPartViewModel)model[1];
+        var stream = (StreamPartViewModel)model.Root[1];
         Assert.Equal("1 0: Stream", stream.Title);
         Assert.Equal("/Type: /C1", stream.Children[0].Title);
         Assert.Equal("/Length: 15", stream.Children[1].Title);
@@ -86,17 +86,24 @@ public class PartParserTest
 
     private async Task TestSingleElementAsync(PdfDirectObject item, string renderAs)
     {
-        var model = await BuildSingleElementFileAsync(_=>item);
-        Assert.Equal("1 0: "+renderAs, model[1].Title);
+        {
+            using var model = await BuildSingleElementFileAsync(_ => item);
+            Assert.Equal("1 0: " + renderAs, model.Root[1].Title);
+        }
+#warning get rid of this
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
     }
 
-    private async Task<DocumentPart[]> BuildSingleElementFileAsync(
+    private async Task<ParsedLowLevelDocument> BuildSingleElementFileAsync(
         Func<IPdfObjectCreatorRegistry,PdfDirectObject> item)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
-        var parsedLowLevelDocument = await CreateParsedFileAsync(builder);
-        return parsedLowLevelDocument.Root;
+        return await CreateParsedFileAsync(builder);
     }
 
     private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
