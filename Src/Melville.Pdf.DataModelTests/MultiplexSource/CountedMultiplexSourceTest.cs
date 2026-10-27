@@ -18,30 +18,33 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
 
     public override long Length => throw new System.NotSupportedException();
 
-    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) =>
-        new Wrapper(false,false, false, ticket);
+    protected override Stream ReadFromOverride(long position) =>
+        new Wrapper(false,false, false);
 
-    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket) =>
-        new ReaderWrapper(ticket);
+    protected override IAsyncReader ReaderFromOverride(long position) =>
+        new ReaderWrapper();
 
     protected override void CleanUp() => CleanUps++;
 
-    private partial class ReaderWrapper(CountedSourceTicket ticket) : IAsyncReader, IDisposable
+    private partial class ReaderWrapper : IAsyncReader, IDisposable, IHasSourceTicket
     {
+        CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
+
         public ValueTask<int> ReadAsync(
             Memory<byte> buffer, CancellationToken cancellation = default) =>
             ValueTask.FromResult(0);
 
-        public void Dispose() => ticket.TryRelease();
+        public void Dispose() => ((IHasSourceTicket)this).SourceTicket.Release(this);
     }
 
-    private partial class Wrapper : DefaultBaseStream
+    [FromConstructor]
+    private partial class Wrapper : DefaultBaseStream, IHasSourceTicket
     {
-        [FromConstructor] private CountedSourceTicket ticket;
+        CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
 
         protected override void Dispose(bool disposing)
         {
-            ticket.TryRelease();
+            ((IHasSourceTicket)this).SourceTicket.Release(this);
             base.Dispose(disposing);
         }
     }

@@ -33,17 +33,16 @@ internal interface IIndexedReader
 
 
 internal class IndexedReaderStream : 
-    DefaultBaseStream
+    DefaultBaseStream, IHasSourceTicket
 {
     private IIndexedReader? source = null;
-    private CountedSourceTicket sourceTicket;
+    CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
 
-    public IndexedReaderStream(IIndexedReader source, long position, CountedSourceTicket ticket):
+    public IndexedReaderStream(IIndexedReader source, long position):
         base (true, false, true)
     {
         this.source = source;
         Position = position;
-        sourceTicket = ticket;
     }
 
     public override int Read(Span<byte> buffer)
@@ -84,21 +83,24 @@ internal class IndexedReaderStream :
 
     public override long Length => source?.Length ?? 0;
 
+
     protected override void Dispose(bool disposing)
     {
         if (source is null) return; // prevents recursion
         source = null;
-        sourceTicket.TryRelease();
+        ((IHasSourceTicket)this).SourceTicket.Release(this);
         base.Dispose(disposing);
     }
 }
 
-internal class IndexedReader(IIndexedReader inner, long basePosition, CountedSourceTicket ticket): 
-    IAsyncReader, ISyncReader, ISeekableStream, IStreamPosition, IDisposable, IStreamLength
+internal class IndexedReader(IIndexedReader inner, long basePosition): 
+    IAsyncReader, ISyncReader, ISeekableStream, IStreamPosition, IDisposable, IStreamLength, IHasSourceTicket
 {
     IIndexedReader inner = inner;
     readonly long basePosition = basePosition;
     long absolutePosition = basePosition;
+    CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
+
 
     int BumpPosition (int delta)
     {
@@ -131,6 +133,6 @@ internal class IndexedReader(IIndexedReader inner, long basePosition, CountedSou
     {
         if (inner is null) return; 
         inner = null!;
-        ticket.TryRelease();
+        ((IHasSourceTicket)this).SourceTicket.Release(this);
     }
 }

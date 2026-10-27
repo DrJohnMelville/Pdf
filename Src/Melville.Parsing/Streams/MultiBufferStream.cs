@@ -7,17 +7,16 @@ using System.Diagnostics;
 
 namespace Melville.Parsing.Streams;
 
-internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource
+internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource, IHasSourceTicket
 {
     private LinkedList data;
     private LinkedListPosition currentPosition;
-    private CountedSourceTicket ticket;
+    CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
     private readonly bool writable;
 
-    internal MultiBufferStream(LinkedList data, bool writable, CountedSourceTicket ticket)
+    internal MultiBufferStream(LinkedList data, bool writable)
     {
         this.data = data;
-        this.ticket = ticket;
         this.writable = writable;
         currentPosition = data.StartPosition;
     }
@@ -27,7 +26,7 @@ internal class MultiBufferStream : ReadWriteStreamBase, IMultiplexSource
     protected override void Dispose(bool disposing)
     {
         if (!IsValid()) return;
-        ticket.TryRelease();
+        ((IHasSourceTicket)this).SourceTicket.Release(this);
         data = LinkedList.Empty;
         currentPosition = LinkedListPosition.NullPosition;
         base.Dispose(disposing);

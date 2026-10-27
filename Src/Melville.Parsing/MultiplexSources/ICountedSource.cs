@@ -2,13 +2,18 @@
 
 namespace Melville.Parsing.MultiplexSources;
 
+internal interface IHasSourceTicket
+{
+    CountedSourceTicket SourceTicket { get; set; }
+}
+
 internal interface ICountedSource
 {
 
     private static int nextNonce= 0;
     public static int NextNonce() => Interlocked.Increment(ref nextNonce);
 
-    bool TryRelease(ref CountedSourceTicket ticket);
+    void TryRelease(IHasSourceTicket item);
 }
 
 internal readonly partial struct CountedSourceTicket
@@ -16,13 +21,9 @@ internal readonly partial struct CountedSourceTicket
     [FromConstructor]private readonly ICountedSource? source;
     [FromConstructor]private readonly int nonce;
 
-    public bool TryRelease(ref CountedSourceTicket ticket) => source?.TryRelease(ref ticket) ?? false;
+    public void Release(IHasSourceTicket item) => source?.TryRelease(item);
     public bool HasNonce(int candidate) => nonce == candidate;
 
     public bool IsEmpty => source is null;
 }
 
-internal static class CountedSourceTicketOperations
-{
-    public static bool TryRelease(this ref CountedSourceTicket ticket) => ticket.TryRelease(ref ticket);
-}

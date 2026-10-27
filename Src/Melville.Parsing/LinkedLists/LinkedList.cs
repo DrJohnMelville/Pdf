@@ -157,15 +157,15 @@ internal abstract class LinkedList: CountedMultiplexSource
 
     public override long Length => endPosition.GlobalPosition;
 
-    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket)
+    protected override Stream ReadFromOverride(long position)
     {
-        var ret = new MultiBufferStream(this, false, ticket);
+        var ret = new MultiBufferStream(this, false);
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
-    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket)
+    protected override IAsyncReader ReaderFromOverride(long position)
     {
-        var ret = new LinkedListIStream.LinkedListReader(this, ticket);
+        var ret = new LinkedListIStream.LinkedListReader(this);
         if (position is not 0) ret.Seek(position);
         return ret;
     }

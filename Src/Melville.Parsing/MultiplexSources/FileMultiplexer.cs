@@ -20,12 +20,12 @@ internal class FileMultiplexer : CountedMultiplexSource, IIndexedReader
 
     protected override void CleanUp() => handle.DangerousRelease();
 
-    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) => 
-        new IndexedReaderStream(this, position, ticket);
+    protected override Stream ReadFromOverride(long position) => 
+        new IndexedReaderStream(this, position);
 
-    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket)
+    protected override IAsyncReader ReaderFromOverride(long position)
     {
-        return new IndexedReader(this, position, ticket);
+        return new IndexedReader(this, position);
     }
 
 

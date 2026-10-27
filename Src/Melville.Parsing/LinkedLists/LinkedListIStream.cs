@@ -9,16 +9,15 @@ namespace Melville.Parsing.LinkedLists;
 /// This is an implementation class for the MultimemoryBuffer
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposable
+public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposable,IHasSourceTicket
 {
     private LinkedListPosition position;
     private readonly LinkedList data;
-    private CountedSourceTicket ticket;
-    internal LinkedListIStream(LinkedList data, CountedSourceTicket ticket)
+    CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
+    internal LinkedListIStream(LinkedList data)
     {
         this.data = data;
         position = data.StartPosition;
-        this.ticket = ticket;
     }
 
     /// <inheritdoc/>
@@ -31,7 +30,7 @@ public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposa
     }
 
     /// <inheritdoc/>
-    public void Dispose() => ticket.TryRelease();
+    public void Dispose() => ((IHasSourceTicket)this).SourceTicket.Release(this);
 
     /// <inheritdoc/>
     public long Length => data.Length;
@@ -43,11 +42,7 @@ public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposa
     public class LinkedListReader : LinkedListIStream, ISyncReader, IAsyncReader
     {
 
-        internal LinkedListReader(LinkedList data) : this(data, data.CreateSourceTicket())
-        {
-        }
-        internal LinkedListReader(LinkedList data, CountedSourceTicket ticket) :
-            base(data, ticket)
+        internal LinkedListReader(LinkedList data) : base(data)
         {
         }
 
@@ -69,11 +64,7 @@ public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposa
     /// </summary>
     public class LinkedListWriter : LinkedListIStream, ISyncWriter, IAsyncWriter
     {
-        internal LinkedListWriter(LinkedList data) : this(data, data.CreateSourceTicket())
-        {
-        }
-        internal LinkedListWriter(LinkedList data, CountedSourceTicket ticket) :
-            base(data, ticket)
+        internal LinkedListWriter(LinkedList data) : base(data)
         {
         }
         /// <inheritdoc/>

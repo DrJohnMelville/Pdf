@@ -63,9 +63,9 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
         if (source.Position != position) source.Seek(position, SeekOrigin.Begin);
     }
 
-    protected override Stream ReadFromOverride(long position, CountedSourceTicket ticket) =>
-        new IndexedReaderStream(this, position, ticket);
-    protected override IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket) =>
-        new IndexedReader(this, position, ticket);
+    protected override Stream ReadFromOverride(long position) =>
+        new IndexedReaderStream(this, position);
+    protected override IAsyncReader ReaderFromOverride(long position) =>
+        new IndexedReader(this, position);
 
 }

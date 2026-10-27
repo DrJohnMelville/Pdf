@@ -5,15 +5,16 @@ using System.Diagnostics;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSource
+internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICountedSource
 {
     private CountedSourceState state;
-    private int pendingReaders;
+    private volatile int pendingReaders;
     private int serialNumber = ICountedSource.NextNonce();
+    private ProductionCountingStrategy counter = ProductionCounter;
 
     protected CountedMultiplexSource()
     {
-        RequireDisposal.ReportCreation(this);
+        ;
     }
 
     protected void ResetState()
@@ -39,7 +40,7 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
         GC.SuppressFinalize(this);
     }
 
-    ~CountedMultiplexSource() => RequireDisposal.ReportMissedDispose(this);
+    ~CountedMultiplexSource() => counter.FinalizeOccurred(this);
 
     private bool ShouldStayOpen()
     {
@@ -47,50 +48,20 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
     }
 
     public Stream ReadFrom(long position) => 
-        ReadFromOverride(position, CreateSourceTicket());
+        counter.IssueTicket(this, ReadFromOverride(position));
 
     public IAsyncReader ReaderFrom(long position) =>
-        ReaderFromOverride(position, CreateSourceTicket());
+        counter.IssueTicket(this, ReaderFromOverride(position));
 
+    public void TryRelease(IHasSourceTicket item) => counter.CancelTicket(this, item);
 
-
-    public CountedSourceTicket CreateSourceTicket()
-    {
-        if (state == CountedSourceState.Closed)
-        {
-            ;
-        }
-        Debug.Assert(state == CountedSourceState.Open);
-        pendingReaders++;
-        return new CountedSourceTicket(this, serialNumber);
-    }
-
-    public bool TryRelease(ref CountedSourceTicket ticket)
-    {
-        if (!ticket.HasNonce(serialNumber))
-        {
-            Debug.Fail("Nonce does not match");
-            return false;
-        }
-        ticket = default; // clear the ticket so it cannot be fired again
-        ReleaseReference();
-        return true;
-    }
-
-    private void ReleaseReference()
-    {
-        Debug.Assert(state != CountedSourceState.Closed);
-        Debug.Assert(pendingReaders > 0);
-        pendingReaders --;
-        TryCleanUp();
-    }
-
+ 
     public IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
 
     public abstract long Length { get; }
 
-    protected abstract Stream ReadFromOverride(long position, CountedSourceTicket ticket);
-    protected abstract IAsyncReader ReaderFromOverride(long position, CountedSourceTicket ticket);
+    protected abstract Stream ReadFromOverride(long position);
+    protected abstract IAsyncReader ReaderFromOverride(long position);
 
     protected abstract void CleanUp();
 
