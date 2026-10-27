@@ -19,20 +19,28 @@ internal static class RandomAccessFileParser
     public static async ValueTask<PdfLoadedLowLevelDocument> ParseAsync(
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)
     {
-        using var _ = Force.Using(owner.SubsetIAsyncReader(0), out var reader);
-        using var buffer = new ParsingBuffer(reader);
-        var preheaderOffset = await buffer.EnsureHasCharAsync(findPercent).CA();
-        owner.SetPreheaderOffset(preheaderOffset);
-        buffer.Advance(preheaderOffset);
+        try
+        {
+            using var _ = Force.Using(owner.SubsetIAsyncReader(0), out var reader);
+            using var buffer = new ParsingBuffer(reader);
+            var preheaderOffset = await buffer.EnsureHasCharAsync(findPercent).CA();
+            owner.SetPreheaderOffset(preheaderOffset);
+            buffer.Advance(preheaderOffset);
 
-        await buffer.EnsureBytesAsync(8);
-        var (major, minor) = ParseHeader(buffer.Peek());
+            await buffer.EnsureBytesAsync(8);
+            var (major, minor) = ParseHeader(buffer.Peek());
 
-        var xrefPosition = await FileTrailerLocater.SearchAsync(owner, fileTrailerSizeHint).CA();
-        var dictionary = await new PdfTrailerParser(owner, xrefPosition).ParseXrefAndTrailerAsync().CA();
+            var xrefPosition = await FileTrailerLocater.SearchAsync(owner, fileTrailerSizeHint).CA();
+            var dictionary = await new PdfTrailerParser(owner, xrefPosition).ParseXrefAndTrailerAsync().CA();
 
-        return new PdfLoadedLowLevelDocument(
-           major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, owner);
+            return new PdfLoadedLowLevelDocument(
+               major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, owner);
+        }
+        catch (Exception)
+        {
+            owner.Dispose();
+            throw;
+        }
     }
 
     static (byte major, byte minor) ParseHeader(ReadOnlySpan<byte> header)
