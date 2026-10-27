@@ -90,12 +90,6 @@ public class PartParserTest
             using var model = await BuildSingleElementFileAsync(_ => item);
             Assert.Equal("1 0: " + renderAs, model.Root[1].Title);
         }
-#warning get rid of this
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
     }
 
     private async Task<ParsedLowLevelDocument> BuildSingleElementFileAsync(
