@@ -223,7 +223,7 @@ public class CmapGlobalParserTest: IDisposable
     public async Task ParseType14CmapAsync()
     {
         using var select = GetPeerFile("CmapFromCambriaFont.dat");
-        IMultiplexSource source = MultiplexSourceFactory.Create(select);
+        using var source = MultiplexSourceFactory.Create(select);
         using var buffer = source.ParsingBufferFrom(0);
         var cmap = (ICMapSource)new ParsedCmap(source,
             (await FieldParser.ReadFromAsync<CmapTable>(buffer).CA()).Tables);
@@ -234,7 +234,6 @@ public class CmapGlobalParserTest: IDisposable
             subtable.TryMap(i.Bytes, i.Character, out var glyph);
             glyph.Should().Be(i.Glyph);
         });
-
     }
 
 

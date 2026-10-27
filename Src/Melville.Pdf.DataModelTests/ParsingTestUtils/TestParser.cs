@@ -54,7 +54,9 @@ public static class TestParser
 
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024)
     {
-        using var owner = str.AsParsingSource();
+        // this cannot be a using var statement because the loaded document will continue to access the source.
+        // 
+        var owner = str.AsParsingSource();
         return RandomAccessFileParser.ParseAsync(owner, sizeHint);
     }
 

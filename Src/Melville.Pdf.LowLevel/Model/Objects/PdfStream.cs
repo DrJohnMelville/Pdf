@@ -55,7 +55,7 @@ public class PdfStream : PdfDictionary
     /// <returns></returns>
     public async ValueTask<IAsyncReader> ReaderForContentAsync(
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
-            (await StreamContentAsync(desiredFormat, context)).AsStreamReader();
+            (await StreamContentAsync(desiredFormat, context)).AsStreamReader(true);
 
 #warning convert this to native readers.
     internal async ValueTask<Stream> StreamEncryptedContentAsync(

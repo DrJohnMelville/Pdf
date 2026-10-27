@@ -88,7 +88,8 @@ public class S7_5_7ObjectStreamExtends
     [Fact]
     public async Task OverridePriorTestAsync()
     {
-        using var mbs = CreateFile("""
+        {
+            using var mbs = CreateFile("""
         1 0 obj
         <</Type /ObjStm
         /Length 21
@@ -110,10 +111,11 @@ public class S7_5_7ObjectStreamExtends
         endstream
  
         """);
-        await using var r2 = mbs.CreateReader();
-        var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
-        Assert.Equal("1234", (await reader.Objects[(2, 0)].LoadValueAsync()).ToString());
-        Assert.Equal("NewStr", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
+            await using var r2 = mbs.CreateReader();
+            var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
+            Assert.Equal("1234", (await reader.Objects[(2, 0)].LoadValueAsync()).ToString());
+            Assert.Equal("NewStr", (await reader.Objects[(3, 0)].LoadValueAsync()).ToString());
+        }
     }
 
     private static MultiBufferWriter CreateFile(string firstStream, string SecondStream)

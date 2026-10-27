@@ -56,6 +56,10 @@ internal abstract class CountedMultiplexSource : IMultiplexSource, ICountedSourc
 
     public CountedSourceTicket CreateSourceTicket()
     {
+        if (state == CountedSourceState.Closed)
+        {
+            ;
+        }
         Debug.Assert(state == CountedSourceState.Open);
         pendingReaders++;
         return new CountedSourceTicket(this, serialNumber);
