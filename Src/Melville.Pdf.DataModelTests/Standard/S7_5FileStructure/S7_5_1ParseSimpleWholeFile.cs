@@ -82,7 +82,7 @@ public class S7_5_1ParseSimpleWholeFile
     [Fact]
     public async Task ParseSimpleDocumentAsync()
     {
-        var doc = await (await OutputTwoItemDocumentAsync()).ParseDocumentAsync();
+        using var doc = await (await OutputTwoItemDocumentAsync()).ParseDocumentAsync();
         Assert.Equal(1, doc.MajorVersion);
         Assert.Equal(7, doc.MinorVersion);
         Assert.Equal(2, doc.Objects.Count);

@@ -1,11 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Melville.FileSystem;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.Streams;
+﻿using FluentAssertions;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -14,6 +7,10 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Moq;
+using System;
+using System.IO;
+using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
@@ -29,7 +26,8 @@ public class S_7_5_8CrossReferenceStreams
         await writer.WriteAsync();
         var fileAsString = ms.GetBuffer().AsSpan(0, (int)ms.Length).ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");
-        var doc = await (fileAsString).ParseDocumentAsync();
+
+        using var doc = await (fileAsString).ParseDocumentAsync();
         Assert.NotNull(doc.TrailerDictionary);
         Assert.IsType<PdfStream>(doc.TrailerDictionary);
         var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
@@ -44,12 +42,12 @@ public class S_7_5_8CrossReferenceStreams
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 0, 1, 2 });
-        
+
         var target = new Mock<IIndirectObjectRegistry>();
 
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
-        
-        target.Verify(i=>i.RegisterDeletedBlock(10, 2, 1));
+
+        target.Verify(i => i.RegisterDeletedBlock(10, 2, 1));
         target.VerifyNoOtherCalls();
     }
 
@@ -66,12 +64,12 @@ public class S_7_5_8CrossReferenceStreams
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 1, 1, 2 });
-        
+
         var target = new Mock<IIndirectObjectRegistry>();
 
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
-        
-        target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
+
+        target.Verify(i => i.RegisterIndirectBlock(10, 2, 1));
         target.VerifyNoOtherCalls();
     }
     [Fact]
@@ -80,12 +78,12 @@ public class S_7_5_8CrossReferenceStreams
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 2, 1, 2 });
-        
+
         var target = new Mock<IIndirectObjectRegistry>();
 
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
-        
-        target.Verify(i=>i.RegisterObjectStreamBlock(10, 1, 2));
+
+        target.Verify(i => i.RegisterObjectStreamBlock(10, 1, 2));
         target.VerifyNoOtherCalls();
     }
     [Fact]
@@ -93,31 +91,31 @@ public class S_7_5_8CrossReferenceStreams
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 3))
-            .AsStream(new byte[] { 1, 1, 2,   1,110,21,  1,50, 0});
-        
+            .AsStream(new byte[] { 1, 1, 2, 1, 110, 21, 1, 50, 0 });
+
         var target = new Mock<IIndirectObjectRegistry>();
 
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
-        
-        target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
-        target.Verify(i=>i.RegisterIndirectBlock(11, 21, 110));
-        target.Verify(i=>i.RegisterIndirectBlock(12, 0, 50));
+
+        target.Verify(i => i.RegisterIndirectBlock(10, 2, 1));
+        target.Verify(i => i.RegisterIndirectBlock(11, 21, 110));
+        target.Verify(i => i.RegisterIndirectBlock(12, 0, 50));
         target.VerifyNoOtherCalls();
     }
     [Fact]
     public async Task IndirectWithMultipleSectionsAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.Index, new PdfArray(10, 2,  255,1))
-            .AsStream(new byte[] { 1, 1, 2,   1,110,21,  1,50, 0});
-        
+            .WithItem(KnownNames.Index, new PdfArray(10, 2, 255, 1))
+            .AsStream(new byte[] { 1, 1, 2, 1, 110, 21, 1, 50, 0 });
+
         var target = new Mock<IIndirectObjectRegistry>();
 
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
-        
-        target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
-        target.Verify(i=>i.RegisterIndirectBlock(11, 21, 110));
-        target.Verify(i=>i.RegisterIndirectBlock(255, 0, 50));
+
+        target.Verify(i => i.RegisterIndirectBlock(10, 2, 1));
+        target.Verify(i => i.RegisterIndirectBlock(11, 21, 110));
+        target.Verify(i => i.RegisterIndirectBlock(255, 0, 50));
         target.VerifyNoOtherCalls();
     }
 
