@@ -26,9 +26,9 @@ public class CcittCodecFactory
     /// <returns></returns>
     public static IStreamFilterDefinition SelectDecoder(CcittParameters args) => args.K switch
     {
-        < 0 => new CcittType4Decoder(args, new TwoDimensionalLineCodeDictionary()),
-        0 => new CcittType4Decoder(args, new Type3K0LineCodeDictionary()),
-        > 0 => new CcittType4Decoder(args, new Type3SwitchingLineCodeDictionary())
+        < 0 => new CcittDecoder(args, new TwoDimensionalLineCodeDictionary()),
+        0 => new CcittDecoder(args, new Type3K0LineCodeDictionary()),
+        > 0 => new CcittDecoder(args, new Type3SwitchingLineCodeDictionary())
     };
 
 }

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Melville.CCITT;
 
-internal class CcittType4Decoder : IJBigMmrFilter
+internal class CcittDecoder : IJBigMmrFilter
 {
     private readonly CcittParameters parameters;
     private LinePair lines;
@@ -14,7 +14,7 @@ internal class CcittType4Decoder : IJBigMmrFilter
     private readonly BitWriter writer = new();
     private int linesDone = 0;
 
-    public CcittType4Decoder(CcittParameters parameters, ICodeDictionay codeDictionay)
+    public CcittDecoder(CcittParameters parameters, ICodeDictionay codeDictionay)
     {
         this.parameters = parameters;
         lines = new LinePair(parameters);
@@ -22,24 +22,8 @@ internal class CcittType4Decoder : IJBigMmrFilter
         reader = new(codeDictionay);
     }
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-    ref SequenceReader<byte> source, in Span<byte> destination)
-    {
-        var source2 = new SpanParsingBuffer(source.UnreadSequence.ToArray());
-        try
-        {
-            var localDestination = destination;
-            var doneReading = InnerConvertLoop(ref source2, ref localDestination);
-            return (source.Sequence.GetPosition(source2.RelativePosition), 
-                destination.Length - localDestination.Length, doneReading);
-        }
-        finally
-        {
-            source.Advance(source2.RelativePosition);
-        }
-    }
-
-    private bool InnerConvertLoop(ref SpanParsingBuffer source, ref Span<byte> destination)
+   
+    public bool Convert(ref SpanParsingBuffer source, ref Span<byte> destination)
     {
         while (destination.Length > 0)
         {
