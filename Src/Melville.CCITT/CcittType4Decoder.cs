@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.CCITT;
 
@@ -50,14 +51,22 @@ internal class CcittType4Decoder : IJBigMmrFilter
 
   private int a0IsNextPixelToWrite = -1;
   private bool ReadLine(ref SequenceReader<byte> source)
-  {
-    while (!codeDictionay.IsAtValidEndOfLine || a0IsNextPixelToWrite < lines.LineLength)
     {
-      if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
-      ProcessCode(code);
-     }
-    return true;
-  }
+        var source2 = new SpanParsingBuffer(source.UnreadSequence.ToArray());
+        try
+        {
+            while (!codeDictionay.IsAtValidEndOfLine || a0IsNextPixelToWrite < lines.LineLength)
+            {
+                if (!reader.TryReadCode(ref source2, currentRunColor, out var code)) return false;
+                ProcessCode(code);
+            }
+            return true;
+        }
+        finally
+        {
+            source.Advance(source2.RelativePosition);
+        }
+    }
 
   private void ProcessCode(CcittCode code)
   {

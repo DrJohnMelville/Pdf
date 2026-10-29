@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.CCITT;
 
@@ -57,31 +58,31 @@ internal partial class CcittCodeReader
         return true;
     }
     
-
-    public bool TryReadCode(ref SequenceReader<byte> source, bool isWhiteRun, out CcittCode code)
+    public bool TryReadCode(ref SpanParsingBuffer source2, bool isWhiteRun, out CcittCode code)
     {
         while (true)
         {
-            if (!ReadSingleCodeWord(ref source, isWhiteRun, out code)) return false;
-             if (code.Operation != CcittCodeOperation.NoCode)
+            if (!ReadSingleCodeWord(ref source2, isWhiteRun, out code)) return false;
+            if (code.Operation != CcittCodeOperation.NoCode)
             {
                 Debug.Assert(code.Operation != CcittCodeOperation.MakeUp);
                 Debug.Assert(code.Operation != CcittCodeOperation.SwitchToHorizontalMode);
                 return true;
             }
         }
+
     }
 
-    private bool ReadSingleCodeWord(ref SequenceReader<byte> source, bool isWhiteRun, out CcittCode code)
+    private bool ReadSingleCodeWord(ref SpanParsingBuffer source2, bool isWhiteRun, out CcittCode code)
     {
-        do
-        {
-            if (!reader.TryRead(1, ref source, out var bit)) 
-                return NotEnoughBitsForCompleteCode(out code);
-            AddBitToCurrentWord(bit);
-        } while (!LookupCode(isWhiteRun, out code));
-        ResetCurrentWord();
-        return true;
+            do
+            {
+                if (!reader.TryRead(1, ref source2, out var bit))
+                    return NotEnoughBitsForCompleteCode(out code);
+                AddBitToCurrentWord(bit);
+            } while (!LookupCode(isWhiteRun, out code));
+            ResetCurrentWord();
+            return true;
     }
 
     private static bool NotEnoughBitsForCompleteCode(out CcittCode code)

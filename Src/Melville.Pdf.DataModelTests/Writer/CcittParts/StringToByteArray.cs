@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,10 @@ namespace Melville.Pdf.DataModelTests.Writer.CcittParts;
 
 public static class StringToByteArray
 {
-    public static SequenceReader<byte> CreateSequence(string bits)
+    public static SpanParsingBuffer CreateSequence(string bits)
     {
         var seq = CreateArray(bits);
-        return new SequenceReader<byte>(new ReadOnlySequence<byte>(seq));
+        return new(seq);
     }
 
     public static byte[] CreateArray(string bits)
