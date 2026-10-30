@@ -40,16 +40,7 @@ public interface IStreamFilterDefinition
     /// <returns>A tuple of the next byte to be consumed, number of bytes written to the destination, and a bool that can be set to true if
     /// the filter has generated all of the available output.</returns>
     (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-        ref SequenceReader<byte> source, in Span<byte> destination)
-    {
-#warning very inefficient
-        var span = source.UnreadSequence.ToArray();
-        var endDest = destination;
-        var reader = new SpanParsingBuffer(span);
-        var done = this.Convert(ref reader, ref endDest);
-        source.Advance(reader.RelativePosition);
-        return (source.UnreadSequence.Start, destination.Length - endDest.Length, done);
-    }
+        ref SequenceReader<byte> source, in Span<byte> destination) => this.Convert(ref source, destination);
 
     // new methods
 

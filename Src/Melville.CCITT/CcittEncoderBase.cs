@@ -1,6 +1,9 @@
-﻿using System.Buffers;
-using Melville.Parsing.StreamFilters;
+﻿using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Buffers;
 
 namespace Melville.CCITT;
 
@@ -21,21 +24,28 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
 
     public int MinWriteSize => 10;
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-        ref SequenceReader<byte> source, in Span<byte> destination)
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        if (source.Length == 0)
-            return (source.Position, bitWriter.FinishWrite(destination), true);
-        if (LineLoadIsIncomplete() && !LoadLine(ref source))
-            return (source.Position, 0, false);
-        return (source.Position, TryWriteCurrentRow(destination), false);
+        if (input.CurrentLength == 0)
+        {
+            if (bitWriter.FinishWrite(output) is > 0 and var delta)
+                output = output[delta..];
+            return true;
+        }
+
+        while (LineLoadIsIComplete() || LoadLine(ref input))
+        {
+            TryWriteCurrentRow(ref output);
+        }
+
+        return false;
     }
 
-    private bool LineLoadIsIncomplete() => currentReadPos < lines.LineLength;
+    private bool LineLoadIsIComplete() => currentReadPos >= lines.LineLength;
 
-    private bool LoadLine(ref SequenceReader<byte> source)
+    private bool LoadLine(ref SpanParsingBuffer source)
     {
-        for (; currentReadPos < lines.CurrentLine.Length; currentReadPos++)
+        for (; !LineLoadIsIComplete(); currentReadPos++)
         {
             if (!bitReader.TryRead(1, ref source, out var pixel)) return false;
             lines.CurrentLine[currentReadPos] = Parameters.IsWhiteValue(pixel);
@@ -51,10 +61,10 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
         if (Parameters.EncodedByteAlign) encoding.PadUnusedBits();
     }
 
-    private int TryWriteCurrentRow(Span<byte> destination)
+    private void TryWriteCurrentRow(ref Span<byte> destination)
     {
         var writer = new CcittBitWriter(destination, bitWriter);
-        if (!TryWriteLinePrefix(ref writer)) return writer.BytesWritten;
+        if (!TryWriteLinePrefix(ref writer)) return;
         while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
         {
             // do nothing
@@ -65,8 +75,8 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
             WriteLineSuffix(ref writer);
             ResetForNextLine(ref writer);
         }
-        
-        return writer.BytesWritten;
+
+        destination = destination[writer.BytesWritten..];
     }
 
     private bool TryWriteLinePrefix(ref CcittBitWriter writer) =>
