@@ -4,103 +4,129 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
 using System.Buffers;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 
 internal class Ascii85Encoder : IStreamFilterDefinition
 {
-    public int MinWriteSize => 7;
+    private uint code = 0;
+    private int bytesToWrite = 0;
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        int i;
-        for (i = 0; i + 4 < destination.Length && TryGetQuad(ref source, out uint quad); i += 5)
-        {
-            if (quad == 0)
-            {
-                destination[i] = (byte)'z';
-                i -= 4; // we need to step back to compensate for the shorter code;
-            }
-            else
-            {
-                EncodeValue(destination.Slice(i, 5), quad, 5);
-            }
-        }
-
-        return (source.Position, Math.Min(destination.Length, i), false);
+        InnerConvert(ref input, ref output);
+        return false;
     }
 
-    private bool TryGetQuad(ref SequenceReader<byte> source, out uint readVal)
+    private bool InnerConvert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        if (source.Remaining < 4)
+        while (true)
         {
-            readVal = 0;
-            return false;
+            if (!TryWrite(ref output)) return false;
+            if (input.CurrentLength < 4) return true;
+            code = input.GetUInt32BigEndian();
+            bytesToWrite = 5;
         }
+    }
 
-        readVal = ReadBigEndianUInt(source.UnreadSpan);
-        source.Advance(4);
+    bool TryWrite(ref Span<byte> output)
+    {
+        if (bytesToWrite is 0) return true;
+        if (output.Length is 0) return false;
+        if (bytesToWrite is 5 && code is 0)
+        {
+            PushByte(ref output, Ascii85Constants.FourZeroChar);
+            bytesToWrite = 0;
+            return true;
+        }
+        WriteCompositeBytes(ref output);
+        if ( bytesToWrite == 0)
+        {
+            code = 0;
+            return true;
+        }
+        return false;
+    }
+
+    private void WriteCompositeBytes(ref Span<byte> output)
+    {
+        Span<byte> bytes = stackalloc byte[5];
+        FillSpan(bytes);
+        bytes = bytes[^bytesToWrite..];
+        while (bytes is [var first, ..] && output.Length > 1)
+        {
+            output[0] = first;
+            output = output[1..];
+            bytes = bytes[1..];
+        }
+        bytesToWrite = bytes.Length;
+    }
+
+    void FillSpan(Span<byte> bytes)
+    {
+        uint innerCode = code;
+        for (int i = 4; i >= 0; i--)
+        {
+            var rem2 = innerCode % 85;
+            (innerCode, var remainder) = Math.DivRem(innerCode, 85);
+            bytes[i] = (byte)(remainder + Ascii85Constants.FirstChar);
+        }
+    }
+
+
+    private static bool TryPushByte(ref Span<byte> output, byte thisByte)
+    {
+        if (output.Length == 0) return false;
+        PushByte(ref output, thisByte);
         return true;
     }
-
-    private static uint ReadBigEndianUInt(ReadOnlySpan<byte> span) =>
-        (uint)((span[0] << 24) | (span[1] << 16) | (span[2] << 8) | span[3]);
-
-    private static void EncodeValue(Span<byte> buffer, uint value, int bytesToWrite)
+    private static void PushByte(ref Span<byte> output, byte thisByte)
     {
-        for (int index = 4; index >= 0; index--)
+        output[0] = thisByte;
+        output = output[1..];
+    }
+
+    private int suffixState = 0;
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        switch (suffixState)
         {
-            if (index < bytesToWrite)
-                buffer[index] = (byte)((value % 85) + Ascii85Constants.FirstChar);
-            value /= 85;
+            case 0:
+                if (!WritePartialCodes(ref input, ref output)) return false;
+                suffixState = 1;
+                goto case 1;
+            case 1:
+                if (!TryPushByte(ref output, Ascii85Constants.FirstTerminatingChar)) return false;
+                suffixState = 2;
+                goto case 2;
+            case 2:
+                if (!TryPushByte(ref output, Ascii85Constants.SecondTerminatingChar)) return false;
+                suffixState = 3;
+                return true;
+            default:
+                return true;
         }
     }
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        FinalConvert(ref SequenceReader<byte> source,
-            in Span<byte> destination)
+    private bool WritePartialCodes(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        if (destination.Length < 7) return (source.Position, 0, false);
-        var (finalBytes, finalQuad) = ReadPartialQuad(source);
-        var lastCodeLen = EncodePartialValue(destination, finalBytes, finalQuad);
-        AddStreamTerminator(destination, lastCodeLen);
-        return (source.Position, lastCodeLen + 2, true);
-    }
-
-    private static (int count, uint value) ReadPartialQuad(SequenceReader<byte> source)
-    {
-        var count = 0;
-        uint value = 0;
+        if (!InnerConvert(ref input, ref output)) return false;
+        var remaining = input.CurrentLength;
+        Debug.Assert(remaining < 4);
+        Debug.Assert(code is 0);
+        if (remaining is 0) return true;
         for (int i = 0; i < 4; i++)
         {
-            value <<= 8;
-            if (source.TryRead(out byte val))
-            {
-                count++;
-                value |= val;
-            }
+            input.TryGetUInt8(out var b);
+            code <<= 8;
+            code |= b;
         }
-
-        return (count, value);
+        bytesToWrite = remaining + 1;
+        for (int i = bytesToWrite; i < 5; i++) code /= 85;
+        return TryWrite(ref output);
     }
 
-    private static int EncodePartialValue(Span<byte> destination, int count, uint value)
-    {
-        int lastCodeLen = 0;
-        if (count > 0)
-        {
-            lastCodeLen = count + 1;
-            EncodeValue(destination, value, lastCodeLen);
-        }
-
-        return lastCodeLen;
-    }
-
-    private static void AddStreamTerminator(in Span<byte> destination, int lastCodeLen)
-    {
-        destination[lastCodeLen] = Ascii85Constants.FirstTerminatingChar;
-        destination[lastCodeLen + 1] = Ascii85Constants.SecondTerminatingChar;
-    }
+    public int MinWriteSize => 1;
 }
