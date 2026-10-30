@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.StreamFilters;
+﻿using Melville.Parsing.SequenceReaders;
+using Melville.Parsing.StreamFilters;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
@@ -15,14 +16,42 @@ internal class Ascii85Decoder2 : StringDecoderStreamFilterDefinition<Ascii85Stri
 
 }
 
-internal class Ascii85Decoder : IStreamFilterDefinition
+internal class Ascii85Decoder() : IStreamFilterDefinition
+{
+    private (uint,int,int) memento;
+   
+
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        InnerConvert(ref input, ref output, false);
+
+    private bool InnerConvert(ref SpanParsingBuffer input, ref Span<byte> output, bool final)
+    {
+        var engine = new Ascii85DecoderCore(memento);
+        var ret = engine.InnerConvert(ref input, ref output, final);
+        memento = engine.GetMemento();
+        return ret;
+    }
+
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        InnerConvert(ref input, ref output, true);
+
+    /// <summary>
+    /// Minimum size of a buffer that can be written to.
+    /// </summary>
+    public int MinWriteSize => 0;
+}
+
+internal ref struct Ascii85DecoderCore()
 {
     private uint buffer = 0;
     private int bytesRead = 0;
     private int bytesToWrite = 0;
 
-    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) =>
-        InnerConvert(ref input, ref output, false);
+    public (uint, int, int) GetMemento() => (buffer, bytesRead, bytesToWrite);
+    public Ascii85DecoderCore((uint,int,int) memento) : this()
+    {
+        (buffer, bytesRead, bytesToWrite) = memento;
+    }
 
     public bool InnerConvert(ref SpanParsingBuffer input, ref Span<byte> output, bool final)
     {
@@ -91,20 +120,11 @@ internal class Ascii85Decoder : IStreamFilterDefinition
         {
             if (output.Length is 0) return false;
             bytesToWrite--;
-            output[0] = (byte)(buffer >> (8*bytesToWrite) );
+            output[0] = (byte)(buffer >> (8 * bytesToWrite));
             output = output[1..];
         }
         buffer = 0;
         bytesRead = 0;
         return true;
     }
-
-
-    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
-        InnerConvert(ref input, ref output, true);
-
-    /// <summary>
-    /// Minimum size of a buffer that can be written to.
-    /// </summary>
-    public int MinWriteSize => 0;
 }
