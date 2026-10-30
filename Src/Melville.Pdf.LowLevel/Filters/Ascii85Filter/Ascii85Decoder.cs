@@ -8,13 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 
-internal class Ascii85Decoder2 : StringDecoderStreamFilterDefinition<Ascii85StringDecoder, byte>
-{
-    public override int MinWriteSize => 4;
-
-    protected override ReadOnlySpan<byte> TerminatorSequence() => "~>"u8;
-
-}
 
 internal class Ascii85Decoder() : IStreamFilterDefinition
 {
