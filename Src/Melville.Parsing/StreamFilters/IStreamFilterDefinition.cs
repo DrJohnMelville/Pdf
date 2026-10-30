@@ -1,4 +1,5 @@
-﻿using Melville.StreamInterfaces.ParsingBuffers;
+﻿using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
 using System.Reflection;
 
@@ -40,7 +41,17 @@ public interface IStreamFilterDefinition
     /// <returns>A tuple of the next byte to be consumed, number of bytes written to the destination, and a bool that can be set to true if
     /// the filter has generated all of the available output.</returns>
     (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-        ref SequenceReader<byte> source, in Span<byte> destination) => this.Convert(ref source, destination);
+        ref SequenceReader<byte> source, in Span<byte> destination)
+    {
+#warning very inefficient
+        var span = source.UnreadSequence.ToArray();
+        var endDest = destination;
+        var reader = new SpanParsingBuffer(span);
+        var done = this.FinalConvert(ref reader, ref endDest);
+        source.Advance(reader.RelativePosition);
+        return (source.UnreadSequence.Start, destination.Length - endDest.Length, done);
+    }
+
 
     // new methods
 
@@ -56,16 +67,7 @@ public interface IStreamFilterDefinition
     /// <returns>True if the filter has no more data to provide, false otherwise.</returns>
     bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-#warning very inefficient
-        var oldLength = input.CurrentLength;
-        var innerInput = new SequenceReader<byte>(new ReadOnlySequence<byte>(input.Peek().ToArray()));
-
-            var (endPos, written, done) = this.Convert(ref innerInput, output);
-
-        input.Advance((int)innerInput.Consumed);
-        output = output[written..];
-        return done;
-
+        throw new NotImplementedException("This shim shoould never be called");
     }
 
     /// <summary>
@@ -84,12 +86,11 @@ public interface IStreamFilterDefinition
         var oldLength = input.CurrentLength;
         var innerInput = new SequenceReader<byte>(new ReadOnlySequence<byte>(input.Peek().ToArray()));
 
-        var (endPos, written, done) = this.FinalConvert(ref innerInput, output);
+        var (endPos, written, done) = this.Convert(ref innerInput, output);
 
         input.Advance((int)innerInput.Consumed);
         output = output[written..];
         return done;
-
     }
 
     /// <summary>
