@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.StreamFilters;
+using Melville.Parsing.StreamFilters.AsciiHex;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
@@ -24,21 +25,20 @@ internal static class StaticCodecFactory
     private static Dictionary<PdfDirectObject, ICodecDefinition> CreateDictionary() =>
         new()
         {
-            { KnownNames.ASCIIHexDecode, ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()) },
-            { KnownNames.ASCII85Decode, new CodecDefinition(_=>
-            ValueTask.FromResult<IStreamFilterDefinition>(new Ascii85Encoder()), 
-                _ => ValueTask.FromResult<IStreamFilterDefinition>(new Ascii85Decoder())) },
-            { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
-            { KnownNames.LZWDecode, new CodecDefinition(LzwFilterFactory.EncoderAsync, LzwFilterFactory.DecoderAsync)},
+            { KnownNames.ASCIIHexDecode, new CodecDefinition(
+                new(_=>new AsciiHexEncoder()), new(new AsciiHexDecoder())) },
+            { KnownNames.ASCII85Decode, new CodecDefinition(new(_=>new Ascii85Encoder()),
+                new( _=>new Ascii85Decoder())) },
+            { KnownNames.RunLengthDecode, new CodecDefinition(new(new RunLengthEncoder()), new(new RunLengthDecoder())) },
+            { KnownNames.LZWDecode, new CodecDefinition(
+                new(LzwFilterFactory.EncoderAsync), new(LzwFilterFactory.DecoderAsync))},
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
             { KnownNames.DCTDecode, new DctCodec() },
             { KnownNames.JBIG2Decode, new JbigToPdfAdapter()},
             { KnownNames.JPXDecode, new JpxToPdfAdapter()},
-            { KnownNames.CCITTFaxDecode, new CodecDefinition(CcittFilterFactory.EncoderAsync, CcittFilterFactory.DecoderAsync) }
+            { KnownNames.CCITTFaxDecode, new CodecDefinition(
+                new(CcittFilterFactory.EncoderAsync), new(CcittFilterFactory.DecoderAsync)) }
         };
 
-    private static CodecDefinition ConstantCodec(
-        IStreamFilterDefinition encoder, IStreamFilterDefinition decoder) =>
-        new(_ => new ValueTask<IStreamFilterDefinition>(encoder),
-            _ => new ValueTask<IStreamFilterDefinition>(decoder));
+    
 }

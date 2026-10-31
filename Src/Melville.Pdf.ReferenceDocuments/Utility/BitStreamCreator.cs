@@ -22,6 +22,7 @@ public static class BitStreamCreator
         return string.Join("", sources).BitsFromHex();
     }
 
+#warning use the hexstring convertter
     public static byte[] BitsFromHex(this string source) =>
         source
             .Select(HexValue)

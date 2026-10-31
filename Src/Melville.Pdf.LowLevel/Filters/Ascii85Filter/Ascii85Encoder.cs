@@ -1,5 +1,6 @@
 ﻿using CoreJ2K.j2k.image;
 using Melville.Parsing.StreamFilters;
+using Melville.Parsing.StreamFilters.AsciiHex;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
@@ -37,7 +38,7 @@ internal class Ascii85Encoder : IStreamFilterDefinition
         if (output.Length is 0) return false;
         if (bytesToWrite is 5 && code is 0)
         {
-            PushByte(ref output, Ascii85Constants.FourZeroChar);
+            output.SetAndIncrement(Ascii85Constants.FourZeroChar);
             bytesToWrite = 0;
             return true;
         }
@@ -57,8 +58,7 @@ internal class Ascii85Encoder : IStreamFilterDefinition
         bytes = bytes[^bytesToWrite..];
         while (bytes is [var first, ..] && output.Length > 1)
         {
-            output[0] = first;
-            output = output[1..];
+            output.SetAndIncrement(first);
             bytes = bytes[1..];
         }
         bytesToWrite = bytes.Length;
@@ -75,19 +75,6 @@ internal class Ascii85Encoder : IStreamFilterDefinition
         }
     }
 
-
-    private static bool TryPushByte(ref Span<byte> output, byte thisByte)
-    {
-        if (output.Length == 0) return false;
-        PushByte(ref output, thisByte);
-        return true;
-    }
-    private static void PushByte(ref Span<byte> output, byte thisByte)
-    {
-        output[0] = thisByte;
-        output = output[1..];
-    }
-
     private int suffixState = 0;
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
@@ -98,11 +85,11 @@ internal class Ascii85Encoder : IStreamFilterDefinition
                 suffixState = 1;
                 goto case 1;
             case 1:
-                if (!TryPushByte(ref output, Ascii85Constants.FirstTerminatingChar)) return false;
+                if (!output.TrySetAndIncrement(Ascii85Constants.FirstTerminatingChar)) return false;
                 suffixState = 2;
                 goto case 2;
             case 2:
-                if (!TryPushByte(ref output, Ascii85Constants.SecondTerminatingChar)) return false;
+                if (!output.TrySetAndIncrement(Ascii85Constants.SecondTerminatingChar)) return false;
                 suffixState = 3;
                 return true;
             default:

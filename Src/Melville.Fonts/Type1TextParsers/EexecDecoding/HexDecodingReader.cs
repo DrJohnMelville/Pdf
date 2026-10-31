@@ -13,6 +13,7 @@ namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 /// <param name="inner"></param>
 public class HexDecodingReader(IAsyncReader inner) : IAsyncReader
 {
+#warning make this go away
     byte? savedByte = null;
 
     ///<inheritdoc/>

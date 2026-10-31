@@ -1,4 +1,6 @@
 ﻿using Melville.Parsing.IStreamAdaptors;
+using Melville.Parsing.StreamFilters;
+using Melville.Parsing.StreamFilters.AsciiHex;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
@@ -28,9 +30,9 @@ internal partial class EexecCommand(
 
         IAsyncReader newSource = await BuildNewCodeSourceAsync(oldCodeSource);
 
-        var newCodeSource = new ParsingBuffer(newSource);
+        var newCodeSource = new ParsingBuffer(newSource).WithDisposedDependency(newSource);
         await newCodeSource.AdvanceAsync(4).CA();
-
+ 
         engine.TokenSource.CodeSource = newCodeSource;
     }
 
@@ -39,7 +41,10 @@ internal partial class EexecCommand(
         await oldCodeSource.EnsureBytesAsync(6).CA();
         TrySkipOneLineBreak(oldCodeSource);
         IAsyncReader newSource = new PrefixingAsyncReader(source, oldCodeSource.Peek().ToArray());
-        if (AllHex(oldCodeSource.Peek(4))) newSource = new HexDecodingReader(newSource);
+
+        if (AllHex(oldCodeSource.Peek(4))) newSource =
+                new FilteredReader(newSource, new AsciiHexDecoder());
+
         return new DecodingReader(newSource, eexecDecodeKey);
     }
 

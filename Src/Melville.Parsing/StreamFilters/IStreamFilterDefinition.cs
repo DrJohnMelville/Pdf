@@ -1,9 +1,39 @@
-﻿using Melville.StreamInterfaces.Adapters;
+﻿using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
 using System.Reflection;
 
 namespace Melville.Parsing.StreamFilters;
+
+public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter): IAsyncReader, IDisposable
+{
+    private ParsingBuffer input = new ParsingBuffer(inner);
+    bool isDone = false;
+
+
+    public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
+    {
+        int bytesRead = 0;
+        while ((!isDone) && (bytesRead += TryReadFromButter(buffer)) is 0)
+            await input.ReadBytesAsync();
+        return bytesRead;
+    }
+
+    int TryReadFromButter(Memory<byte> target)
+    {
+        var reader = new SpanParsingBuffer(input.Peek());
+        var targetSpan = target.Span;
+        isDone = input.DoneReadingSource ?
+            filter.FinalConvert(ref reader, ref targetSpan) :
+            filter.Convert(ref reader, ref targetSpan);
+        input.Advance((int)
+            reader.RelativePosition);
+        return target.Length - targetSpan.Length;
+
+    }
+    public void Dispose() => input.Dispose();
+}
 
 /// <summary>
 /// An interface that represents a filter that compresses or decompresses a stream.

@@ -110,3 +110,4 @@ public ref struct Ascii85DecoderCore()
         return true;
     }
 }
+
