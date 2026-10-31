@@ -43,7 +43,7 @@ internal partial class EexecCommand(
         IAsyncReader newSource = new PrefixingAsyncReader(source, oldCodeSource.Peek().ToArray());
 
         if (AllHex(oldCodeSource.Peek(4))) newSource =
-                new FilteredReader(newSource, new AsciiHexDecoder());
+                new FilteredReader(newSource, AsciiHexDecoder.Instance);
 
         return new DecodingReader(newSource, eexecDecodeKey);
     }

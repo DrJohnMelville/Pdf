@@ -29,18 +29,7 @@ public class HexDecodeStreamTests
     [InlineData("1gk234567890\r\nABCDEF")]
     public async Task DecodeHexReaderAsync(string input)
     {
-        var source = new HexDecodingReader(new MemoryReader(Encoding.ASCII.GetBytes(input)));
-        var target = new MemoryStream();
-        await ((IAsyncReader)source).CopyToAsync(target.AsStreamWriter(), TestContext.Current.CancellationToken);
-        target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());
-    }
-    [Theory]
-    [InlineData("1234567890ABCDEF")]
-    [InlineData("1234567890\r\nABCDEF")]
-    [InlineData("1gk234567890\r\nABCDEF")]
-    public async Task DecodeHexReaderAsync2(string input)
-    {
-        using var source = new FilteredReader(new MemoryReader(Encoding.ASCII.GetBytes(input)), new AsciiHexDecoder());
+        using var source = new FilteredReader(new MemoryReader(Encoding.ASCII.GetBytes(input)), AsciiHexDecoder.Instance);
         var target = new MemoryStream();
         await ((IAsyncReader)source).CopyToAsync(target.AsStreamWriter(), TestContext.Current.CancellationToken);
         target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());

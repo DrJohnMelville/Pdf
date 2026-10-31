@@ -1,17 +1,23 @@
-﻿using Melville.StreamInterfaces.ParsingBuffers;
+﻿using Melville.INPC;
+using Melville.StreamInterfaces.ParsingBuffers;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Melville.Parsing.StreamFilters.AsciiHex;
-public class AsciiHexDecoder: IStreamFilterDefinition
+
+/// <summary>
+/// Decide a hexadecimal stream to regular bytes.
+/// </summary>
+[StaticSingleton]
+public partial class AsciiHexDecoder: IStreamFilterDefinition
 {
-#warning make this a static singleton
+    ///<inheritdoc/>
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) =>
         InnerConvert(ref input, ref output, false);
 
-    public static bool InnerConvert(ref SpanParsingBuffer input, ref Span<byte> output, bool done)
+    private static bool InnerConvert(ref SpanParsingBuffer input, ref Span<byte> output, bool done)
     {
         var peek = input.Peek();
 
@@ -60,29 +66,11 @@ public class AsciiHexDecoder: IStreamFilterDefinition
     private static byte ByteFromHexChars(byte char1, byte char2) =>
         (byte)((ValueFromDigit(char1) << 4) | ValueFromDigit(char2));
 
-
+    ///<inheritdoc/>
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
       InnerConvert(ref input, ref output, true);
-
+    
+    ///<inheritdoc/>
     public int MinWriteSize => 1;
 
-}
-
-public static class PushByteImplementation
-{
-    extension<T>(ref Span<T> self)
-    {
-        public void SetAndIncrement(T element)
-        {
-            self[0] = element;
-            self = self[1..];
-        }
-
-        public bool TrySetAndIncrement(T element)
-        {
-            if (self.Length is 0) return false;
-            self.SetAndIncrement(element);
-            return true;
-        }
-    }
 }

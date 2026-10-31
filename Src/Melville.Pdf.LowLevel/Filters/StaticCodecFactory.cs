@@ -26,7 +26,7 @@ internal static class StaticCodecFactory
         new()
         {
             { KnownNames.ASCIIHexDecode, new CodecDefinition(
-                new(_=>new AsciiHexEncoder()), new(new AsciiHexDecoder())) },
+                new(_=>new AsciiHexEncoder()), new(AsciiHexDecoder.Instance)) },
             { KnownNames.ASCII85Decode, new CodecDefinition(new(_=>new Ascii85Encoder()),
                 new( _=>new Ascii85Decoder())) },
             { KnownNames.RunLengthDecode, new CodecDefinition(new(new RunLengthEncoder()), new(new RunLengthDecoder())) },
