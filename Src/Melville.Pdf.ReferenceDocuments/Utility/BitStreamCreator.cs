@@ -1,4 +1,8 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Utility;
+﻿using Melville.Parsing.IStreamAdaptors;
+using Melville.Parsing.StreamFilters.AsciiHex;
+using Melville.StreamInterfaces.ParsingBuffers;
+
+namespace Melville.Pdf.ReferenceDocuments.Utility;
 
 public static class BitStreamCreator
 {
@@ -22,22 +26,18 @@ public static class BitStreamCreator
         return string.Join("", sources).BitsFromHex();
     }
 
-#warning use the hexstring convertter
-    public static byte[] BitsFromHex(this string source) =>
-        source
-            .Select(HexValue)
-            .Where(i => i >= 0)
-            .Chunk(2)
-            .Select(i => (byte)((i[0] << 4) | (i.Length == 2 ?i[1] : 0)))
-            .ToArray();
-
-    private static int HexValue(char character) => character switch
+    public static byte[] BitsFromHex(this string source)
     {
-        >= '0' and <= '9' => character - '0',
-        >= 'A' and <= 'F' => 0x0A + character - 'A',
-        >= 'a' and <= 'f' => 0x0A + character - 'a',
-        _=> -1
-    };
+        using var bytes = new PooledBuffer<byte>(source.Length);
+        Encoding.ASCII.TryGetBytes(source, bytes.AsSpan(), out var length);
+        using var output = new PooledBuffer<byte>(length / 2);
+        var start = output.AsSpan();
+        var end = start;
+        var reader = new SpanParsingBuffer(bytes.AsSpan(0, length));
+        AsciiHexDecoder.Instance.FinalConvert(ref reader, ref end);
+        return start[..(start.Length - end.Length)].ToArray();
+        
+    }
 
     public static byte[] BitsFromBinary(this string source) =>
         source

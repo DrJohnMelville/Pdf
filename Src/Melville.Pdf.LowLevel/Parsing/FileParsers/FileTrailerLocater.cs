@@ -33,10 +33,10 @@ internal static class FileTrailerLocater
         var position = buffer.Peek(blockLength).LastIndexOf(StartXRef);
         if (position < 0) return -1;
 
-        return await FindXrefStartPosition(buffer, position);
+        return await FindXrefStartPositionAsync(buffer, position);
     }
 
-    private static async Task<long> FindXrefStartPosition(ParsingBuffer buffer, int position)
+    private static async Task<long> FindXrefStartPositionAsync(ParsingBuffer buffer, int position)
     {
         buffer.Advance(position + StartXRef.Length); // skip the startxref
         return await buffer.ReadTextLongAsync().CA() ??

@@ -41,12 +41,12 @@ internal class PdfBitmapWrapper(
         var row = 0;
         var column = 0;
         var writer = byteWriter(finalColorSpace);
-        ISequenceSource seq = source as ISequenceSource ?? await FillBuffer(source);
+        ISequenceSource seq = source as ISequenceSource ?? await FillBufferAsync(source);
         var src = new SequenceReader<byte>(seq.AsSequence());
         c.LoadLPixels(ref src, ref row, ref column, writer, out var readTo);
         if (seq is IDisposable disp && seq != source) disp.Dispose();
     }
-    async Task<ISequenceSource> FillBuffer(Stream source)
+    async Task<ISequenceSource> FillBufferAsync(Stream source)
     {
         var buffer = new MultiMemoryBuffer();
         using var memStr = buffer.CreateWriter();

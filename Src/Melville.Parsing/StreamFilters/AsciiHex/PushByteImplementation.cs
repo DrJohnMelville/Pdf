@@ -2,6 +2,9 @@
 
 namespace Melville.Parsing.StreamFilters.AsciiHex
 {
+    /// <summary>
+    /// This is two helper methods to hadle wrting to spans that keep only the unwritten span.
+    /// </summary>
     public static class PushByteImplementation
     {
         extension<T>(ref Span<T> self)
