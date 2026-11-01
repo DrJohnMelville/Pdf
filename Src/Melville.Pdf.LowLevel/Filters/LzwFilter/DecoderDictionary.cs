@@ -42,37 +42,12 @@ internal class DecoderDictionary
 
     public int WriteChars(int entryIndex, ref Span<byte> destination, int lastWrittenIndex)
     {
+        if (entryIndex <= lastWrittenIndex) return entryIndex;
         var entry = entries[entryIndex];
-        if (entry.Parent > lastWrittenIndex)
-        {
-            var ret = WriteChars(entry.Parent, ref destination, lastWrittenIndex);
-            if (destination.IsEmpty) return ret;
-        }
+        var ret = WriteChars(entry.Parent, ref destination, lastWrittenIndex);
+        if (destination.IsEmpty) return ret;
         destination.SetAndIncrement(entry.Element);
         return entryIndex;
-    }
-
-
-
-
-    public int WriteChars(int entryIndex, int firstToWrite, in Span<byte> destination) => 
-        WriteChars(ref entries[entryIndex], firstToWrite, destination);
-
-    private int WriteChars(
-        ref Entry entry, int firstToWrite, in Span<byte> destination)
-    {
-        int destNext = 0;
-        if (firstToWrite > entry.StringIndex) return 0;
-        if (firstToWrite < entry.StringIndex)
-        {
-            destNext =
-                WriteChars(ref entries[entry.Parent], firstToWrite, destination);
-        }
-
-        if (destNext >= destination.Length) return destNext;
-
-        destination[destNext] = entry.Element;
-        return destNext + 1;
     }
 
     public short AddChild(short parent, byte character)
@@ -100,7 +75,11 @@ internal class DecoderDictionary
         entry.StringIndex = (short)(1 + entries[parentIndex].StringIndex);
     }
 
-    public bool IsDefined(int index) => index < 256 || entries[index].StringIndex > 0;
+    public bool IsDefined(int index) => index < nextEntry && index < LzwConstants.MaxTableSize;
 
-    public byte FirstChar(short index) => index < 256 ? (byte)index : FirstChar(entries[index].Parent);
+    public byte FirstChar(short index)
+    {
+        while (index > 255) index = entries[index].Parent;
+        return (byte)index;
+    }
 }
