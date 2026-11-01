@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Melville.Fonts.Type1TextParsers.EexecDecoding;
 
-internal class DecodingReader(IAsyncReader inner, ushort key) : IAsyncReader
+internal class DecodingReader(IAsyncReader inner, ushort key) : IAsyncReader, IDisposable
 {
     private ushort key = key;
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
@@ -13,4 +13,6 @@ internal class DecodingReader(IAsyncReader inner, ushort key) : IAsyncReader
         DecodeType1Encoding.DecodeSegment(buffer.Span[..read], ref key);
         return read;
     }
+
+    public void Dispose() => (inner as IDisposable)?.Dispose();
 }
