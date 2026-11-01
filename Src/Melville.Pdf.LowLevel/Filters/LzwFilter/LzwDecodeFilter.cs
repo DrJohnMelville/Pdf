@@ -1,17 +1,17 @@
-﻿using System;
-using System.Buffers;
-using Melville.Parsing.StreamFilters;
+﻿using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
+using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
+
 
 internal class LzwDecodeFilter : IStreamFilterDefinition
 {
     private readonly BitReader reader;
     private readonly DecoderDictionary dictionary = new();
     private readonly BitLength bits;
-    private short codeBeingWritten = EmptyCode;
-    private int nextByteToWrite = int.MaxValue;
     private const short EmptyCode = -1;
 
     public int MinWriteSize => 1;
@@ -22,21 +22,17 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
         reader = new BitReader();
     }
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) 
     {
-        var destPosition = 0;
         while (true)
         {
-            destPosition = TryWriteCurrentCode(destination, destPosition);
-            if (destPosition >= destination.Length)
-                return (source.Position, destination.Length, false);
+            TryWriteCurrentCode(ref output);
+            if (output.IsEmpty) return false;
 
-            switch (reader.TryRead(bits.Length, ref source))
+            switch (reader.TryRead(bits.Length, ref input))
             {
-                case null: return (source.Position, destPosition, false);
-                case LzwConstants.EndOfFileCode:
-                    return (source.Position, destPosition, true);
+                case null: return false;
+                case LzwConstants.EndOfFileCode: return true;
                 case LzwConstants.ClearDictionaryCode:
                     ResetDictionary();
                     break;
@@ -47,24 +43,14 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
         }
     }
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        FinalConvert(ref SequenceReader<byte> source, in Span<byte> destination) =>
-        (source.Position, 0, false);
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        Convert(ref input, ref output);
 
     private void ResetDictionary()
     {
         dictionary.Reset();
         bits.SetBitLength(9);
         codeBeingWritten = EmptyCode;
-    }
-
-    private int TryWriteCurrentCode(in Span<byte> destination, int destPosition)
-    {
-        if (codeBeingWritten == EmptyCode) return destPosition;
-        var localWrite = WriteCurrentCodeToDestionation(destination, destPosition);
-        destPosition += localWrite;
-        nextByteToWrite += localWrite;
-        return destPosition;
     }
 
     private void HandleCodedGroup(short item)
@@ -103,16 +89,18 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
         ScheduleNewCodeForOutput(item);
     }
 
+    private short codeBeingWritten = EmptyCode;
+    private int lastWrittenIndex = int.MaxValue;
+
     private void ScheduleNewCodeForOutput(short code)
     {
         codeBeingWritten = code;
-        nextByteToWrite = 0;
+        lastWrittenIndex = -1;
+    }
+    private void TryWriteCurrentCode(ref Span<byte> destination)
+    {
+        if (codeBeingWritten == EmptyCode || codeBeingWritten == lastWrittenIndex) return;
+        lastWrittenIndex = dictionary.WriteChars(codeBeingWritten, ref destination, lastWrittenIndex);    
     }
 
-    private int WriteCurrentCodeToDestionation(in Span<byte> destination, int destPosition)
-    {
-        var target = destination[destPosition..];
-        var localWrite = dictionary.WriteChars(codeBeingWritten, nextByteToWrite, target);
-        return localWrite;
-    }
 }

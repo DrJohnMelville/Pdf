@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melville.Parsing.StreamFilters.AsciiHex;
+using System;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
@@ -8,6 +9,7 @@ internal class DecoderDictionary
     {
         public byte Element;
         public short Parent;
+#warning I think I can get rid of this field.
         public short StringIndex;
     }
 
@@ -21,10 +23,12 @@ internal class DecoderDictionary
         SetupDefaultDictionary();
     }
 
+#warning I do not need to store the first 255 entries, because I can always compute them
     private void SetupDefaultDictionary()
     {
         for (int i = 0; i < 256; i++)
         {
+            entries[i].Parent = -1;
             entries[i].Element = (byte) i;
         }
         nextEntry = LzwConstants.EndOfFileCode + 1;
@@ -35,6 +39,21 @@ internal class DecoderDictionary
         Array.Clear(entries, 0, entries.Length);
         SetupDefaultDictionary();
     }
+
+    public int WriteChars(int entryIndex, ref Span<byte> destination, int lastWrittenIndex)
+    {
+        var entry = entries[entryIndex];
+        if (entry.Parent > lastWrittenIndex)
+        {
+            var ret = WriteChars(entry.Parent, ref destination, lastWrittenIndex);
+            if (destination.IsEmpty) return ret;
+        }
+        destination.SetAndIncrement(entry.Element);
+        return entryIndex;
+    }
+
+
+
 
     public int WriteChars(int entryIndex, int firstToWrite, in Span<byte> destination) => 
         WriteChars(ref entries[entryIndex], firstToWrite, destination);
