@@ -1,7 +1,14 @@
-﻿using System;
-using System.Buffers;
-using Melville.Parsing.StreamFilters;
+﻿using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Buffers;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
@@ -11,6 +18,8 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
     private readonly EncoderDictionary dictionary = new();
     private short currentDictionaryEntry = -1;
     private readonly BitLength bits;
+    private readonly byte[] outputBufferBacker = new byte[5];
+    private Memory<byte> outputBuffer = Array.Empty<byte>();
 
     public LzwEncodeFilter(int earlySwitchLength)
     {
@@ -19,17 +28,15 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
 
     public int MinWriteSize => 10;
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
         if (currentDictionaryEntry < 0)
         {
-            if (!source.TryRead(out var firstByte)) return (source.Sequence.Start, 0, false);
+            if (!input.TryGetUInt8(out var firstByte)) return false;
             currentDictionaryEntry = firstByte;
         }
 
-        int destPosition = 0;
-        while (HasRoomToWrite(destination, destPosition) && source.TryRead(out var nextByte))
+        while (TryWriteBytes(ref output) && input.TryGetUInt8(out var nextByte))
         {
             if (dictionary.GetOrCreateNode(currentDictionaryEntry, nextByte, out var nextEntry))
             {
@@ -37,19 +44,32 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
             }
             else
             {
-                destPosition += WriteCodeForCurrentChain(
-                    destination[destPosition..], nextEntry, nextByte);
+                Debug.Assert(outputBuffer.IsEmpty);
+                var written = WriteCodeForCurrentChain(outputBufferBacker, nextEntry, nextByte);
+                outputBuffer = outputBufferBacker.AsMemory(0, written);
             }
         }
 
-        return (source.Position, destPosition, false);
+        return false;
+    }
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
+
+    bool TryWriteBytes(ref Span<byte> output)
+    {
+        if (output.IsEmpty) return false;
+        if (outputBuffer.IsEmpty) return true;
+        var source = outputBuffer.Span.TakeMax(output.Length, out var actualLength);
+        source.CopyTo(output);
+        output = output[actualLength..];
+        outputBuffer = outputBuffer[actualLength..];
+        return true;
     }
 
     private int WriteCodeForCurrentChain(Span<byte> destination, short nextEntry, byte nextByte)
     {
-        var len= output.WriteBits(currentDictionaryEntry, bits.Length,
+        var len = output.WriteBits(currentDictionaryEntry, bits.Length,
             destination);
-        len  += UpdateEncodingState(nextEntry, destination, len);
+        len += UpdateEncodingState(nextEntry, destination, len);
         currentDictionaryEntry = nextByte;
         return len;
     }
