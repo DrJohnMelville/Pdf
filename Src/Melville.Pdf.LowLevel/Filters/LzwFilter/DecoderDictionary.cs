@@ -1,7 +1,9 @@
 ﻿using Melville.Parsing.StreamFilters.AsciiHex;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
+
 
 internal class DecoderDictionary
 {
@@ -9,43 +11,44 @@ internal class DecoderDictionary
     {
         public byte Element;
         public short Parent;
-#warning I think I can get rid of this field.
-        public short StringIndex;
     }
+
+    [InlineArray(DictSizeWithExtraSlot + 1 - 256)]
+    internal struct DecoderArray
+    {
+        private Entry element;
+    }
+
 
     private const int DictSizeWithExtraSlot = LzwConstants.MaxTableSize + 1;
 
-    private readonly Entry[] entries = new Entry[DictSizeWithExtraSlot+1];
+    private DecoderArray entries = new ();
     private int nextEntry;
         
-    public DecoderDictionary()
-    {
-        SetupDefaultDictionary();
-    }
+    public DecoderDictionary() => Reset();
 
-#warning I do not need to store the first 255 entries, because I can always compute them
-    private void SetupDefaultDictionary()
-    {
-        for (int i = 0; i < 256; i++)
-        {
-            entries[i].Parent = -1;
-            entries[i].Element = (byte) i;
-        }
-        nextEntry = LzwConstants.EndOfFileCode + 1;
-    }
+    public void Reset() => nextEntry = LzwConstants.EndOfFileCode + 1;
 
-    public void Reset()
+    private Entry GetEntry(int index) =>
+        (index > 255) ? 
+           entries[index - 256] :
+           new Entry() { Element = (byte)index, Parent = -1 };
+    
+    private ref Entry WritableEntry(int index)
     {
-        Array.Clear(entries, 0, entries.Length);
-        SetupDefaultDictionary();
+        if ( index > 255)
+            return ref entries[index - 256];
+        throw new InvalidOperationException("Cannot overwrite the default entries");
     }
 
     public int WriteChars(int entryIndex, ref Span<byte> destination, int lastWrittenIndex)
     {
         if (entryIndex <= lastWrittenIndex) return entryIndex;
-        var entry = entries[entryIndex];
+        
+        var entry = GetEntry(entryIndex);
         var ret = WriteChars(entry.Parent, ref destination, lastWrittenIndex);
         if (destination.IsEmpty) return ret;
+        
         destination.SetAndIncrement(entry.Element);
         return entryIndex;
     }
@@ -53,7 +56,7 @@ internal class DecoderDictionary
     public short AddChild(short parent, byte character)
     {
         var index = NextDictionaryPosition();
-        AddChild(ref entries[index], parent, character);
+        AddChild(ref WritableEntry(index), parent, character);
         return index;
     }
 
@@ -72,14 +75,13 @@ internal class DecoderDictionary
     {
         entry.Parent = parentIndex;
         entry.Element = character;
-        entry.StringIndex = (short)(1 + entries[parentIndex].StringIndex);
     }
 
     public bool IsDefined(int index) => index < nextEntry && index < LzwConstants.MaxTableSize;
 
     public byte FirstChar(short index)
     {
-        while (index > 255) index = entries[index].Parent;
+        while (index > 255) index = GetEntry(index).Parent;
         return (byte)index;
     }
 }
