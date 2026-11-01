@@ -21,7 +21,7 @@ internal class RunLengthDecoder : IStreamFilterDefinition
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
         FinalConvert(ref input, ref output);
-        return state == Terminated;
+        return state == Terminated; // final convert might think it is done, but we know there may be more bytes comming.
     }
 
     private RleDecoderState state = Opcode;
@@ -34,8 +34,16 @@ internal class RunLengthDecoder : IStreamFilterDefinition
         {
             if (!ProcessOpcode(ref input, ref output)) return state == Terminated;
         }
-        return state == Terminated;
+        return state == Terminated || DetectImplicitEndInsideFinalConvert(ref input);
     }
+
+    private bool DetectImplicitEndInsideFinalConvert(ref SpanParsingBuffer input)
+    {
+        // if we are in final convert then no more bytes are comming.  If we are looking for an opcode,
+        // and there are no more bytes, then we can report the stream as terminated.
+        return (state == Opcode && input.CurrentLength == 0);
+    }
+
     bool ProcessOpcode(ref SpanParsingBuffer input, ref Span<byte> output) => state switch { 
             Opcode => ReadOpcode(ref input),
             Literal => CopyLiteral(ref input, ref output),
@@ -45,23 +53,22 @@ internal class RunLengthDecoder : IStreamFilterDefinition
     bool ReadOpcode(ref SpanParsingBuffer input)
     {
         Debug.Assert(lengthRemaining == 0);
-        if (!input.TryPeekUInt8(out var opcode)) return false;
-        switch (opcode) 
+        switch (input.Peek()) 
         {
-            case RleConstants.EndOfStream:
+            case [RleConstants.EndOfStream,..]:
                 state = Terminated;
                 break;
-            case < RleConstants.EndOfStream: // literal block
+            case [< RleConstants.EndOfStream and var opcode,..]: // literal block
                 lengthRemaining = opcode + 1;
                 state = Literal;
                 break;
-            default: // repeat block
-                if (input.Peek() is not [_, var repeat, ..]) return false;
+            case [var opcode, var repeat, ..]: // repeat block
                 repeatedChar = repeat;
                 lengthRemaining = RleConstants.RepeatedRunLength(opcode);
                 state = Repeat;
                 input.Advance(1);
                 break;
+            default: return false;
         }
         input.Advance(1);
         return true;
