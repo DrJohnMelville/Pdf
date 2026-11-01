@@ -29,7 +29,7 @@ internal static class StaticCodecFactory
                 new(_=>new AsciiHexEncoder()), new(AsciiHexDecoder.Instance)) },
             { KnownNames.ASCII85Decode, new CodecDefinition(new(_=>new Ascii85Encoder()),
                 new( _=>new Ascii85Decoder())) },
-            { KnownNames.RunLengthDecode, new CodecDefinition(new(new RunLengthEncoder()), new(_=>new RunLengthDecoder())) },
+            { KnownNames.RunLengthDecode, new CodecDefinition(new(_=>new RunLengthEncoder()), new(_=>new RunLengthDecoder())) },
             { KnownNames.LZWDecode, new CodecDefinition(
                 new(LzwFilterFactory.EncoderAsync), new(LzwFilterFactory.DecoderAsync))},
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
