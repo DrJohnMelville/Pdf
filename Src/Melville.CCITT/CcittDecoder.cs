@@ -30,17 +30,21 @@ internal class CcittDecoder : IJBigMmrFilter
             Debug.Assert(a0IsNextPixelToWrite <= lines.LineLength);
             if (DoneReadingLine() && !WriteCurrentLine(ref destination)) return false;
             if (parameters.HasReadEntireImage(linesDone))
-                return true;
+            {
+                if (writer.FinishWrite(destination) is var written and > 0)
+                {
+                    destination = destination[written..];
+                }
+                return writer.NoBitsWaitingToBeWritten();
+            }
             if (!ReadLine(ref source)) return false;
         }
         return false;
     }
-
     private bool DoneReadingLine() => a0IsNextPixelToWrite >= lines.LineLength;
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-      ref SequenceReader<byte> source, in Span<byte> destination) =>
-      (source.Position, writer.FinishWrite(destination), true);
+    public bool FinalConvert(ref SpanParsingBuffer source, ref Span<byte> destination) =>
+        Convert(ref source, ref destination);
 
     private int a0IsNextPixelToWrite = -1;
     private bool ReadLine(ref SpanParsingBuffer source)

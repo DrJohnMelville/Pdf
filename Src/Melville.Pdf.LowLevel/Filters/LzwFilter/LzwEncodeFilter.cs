@@ -52,7 +52,23 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
 
         return false;
     }
-    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        Convert(ref input, ref output);
+        if (input.CurrentLength > 0) return false;
+        if (currentDictionaryEntry >= 0)
+        {
+            Debug.Assert(outputBuffer.IsEmpty);
+            outputBuffer = outputBufferBacker;
+            var len = this.output.WriteBits(currentDictionaryEntry, bits.Length, outputBuffer.Span);
+            len += this.output.WriteBits(LzwConstants.EndOfFileCode, bits.Length, outputBuffer.Span[len..]);
+            len += this.output.FinishWrite(outputBuffer.Span[len..]);
+            outputBuffer = outputBuffer[..len];
+            currentDictionaryEntry = -1;
+        }
+
+        return TryWriteBytes(ref output);
+    }
 
     bool TryWriteBytes(ref Span<byte> output)
     {
@@ -62,7 +78,7 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
         source.CopyTo(output);
         output = output[actualLength..];
         outputBuffer = outputBuffer[actualLength..];
-        return true;
+        return outputBuffer.IsEmpty;
     }
 
     private int WriteCodeForCurrentChain(Span<byte> destination, short nextEntry, byte nextByte)
@@ -94,18 +110,6 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
 
     private static bool HitMaximumDictionarySize(short nextEntry) =>
         nextEntry >= LzwConstants.MaxTableSize - 2;
-
-
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-        ref SequenceReader<byte> source,
-        in Span<byte> destination)
-    {
-        if (!HasRoomToWrite(destination, 2)) return (source.Position, 0, false);
-        var len = output.WriteBits(currentDictionaryEntry, bits.Length, destination);
-        len += output.WriteBits(LzwConstants.EndOfFileCode, bits.Length, destination[len..]);
-        len += output.FinishWrite(destination[len..]);
-        return (source.Position, len, true);
-    }
 
     private static bool HasRoomToWrite(Span<byte> destination, int destPosition)
     {
