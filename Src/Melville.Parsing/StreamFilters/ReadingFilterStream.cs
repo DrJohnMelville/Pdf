@@ -43,10 +43,18 @@ public class ReadingFilterStream : DefaultBaseStream
     public override void Close() => source.Complete();
 
     /// <inheritdoc />
-    protected override void Dispose(bool disposing) => source.Complete();
+    protected override void Dispose(bool disposing)
+    {
+        (filter as IDisposable)?.Dispose();
+        source.Complete();
+    }
 
     /// <inheritdoc />
-    public override ValueTask DisposeAsync() => source.CompleteAsync();
+    public override ValueTask DisposeAsync()
+    {
+        (filter as IDisposable)?.Dispose();
+        return source.CompleteAsync();
+    }
 
 
     /// <inheritdoc />

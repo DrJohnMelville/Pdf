@@ -94,11 +94,14 @@ public class FileWriterTest
 
     [Theory]
     [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
-    [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 23>> stream\r\n")]
+    [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 27>> stream\r\n")]
     [InlineData("stream\r\nxÚ")]
-    public async Task RefStreamContentsAsync(string expected) => 
-        Assert.Contains(expected, await OutputTwoItemRefStreamAsync());
- 
+    public async Task RefStreamContentsAsync(string expected)
+    {
+        string actualString = await OutputTwoItemRefStreamAsync();
+        Assert.Contains(expected, actualString);
+    }
+
     [Theory]
     [InlineData(1, 1, false)]
     [InlineData(1, 4, false)]

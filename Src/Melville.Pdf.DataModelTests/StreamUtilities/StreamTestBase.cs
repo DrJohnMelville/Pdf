@@ -70,9 +70,12 @@ public abstract partial class StreamTestBase
     }
 
 
-    private async Task VerifyEncodingAsync(PdfStream stream) => 
-        Assert.Equal(SimulateStreamOutput(), await stream.WriteStreamToStringAsync());
-        
+    private async Task VerifyEncodingAsync(PdfStream stream)
+    {
+        string encodedString = await stream.WriteStreamToStringAsync();
+        Assert.Equal(SimulateStreamOutput(), encodedString);
+    }
+
     private string SimulateStreamOutput() => 
         $"<</Filter{RenderCompression(compression)}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
 

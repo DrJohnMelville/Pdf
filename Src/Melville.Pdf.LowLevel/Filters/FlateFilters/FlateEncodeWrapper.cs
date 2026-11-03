@@ -10,6 +10,7 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
+#warning get rid of this
 internal sealed class FlateEncodeWrapper: DefaultBaseStream
 {
 
