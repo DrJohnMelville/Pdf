@@ -88,6 +88,7 @@ internal readonly unsafe partial struct BitmapWriter
         return row < height;
     }
 
+#warning make this safe with spans
     private void LoadBytes(ref int row, ref int col, IByteWriter writer, ref SequenceReader<byte> seq)
     {
         while (EnoughBytesToRead(seq.Remaining, writer.MinimumInputSize))

@@ -50,7 +50,7 @@ public readonly partial struct JpegStreamFactory
         decoder.SetInput(input);
         decoder.Identify();
         var bufferLength = decoder.Width * decoder.Height * decoder.NumberOfComponents;
-        using var output = new PooledBuffer<byte>(bufferLength);
+        var output = ArrayPool<byte>.Shared.Rent(bufferLength);
         var outputWriter =
             new JpegBufferOutputWriter8Bit(
                 decoder.Width, decoder.Height, decoder.NumberOfComponents, output.AsMemory());

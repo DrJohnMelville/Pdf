@@ -17,7 +17,7 @@ internal abstract class RentedArrayReadingStream : DefaultBaseStream, ISequenceS
         Debug.Assert(this.data.Length >= this.length);
     }
 
-    public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(data.AsMemory(0, length));
+    public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(data.AsMemory(position, length-position));
 
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {

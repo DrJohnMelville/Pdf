@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using CoreJ2K.Util;
+﻿using CoreJ2K.Util;
+using Melville.Parsing.SequenceReaders;
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
+using System;
+using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
+internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream, ISequenceSource
 {
-    private int position;
     private ReadOnlyMemory<byte> source;
 
-    static ReadPartialBytesStream()
-    {
-        (typeof(ImageFactory).GetField("_creators", BindingFlags.NonPublic | BindingFlags.Static)?.
-            GetValue(null) as List<IImageCreator>)?.Add(RawImageCreator.Instance);
-    }
+    static ReadPartialBytesStream() => ImageFactory.Register(RawImageCreator.Instance);
 
     public ReadPartialBytesStream(InterleavedImage image, int bytesPerQuad) : base(true, false, false)
     {
@@ -32,16 +26,19 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
     {
         if (bytesPerQuad >= image.Components) return new ReadOnlyMemory<byte>(image.Bytes);
       
-        var bytes = image.Bytes;
+        var bytes = image.Bytes.AsSpan();
         if (bytes.Length % bytesPerQuad != 0) throw new ArgumentException("Invalid length for JPX image");
-        int target = bytesPerQuad;
-        for (int source = bytesPerQuad; source < bytes.Length; source+=bytesPerQuad)
-        {
-            bytes.AsSpan(source, bytesPerQuad).CopyTo(bytes.AsSpan(target));
-            target += bytesPerQuad;
-        }
 
-        return new ReadOnlyMemory<byte>(bytes, 0, target);
+        var sourceSpan = bytes[4..];
+        var targetSpan = bytes[bytesPerQuad..];
+        
+        while (!sourceSpan.IsEmpty)
+        {
+            sourceSpan[..bytesPerQuad].CopyTo(targetSpan);
+            sourceSpan = sourceSpan[4..];
+            targetSpan = targetSpan[bytesPerQuad..];
+        }
+        return new ReadOnlyMemory<byte>(image.Bytes, 0, bytes.Length - targetSpan.Length);
     }
 
     public int Width { get; }
@@ -51,8 +48,10 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
 
     public override int Read(Span<byte> buffer)
     {
-        source.Span.Slice(position).TakeMax(buffer.Length, out var retLen).CopyTo(buffer);
-        position += retLen;
+        source.Span.TakeMax(buffer.Length, out var retLen).CopyTo(buffer);
+        source = source[retLen..];
         return retLen;
     }
+
+    public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(source);
 }
