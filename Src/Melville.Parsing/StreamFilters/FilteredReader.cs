@@ -19,7 +19,7 @@ public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) 
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
     {
         int bytesRead = 0;
-        while (!isDone && (bytesRead += TryReadFromBuffer(buffer)) is 0)
+        while (!isDone && !buffer.IsEmpty && (bytesRead += TryReadFromBuffer(buffer)) is 0)
             await input.ReadBytesAsync();
         return bytesRead;
     }
@@ -31,11 +31,15 @@ public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) 
         isDone = input.DoneReadingSource ?
             filter.FinalConvert(ref reader, ref targetSpan) :
             filter.Convert(ref reader, ref targetSpan);
-        input.Advance((int)
-            reader.RelativePosition);
+        input.Advance((int) reader.RelativePosition);
         return target.Length - targetSpan.Length;
 
     }
     ///<inheritdoc/>
-    public void Dispose() => input.Dispose();
+    public void Dispose()
+    {
+        input.Dispose();
+        (filter as IDisposable)?.Dispose();
+        (inner as IDisposable)?.Dispose();
+    }
 }

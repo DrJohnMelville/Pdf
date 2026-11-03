@@ -1,24 +1,12 @@
 ﻿using Melville.Parsing.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Buffers.Binary;
-using System.IO;
 using System.IO.Compression;
-using System.Threading.Tasks;
 using static Melville.Pdf.LowLevel.Filters.FlateFilters.FlateEncoderState;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
-
-internal class FlateCodecDefinition : ICodecDefinition
-{
-    public  ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) =>
-        ValueTask.FromResult(ReadingFilterStream.Wrap(data, new FlateEncoder()));
-
-    public  ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context) => ValueTask.FromResult(ReadingFilterStream.Wrap(input, new FlateDecoder()));
-}
 
 internal enum FlateEncoderState
 {
@@ -30,7 +18,7 @@ internal enum FlateEncoderState
 
 internal sealed class FlateEncoder : IStreamFilterDefinition, IDisposable
 {
-    private readonly DeflateEncoder encoder = new();
+    private readonly DeflateEncoder encoder = new(9);
     private readonly Adler32Computer adler = new();
     private int byteCount = 0;
     private FlateEncoderState state;
@@ -70,7 +58,8 @@ internal sealed class FlateEncoder : IStreamFilterDefinition, IDisposable
 
     bool WriteBytes(ref SpanParsingBuffer input, ref Span<byte> output, bool final)
     {
-        var ret = encoder.Compress(input.Peek(), output, out var inputConsumed, out var outputWritten, final);
+        var ret = encoder.Compress(
+            input.Peek(), output, out var inputConsumed, out var outputWritten, final);
         adler.AddData(input.Peek(inputConsumed));
         input.Advance(inputConsumed);
         output = output[outputWritten..];
@@ -79,7 +68,8 @@ internal sealed class FlateEncoder : IStreamFilterDefinition, IDisposable
 
     private static ReadOnlySpan<byte> PrefixBytes() => new byte[] { 0x78, 0xDA };
 
-    public bool WriteBuffer(scoped ReadOnlySpan<byte> buffer, ref Span<byte> target, FlateEncoderState nextState)
+    public bool WriteBuffer(
+        scoped ReadOnlySpan<byte> buffer, ref Span<byte> target, FlateEncoderState nextState)
     {
         buffer = buffer[byteCount..];
         var source = buffer.TakeMax(target.Length, out var actualLength);
