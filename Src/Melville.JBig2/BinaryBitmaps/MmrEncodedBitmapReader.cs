@@ -15,12 +15,12 @@ internal static class MmrEncodedBitmapReader
         reader.TempBridge((ref spb) => {
             var s = bits.AsSpan();
             ccittType4Decoder.Convert(ref spb, ref s);
+            if (requireTerminator)
+            {
+                ccittType4Decoder.RequireTerminator(ref spb);
+            }
             return 0;
         });
-        if (requireTerminator)
-        {
-            ccittType4Decoder.RequireTerminator(ref reader);
-        }
 
     }
 

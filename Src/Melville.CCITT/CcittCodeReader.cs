@@ -35,8 +35,7 @@ internal partial class CcittCodeReader
     {
         this.dict = dict;
     }
-
-    public bool TryReadEndOfFileCode(ref SequenceReader<byte> source, out bool isEndOfFile)
+    public bool TryReadEndOfFileCode(ref SpanParsingBuffer source, out bool isEndOfFile)
     {
         var privateSource = source;
         var privateReader = reader;
@@ -57,7 +56,7 @@ internal partial class CcittCodeReader
         source = privateSource;
         return true;
     }
-    
+
     public bool TryReadCode(ref SpanParsingBuffer source2, bool isWhiteRun, out CcittCode code)
     {
         while (true)

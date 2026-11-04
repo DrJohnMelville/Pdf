@@ -158,7 +158,7 @@ internal class CcittDecoder : IJBigMmrFilter
         currentRunColor = true;
     }
 
-    public void RequireTerminator(ref SequenceReader<byte> source)
+    public void RequireTerminator(ref SpanParsingBuffer source)
     {
         if (!this.reader.TryReadEndOfFileCode(ref source, out var done) || !done)
         {

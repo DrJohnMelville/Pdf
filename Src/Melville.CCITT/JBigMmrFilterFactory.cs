@@ -1,4 +1,5 @@
 ﻿using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 using System.Buffers;
 
 namespace Melville.CCITT;
@@ -15,5 +16,5 @@ public interface IJBigMmrFilter : IStreamFilterDefinition
     /// encoded and the decoder;
     /// </summary>
     /// <param name="source">the sequence we are currently reading from.</param>
-    public void RequireTerminator(ref SequenceReader<byte> source);
+    public void RequireTerminator(ref SpanParsingBuffer source);
 }
