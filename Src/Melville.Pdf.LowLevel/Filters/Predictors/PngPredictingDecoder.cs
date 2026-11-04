@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
@@ -12,15 +13,15 @@ internal class PngPredictingDecoder: PngPredictingFilter
     }
 
 
-    protected override bool TryGetByte(ref SequenceReader<byte> source, out byte byteToWrite)
+    protected override bool TryGetByte(ref SpanParsingBuffer source, out byte byteToWrite)
     {
-        if (Buffer.AtEndOfRow() && source.TryRead(out var predictorByte))
+        if (Buffer.AtEndOfRow() && source.TryGetUInt8(out var predictorByte))
         {
             predictor = PredictorFactory.Get(predictorByte);
             Buffer.AdvanceToNextRow();
         }
             
-        if (!source.TryRead(out byteToWrite)) return false;
+        if (!source.TryGetUInt8(out byteToWrite)) return false;
         byteToWrite = predictor.Decode(Buffer.UpLeft, Buffer.Up, Buffer.Left, byteToWrite);
         Buffer.RecordColumnValue(byteToWrite);
         Buffer.AdvanceToNextColumn();

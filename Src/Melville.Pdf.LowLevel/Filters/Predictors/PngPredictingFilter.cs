@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
-using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
@@ -13,19 +14,17 @@ internal abstract class PngPredictingFilter: IStreamFilterDefinition
         Buffer = new PngPredictionBuffer(colors, bitsPerColor, columns);
     }
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-        ref SequenceReader<byte> source, in Span<byte> destination)
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        int written;
-        for (written = 0;
-             written < destination.Length && TryGetByte(ref source, out var nextByte);
-             written++)
+        while ((!output.IsEmpty) && (TryGetByte(ref input, out output[0])))
         {
-            destination[written] = nextByte;
+            output = output[1..];
         }
-
-        return (source.Position, written, false);
+        return false;
     }
 
-    protected abstract bool TryGetByte(ref SequenceReader<byte> source, out byte byteToWrite);
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        Convert(ref input, ref output);
+
+    protected abstract bool TryGetByte(ref SpanParsingBuffer source, out byte byteToWrite);
 }
