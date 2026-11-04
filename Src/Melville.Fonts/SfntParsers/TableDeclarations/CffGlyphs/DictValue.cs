@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -42,6 +43,6 @@ public readonly struct DictValue
     public float FloatValue => isInt?Convert.ToSingle(intValue):floatValue;
 
     /// <inheritdoc />
-    public override string ToString() => isInt?intValue.ToString():
-        floatValue.ToString()+"f";
+    public override string ToString() => isInt?intValue.ToString(CultureInfo.InvariantCulture):
+        floatValue.ToString(CultureInfo.InvariantCulture)+"f";
 }

@@ -45,6 +45,7 @@ using System;
 using CoreJ2K.j2k.encoder;
 using CoreJ2K.j2k.image;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.wavelet.analysis
 {
@@ -159,7 +160,7 @@ namespace CoreJ2K.j2k.wavelet.analysis
 			str = stk.NextToken();
 			try
 			{
-				cb0x = (int.Parse(str));
+				cb0x = (int.Parse(str, CultureInfo.InvariantCulture));
 			}
 			catch (FormatException)
 			{
@@ -173,7 +174,7 @@ namespace CoreJ2K.j2k.wavelet.analysis
 			str = stk.NextToken();
 			try
 			{
-				cb0y = (int.Parse(str));
+				cb0y = (int.Parse(str, CultureInfo.InvariantCulture));
 			}
 			catch (FormatException)
 			{

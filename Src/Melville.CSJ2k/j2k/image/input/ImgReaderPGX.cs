@@ -44,6 +44,7 @@
 using System;
 using CoreJ2K.j2k.io;
 using CoreJ2K.Util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.image.input
 {
@@ -193,13 +194,13 @@ namespace CoreJ2K.j2k.image.input
 				// bit-depth, width, height
 				try
 				{
-					bitDepth = (int.Parse(st.NextToken()));
+					bitDepth = (int.Parse(st.NextToken(), CultureInfo.InvariantCulture));
 					// bitDepth must be between 1 and 31
 					if ((bitDepth <= 0) || (bitDepth > 31))
 						throw new System.IO.IOException("Not a PGX file");
 					
-					w = (int.Parse(st.NextToken()));
-					h = (int.Parse(st.NextToken()));
+					w = (int.Parse(st.NextToken(), CultureInfo.InvariantCulture));
+					h = (int.Parse(st.NextToken(), CultureInfo.InvariantCulture));
 				}
 				catch (FormatException)
 				{

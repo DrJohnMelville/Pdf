@@ -42,6 +42,7 @@
 * */
 using System;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.quantization
 {
@@ -128,7 +129,7 @@ namespace CoreJ2K.j2k.quantization
 						try
 						{
 							//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-							value_Renamed = float.Parse(word);
+							value_Renamed = float.Parse(word, CultureInfo.InvariantCulture);
 						}
 						catch (FormatException)
 						{
@@ -206,7 +207,7 @@ namespace CoreJ2K.j2k.quantization
 				if (ndefspec != 0)
 				{
 					//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-					setDefault(float.Parse(pl.DefaultParameterList.getParameter("Qstep")));
+					setDefault(float.Parse(pl.DefaultParameterList.getParameter("Qstep"), CultureInfo.InvariantCulture));
 				}
 				else
 				{

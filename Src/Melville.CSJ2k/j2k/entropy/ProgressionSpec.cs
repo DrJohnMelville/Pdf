@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using CoreJ2K.j2k.codestream;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.entropy
 {
@@ -190,7 +191,7 @@ namespace CoreJ2K.j2k.entropy
 							// Progression bound info
 							try
 							{
-								tmp = (int.Parse(word));
+								tmp = (int.Parse(word, CultureInfo.InvariantCulture));
 							}
 							catch (FormatException)
 							{

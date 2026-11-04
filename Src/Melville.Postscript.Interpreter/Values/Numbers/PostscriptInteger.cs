@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using System.Globalization;
 
 namespace Melville.Postscript.Interpreter.Values.Numbers;
 
@@ -16,7 +17,7 @@ public partial class PostscriptInteger :
     IPostscriptValueStrategy<float>,
     IPostscriptValueComparison
 {
-    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => LongValue(memento).ToString();
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => LongValue(memento).ToString(CultureInfo.InvariantCulture);
 
     long IPostscriptValueStrategy<long>.GetValue(in MementoUnion memento) => (long)LongValue(memento);
 

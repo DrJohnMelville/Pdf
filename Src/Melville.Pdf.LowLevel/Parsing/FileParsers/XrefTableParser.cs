@@ -6,6 +6,7 @@ using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
@@ -32,7 +33,8 @@ internal readonly struct XrefTableParser(ParsingBuffer buffer, IIndirectObjectRe
         }  
     }
     void ParseSingleLine(ReadOnlySpan<byte> peek, int objectNumber) => 
-        HandleXrefLine(long.Parse(peek[..10]), int.Parse(peek[11..16]), peek[17], objectNumber);
+        HandleXrefLine(long.Parse(peek[..10], CultureInfo.InvariantCulture),
+            int.Parse(peek[11..16], CultureInfo.InvariantCulture), peek[17], objectNumber);
     
     private void HandleXrefLine(long first, int second, byte operation, int objectNumber)
     {

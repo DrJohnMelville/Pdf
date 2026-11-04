@@ -42,6 +42,7 @@
 * */
 using System;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.entropy
 {
@@ -156,7 +157,7 @@ namespace CoreJ2K.j2k.entropy
 						// Get code-block's width
 						try
 						{
-							dim[0] = int.Parse(word);
+							dim[0] = int.Parse(word, CultureInfo.InvariantCulture);
 							// Check that width is not >
 							// StdEntropyCoderOptions.MAX_CB_DIM
 							if (dim[0] > StdEntropyCoderOptions.MAX_CB_DIM)
@@ -198,7 +199,7 @@ namespace CoreJ2K.j2k.entropy
 						// Get the code-block's height
 						try
 						{
-							dim[1] = int.Parse(word);
+							dim[1] = int.Parse(word, CultureInfo.InvariantCulture);
 							// Check that height is not >
 							// StdEntropyCoderOptions.MAX_CB_DIM
 							if (dim[1] > StdEntropyCoderOptions.MAX_CB_DIM)

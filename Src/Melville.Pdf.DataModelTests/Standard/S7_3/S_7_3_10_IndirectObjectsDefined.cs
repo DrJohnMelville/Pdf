@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
+using System.Globalization;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
@@ -45,7 +46,7 @@ public class S_7_3_10_IndirectObjectsDefined
        builder.AppendLine($"{objPos:0000000000} 00000 n\r");
        builder.AppendLine("trailer <</Root 1 0 R>>");
        builder.AppendLine("startxref");
-       builder.AppendLine(xrefPos.ToString());
+       builder.AppendLine(xrefPos.ToString(CultureInfo.InvariantCulture));
        builder.AppendLine("%EOF");
 
        var asStr = builder.ToString();
@@ -73,7 +74,7 @@ public class S_7_3_10_IndirectObjectsDefined
        builder.AppendLine($"{obj2Pos:0000000000} 00000 n\r");
        builder.AppendLine("trailer <</Root 2 0 R>>");
        builder.AppendLine("startxref");
-       builder.AppendLine(xrefPos.ToString());
+       builder.AppendLine(xrefPos.ToString(CultureInfo.InvariantCulture));
        builder.AppendLine("%EOF");
 
        var asStr = builder.ToString();

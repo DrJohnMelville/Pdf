@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using System.Globalization;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -16,7 +17,7 @@ public partial class PostscriptDouble :
     IPostscriptValueComparison
 {
     string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => 
-        DoubleFromMemento(memento).ToString();
+        DoubleFromMemento(memento).ToString(CultureInfo.InvariantCulture);
 
     int IPostscriptValueStrategy<int>.GetValue(in MementoUnion memento) => 
         (int)OffsetForTruncationRounding(memento);
