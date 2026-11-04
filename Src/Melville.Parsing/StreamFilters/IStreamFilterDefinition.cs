@@ -10,6 +10,7 @@ namespace Melville.Parsing.StreamFilters;
 public delegate bool ShimmedDelegate(ref SpanParsingBuffer input, ref Span<byte> output);
 public delegate T SkinnyDelegate<T>(ref SpanParsingBuffer input);
 
+#warning get rid of this when we are done with the sequencereader.
 [Obsolete("This is a shim that needs to go awat")]
 public static class SequenceReaderWrap
 {
@@ -67,10 +68,5 @@ public interface IStreamFilterDefinition
     /// <param name="output">The span to which the output should be routed.</param>
     /// <returns>True if the filter has no more data to provide, false otherwise.</returns>
     bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output);
-#warning get rid of this
-    /// <summary>
-    /// Minimum size of a buffer that can be written to.
-    /// </summary>
-    int MinWriteSize => 1;
 }
 

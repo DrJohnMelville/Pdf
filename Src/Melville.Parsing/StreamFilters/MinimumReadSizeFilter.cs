@@ -15,6 +15,8 @@ namespace Melville.Parsing.StreamFilters;
 /// </summary>
 public class MinimumReadSizeFilter : DefaultBaseStream
 {
+#warning get rid of this
+
     private readonly Stream source;
     private readonly int minReadSize;
     private byte[]? priorData;

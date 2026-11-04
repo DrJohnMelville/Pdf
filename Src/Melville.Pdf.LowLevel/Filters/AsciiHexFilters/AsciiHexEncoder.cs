@@ -10,7 +10,6 @@ namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 
 internal class AsciiHexEncoder : IStreamFilterDefinition
 {
-    public int MinWriteSize => 1;
     private byte nextByte = 0;
 
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)

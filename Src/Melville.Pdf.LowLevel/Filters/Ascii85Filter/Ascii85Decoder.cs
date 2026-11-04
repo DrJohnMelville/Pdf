@@ -28,9 +28,5 @@ internal class Ascii85Decoder() : IStreamFilterDefinition
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
         InnerConvert(ref input, ref output, true);
 
-    /// <summary>
-    /// Minimum size of a buffer that can be written to.
-    /// </summary>
-    public int MinWriteSize => 0;
 }
 

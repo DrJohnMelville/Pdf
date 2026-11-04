@@ -24,8 +24,6 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
         bits = new BitLength(9, earlySwitchLength);
     }
 
-    public int MinWriteSize => 10;
-
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
         if (currentDictionaryEntry < 0)

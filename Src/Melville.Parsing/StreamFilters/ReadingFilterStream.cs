@@ -22,18 +22,8 @@ public class ReadingFilterStream : DefaultBaseStream
     /// <param name="source">The source stream</param>
     /// <param name="filter">The filter to encode / decode the stream.</param>
     /// <returns>A stream that will read the encoded or decoded data</returns>
-    public static Stream Wrap(Stream source, IStreamFilterDefinition filter)
-    {
-        var ret = new ReadingFilterStream(source, filter);
-#warning -- get rid of ensure minimumnreadszies
-        return EmsureMinimumReadSizes(filter, ret);
-    }
-
-    private static Stream EmsureMinimumReadSizes(
-        IStreamFilterDefinition filter, ReadingFilterStream ret) =>
-        filter.MinWriteSize > 1?
-            new MinimumReadSizeFilter(ret, filter.MinWriteSize):
-            ret;
+    public static Stream Wrap(Stream source, IStreamFilterDefinition filter) =>
+        new ReadingFilterStream(source, filter);
 
     private ReadingFilterStream(Stream sourceStream, IStreamFilterDefinition filter):
         base(true, false, false)

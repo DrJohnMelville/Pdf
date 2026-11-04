@@ -41,8 +41,6 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
         buffer = new int[colors];
     }
 
-    public int MinWriteSize => minBytes+1;
-
     private readonly BitWritingBuffer writer = new();
 
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)

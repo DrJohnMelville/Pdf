@@ -115,5 +115,4 @@ internal class Ascii85Encoder : IStreamFilterDefinition
         return TryWrite(ref output);
     }
 
-    public int MinWriteSize => 1;
 }

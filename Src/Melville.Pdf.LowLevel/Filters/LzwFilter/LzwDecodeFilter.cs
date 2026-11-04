@@ -14,8 +14,6 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
     private readonly BitLength bits;
     private const short EmptyCode = -1;
 
-    public int MinWriteSize => 1;
-
     public LzwDecodeFilter(int sizeSwitchFlavorDelta)
     {
         bits = new BitLength(9, sizeSwitchFlavorDelta);

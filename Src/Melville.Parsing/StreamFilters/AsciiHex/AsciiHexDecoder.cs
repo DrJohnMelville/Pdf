@@ -69,8 +69,4 @@ public partial class AsciiHexDecoder: IStreamFilterDefinition
     ///<inheritdoc/>
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
       InnerConvert(ref input, ref output, true);
-    
-    ///<inheritdoc/>
-    public int MinWriteSize => 1;
-
 }

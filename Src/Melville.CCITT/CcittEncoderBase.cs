@@ -22,8 +22,6 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
         lines = new LinePair(parameters);
     }
 
-    public int MinWriteSize => 10;
-
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
         Convert(ref input, ref output, true);
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) =>

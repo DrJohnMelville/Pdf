@@ -17,17 +17,11 @@ internal static class MmrEncodedBitmapReader
             ccittType4Decoder.Convert(ref spb, ref s);
             return 0;
         });
-        TryRequireTerminator(ref reader, requireTerminator, ccittType4Decoder);
-
-    }
-
-    private static void TryRequireTerminator(ref SequenceReader<byte> reader, bool requireTerminator,
-        IJBigMmrFilter ccittType4Decoder)
-    {
         if (requireTerminator)
         {
             ccittType4Decoder.RequireTerminator(ref reader);
         }
+
     }
 
     private const int selectTwoDimensionalEncoding = -1;
