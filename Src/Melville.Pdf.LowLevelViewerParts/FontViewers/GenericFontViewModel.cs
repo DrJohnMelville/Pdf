@@ -1,13 +1,14 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Melville.Fonts;
+﻿using Melville.Fonts;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using System.Globalization;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
@@ -82,9 +83,9 @@ public partial class GenericFontViewModel
             var readChars = realizedFont.ReadCharacter.GetCharacters(ref text, buffer);
             foreach (var character in readChars.Span)
             {
-                chars.Append($"[{character}, 0x{character:X4}] ");
+                chars.Append(CultureInfo.InvariantCulture, $"[{character}, 0x{character:X4}] ");
                 var glyph = realizedFont.MapCharacterToGlyph.GetGlyph(character);
-                glyphs.Append($"[{glyph}, 0x{glyph:X4}] ");
+                glyphs.Append(CultureInfo.InvariantCulture, $"[{glyph}, 0x{glyph:X4}] ");
             }
         }
         Characters = chars.ToString();

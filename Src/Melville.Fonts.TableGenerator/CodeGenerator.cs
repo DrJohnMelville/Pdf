@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -98,7 +99,8 @@ namespace Melville.Fonts.TableGenerator
         private void GenerateSizeMember() => 
             output.AppendLine($"    static int {InterfaceName()}.StaticSize => {ComputeStaticSize()};");
 
-        private string ComputeStaticSize() => fields.Select(ComputeSizeFor).Sum().ToString();
+        private string ComputeStaticSize() => 
+            fields.Select(ComputeSizeFor).Sum().ToString(CultureInfo.InvariantCulture);
 
         private static int ComputeSizeFor(MemberGenerator memberGenerator)
         {

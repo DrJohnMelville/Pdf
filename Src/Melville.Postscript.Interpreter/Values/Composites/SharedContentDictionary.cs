@@ -1,8 +1,9 @@
-﻿using System;
-using System.Buffers;
-using System.Text;
-using Melville.INPC;
+﻿using Melville.INPC;
 using Melville.Parsing.IStreamAdaptors;
+using System;
+using System.Buffers;
+using System.Globalization;
+using System.Text;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
@@ -75,7 +76,7 @@ internal sealed partial class SharedContentDictionary:
         using var items = new PooledBuffer<PostscriptValue>(2);
         while (curson.TryGetItr(items.AsSpan(), ref pos))
         {
-            target.AppendLine($"    {items[0]}: {items[1]}");
+            target.AppendLine(CultureInfo.InvariantCulture, $"    {items[0]}: {items[1]}");
         }
     }
 }

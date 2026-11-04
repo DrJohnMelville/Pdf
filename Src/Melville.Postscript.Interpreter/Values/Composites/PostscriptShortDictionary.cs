@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -30,7 +31,7 @@ internal partial class PostscriptShortDictionary : PostscriptDictionary
     {
         for (int i = 0; i < length*2; i += 2)
         {
-            sb.AppendLine($"    {items[i].ToString()}: {items[i + 1].ToString()}");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"    {items[i].ToString()}: {items[i + 1].ToString()}");
         }
     }
 

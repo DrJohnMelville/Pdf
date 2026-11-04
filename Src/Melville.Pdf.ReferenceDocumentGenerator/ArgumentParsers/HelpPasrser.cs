@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
@@ -40,7 +41,7 @@ public class HelpPasrser: IArgumentParser
     }
 
     private string TextForParser(IArgumentParser parser, string formatString) => 
-        string.Format(formatString, parser.Prefix, parser.HelpText);
+        string.Format(CultureInfo.InvariantCulture, formatString, parser.Prefix, parser.HelpText);
 
     private string FormatString() => "  {0," + PrefixLength + "}  {1}";
 }

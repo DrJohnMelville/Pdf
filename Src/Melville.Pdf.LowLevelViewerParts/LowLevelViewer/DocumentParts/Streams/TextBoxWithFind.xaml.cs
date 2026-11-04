@@ -1,10 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using Melville.INPC;
+using Melville.Pdf.LowLevel.Filters.FlateFilters;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using Melville.INPC;
-using Melville.Pdf.LowLevel.Filters.FlateFilters;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -69,7 +70,7 @@ public partial class TextBoxWithFind : UserControl
     }
 
     private string SelectedHex(string text) =>
-        $"<{string.Join(" ", text.Select(i => ((int)i).ToString("X")))}>";
+        $"<{string.Join(" ", text.Select(i => ((int)i).ToString("X", CultureInfo.InvariantCulture)))}>";
     
     private string PositionString()
     {

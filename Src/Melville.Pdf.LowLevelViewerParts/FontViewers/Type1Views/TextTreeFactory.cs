@@ -1,5 +1,6 @@
 ﻿using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
+using System.Globalization;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers.Type1Views;
 
@@ -32,7 +33,7 @@ internal class TextTreeFactory
             if ((!(value.IsString || value.IsLiteralName || value.IsExecutedName)) 
                 && value.TryGet(out IPostscriptArray? array))
                 return new TextTree($"{name} Array [{array.Length}]", array
-                    .Select((item, i) => CreateTextTree(i.ToString(), item)).ToArray());
+                    .Select((item, i) => CreateTextTree(i.ToString(CultureInfo.InvariantCulture), item)).ToArray());
             return new TextTree($"{name}: {value.ToString()}", []);
         }
         finally

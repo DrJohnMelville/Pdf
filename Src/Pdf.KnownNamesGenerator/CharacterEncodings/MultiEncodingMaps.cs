@@ -27,7 +27,8 @@ public class MultiEncodingMaps
     private void TryAddValue(Dictionary<byte,string> dictionary, string name, string code)
     {
         if (CharacterNotMappedInThisEncoding(code)) return;
-        dictionary.Add(byte.Parse(code, NumberStyles.AllowHexSpecifier), name);
+        dictionary.Add(byte.Parse(code, NumberStyles.AllowHexSpecifier,
+            CultureInfo.InvariantCulture), name);
     }
 
     private static bool CharacterNotMappedInThisEncoding(string code) => code.Length > 3;

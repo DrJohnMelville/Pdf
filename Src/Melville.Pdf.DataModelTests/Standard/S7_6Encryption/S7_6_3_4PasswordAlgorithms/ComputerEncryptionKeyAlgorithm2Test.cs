@@ -1,7 +1,8 @@
-﻿using System.Text;
-using System.Threading.Tasks;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
+﻿using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
+using System.Globalization;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms;
@@ -14,7 +15,7 @@ public class ComputerEncryptionKeyAlgorithm2Test
         ret.Append("<");
         foreach (var b in item)
         {
-            ret.Append(b.ToString("X2"));
+            ret.Append(b.ToString("X2", CultureInfo.InvariantCulture));
         }
         ret.Append(">");
         return ret.ToString();

@@ -1,6 +1,7 @@
-﻿using System;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using System;
+using System.Globalization;
 
 namespace Performance.Playground.Writers
 {
@@ -42,7 +43,7 @@ namespace Performance.Playground.Writers
         private void CopyToSpan(int i, ref Span<byte> span)
         {
             Span<Char> chars = stackalloc char[20];
-            values[i].TryFormat(chars, out var written);
+            values[i].TryFormat(chars, out var written, default, CultureInfo.InvariantCulture);
             for (int j = 0; j < written; j++)
             {
                 span[j] = (byte) chars[j];

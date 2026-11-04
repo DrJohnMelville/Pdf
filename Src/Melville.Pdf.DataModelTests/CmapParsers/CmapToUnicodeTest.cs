@@ -1,7 +1,8 @@
-﻿using System;
-using System.Linq;
-using Melville.INPC;
+﻿using Melville.INPC;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using System;
+using System.Globalization;
+using System.Linq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;
@@ -37,7 +38,7 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
         var result = maps.Maps[map].GetCharacters(soura.AsSpan(), target, out var consumed);
         Assert.Equal(expecteDConsumed, consumed);
         Assert.Equal(hexDest, string.Join("",
-            result.ToArray().Select(i=> i.ToString("X4"))));
+            result.ToArray().Select(i=> i.ToString("X4", CultureInfo.InvariantCulture))));
     }
 
     [Fact]
@@ -48,7 +49,7 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
         var result = maps.Maps[1].GetCharacters(soura.AsSpan(), target, out var consumed);
         Assert.Equal(2, consumed);
         Assert.Equal("00660066006C", string.Join("",
-            result.ToArray().Select(i=> i.ToString("X4"))));
+            result.ToArray().Select(i=> i.ToString("X4", CultureInfo.InvariantCulture))));
 
     }
 }

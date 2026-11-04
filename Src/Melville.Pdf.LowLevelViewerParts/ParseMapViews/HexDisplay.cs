@@ -76,13 +76,13 @@ internal readonly struct HexDisplayPainter(
     public void DrawLine()
     {
         dc.PushTransform(new MatrixTransform(1, 0, 0, 1, 0, YStride * (row / 16.0)));
-        PaintText(0.0, 0.0, row.ToString("X8"));
+        PaintText(0.0, 0.0, row.ToString("X8", CultureInfo.InvariantCulture));
 
         PaintBackgrounds();
 
         for (int i = 0; i < Math.Min(16, data.Length); i++)
         {
-            PaintText(XHexLocation(i), 0, data.Span[i].ToString("X2"));
+            PaintText(XHexLocation(i), 0, data.Span[i].ToString("X2", CultureInfo.InvariantCulture));
             PaintText(XCharLocation(i), 0, PrintChar((char)data.Span[i]));
         }
 

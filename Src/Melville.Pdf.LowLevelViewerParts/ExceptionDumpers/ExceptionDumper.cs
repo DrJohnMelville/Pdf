@@ -1,6 +1,7 @@
-﻿using System.IO;
+﻿using Melville.Linq;
+using System.Globalization;
+using System.IO;
 using System.Text;
-using Melville.Linq;
 
 namespace Melville.Pdf.LowLevelViewerParts.ExceptionDumpers;
 
@@ -39,5 +40,7 @@ public static class ExceptionExtension
         string.Join("--------------------\r\n", 
             FunctionalMethods.Sequence(exception, i => i.InnerException!).
                 Reverse().
-                Select(i => String.Format("{0}\n{1}\n{2}\n", i.GetType(), i.Message, i.StackTrace)));
+                Select(i => String.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}\n{1}\n{2}\n", i.GetType(), i.Message, i.StackTrace)));
 }

@@ -1,6 +1,7 @@
-﻿using System.Numerics;
+﻿using Melville.INPC;
+using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
-using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
 
@@ -124,7 +125,8 @@ public readonly struct FixedPoint<TStorage, TCompute,TConfig>(TStorage value)
             while (pos < buffer.Length && fractional > TCompute.Zero)
             {
                 fractional *= ten;
-                buffer[pos++] = (char)('0' + Convert.ToChar(fractional >> TConfig.FractionalBits));
+                buffer[pos++] = (char)('0' + 
+                    Convert.ToChar(fractional >> TConfig.FractionalBits, CultureInfo.InvariantCulture));
                 fractional &= FractionalMask;
             }
         }

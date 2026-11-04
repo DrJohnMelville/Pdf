@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
 using Melville.TestHelpers.StringDatabase;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using TUnit.Core.Executors;
 namespace Melville.Wpf.IntegrationTesting;
 
@@ -61,7 +62,7 @@ public class RenderingTest
             using var doc = await generator.ReadDocumentAsync();
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
-            var hash = target.Computer.GetHash().ToString();
+            var hash = target.Computer.GetHash().ToString(CultureInfo.InvariantCulture);
             return hash;
         }
         catch (Exception e)

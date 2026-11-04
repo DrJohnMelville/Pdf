@@ -1,9 +1,10 @@
-﻿using System.Windows.Data;
-using System.Windows.Media;
-using Melville.MVVM.Wpf.Bindings;
+﻿using Melville.MVVM.Wpf.Bindings;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Wpf.Rendering;
+using System.Globalization;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
 
@@ -16,13 +17,13 @@ public static class ColorConverter
         LambdaConverter.Create((DeviceColor col) => col.AsWpfColor());
 
     public static readonly IValueConverter Double = LambdaConverter.Create(
-        (double value) => value.ToString("##0.0000"), 
+        (double value) => value.ToString("##0.0000", CultureInfo.InvariantCulture), 
         arg => double.TryParse(arg, out var ret) ? ret : 0.0
     );
     public static readonly IValueConverter Hex = 
         LambdaConverter.Create<double, string>(HexFromDouble, ParseHex);
 
-    private static string HexFromDouble(double value) => ((byte)(255 * value)).ToString("X2");
+    private static string HexFromDouble(double value) => ((byte)(255 * value)).ToString("X2", CultureInfo.InvariantCulture);
 
     private static double ParseHex(string? arg) => (arg?.Length ?? 0) switch
         {

@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.SpanAndMemory;
+﻿using System.Globalization;
+
+namespace Melville.Parsing.SpanAndMemory;
 
 /// <summary>
 /// Extension method on Memory
@@ -27,5 +29,5 @@ public static class MemoryExtensions
     /// <param name="str">A span of bytes</param>
     /// <returns>A hexadevimal string</returns>
     public static string AsHex(in this ReadOnlySpan<byte> str) =>
-        string.Join(" ", str.ToArray().Select(i => i.ToString("X2")));
+        string.Join(" ", str.ToArray().Select(i => i.ToString("X2", CultureInfo.InvariantCulture)));
 }

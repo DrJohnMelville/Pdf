@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Melville.INPC;
+﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Composites;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -18,7 +19,7 @@ internal partial class PostscriptLongDictionary :PostscriptDictionary
     {
         foreach (var pair in items)
         {
-            sb.AppendLine($"    {pair.Key.ToString()}: {pair.Value.ToString()}");
+            sb.AppendLine(CultureInfo.InvariantCulture,$"    {pair.Key}: {pair.Value}");
         }
     }
 

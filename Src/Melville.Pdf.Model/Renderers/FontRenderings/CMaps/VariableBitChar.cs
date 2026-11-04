@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Melville.INPC;
+using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
-using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
@@ -44,5 +45,5 @@ internal readonly partial struct VariableBitChar: IComparable<VariableBitChar>
     public static VariableBitChar operator +(VariableBitChar item, int delta) =>
         new VariableBitChar(item.bits + (ulong)delta);
 
-    public override string ToString() => bits.ToString("X")[1..];
+    public override string ToString() => bits.ToString("X", CultureInfo.InvariantCulture)[1..];
 }
