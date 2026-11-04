@@ -59,13 +59,17 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
     [Fact]
     public async Task LzwDecodeBugAsync()
     {
-        var str = new DictionaryBuilder()
-            .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)
-            .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
-        var result = await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(LwzDecodeBugResult.Replace("\r\n","\r"), result);
-        
+        {
+            var str = new DictionaryBuilder()
+                .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)
+                .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
+            using var stream = await str.StreamContentAsync();
+            StreamReader streamReader = new StreamReader(stream);
+            var result = await streamReader.ReadToEndAsync(TestContext.Current.CancellationToken);
+            Assert.Equal(LwzDecodeBugResult.Replace("\r\n", "\r"), result);
+        }
         // assertion is the lack of an exception
+
     }
 
     private const string LwzDecodeBugResult = @"0.7 0.7 0.7 RG
