@@ -25,6 +25,7 @@ public class ReadingFilterStream : DefaultBaseStream
     public static Stream Wrap(Stream source, IStreamFilterDefinition filter)
     {
         var ret = new ReadingFilterStream(source, filter);
+#warning -- get rid of ensure minimumnreadszies
         return EmsureMinimumReadSizes(filter, ret);
     }
 

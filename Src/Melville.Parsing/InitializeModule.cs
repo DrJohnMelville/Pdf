@@ -17,8 +17,8 @@ public static class InitializeModule
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "<Pending>")]
     public static void SetupModule()
     {
-        RequireDisposal.RecordDisposableCreation = false;
-        RequireDisposal.ThrowOnMissedDispose = false;
+        RequireDisposal.RecordDisposableCreation = true;
+        RequireDisposal.ThrowOnMissedDispose = true;
 #warning need to look for disposal bugs once the stream wrapping is done.
     }
 }

@@ -147,7 +147,8 @@ public abstract partial class StreamTestBase
     [Fact]
     public async Task RoundTripStreamAsync()
     {
-        await VerifyDecodedStreamAsync(await (await StreamWithEncodedBackEndAsync()).StreamContentAsync());
+        PdfStream pdfStream = await StreamWithEncodedBackEndAsync();
+        await VerifyDecodedStreamAsync(await pdfStream.StreamContentAsync());
     }
 
     private async Task VerifyDecodedStreamAsync(Stream streamToRead)
