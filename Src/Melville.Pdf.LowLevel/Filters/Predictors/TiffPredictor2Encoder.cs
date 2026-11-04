@@ -26,12 +26,11 @@ internal static class ScanLineLengthComputer
 
 internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
 {
-    private int bitsPerColor;
-    private int groupsPerRow;
-    private int[] buffer;
-    private int minBytes;
-    private BitReader reader;
-    private BitWriter writer;
+    private readonly int bitsPerColor;
+    private readonly int groupsPerRow;
+    private readonly int[] buffer;
+    private readonly int minBytes;
+    private readonly BitReader reader = new();
     private int currentCol = 0;
 
     protected TiffPredictor2Filter(int colors, int bitsPerColor, int colorsPerRow)
@@ -40,50 +39,18 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
         groupsPerRow = ScanLineLengthComputer.ComputeGroupsPerRow(colors, bitsPerColor, colorsPerRow, bitsPerColor);
         minBytes = 2 + ((bitsPerColor + 7) / 8);
         buffer = new int[colors];
-        reader = new BitReader();
-        writer = new BitWriter();
     }
 
     public int MinWriteSize => minBytes+1;
 
-#if true
-
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(ref SequenceReader<byte> source, in Span<byte> destination)
-    {
-        var destPosition = 0;
-        while (destPosition + minBytes < destination.Length && 
-               reader.TryRead(bitsPerColor, ref source, out var readValue))
-        {
-            destPosition += writer.WriteBits(
-                ComputeFilterResult(readValue), bitsPerColor, destination[destPosition..]);
-            currentCol++;
-            if (currentCol >= groupsPerRow)
-            {
-                currentCol = 0;
-                Array.Clear(buffer, 0, buffer.Length);
-            }
-        }
-        return (source.Position, destPosition, false);
-    }
-
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(ref SequenceReader<byte> source,
-        in Span<byte> destination)
-    {
-        if (destination.Length < minBytes) return (source.Position, 0, false);
-        Debug.Assert(!source.TryRead(out _));
-        return (source.Position, writer.FinishWrite(destination), true);
-    }
-
-#else
+    private readonly BitWritingBuffer writer = new();
 
     public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        var destPosition = 0;
-        while (destPosition + minBytes < destination.Length &&
-               reader.TryRead(bitsPerColor, ref source, out var readValue))
+        while (writer.TryWriteToMovingBuffer(ref output) &&
+               reader.TryRead(bitsPerColor, ref input, out var readValue))
         {
-            destPosition += writer.WriteBits(
-                ComputeFilterResult(readValue), bitsPerColor, destination[destPosition..]);
+            writer.WriteBits(ComputeFilterResult(readValue), bitsPerColor);
             currentCol++;
             if (currentCol >= groupsPerRow)
             {
@@ -95,7 +62,7 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
     }
 
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
-#endif
+
     private int ComputeFilterResult(int readValue) => ComputeAdjustedValue(readValue, ref buffer[SelectBufferSlot()]);
 
     private int SelectBufferSlot() => currentCol % buffer.Length;
