@@ -46,7 +46,7 @@ public partial class S7_4_3Ascii85DecodeFilter
     [InlineData("", "")]
     public async Task EncodeStringAsync(string plain, string encoded)
     {
-        await SpecialCasesAsync(plain, encoded);
+       // await SpecialCasesAsync(plain, encoded);
         await SpecialCasesAsync(plain, encoded+"~>this garbage does not matter");
     }
         

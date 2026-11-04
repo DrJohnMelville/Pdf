@@ -24,9 +24,13 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
 
     public int MinWriteSize => 10;
 
-    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        Convert(ref input, ref output, true);
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+        Convert(ref input, ref output, false);
+    bool Convert(ref SpanParsingBuffer input, ref Span<byte> output, bool doneReading)
     {
-        if (input.CurrentLength == 0)
+        if (input.CurrentLength == 0 && doneReading)
         {
             if (bitWriter.FinishWrite(output) is > 0 and var delta)
                 output = output[delta..];

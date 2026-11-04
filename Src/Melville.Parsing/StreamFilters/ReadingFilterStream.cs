@@ -1,5 +1,7 @@
 ﻿using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
 using System.Buffers;
 using System.IO.Pipelines;
 
@@ -11,7 +13,7 @@ namespace Melville.Parsing.StreamFilters;
 public class ReadingFilterStream : DefaultBaseStream
 {
     private readonly IStreamFilterDefinition filter;
-    private readonly PipeReader source;
+    private readonly ParsingBuffer source2;
     private bool doneReading = false;
 
     /// <summary>
@@ -36,66 +38,46 @@ public class ReadingFilterStream : DefaultBaseStream
         base(true, false, false)
     {
         this.filter = filter;
-        this.source = PipeReader.Create(sourceStream);
+        source2 = new ParsingBuffer(sourceStream.AsStreamReader()).WithDisposedDependency(sourceStream);
     }
 
     /// <inheritdoc />
-    public override void Close() => source.Complete();
-
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
+    public override void Close()
     {
         (filter as IDisposable)?.Dispose();
-        source.Complete();
+        source2.Dispose();
     }
 
     /// <inheritdoc />
     public override ValueTask DisposeAsync()
     {
-        (filter as IDisposable)?.Dispose();
-        return source.CompleteAsync();
+        Close();
+        return ValueTask.CompletedTask;
     }
-
-
-    /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        if (buffer.Length < 1 || doneReading ) return 0;
+        if (buffer.Length < 1 || doneReading) return 0;
         var ret = 0;
         do
         {
-            var result = await source.ReadAsync().CA();
-            ret = HandleResult(buffer.Span, result);
-            if (result.IsCompleted) return ret;
+            ret = HandleResult(buffer.Span);
+            if (source2.DoneReadingSource || ret > 0) return ret;
+            await source2.ReadBytesAsync().CA();
         } while (ret < 1);
         return ret;
     }
-
-    private int HandleResult(Span<byte> buffer, ReadResult result)
+    private int HandleResult(Span<byte> buffer)
     {
-        if (result.IsCanceled || doneReading) return 0;
-        var reader = new SequenceReader<byte>(result.Buffer);
-        var (finalPos, bytesWritten, done) = filter.Convert(ref reader, buffer);
-        if (bytesWritten == 0 && result.IsCompleted)
-        {
-            (finalPos, bytesWritten, done) = HandleFinalDecode(buffer, result, finalPos, bytesWritten);
-        }
-        source.AdvanceTo(finalPos, result.Buffer.End);
+        if (doneReading ) return 0;
+        var reader = new SpanParsingBuffer(source2.Peek());
+        var nextByte = buffer;
+        var done = source2.DoneReadingSource ?
+            filter.FinalConvert(ref reader, ref nextByte):
+            filter.Convert(ref reader, ref nextByte);
+        source2.Advance((int)reader.RelativePosition);
         if (done) doneReading = true;
-        Position += bytesWritten;
-        return bytesWritten;
+        return buffer.Length - nextByte.Length;
     }
 
-    private (SequencePosition finalPos, int bytesWritten, bool done) HandleFinalDecode(Span<byte> buffer, ReadResult result,
-        SequencePosition finalPos, int bytesWritten)
-    {
-        bool done;
-        int extrBytes;
-        var r2 = new SequenceReader<byte>(result.Buffer.Slice(finalPos));
-        var remaining = buffer.Slice(bytesWritten);
-        (finalPos, extrBytes, done) = filter.FinalConvert(ref r2, remaining);
-        bytesWritten += extrBytes;
-        return (finalPos, bytesWritten, done);
-    }
 }

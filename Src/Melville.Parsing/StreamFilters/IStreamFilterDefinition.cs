@@ -94,8 +94,10 @@ public interface IStreamFilterDefinition
         return done;
     }
 
+#warning get rid of this
     /// <summary>
     /// Minimum size of a buffer that can be written to.
     /// </summary>
     int MinWriteSize => 1;
 }
+

@@ -5,7 +5,6 @@ using Melville.Parsing.SequenceReaders;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.Parsing;
-
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 
