@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using CoreJ2K.j2k.codestream;
 using CoreJ2K.j2k.image;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.entropy
 {
@@ -210,7 +211,7 @@ namespace CoreJ2K.j2k.entropy
 							try
 							{
 								// Get precinct width
-								w = int.Parse(word);
+								w = int.Parse(word, CultureInfo.InvariantCulture);
 								
 								// Get next word in argument list
 								try
@@ -223,7 +224,7 @@ namespace CoreJ2K.j2k.entropy
 									throw new ArgumentException(errMsg);
 								}
 								// Get precinct height
-								h = int.Parse(word);
+								h = int.Parse(word, CultureInfo.InvariantCulture);
 								if (w != (1 << MathUtil.log2(w)) || h != (1 << MathUtil.log2(h)))
 								{
 									errMsg = "Precinct dimensions must be powers of 2";

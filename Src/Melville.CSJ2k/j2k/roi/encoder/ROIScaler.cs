@@ -50,6 +50,7 @@ using CoreJ2K.j2k.quantization.quantizer;
 using CoreJ2K.j2k.util;
 using CoreJ2K.j2k.wavelet;
 using CoreJ2K.j2k.wavelet.analysis;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.roi.encoder
 {
@@ -354,13 +355,13 @@ namespace CoreJ2K.j2k.roi.encoder
 						try
 						{
 							word = stok.NextToken();
-							ulx = (int.Parse(word));
+							ulx = (int.Parse(word, CultureInfo.InvariantCulture));
 							word = stok.NextToken();
-							uly = (int.Parse(word));
+							uly = (int.Parse(word, CultureInfo.InvariantCulture));
 							word = stok.NextToken();
-							w = (int.Parse(word));
+							w = (int.Parse(word, CultureInfo.InvariantCulture));
 							word = stok.NextToken();
-							h = (int.Parse(word));
+							h = (int.Parse(word, CultureInfo.InvariantCulture));
 						}
 						catch (FormatException)
 						{
@@ -398,11 +399,11 @@ namespace CoreJ2K.j2k.roi.encoder
 						try
 						{
 							word = stok.NextToken();
-							x = (int.Parse(word));
+							x = (int.Parse(word, CultureInfo.InvariantCulture));
 							word = stok.NextToken();
-							y = (int.Parse(word));
+							y = (int.Parse(word, CultureInfo.InvariantCulture));
 							word = stok.NextToken();
-							rad = (int.Parse(word));
+							rad = (int.Parse(word, CultureInfo.InvariantCulture));
 						}
 						catch (FormatException)
 						{

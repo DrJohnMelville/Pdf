@@ -43,6 +43,7 @@
 using System;
 using System.Collections.Generic;
 using CoreJ2K.j2k.image;
+using System.Globalization;
 
 namespace CoreJ2K.j2k
 {
@@ -232,7 +233,7 @@ namespace CoreJ2K.j2k
 					tmpVal = tileCompVal[tmpKey];
 					i1 = tmpKey.IndexOf('t');
 					i2 = tmpKey.IndexOf('c');
-					btIdx = (int.Parse(tmpKey.Substring(i1 + 1, (i2) - (i1 + 1))));
+					btIdx = (int.Parse(tmpKey.Substring(i1 + 1, (i2) - (i1 + 1)), CultureInfo.InvariantCulture));
 					bx = btIdx % bnT.x;
 					by = btIdx / bnT.x;
 					ay = bx;

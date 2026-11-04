@@ -43,6 +43,7 @@
 */
 using System;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k.quantization
 {
@@ -128,7 +129,7 @@ namespace CoreJ2K.j2k.quantization
 					default:  // Step size value
 						try
 						{
-							value_Renamed = int.Parse(word);
+							value_Renamed = int.Parse(word, CultureInfo.InvariantCulture);
 						}
 						catch (FormatException)
 						{
@@ -203,7 +204,7 @@ namespace CoreJ2K.j2k.quantization
 				// the default value defined in ParameterList
 				if (ndefspec != 0)
 				{
-					setDefault(int.Parse(pl.DefaultParameterList.getParameter("Qguard_bits")));
+					setDefault(int.Parse(pl.DefaultParameterList.getParameter("Qguard_bits"), CultureInfo.InvariantCulture));
 				}
 				else
 				{

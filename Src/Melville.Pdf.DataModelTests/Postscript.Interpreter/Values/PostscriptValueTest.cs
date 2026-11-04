@@ -3,6 +3,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Xunit;
+using System.Globalization;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
 
@@ -39,7 +40,7 @@ public class PostscriptValueTest
         Assert.Equal(number, value.Get<long>());
         Assert.True(value.TryGet<long>(out var result));
         Assert.Equal(number, result);
-        Assert.Equal(number.ToString(), value.ToString());
+        Assert.Equal(number.ToString(CultureInfo.InvariantCulture), value.ToString());
         Assert.Equal((double)number, value.Get<double>());
     }
 
@@ -56,7 +57,7 @@ public class PostscriptValueTest
         Assert.Equal(rounded, value.Get<long>());
         Assert.True(value.TryGet<double>(out var result));
         Assert.Equal(number, result);
-        Assert.Equal(number.ToString(), value.ToString());
+        Assert.Equal(number.ToString(CultureInfo.InvariantCulture), value.ToString());
         Assert.Equal(number, value.Get<double>());
     }
 

@@ -41,6 +41,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
+using System.Globalization;
 namespace CoreJ2K.j2k.util
 {
 	
@@ -300,7 +301,7 @@ namespace CoreJ2K.j2k.util
 
 			try
 			{
-				return int.Parse(s);
+				return int.Parse(s, CultureInfo.InvariantCulture);
 			}
 			catch (FormatException e)
 			{
@@ -331,7 +332,7 @@ namespace CoreJ2K.j2k.util
 
 			try
 			{
-				return float.Parse(s);
+				return float.Parse(s, CultureInfo.InvariantCulture);
 			}
 			catch (FormatException e)
 			{

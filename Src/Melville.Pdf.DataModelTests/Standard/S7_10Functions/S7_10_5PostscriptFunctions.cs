@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Xunit;
+using System.Globalization;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
@@ -167,6 +168,6 @@ public class S7_10_5PostscriptFunctions
     private static double[] GetDoubles(string inputs) =>
         inputs
             .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Select(i => double.Parse(i))
+            .Select(i => double.Parse(i, CultureInfo.InvariantCulture))
             .ToArray();
 }

@@ -42,6 +42,7 @@
 * */
 using System;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 namespace CoreJ2K.j2k
 {
@@ -163,7 +164,7 @@ namespace CoreJ2K.j2k
 				param = pl.DefaultParameterList.getParameter(optName);
 				try
 				{
-					setDefault(int.Parse(param));
+					setDefault(int.Parse(param, CultureInfo.InvariantCulture));
 				}
 				catch (FormatException)
 				{
@@ -200,7 +201,7 @@ namespace CoreJ2K.j2k
 					default: 
 						try
 						{
-							value_Renamed = int.Parse(word);
+							value_Renamed = int.Parse(word, CultureInfo.InvariantCulture);
 						}
 						catch (FormatException)
 						{
@@ -272,7 +273,7 @@ namespace CoreJ2K.j2k
 					param = pl.DefaultParameterList.getParameter(optName);
 					try
 					{
-						setDefault(int.Parse(param));
+						setDefault(int.Parse(param, CultureInfo.InvariantCulture));
 					}
 					catch (FormatException)
 					{

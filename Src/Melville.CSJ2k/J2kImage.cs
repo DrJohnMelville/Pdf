@@ -2,6 +2,7 @@
 // Licensed under the BSD 3-Clause License.
 
 using System.Linq;
+using System.Globalization;
 
 namespace CoreJ2K
 {
@@ -502,8 +503,8 @@ namespace CoreJ2K
             int refy;
             try
             {
-                refx = int.Parse(refs[0]);
-                refy = int.Parse(refs[1]);
+                refx = int.Parse(refs[0], CultureInfo.InvariantCulture);
+                refy = int.Parse(refs[1], CultureInfo.InvariantCulture);
             }
             catch (IndexOutOfRangeException)
             {
@@ -524,8 +525,8 @@ namespace CoreJ2K
             int trefy;
             try
             {
-                trefx = int.Parse(trefs[0]);
-                trefy = int.Parse(trefs[1]);
+                trefx = int.Parse(trefs[0], CultureInfo.InvariantCulture);
+                trefy = int.Parse(trefs[1], CultureInfo.InvariantCulture);
             }
             catch (IndexOutOfRangeException)
             {

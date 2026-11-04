@@ -3,6 +3,7 @@ using Melville.INPC;
 using Melville.Parsing.ParserMapping;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Globalization;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
@@ -85,7 +86,7 @@ internal ref partial struct DictParser<T>(
                AddNibble(b >> 4, stringValue, ref pos) &&
                AddNibble(b & 0xF, stringValue, ref pos)
               ) ; // do nothing in loop
-        PushOperand(new DictValue(float.Parse(stringValue[..pos])));
+        PushOperand(new DictValue(float.Parse(stringValue[..pos], CultureInfo.InvariantCulture)));
         
     }
 

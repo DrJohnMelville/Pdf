@@ -12,6 +12,7 @@
 using System;
 using CoreJ2K.Util;
 using CoreJ2K.j2k.util;
+using System.Globalization;
 
 /// <summary>
 /// Contains conversion support elements such as classes, interfaces and static methods.
@@ -998,7 +999,7 @@ internal class SupportClass
 									unread(ch);
 								try
 								{
-									nval = double.Parse(buf.ToString());
+									nval = double.Parse(buf.ToString(), CultureInfo.InvariantCulture);
 								}
 								catch (FormatException) {}
 								state = STATE_DONE;
@@ -1036,7 +1037,7 @@ internal class SupportClass
 								{
 									try
 									{
-										nval = double.Parse(str);
+										nval = double.Parse(str, CultureInfo.InvariantCulture);
 									}
 									catch (FormatException){}
 								}
@@ -1058,7 +1059,7 @@ internal class SupportClass
 								unread(ch);
 							try
 							{
-								nval = double.Parse(buf.ToString());
+								nval = double.Parse(buf.ToString(), CultureInfo.InvariantCulture);
 							}
 							catch (FormatException) {}
 							state = STATE_DONE;
