@@ -83,7 +83,8 @@ internal class BinaryBitmap: IBitmapCopyTarget
     public bool ContainsPixel(int row, int col) =>
         row >= 0 && col >= 0 && row < Height & col < Width;
 
-    public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
+    public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => 
+        (bits, ComputeBitPosition(0, column));
 
     public BinaryBitmap(int height, int width)
     {

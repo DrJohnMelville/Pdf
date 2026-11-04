@@ -1,5 +1,7 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.CCITT;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
@@ -10,8 +12,13 @@ internal static class MmrEncodedBitmapReader
     {
         var (bits, _) = bitmap.ColumnLocation(0);
         var ccittType4Decoder = CreateMmrDecoder(bitmap);
-        ccittType4Decoder.Convert(ref reader, bits);
+        reader.TempBridge((ref spb) => {
+            var s = bits.AsSpan();
+            ccittType4Decoder.Convert(ref spb, ref s);
+            return 0;
+        });
         TryRequireTerminator(ref reader, requireTerminator, ccittType4Decoder);
+
     }
 
     private static void TryRequireTerminator(ref SequenceReader<byte> reader, bool requireTerminator,
