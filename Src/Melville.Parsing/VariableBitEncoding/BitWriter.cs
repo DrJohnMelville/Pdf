@@ -2,9 +2,48 @@
 
 namespace Melville.Parsing.VariableBitEncoding;
 
+public interface IBitBuffer
+{
+}
+
+public class BitWritingBuffer
+{
+    private UInt128 buffer = 0;
+    private int bitsUsed = 0;
+
+    public void WriteBits(int data, int bits) => WriteBits((uint)data, bits);
+    public void WriteBits(uint data, int bits)
+    {
+        bitsUsed += bits;
+        Debug.Assert(bitsUsed <= 128);
+        buffer <<= bits;
+        buffer |= (UInt128)(data & ((1 << bits) - 1));
+    }
+    public void AdvanceToWholeByte() 
+    {
+        if (bitsUsed % 8 is > 0 and var modulus)
+            WriteBits(0u, 8 - modulus);
+    }
+    public bool TryWriteToMovingBuffer(ref Span<byte> output)
+    {
+        while (bitsUsed > 7 && !output.IsEmpty)
+        {
+            bitsUsed -= 8;
+            output[0] = (byte)(buffer >> bitsUsed);
+            output = output[1..];
+        }
+        return NothingToWrite;
+    }
+
+    public bool NothingToWrite => bitsUsed < 8;
+
+    public bool IsEmpty => bitsUsed is 0;
+}
+
 /// <summary>
 /// Write numbers with a variable number of bits.
 /// </summary>
+[Obsolete("Switch to BitWriting buffer.")]
 public class BitWriter
 {
     private byte residue;

@@ -14,7 +14,7 @@ using Xunit;
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 [MacroItem("Hello World.", "GhVa[c,n(/#gY0H8^RV?z***28~>", "FlateDecode", "KnownNames.FlateDecode")]
-[MacroItem("-----A---B", "(;QS2(`<Y^~>", "LzwDecode", "KnownNames.LZWDecode")]
+[MacroItem("-----A---B", "(;QS2(`<Y~>", "LzwDecode", "KnownNames.LZWDecode")]
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", new PdfArray(KnownNames.ASCII85Decode, ~3~)){}}")]
 public partial class S7_4_4LzwAndFlateDecodeFilter
 {

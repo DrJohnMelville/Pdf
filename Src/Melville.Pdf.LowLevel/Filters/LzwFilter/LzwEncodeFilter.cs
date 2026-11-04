@@ -14,12 +14,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 internal class LzwEncodeFilter : IStreamFilterDefinition
 {
-    private readonly BitWriter output = new();
+    private readonly BitWritingBuffer outputBuf = new();
     private readonly EncoderDictionary dictionary = new();
     private short currentDictionaryEntry = -1;
     private readonly BitLength bits;
-    private readonly byte[] outputBufferBacker = new byte[5];
-    private Memory<byte> outputBuffer = Array.Empty<byte>();
 
     public LzwEncodeFilter(int earlySwitchLength)
     {
@@ -44,9 +42,8 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
             }
             else
             {
-                Debug.Assert(outputBuffer.IsEmpty);
-                var written = WriteCodeForCurrentChain(outputBufferBacker, nextEntry, nextByte);
-                outputBuffer = outputBufferBacker.AsMemory(0, written);
+                Debug.Assert(outputBuf.NothingToWrite);
+                WriteCodeForCurrentChain(nextEntry, nextByte);
             }
         }
 
@@ -58,54 +55,46 @@ internal class LzwEncodeFilter : IStreamFilterDefinition
         if (input.CurrentLength > 0) return false;
         if (currentDictionaryEntry >= 0)
         {
-            Debug.Assert(outputBuffer.IsEmpty);
-            outputBuffer = outputBufferBacker;
-            var len = this.output.WriteBits(currentDictionaryEntry, bits.Length, outputBuffer.Span);
-            len += this.output.WriteBits(LzwConstants.EndOfFileCode, bits.Length, outputBuffer.Span[len..]);
-            len += this.output.FinishWrite(outputBuffer.Span[len..]);
-            outputBuffer = outputBuffer[..len];
+            Debug.Assert(outputBuf.NothingToWrite);
+            WriteBits(currentDictionaryEntry);
+            WriteBits(LzwConstants.EndOfFileCode);
             currentDictionaryEntry = -1;
         }
 
         return TryWriteBytes(ref output);
     }
 
+    void WriteBits(int code) => outputBuf.WriteBits(code, bits.Length);
+
     bool TryWriteBytes(ref Span<byte> output)
     {
         if (output.IsEmpty) return false;
-        if (outputBuffer.IsEmpty) return true;
-        var source = outputBuffer.Span.TakeMax(output.Length, out var actualLength);
-        source.CopyTo(output);
-        output = output[actualLength..];
-        outputBuffer = outputBuffer[actualLength..];
-        return outputBuffer.IsEmpty;
+        if (outputBuf.IsEmpty) return true;
+        return outputBuf.TryWriteToMovingBuffer(ref output);
     }
 
-    private int WriteCodeForCurrentChain(Span<byte> destination, short nextEntry, byte nextByte)
+    private void WriteCodeForCurrentChain(short nextEntry, byte nextByte)
     {
-        var len = output.WriteBits(currentDictionaryEntry, bits.Length,
-            destination);
-        len += UpdateEncodingState(nextEntry, destination, len);
+        WriteBits(currentDictionaryEntry);
+        UpdateEncodingState(nextEntry);
         currentDictionaryEntry = nextByte;
-        return len;
     }
 
-    private int UpdateEncodingState(short nextEntry, in Span<byte> destination, int destPos) =>
-        HitMaximumDictionarySize(nextEntry) ? ResetDictionary(destination, destPos) : CheckBitLength(nextEntry);
-
-    private int CheckBitLength(short nextEntry)
+    private void UpdateEncodingState(short nextEntry)
     {
-        bits.CheckBitLength(nextEntry);
-        return 0;
+        if (HitMaximumDictionarySize(nextEntry))
+            ResetDictionary();
+        else
+            CheckBitLength(nextEntry);
     }
 
-    private int ResetDictionary(Span<byte> destination, int destPos)
+    private void CheckBitLength(short nextEntry) => bits.CheckBitLength(nextEntry);
+
+    private void ResetDictionary()
     {
-        var len = output.WriteBits(LzwConstants.ClearDictionaryCode, bits.Length,
-            destination[destPos..]);
+        WriteBits(LzwConstants.ClearDictionaryCode);
         dictionary.Reset();
         bits.SetBitLength(9);
-        return len;
     }
 
     private static bool HitMaximumDictionarySize(short nextEntry) =>

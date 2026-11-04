@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Melville.Parsing.StreamFilters;
+using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.Adapters;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 using System.Diagnostics;
-using Melville.Parsing.StreamFilters;
-using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
@@ -44,6 +46,8 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
 
     public int MinWriteSize => minBytes+1;
 
+#if true
+
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         var destPosition = 0;
@@ -61,7 +65,7 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
         }
         return (source.Position, destPosition, false);
     }
-        
+
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(ref SequenceReader<byte> source,
         in Span<byte> destination)
     {
@@ -70,6 +74,28 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
         return (source.Position, writer.FinishWrite(destination), true);
     }
 
+#else
+
+    public bool Convert(ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        var destPosition = 0;
+        while (destPosition + minBytes < destination.Length &&
+               reader.TryRead(bitsPerColor, ref source, out var readValue))
+        {
+            destPosition += writer.WriteBits(
+                ComputeFilterResult(readValue), bitsPerColor, destination[destPosition..]);
+            currentCol++;
+            if (currentCol >= groupsPerRow)
+            {
+                currentCol = 0;
+                buffer.AsSpan().Clear();
+            }
+        }
+        return false;
+    }
+
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
+#endif
     private int ComputeFilterResult(int readValue) => ComputeAdjustedValue(readValue, ref buffer[SelectBufferSlot()]);
 
     private int SelectBufferSlot() => currentCol % buffer.Length;
