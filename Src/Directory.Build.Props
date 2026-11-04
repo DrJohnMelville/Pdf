@@ -10,6 +10,7 @@
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Features>$(Features);runtime-async=on</Features>
+		<WarningsAsErrors>$(WarningsAsErrors);CA1305</WarningsAsErrors>
     </PropertyGroup>
 
 	<ItemGroup>
