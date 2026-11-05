@@ -3,6 +3,8 @@ using Melville.INPC;
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
+using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
@@ -12,7 +14,7 @@ internal abstract class Bitplane: BinaryBitmap
     {
     }
 
-    public abstract void ReadFrom(ref SequenceReader<byte> source);
+    public abstract void ReadFrom(ref SpanParsingBuffer source);
 }
 
 internal class MmrBitplane : Bitplane
@@ -21,7 +23,7 @@ internal class MmrBitplane : Bitplane
     {
     }
 
-    public override void ReadFrom(ref SequenceReader<byte> source)
+    public override void ReadFrom(ref SpanParsingBuffer source)
     {
         this.ReadMmrEncodedBitmap(ref source, true);
     }
@@ -36,7 +38,8 @@ internal abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
             new ArithmeticBitmapReaderContext(ComputeTemplate(template)), 0, this);
     }
 
-    public override void ReadFrom(ref SequenceReader<byte> source) => reader.Read(ref source);
+    public override void ReadFrom(ref SpanParsingBuffer source) => 
+        source.TempBridge((ref seq) => reader.Read(ref seq));
 
     private BitmapTemplate ComputeTemplate(GenericRegionTemplate template)
     {

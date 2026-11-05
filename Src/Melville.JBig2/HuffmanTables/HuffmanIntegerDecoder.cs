@@ -6,6 +6,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
+using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.HuffmanTables;
@@ -31,7 +32,7 @@ internal class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
         if (bitmapLength == 0)
             target.ReadUnencodedBitmap(ref source);
         else
-            target.ReadMmrEncodedBitmap(ref source, false);
+            source.TempBridge((ref spb) => target.ReadMmrEncodedBitmap(ref spb, false));
     }
 
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)

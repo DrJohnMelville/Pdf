@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
@@ -67,6 +68,7 @@ internal ref struct HalftoneSegmentReader
 
     private GrayScaleBitmap ReadGrayScaleBitmap(ref SequenceReader<byte> reader, Span<int> data)
     {
+
         var gsb = new GrayScaleBitmap(data, grayScaleWidth);
         var bitPlane = regionFlags.UseMMR ?
             CreateMmrBitplane():
@@ -75,7 +77,7 @@ internal ref struct HalftoneSegmentReader
         var bitsPerValue = IntLog.CeilingLog2Of((uint)dictionary.ExportedSymbols.Length);
         var bitValue = 1 << (bitsPerValue - 1);
         
-        bitPlane.ReadFrom(ref reader);
+        reader.TempBridge((ref spb) => bitPlane.ReadFrom(ref spb));
         gsb.CopyBinaryBitmap(bitPlane, bitValue);
   
         var priorBitValue = bitValue;
@@ -83,7 +85,7 @@ internal ref struct HalftoneSegmentReader
         
         for (; bitValue > 0; bitValue >>= 1, priorBitValue >>= 1)
         {
-            bitPlane.ReadFrom(ref reader);
+            reader.TempBridge((ref spb) => bitPlane.ReadFrom(ref spb));
             gsb.ProcessBinaryBitmap(bitPlane, bitValue, priorBitValue);
         }
 

@@ -6,6 +6,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.JBig2.SegmentParsers.GenericRegionParsers;
 
@@ -61,7 +62,7 @@ internal static class GenericRegionSegmentParser
     {
         if (flags.UseMmr)
         {
-            bitmap.ReadMmrEncodedBitmap(ref reader, false);
+            reader.TempBridge((ref spb) => bitmap.ReadMmrEncodedBitmap(ref spb, false));
         }
         else
         {

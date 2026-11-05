@@ -3,6 +3,7 @@ using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.JBig2.SegmentParsers;
 
@@ -36,7 +37,7 @@ internal static class PatternDictionarySegmentParser
     private static void ReadBitmap(SequenceReader<byte> reader, PatternDictionaryFlags flags, BinaryBitmap innerBitmap, byte cellWidth)
     {
         if (flags.UseMmr)
-            innerBitmap.ReadMmrEncodedBitmap(ref reader, false);
+            reader.TempBridge((ref spb) =>innerBitmap.ReadMmrEncodedBitmap(ref spb, false));
         else
             new ArithmeticGenericRegionDecodeProcedure(innerBitmap, new MQDecoder(), 
                     CreatePatternContext(flags, cellWidth), 0, DoNotSkip.Instance)

@@ -2,28 +2,24 @@
 using System.Buffers;
 using Melville.CCITT;
 using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
 internal static class MmrEncodedBitmapReader
 {
-#wanring code on the way out
-    [Obsolete("Make this use SpanParsingBuffer ")]
+
     public static void ReadMmrEncodedBitmap(
-        this BinaryBitmap bitmap, ref SequenceReader<byte> reader, bool requireTerminator)
+        this BinaryBitmap bitmap, ref SpanParsingBuffer reader, bool requireTerminator)
     {
         var (bits, _) = bitmap.ColumnLocation(0);
         var ccittType4Decoder = CreateMmrDecoder(bitmap);
-        reader.TempBridge((ref spb) => {
-            var s = bits.AsSpan();
-            ccittType4Decoder.Convert(ref spb, ref s);
-            if (requireTerminator)
-            {
-                ccittType4Decoder.RequireTerminator(ref spb);
-            }
-            return 0;
-        });
-
+        var s = bits.AsSpan();
+        ccittType4Decoder.Convert(ref reader, ref s);
+        if (requireTerminator)
+        {
+            ccittType4Decoder.RequireTerminator(ref reader);
+        }
     }
 
     private const int selectTwoDimensionalEncoding = -1;
