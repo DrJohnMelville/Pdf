@@ -1,7 +1,10 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.INPC;
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.BinaryBitmaps;
+using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.GenericRegionRefinements;
 
@@ -13,8 +16,16 @@ internal ref partial struct GenericRegionRefinementAlgorithm
     [FromConstructor]private readonly MQDecoder decoder;
     [FromConstructor] private readonly int ltpContext;
     private bool ltp = false;
-    
+
+    [Obsolete]
     public void Read(ref SequenceReader<byte> source)
+    {
+        var spb = new SpanParsingBuffer(source.UnreadSequence.ToArray());
+        Read(ref spb);
+        source.Advance(spb.RelativePosition);
+    }
+
+    public void Read(ref SpanParsingBuffer source)
     {
         var incrementalTemplate = template.ToIncrementalTemplate();
         for (int row = 0; row < target.Height; row++)
@@ -51,14 +62,14 @@ internal ref partial struct GenericRegionRefinementAlgorithm
 
     private bool GetRefBit(int row, int col) => reference.ContainsPixel(row, col) && reference[row, col];
 
-    private void TryReadLtpBit(ref SequenceReader<byte> source)
+    private void TryReadLtpBit(ref SpanParsingBuffer source)
     {
         if (ltpContext != 0 &&
             decoder.GetBit(ref source, ref template.ContextFor(ltpContext)) == 1)
             ltp = !ltp;
     }
 
-    private void DecodePixel(ref SequenceReader<byte> source, int contextNum,
+    private void DecodePixel(ref SpanParsingBuffer source, int contextNum,
         ref BitRowWriter bitRowWriter)
     {
         ref var context = ref template.ContextFor(contextNum);

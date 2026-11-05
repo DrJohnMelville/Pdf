@@ -49,6 +49,7 @@ internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecod
     public override void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         int typicalPredictionContext, scoped in RefinementTemplateSet refinementTemplate, 
         scoped ref SequenceReader<byte> source) =>
+
         new GenericRegionRefinementAlgorithm(destination, reference, refinementTemplate, State,
             typicalPredictionContext).Read(ref source);
 }
