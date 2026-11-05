@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
@@ -141,13 +142,13 @@ internal unsafe ref struct BitmapTemplateFactory
         return totalBitLen;
     }
 
-    public static BitmapTemplate ReadContext(ref SequenceReader<byte> source, GenericRegionTemplate template)
+    public static BitmapTemplate ReadContext(ref SpanParsingBuffer source, GenericRegionTemplate template)
     {
         var fact = new BitmapTemplateFactory(template);
         for (int i = 0; i < fact.ExpectedAdaptivePixels(); i++)
         {
-            var x = source.GetInt8BigEndian();
-            var y = source.GetInt8BigEndian();
+            var x = source.GetInt8();
+            var y = source.GetInt8();
             fact.AddPoint(y, x);
         }
 

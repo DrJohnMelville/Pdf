@@ -9,6 +9,7 @@ using Melville.JBig2.FileOrganization;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers;
 
@@ -23,10 +24,10 @@ internal readonly partial struct GenericRefinementRegionFlags
 internal readonly struct GenericRefinementRegionSegmentParser
 {
     public static GenericRefinementRegionSegment Parse(
-        SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)
+        SpanParsingBuffer reader, ReadOnlySpan<Segment> referencedSegments)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
-        var flags = new GenericRefinementRegionFlags(reader.GetUInt8BigEndian());
+        var flags = new GenericRefinementRegionFlags(reader.GetUInt8());
         var template = new RefinementTemplateSet(ref reader, flags.UseGrTemplate1);
 
         var bitmap = regionHead.CreateTargetBitmap();

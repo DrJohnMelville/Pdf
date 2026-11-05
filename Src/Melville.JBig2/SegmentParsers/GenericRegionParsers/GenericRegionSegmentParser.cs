@@ -7,6 +7,7 @@ using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
 using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.GenericRegionParsers;
 
@@ -35,10 +36,10 @@ internal readonly struct GenericRegionSegmentFlags
 
 internal static class GenericRegionSegmentParser
 {
-    public static GenericRegionSegment Parse(SequenceReader<byte> reader)
+    public static GenericRegionSegment Parse(SpanParsingBuffer reader)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
-        var flags = new GenericRegionSegmentFlags(reader.GetUInt8BigEndian());
+        var flags = new GenericRegionSegmentFlags(reader.GetUInt8());
 
         var bitmap = regionHead.CreateTargetBitmap();
         TryReadBitmap(reader, flags, bitmap);
@@ -47,7 +48,7 @@ internal static class GenericRegionSegmentParser
             regionHead, bitmap);
     }
 
-    private static void TryReadBitmap(SequenceReader<byte> reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
+    private static void TryReadBitmap(SpanParsingBuffer reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
     {
         try
         {
@@ -58,11 +59,11 @@ internal static class GenericRegionSegmentParser
         }
     }
 
-    private static void ReadBitmap(SequenceReader<byte> reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
+    private static void ReadBitmap(SpanParsingBuffer reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
     {
         if (flags.UseMmr)
         {
-            reader.TempBridge((ref spb) => bitmap.ReadMmrEncodedBitmap(ref spb, false));
+            bitmap.ReadMmrEncodedBitmap(ref reader, false);
         }
         else
         {
@@ -71,9 +72,8 @@ internal static class GenericRegionSegmentParser
                 bitmapTemplate);
 
             MQDecoder state = new MQDecoder();
-            reader.TempBridge((ref spb) =>
             new ArithmeticGenericRegionDecodeProcedure(bitmap, state, context, TpgdonContext(flags), DoNotSkip.Instance)
-                .Read(ref spb));
+                .Read(ref reader);
         }
     }
 

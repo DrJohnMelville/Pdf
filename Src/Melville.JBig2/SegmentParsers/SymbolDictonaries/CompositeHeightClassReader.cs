@@ -3,24 +3,25 @@ using System.Buffers;
 using System.Diagnostics;
 using Melville.INPC;
 using Melville.JBig2.BinaryBitmaps;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
 internal interface IHeightClassReaderStrategy
 {
-    void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height);
+    void ReadHeightClassBitmaps(ref SpanParsingBuffer source, ref SymbolParser parser, int height);
 }
 
 [StaticSingleton]
 internal partial class CompositeHeightClassReader: IHeightClassReaderStrategy
 {
-    public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
+    public void ReadHeightClassBitmaps(ref SpanParsingBuffer source, ref SymbolParser parser, int height)
     {
         var rowBitmap = ConstructCompositeBitmap(ref source, ref parser, height);
         parser.EncodedReader.ReadBitmap(ref source, rowBitmap);
     }
 
-    private unsafe BinaryBitmap ConstructCompositeBitmap(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
+    private unsafe BinaryBitmap ConstructCompositeBitmap(ref SpanParsingBuffer source, ref SymbolParser parser, int height)
     {
         int* widthPtr = stackalloc int[parser.BitmapsLeftToDecode()];
         Span<int> widths = new Span<int>(widthPtr, parser.BitmapsLeftToDecode());

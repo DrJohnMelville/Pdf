@@ -75,7 +75,7 @@ internal readonly struct SegmentReader
         var reader2 = new SpanParsingBuffer(data.ToArray());
         return Header.SegmentType switch
         {
-            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
+            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader2, referencedSegments).Parse(),
             SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader2),
 
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(Header, ref reader),
@@ -85,16 +85,16 @@ internal readonly struct SegmentReader
 
             SegmentType.ImmediateLosslessTextRegion or SegmentType.ImmediateTextRegion or 
                 SegmentType.IntermediateTextRegion=> 
-                TextRegionSegmentParser.Parse(reader, referencedSegments),
+                TextRegionSegmentParser.Parse(reader2, referencedSegments),
             SegmentType.ImmediateLosslessGenericRegion or SegmentType.ImmediateGenericRegion
                 or SegmentType.IntermediateGenericRegion=> 
-                GenericRegionSegmentParser.Parse(reader),
+                GenericRegionSegmentParser.Parse(reader2),
             SegmentType.ImmediateLosslessHalftoneRegion or SegmentType.ImmediateHalftoneRegion
                 or SegmentType.IntermediateHalftoneRegion=> 
                 HalftoneSegmentParser.Parse(reader2, referencedSegments),
             SegmentType.ImmediateGenericRefinementRegion or SegmentType.ImmediateLosslessGenericRefinementRegion
                 or SegmentType.IntermediateGenericRefinementRegion =>
-                GenericRefinementRegionSegmentParser.Parse(reader, referencedSegments),
+                GenericRefinementRegionSegmentParser.Parse(reader2, referencedSegments),
             SegmentType.Extension => new ExtensionSegment(SegmentType.Extension),
             _ => throw new InvalidDataException("Unknown JBig2 Segment: " + Header.SegmentType)
         };

@@ -5,6 +5,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.Segments;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
@@ -25,7 +26,7 @@ internal ref partial struct SymbolWriter
     private int firstS = 0;
     private int curS = 0;
     
-    public void Decode(ref SequenceReader<byte> source)
+    public void Decode(ref SpanParsingBuffer source)
     {
         var deltaT = integerReader.DeltaT(ref source) * stripSize;
         strIpT = -deltaT;
@@ -33,26 +34,26 @@ internal ref partial struct SymbolWriter
     }
     
     
-    private void DecodeStrip(ref SequenceReader<byte> source)
+    private void DecodeStrip(ref SpanParsingBuffer source)
     {
         ReadStripLocation(ref source);
         ReadFirstSymbol(ref source);
         ReadSubsequentSymbols(ref source);
     }
 
-    private void ReadStripLocation(ref SequenceReader<byte> source)
+    private void ReadStripLocation(ref SpanParsingBuffer source)
     {
         strIpT += integerReader.DeltaT(ref source) * stripSize;
         firstS += integerReader.FirstS(ref source) ;
     }
 
-    private void ReadFirstSymbol(ref SequenceReader<byte> source)
+    private void ReadFirstSymbol(ref SpanParsingBuffer source)
     {
         curS = firstS;
         DecodeSymbol(ref source);
     }
 
-    private void ReadSubsequentSymbols(ref SequenceReader<byte> source)
+    private void ReadSubsequentSymbols(ref SpanParsingBuffer source)
     {
         while (integerReader.DeltaS(ref source) is { } deltaS and < int.MaxValue)
         {
@@ -61,7 +62,7 @@ internal ref partial struct SymbolWriter
         }
     } 
 
-    private void DecodeSymbol(ref SequenceReader<byte> source)
+    private void DecodeSymbol(ref SpanParsingBuffer source)
     { 
         int charT = ReadCharacterDeltaT(ref source) + strIpT;
         var symbolId = integerReader.SymbolId(ref source);
@@ -70,7 +71,7 @@ internal ref partial struct SymbolWriter
         remainingSymbolsToDecode--;
     }
 
-    private void CopySourceBitmap(ref SequenceReader<byte> source, int charT, IBinaryBitmap symbol)
+    private void CopySourceBitmap(ref SpanParsingBuffer source, int charT, IBinaryBitmap symbol)
     {
         if (useRefinement && integerReader.RIBit(ref source) == 1)
             ReadRefinementBitmap(charT, symbol, ref source);
@@ -78,7 +79,7 @@ internal ref partial struct SymbolWriter
             CopyUnmodifiedBitmap(charT, symbol);
     }
 
-    private void ReadRefinementBitmap(int charT, IBinaryBitmap symbol, ref SequenceReader<byte> source)
+    private void ReadRefinementBitmap(int charT, IBinaryBitmap symbol, ref SpanParsingBuffer source)
     {
         //section 6.4.11 in the spec
         var rdw = integerReader.RefinementDeltaWidth(ref source);
@@ -96,6 +97,6 @@ internal ref partial struct SymbolWriter
     private void CopyUnmodifiedBitmap(int charT, IBinaryBitmap symbol) => 
         target.WriteBitmap(charT, ref curS, symbol);
 
-    private int ReadCharacterDeltaT(ref SequenceReader<byte> source) => 
+    private int ReadCharacterDeltaT(ref SpanParsingBuffer source) => 
         stripSize == 1?0: integerReader.TCoordinate(ref source);
 }

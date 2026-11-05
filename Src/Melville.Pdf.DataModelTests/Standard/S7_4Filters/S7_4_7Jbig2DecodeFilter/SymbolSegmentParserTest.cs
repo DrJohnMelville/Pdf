@@ -12,7 +12,7 @@ public class SymbolSegmentParserTest
 {
     private static SymbolDictionarySegment ParseSymbolDictionary(string data, params Segment[] referredTo)
     {
-        return new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromHex())),
+        return new SymbolDictionaryParser(new (data.BitsFromHex()),
             referredTo.AsSpan()).Parse();
     }
 

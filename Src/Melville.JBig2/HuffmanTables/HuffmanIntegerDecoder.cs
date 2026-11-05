@@ -8,6 +8,7 @@ using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.HuffmanTables;
 
@@ -17,22 +18,22 @@ internal class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     {
     }
     
-    protected override int Read(ref SequenceReader<byte> source, HuffmanLine[] context) => 
+    protected override int Read(ref SpanParsingBuffer source, HuffmanLine[] context) => 
         source.ReadHuffmanInt(State, context.AsSpan());
 
-    protected override int ReadSymbol(ref SequenceReader<byte> source, HuffmanLine[] context) =>
+    protected override int ReadSymbol(ref SpanParsingBuffer source, HuffmanLine[] context) =>
         Read(ref source, context);
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
     
-    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target)
+    public override void ReadBitmap(ref SpanParsingBuffer source, BinaryBitmap target)
     {
         var bitmapLength = BitmapSize(ref source);
         State.DiscardPartialByte();
         if (bitmapLength == 0)
             target.ReadUnencodedBitmap(ref source);
         else
-            source.TempBridge((ref spb) => target.ReadMmrEncodedBitmap(ref spb, false));
+            target.ReadMmrEncodedBitmap(ref source, false);
     }
 
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
@@ -55,7 +56,7 @@ internal class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     public override void InvokeSymbolRefinement(
         IBinaryBitmap destination, IBinaryBitmap reference,
         int predictionContext, scoped in RefinementTemplateSet refinementTemplate,
-        scoped ref SequenceReader<byte> source)
+        scoped ref SpanParsingBuffer source)
     {
         var datalen = BitmapSize(ref source);
         State.DiscardPartialByte();

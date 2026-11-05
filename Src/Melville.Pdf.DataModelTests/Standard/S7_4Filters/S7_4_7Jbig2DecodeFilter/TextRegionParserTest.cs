@@ -7,6 +7,7 @@ using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -15,18 +16,8 @@ public class TextRegionParserTest
 {
     private static TextRegionSegment Parse(byte[] bits)
     {
-        var reader = ReaderFromBits(bits);
+        var reader = new SpanParsingBuffer(bits);
         return TextRegionSegmentParser.Parse(reader,  ReferredDictionary().AsSpan());
-    }
-
-    private static SequenceReader<byte> ReaderFromBits(byte[] bits)
-    {
-        var reader = new SequenceReader<byte>(
-            new ReadOnlySequence<byte>(
-                bits
-            )
-        );
-        return reader;
     }
 
     private static Segment[] ReferredDictionary()
@@ -100,7 +91,8 @@ B....B..B....B
 .BBBBB...BBBB.".AsBinaryBitmap(6, 14)
         });
 
-        var tr = TextRegionSegmentParser.Parse(ReaderFromBits(data.BitsFromHex()), new Segment[]{importedDict});
+        var tr = TextRegionSegmentParser.Parse(
+            new SpanParsingBuffer(data.BitsFromHex()), new Segment[]{importedDict});
         Assert.Equal(@"
 .BBBB....BBBB...BBBB....BBBB....BBBB.
 B....B.......B..B...B.......B..B....B
@@ -125,11 +117,11 @@ B....B..B....B..BBBB...B....B..B....B
         Assert.Equal(CombinationOperator.And, region.CombinationOperator);
     }
 
-    private static SequenceReader<byte> ReaderFromHexString(string data) =>
-        new(new ReadOnlySequence<byte>(data.BitsFromHex()));
+    private static SpanParsingBuffer ReaderFromHexString(string data) =>
+        new(data.BitsFromHex());
 
-    private static SequenceReader<byte> ReaderFromBinaryString(string data) =>
-        new(new ReadOnlySequence<byte>(data.BitsFromBinary()));
+    private static SpanParsingBuffer ReaderFromBinaryString(string data) =>
+        new(data.BitsFromBinary());
 
     [Fact]
     public unsafe void ParseSymbolDictionaryTest()
@@ -179,7 +171,7 @@ B....B..B....B..BBBB...B....B..B....B
     {
         int leadingBits = bitData << (16 - bits);
         byte[] data = { (byte)(leadingBits >> 8), (byte)leadingBits };
-        var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(data));
+        var reader = new SpanParsingBuffer(data);
         Assert.Equal(result, reader.ReadHuffmanInt(new BitReader(), destination));
     }
 }

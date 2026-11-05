@@ -4,6 +4,7 @@ using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
@@ -18,18 +19,16 @@ internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecod
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
 
-    protected override int Read(ref SequenceReader<byte> source, ContextStateDict context) =>
-        source.TempBridge((ref spb) =>
-        new TypicalIntegerDecoder(context, State).Read(ref spb));
+    protected override int Read(ref SpanParsingBuffer source, ContextStateDict context) =>
+        new TypicalIntegerDecoder(context, State).Read(ref source);
         
 
-    protected override int ReadSymbol(ref SequenceReader<byte> source, ContextStateDict context) =>
-        source.TempBridge((ref spb) =>
-        new SymbolIntegerDecoder(State, context).Read(ref spb));
+    protected override int ReadSymbol(ref SpanParsingBuffer source, ContextStateDict context) =>
+        new SymbolIntegerDecoder(State, context).Read(ref source);
 
-    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) =>
-        source.TempBridge((ref spb) =>
-        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, DoNotSkip.Instance).Read(ref spb));
+    public override void ReadBitmap(ref SpanParsingBuffer source, BinaryBitmap target) =>
+        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, DoNotSkip.Instance)
+        .Read(ref source);
 
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
     {
@@ -48,7 +47,7 @@ internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecod
 
     public override void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         int typicalPredictionContext, scoped in RefinementTemplateSet refinementTemplate, 
-        scoped ref SequenceReader<byte> source) =>
+        scoped ref SpanParsingBuffer source) =>
 
         new GenericRegionRefinementAlgorithm(destination, reference, refinementTemplate, State,
             typicalPredictionContext).Read(ref source);

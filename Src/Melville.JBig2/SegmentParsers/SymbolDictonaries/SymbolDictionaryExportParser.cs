@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.Segments;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
@@ -17,7 +18,7 @@ internal readonly struct SymbolDictionaryExportParser
         this.exportedSymbols = exportedSymbols;
     }
 
-    public IBinaryBitmap[] ParseExportedArray(ref SequenceReader<byte> reader, IEncodedReader intReader,
+    public IBinaryBitmap[] ParseExportedArray(ref SpanParsingBuffer reader, IEncodedReader intReader,
         in ReadOnlySpan<IBinaryBitmap> newBitmaps, in ReadOnlySpan<Segment> importedSegs)
     {
         var currentIndex = 0;

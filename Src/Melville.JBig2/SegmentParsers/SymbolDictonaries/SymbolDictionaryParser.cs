@@ -8,16 +8,17 @@ using Melville.JBig2.HuffmanTables;
 using Melville.JBig2.Segments;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
 internal ref struct SymbolDictionaryParser
 {
-    private SequenceReader<byte> reader;
+    private SpanParsingBuffer reader;
     private ReadOnlySpan<Segment> referencedSegments;
     private readonly SymbolDictionaryFlags flags;
 
-    public SymbolDictionaryParser(in SequenceReader<byte> reader, in ReadOnlySpan<Segment> referencedSegments)
+    public SymbolDictionaryParser(in SpanParsingBuffer reader, in ReadOnlySpan<Segment> referencedSegments)
     {
         this.reader = reader;
         this.referencedSegments = referencedSegments;

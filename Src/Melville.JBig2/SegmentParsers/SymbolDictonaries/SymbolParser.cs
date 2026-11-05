@@ -4,6 +4,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.Segments;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
@@ -37,7 +38,7 @@ internal ref struct SymbolParser
     private static IIndividualBitmapReader PickReader(bool useRefinement) => 
         useRefinement ? RefinementBitmapReader.Instance : UnrefinedBitmapReader.Instance;
 
-    public void ReadSymbols(ref SequenceReader<byte> reader)
+    public void ReadSymbols(ref SpanParsingBuffer reader)
     {
         do
         {
@@ -45,7 +46,7 @@ internal ref struct SymbolParser
         } while (bitmapsDecoded < SymbolsBeingDecoded.Length);
     }
 
-    private void ReadHeightClass(ref SequenceReader<byte> reader)
+    private void ReadHeightClass(ref SpanParsingBuffer reader)
     {
         height += EncodedReader.DeltaHeight(ref reader);
         heightClassReader.ReadHeightClassBitmaps(ref reader, ref this, height);
@@ -55,7 +56,7 @@ internal ref struct SymbolParser
     public int BitmapsLeftToDecode() => SymbolsBeingDecoded.Length - bitmapsDecoded;
     public void AddBitmap(IBinaryBitmap bitmap) => SymbolsBeingDecoded.Span[bitmapsDecoded++] = bitmap;
 
-    public bool TryGetWidth(ref SequenceReader<byte> source, out int value) =>
+    public bool TryGetWidth(ref SpanParsingBuffer source, out int value) =>
         !EncodedReader.IsOutOfBand(value = EncodedReader.DeltaWidth(ref source));
 
     public IBinaryBitmap ReferencedSymbol(int symbolId) => 

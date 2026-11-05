@@ -2,25 +2,26 @@
 using System.Buffers;
 using Melville.JBig2.HuffmanTables;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
 internal ref struct RunCodeInterpreter
 {
-    public SequenceReader<byte> source;
+    public SpanParsingBuffer source;
     private BitReader reader;
     private readonly ReadOnlySpan<HuffmanLine> huffmanTable;
     private int repeatedResult = 0;
     private int remainingRepeats = 0;
 
-    public RunCodeInterpreter(in SequenceReader<byte> source, BitReader reader, ReadOnlySpan<HuffmanLine> huffmanTable)
+    public RunCodeInterpreter(in SpanParsingBuffer source, BitReader reader, ReadOnlySpan<HuffmanLine> huffmanTable)
     {
         this.source = source;
         this.reader = reader;
         this.huffmanTable = huffmanTable;
     }
 
-    public ReadOnlySequence<byte> UnexaminedSequence() => source.UnreadSequence;
+    public long RelativePosition => source.RelativePosition;
 
     public int GetNextCode() => HasRepeatedResultPending() ? 
         ReturnRepeatedResult() : 

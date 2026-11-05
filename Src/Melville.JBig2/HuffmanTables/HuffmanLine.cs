@@ -1,7 +1,9 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Linq;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.HuffmanTables;
 
@@ -16,7 +18,11 @@ internal readonly struct HuffmanCode
         PrefixLength = prefixLength;
     }
 
-    public HuffmanCode AddBitToPattern(ref SequenceReader<byte> reader, BitReader bitState) => 
+    [Obsolete]
+    public HuffmanCode AddBitToPattern(ref SequenceReader<byte> reader, BitReader bitState) =>
+        new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
+
+    public HuffmanCode AddBitToPattern(ref SpanParsingBuffer reader, BitReader bitState) =>
         new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
 
     public bool IsEqualTo(in HuffmanCode other) => PrefixLength == other.PrefixLength && prefixData == other.prefixData;
@@ -43,7 +49,10 @@ internal readonly struct HuffmanLine
         return code.IsEqualTo(other);
     }
 
+    [Obsolete]
     public int ReadNum(ref SequenceReader<byte> source, BitReader bitState) =>
+        AdjustNumber(bitState.ForceRead(rangeLength, ref source));
+    public int ReadNum(ref SpanParsingBuffer source, BitReader bitState) =>
         AdjustNumber(bitState.ForceRead(rangeLength, ref source));
     private int AdjustNumber(int raw) => rangeOffset + (rangeFactor * raw);
     public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;

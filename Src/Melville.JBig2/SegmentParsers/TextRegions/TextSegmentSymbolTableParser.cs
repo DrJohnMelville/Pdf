@@ -2,17 +2,18 @@
 using System.Buffers;
 using Melville.JBig2.HuffmanTables;
 using Melville.Parsing.VariableBitEncoding;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
 internal ref struct TextSegmentSymbolTableParser
 {
-    public static void Parse(ref SequenceReader<byte> reader, in Span<HuffmanLine> table)
+    public static void Parse(ref SpanParsingBuffer reader, in Span<HuffmanLine> table)
     { 
         Span<int> runCodes = stackalloc int[35];
         for (int i = 0; i < 17; i++)
         {
-            reader.TryRead(out var datum);
+            reader.TryGetUInt8(out var datum);
             runCodes[2 * i] = datum >> 4;
             runCodes[2 * i + 1] = datum & 7;
         }
@@ -29,7 +30,7 @@ internal ref struct TextSegmentSymbolTableParser
             symbolCodeLengths[i] = refCodeReader.GetNextCode();
         }
 
-        reader = new SequenceReader<byte>(refCodeReader.UnexaminedSequence());
+        reader.AdvanceToRelativePosition(refCodeReader.RelativePosition);
         
         HuffmanTableFactory.FromIntSpan(symbolCodeLengths, table);
     }

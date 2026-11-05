@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.GenericRegionRefinements;
 
@@ -11,7 +12,7 @@ internal readonly struct RefinementTemplateSet
     private readonly ContextBitRun[] runs;
     private readonly ContextStateDict contextDictionary;
 
-    public RefinementTemplateSet(ref SequenceReader<byte> source, bool useTemplate1)
+    public RefinementTemplateSet(ref SpanParsingBuffer source, bool useTemplate1)
     {
         var referenceFactory = new BitmapTemplateFactory(
             useTemplate1 ? GenericRegionTemplate.RefinementReference1 : GenericRegionTemplate.RefinementReference0);
@@ -33,13 +34,13 @@ internal readonly struct RefinementTemplateSet
     }
 
     private static void ReadAdaptivePixels(
-        ref SequenceReader<byte> source, ref BitmapTemplateFactory destinationFactory,
+        ref SpanParsingBuffer source, ref BitmapTemplateFactory destinationFactory,
         ref BitmapTemplateFactory referenceFactory)
     {
-        var atX1 = source.GetInt8BigEndian();
-        var atY1 = source.GetInt8BigEndian();
-        var atX2 = source.GetInt8BigEndian();
-        var atY2 = source.GetInt8BigEndian();
+        var atX1 = source.GetInt8();
+        var atY1 = source.GetInt8();
+        var atX2 = source.GetInt8();
+        var atY2 = source.GetInt8();
         destinationFactory.AddPoint(atY1, atX1);
         referenceFactory.AddPoint(atY2, atX2);
     }

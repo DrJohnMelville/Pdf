@@ -11,12 +11,13 @@ using Melville.JBig2.HuffmanTables;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
 internal ref struct TextRegionSegmentParser
 {
-    public static TextRegionSegment Parse(SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)
+    public static TextRegionSegment Parse(SpanParsingBuffer reader, ReadOnlySpan<Segment> referencedSegments)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
         var regionFlags = new TextRegionFlags(reader.GetUInt16BigEndian());
@@ -26,13 +27,13 @@ internal ref struct TextRegionSegmentParser
         return new TextRegionSegment(SegmentType.IntermediateTextRegion, regionHead, parser.CreateBitmap());
     }
 
-    private SequenceReader<byte> reader;
+    private SpanParsingBuffer reader;
     private readonly RegionHeader regionHead;
     private readonly TextRegionFlags regionFlags;
     private readonly ReadOnlySpan<Segment> referencedSegments;
 
     private TextRegionSegmentParser(
-        SequenceReader<byte> reader, RegionHeader regionHead, TextRegionFlags regionFlags,
+        SpanParsingBuffer reader, RegionHeader regionHead, TextRegionFlags regionFlags,
         ReadOnlySpan<Segment> referencedSegments)
     {
         this.reader = reader;

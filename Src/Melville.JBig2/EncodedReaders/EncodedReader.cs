@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.INPC;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.GenericRegionRefinements;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.EncodedReaders;
 
@@ -11,76 +12,76 @@ internal interface IEncodedReader
     /// <summary>
     ///  In Spec: IAAI
     /// </summary>
-    int AggregationSymbolInstances(ref SequenceReader<byte> source);
+    int AggregationSymbolInstances(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: SBHUFFBMSIZE
     /// </summary>
-    int BitmapSize(ref SequenceReader<byte> source);
+    int BitmapSize(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IADH
     /// </summary>
-    int DeltaHeight(ref SequenceReader<byte> source);
+    int DeltaHeight(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IADS OR SBHUFFDS
     /// </summary>
-    int DeltaS(ref SequenceReader<byte> source);
+    int DeltaS(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IADT or SBHUFFDT
     /// </summary>
-    int DeltaT(ref SequenceReader<byte> source);
+    int DeltaT(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IADW
     /// </summary>
-    int DeltaWidth(ref SequenceReader<byte> source);
+    int DeltaWidth(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IAEX or Table B1
     /// </summary>
-    int ExportFlags(ref SequenceReader<byte> source);
+    int ExportFlags(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IAFS OR SBHUFFS
     /// </summary>
-    int FirstS(ref SequenceReader<byte> source);
+    int FirstS(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IAID or SBSYMCODES
     /// </summary>
-    int SymbolId(ref SequenceReader<byte> source);
+    int SymbolId(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IAIT or ReadDirectFromBitStream
     /// </summary>
-    int TCoordinate(ref SequenceReader<byte> source);
+    int TCoordinate(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IARDH SBHUFFRDH
     /// </summary>
-    int RefinementDeltaHeight(ref SequenceReader<byte> source);
+    int RefinementDeltaHeight(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IARDW or SBHUFFRDW
     /// </summary>
-    int RefinementDeltaWidth(ref SequenceReader<byte> source);
+    int RefinementDeltaWidth(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IARDX or SBHUFFRDX
     /// </summary>
-    int RefinementX(ref SequenceReader<byte> source);
+    int RefinementX(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IARDY or SBHUFFRDY
     /// </summary>
-    int RefinementY(ref SequenceReader<byte> source);
+    int RefinementY(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec:  SBHUFFRSIZE
     /// </summary>
-    int RefinementSize(ref SequenceReader<byte> source);
+    int RefinementSize(ref SpanParsingBuffer source);
     /// <summary>
     ///  In Spec: IARI
     /// </summary>
-    int RIBit(ref SequenceReader<byte> source);
+    int RIBit(ref SpanParsingBuffer source);
 
     bool IsOutOfBand(int item);
 
-    void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
+    void ReadBitmap(ref SpanParsingBuffer source, BinaryBitmap target);
 
     public void PrepareForRefinementSymbolDictionary(uint totalSymbols);
     void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         int predictionContext,
-        scoped in RefinementTemplateSet refinementTemplate, scoped ref SequenceReader<byte> source);
+        scoped in RefinementTemplateSet refinementTemplate, scoped ref SpanParsingBuffer source);
 }
 
 [MacroItem("AggregationSymbolInstances")]
@@ -99,7 +100,7 @@ internal interface IEncodedReader
 [MacroItem("RefinementSize")]
 [MacroItem("RIBit")]
 [MacroCode("public TContext? ~0~Context {protected get; set;}")]
-[MacroCode("public int ~0~(ref SequenceReader<byte> source) => Read(ref source, VerifyExists(~0~Context));")]
+[MacroCode("public int ~0~(ref SpanParsingBuffer source) => Read(ref source, VerifyExists(~0~Context));")]
 internal abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 {
     protected TState State { get; }
@@ -110,19 +111,19 @@ internal abstract partial class EncodedReader<TContext, TState>: IEncodedReader
     }
 
     public TContext? SymbolIdContext {protected get; set;}
-    public int SymbolId(ref SequenceReader<byte> source) => 
+    public int SymbolId(ref SpanParsingBuffer source) => 
         ReadSymbol(ref source, VerifyExists(SymbolIdContext));
     
     protected TContext VerifyExists(TContext? context) =>
         context ??throw new InvalidOperationException($"No context defined.");
 
     public abstract bool IsOutOfBand(int item);
-    protected abstract int Read(ref SequenceReader<byte> source, TContext context);
-    protected abstract int ReadSymbol(ref SequenceReader<byte> source, TContext context);
-    public abstract void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
+    protected abstract int Read(ref SpanParsingBuffer source, TContext context);
+    protected abstract int ReadSymbol(ref SpanParsingBuffer source, TContext context);
+    public abstract void ReadBitmap(ref SpanParsingBuffer source, BinaryBitmap target);
     public abstract void PrepareForRefinementSymbolDictionary(uint totalSymbols);
 
     public abstract void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference, 
         int predictionContext,
-        scoped in RefinementTemplateSet refinementTemplate, scoped ref SequenceReader<byte> source);
+        scoped in RefinementTemplateSet refinementTemplate, scoped ref SpanParsingBuffer source);
 }

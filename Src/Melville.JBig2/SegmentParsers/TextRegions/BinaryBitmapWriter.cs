@@ -4,6 +4,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.Segments;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
@@ -49,7 +50,7 @@ internal readonly struct BinaryBitmapWriter
 
     public void RefineBitsFrom(int t, scoped ref int s, IBinaryBitmap referenceBitmap,
         int refY, int refX, int refHeight, int refWidth, IEncodedReader reader,
-        RefinementTemplateSet refinementTemplateSet, scoped ref SequenceReader<byte> source)
+        RefinementTemplateSet refinementTemplateSet, scoped ref SpanParsingBuffer source)
     {
         var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, refHeight, refWidth), refHeight, refWidth);
         reader.InvokeSymbolRefinement(

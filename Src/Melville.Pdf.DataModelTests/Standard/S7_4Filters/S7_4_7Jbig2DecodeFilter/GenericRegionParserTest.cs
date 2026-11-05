@@ -3,6 +3,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.SegmentParsers.GenericRegionParsers;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -11,11 +12,7 @@ public class GenericRegionParserTest
 {
     private static GenericRegionSegment Parse(byte[] bits)
     {
-        var reader = new SequenceReader<byte>(
-            new ReadOnlySequence<byte>(
-                bits
-            )
-        );
+        var reader = new SpanParsingBuffer(bits);
         return GenericRegionSegmentParser.Parse(reader);
     }
 
