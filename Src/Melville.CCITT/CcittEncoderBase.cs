@@ -10,7 +10,7 @@ namespace Melville.CCITT;
 internal abstract class CcittEncoderBase : IStreamFilterDefinition
 {
     protected readonly CcittParameters Parameters;
-    private readonly BitWriter bitWriter = new();
+    private readonly BitWritingBuffer bitWriter = new();
     private readonly BitReader bitReader = new();
     private LinePair lines;
     private int currentReadPos;
@@ -30,8 +30,8 @@ internal abstract class CcittEncoderBase : IStreamFilterDefinition
     {
         if (input.CurrentLength == 0 && doneReading)
         {
-            if (bitWriter.FinishWrite(output) is > 0 and var delta)
-                output = output[delta..];
+            bitWriter.AdvanceToWholeByte();
+            bitWriter.TryWriteToMovingBuffer(ref output);
             return true;
         }
 

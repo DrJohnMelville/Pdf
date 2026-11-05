@@ -11,6 +11,19 @@ public class BitWritingBuffer
     private int bitsUsed = 0;
 
     /// <summary>
+    /// Get a memento of the state of this object.
+    /// </summary>
+    /// <returns>A tuple with the current state of the object.</returns>
+    public (UInt128, int) GetState() => (buffer, bitsUsed);
+
+    /// <summary>
+    /// Restore the object from a memento created by GetState
+    /// </summary>
+    /// <param name="state">The memento to restore from.</param>
+    public void SetState((UInt128, int) state) => (buffer, bitsUsed) = state;
+
+
+    /// <summary>
     /// Add the bottom "bits" bits of "data" to the buffer to be written out.0
     /// </summary>
     /// <param name="data">Data is in the low order bits of this parameter</param>

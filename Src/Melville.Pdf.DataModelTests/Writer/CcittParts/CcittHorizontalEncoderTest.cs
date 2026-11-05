@@ -142,12 +142,12 @@ public class CcittHorizontalEncoderTest
     public void Encode(string result, int length)
     {
         var buffer = new byte[10];
-        var bw = new BitWriter();
+        var bw = new BitWritingBuffer();
         var writer = new BitTarget(buffer.AsSpan(), bw);
         HorizontalSpanEncoder.Write(ref writer, true, length, length);
-        var wl = writer.BytesWritten + bw.FinishWrite(buffer.AsSpan(writer.BytesWritten));
+        writer.FinishWrite();
         Assert.Equal(0, StringToByteArray.CreateArray(result).AsSpan()
-            .SequenceCompareTo(buffer.AsSpan(0,wl)));
+            .SequenceCompareTo(writer.WrittenSpan()));
         
     }
 }

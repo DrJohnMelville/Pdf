@@ -5,10 +5,10 @@ namespace Melville.CCITT;
 
 internal ref struct CcittBitWriter
 {
-    private readonly BitWriter writer;
+    private readonly BitWritingBuffer writer;
     private BitTarget target;
 
-    public CcittBitWriter(Span<byte> destination, BitWriter writer)
+    public CcittBitWriter(Span<byte> destination, BitWritingBuffer writer)
     {
         this.writer = writer;
         target = new BitTarget(destination, writer);

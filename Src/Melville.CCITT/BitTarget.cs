@@ -5,29 +5,30 @@ namespace Melville.CCITT;
 internal ref struct BitTarget
 {
     private readonly Span<byte> target;
-    private readonly BitWriter writer;
-    public int BytesWritten { get; set; }
+    private Span<byte> unwritten;
+    private readonly BitWritingBuffer writer;
+    public int BytesWritten => target.Length - unwritten.Length;
 
-    public BitTarget(Span<byte> target, BitWriter writer)
+    public BitTarget(Span<byte> target, BitWritingBuffer writer)
     {
         this.target = target;
+        unwritten = target;
         this.writer = writer;
-        BytesWritten = 0;
     }
 
     public bool TryWriteBits(uint data, int bits)
     {
-        if (BytesWritten + BytesNeeded(bits) >= target.Length) return false;
-        BytesWritten += writer.WriteBits(data, bits, UnwrittenSpan());
-        return true;
+        writer.WriteBits(data, bits);
+        return writer.TryWriteToMovingBuffer(ref unwritten);
     }
 
-    private Span<byte> UnwrittenSpan() => target[BytesWritten..];
+    public int BytesRemaining() => unwritten.Length;
 
-    private int BytesNeeded(int bits) => (7+bits)/8;
-    public int BytesRemaining() => target.Length - BytesWritten;
-
-    public void FinishWrite() => BytesWritten += writer.FinishWrite(UnwrittenSpan());
+    public void FinishWrite() 
+    {
+        writer.AdvanceToWholeByte();
+        writer.TryWriteToMovingBuffer(ref unwritten);
+    }
 
     public Span<byte> WrittenSpan() => target[..BytesWritten];
 }

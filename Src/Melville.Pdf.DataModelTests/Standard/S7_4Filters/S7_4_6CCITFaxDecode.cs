@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 public ref struct CCITEncodingTestBuilder
 {
-    private CcittBitWriter writer = new((Span<byte>)new byte[100], (BitWriter)new BitWriter());
+    private CcittBitWriter writer = new((Span<byte>)new byte[100], new BitWritingBuffer());
 
     public CCITEncodingTestBuilder()
     {
