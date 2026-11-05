@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using Melville.Hacks;
+using Melville.Hacks.Reflection;
 
 namespace Melville.Parsing.VariableBitEncoding;
 
@@ -9,7 +10,7 @@ namespace Melville.Parsing.VariableBitEncoding;
 public readonly struct BitStreamWriter
 {
     private readonly PipeWriter pipe;
-    private readonly BitWriter writer;
+    private readonly BitWritingBuffer writer = new();
     private readonly int bits;
 
     /// <summary>
@@ -21,7 +22,6 @@ public readonly struct BitStreamWriter
     {
         this.bits = bits;
         pipe = PipeWriter.Create(destination);
-        writer = new BitWriter();
     }
 
     /// <summary>
@@ -30,17 +30,25 @@ public readonly struct BitStreamWriter
     /// <param name="datum">The number to write.</param>
     public void Write(uint datum)
     {
-        var span = pipe.GetSpan(5);
-        pipe.Advance(writer.WriteBits(datum, bits, span));
+        writer.WriteBits(datum, bits);
+        AddToPipe();
     }
-        
+
+    private void AddToPipe()
+    {
+        var span = pipe.GetSpan(5);
+        var end = span;
+        writer.TryWriteToMovingBuffer(ref end);
+        pipe.Advance(span.Length - end.Length);
+    }
+
     /// <summary>
     /// Flush the remaining bits to the output stream
     /// </summary>
     public ValueTask FinishAsync()
     {
-        var span = pipe.GetSpan(1);
-        pipe.Advance(writer.FinishWrite(span));
+        writer.AdvanceToWholeByte();
+        AddToPipe();
         return pipe.FlushAsync().AsValueTask();
     }
 }

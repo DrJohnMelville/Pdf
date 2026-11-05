@@ -2,6 +2,7 @@
 
 namespace Melville.Parsing.VariableBitEncoding;
 
+#warning get rid of when able
 /// <summary>
 /// Write numbers with a variable number of bits.
 /// </summary>

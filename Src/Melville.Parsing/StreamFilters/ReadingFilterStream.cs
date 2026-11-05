@@ -45,6 +45,7 @@ public class ReadingFilterStream : DefaultBaseStream
         Close();
         return ValueTask.CompletedTask;
     }
+    /// <inheritdoc/>
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
