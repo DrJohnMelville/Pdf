@@ -57,14 +57,14 @@ internal class ObjectStreamParser(
 
             for (int i = 0; i < count; i++)
             {
-                PdfIndirectObject value = await ReadValueAsnc(rootObjectParser, i).CA();
+                PdfIndirectObject value = await ReadValueAsync(rootObjectParser, i).CA();
                 if (!value.TryGetEmbeddedDirectValue(out var directValue))
                     throw new PdfParseException("Cannot have a bare reference in an object stream");
                 outer.ReportItem(ObjectNumber(i), directValue);
             }
         }
 
-        private async Task<PdfIndirectObject> ReadValueAsnc(RootObjectParser rootObjectParser, int i)
+        private async Task<PdfIndirectObject> ReadValueAsync(RootObjectParser rootObjectParser, int i)
         {
             limiter.LengthLimit = initialOffset + numbers[LengthIndex(i + 1)];
             await pr.Buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);

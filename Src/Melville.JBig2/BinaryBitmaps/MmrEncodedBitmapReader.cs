@@ -7,6 +7,8 @@ namespace Melville.JBig2.BinaryBitmaps;
 
 internal static class MmrEncodedBitmapReader
 {
+#wanring code on the way out
+    [Obsolete("Make this use SpanParsingBuffer ")]
     public static void ReadMmrEncodedBitmap(
         this BinaryBitmap bitmap, ref SequenceReader<byte> reader, bool requireTerminator)
     {
