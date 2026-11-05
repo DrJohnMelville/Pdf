@@ -11,7 +11,7 @@ internal class CcittDecoder : IJBigMmrFilter
     private LinePair lines;
     private readonly CcittCodeReader reader;
     private readonly ICodeDictionay codeDictionay;
-    private readonly BitWriter writer = new();
+    private readonly BitWritingBuffer writer = new();
     private int linesDone = 0;
 
     public CcittDecoder(CcittParameters parameters, ICodeDictionay codeDictionay)
@@ -31,11 +31,8 @@ internal class CcittDecoder : IJBigMmrFilter
             if (DoneReadingLine() && !WriteCurrentLine(ref destination)) return false;
             if (parameters.HasReadEntireImage(linesDone))
             {
-                if (writer.FinishWrite(destination) is var written and > 0)
-                {
-                    destination = destination[written..];
-                }
-                return writer.NoBitsWaitingToBeWritten();
+                writer.AdvanceToWholeByte();
+                return writer.TryWriteToMovingBuffer(ref destination);
             }
             if (!ReadLine(ref source)) return false;
         }
@@ -127,16 +124,31 @@ internal class CcittDecoder : IJBigMmrFilter
     private int currentWritePosition = 0;
     private void TryWriteCurrentLineToSpan(ref Span<byte> destination)
     {
-        var (read, written) = writer.WriteBitSpan(lines.CurrentLine.AsSpan(currentWritePosition..),
-          destination, new BitToByte(parameters.WhiteByte, parameters.BlackByte));
-        destination = destination[written..];
-        currentWritePosition += read;
-
+        BitToByte bitToByte = new(parameters.WhiteByte, parameters.BlackByte);
+        Span<bool> unwrittenpixels = lines.CurrentLine.AsSpan(currentWritePosition..);
+        currentWritePosition += WriteBitSpan(unwrittenpixels,ref destination, bitToByte);
+  
         if (destination.Length > 0)
         {
-            var finalLength = writer.FinishWrite(destination);
-            destination = destination[finalLength..];
+            writer.AdvanceToWholeByte();
+            writer.TryWriteToMovingBuffer(ref destination);
         }
+    }
+    int  WriteBitSpan(Span<bool> input, ref Span<byte> destination, BitToByte bitToByte)
+    {
+        int ret = 0;
+        foreach(var boolean in input)
+        {
+            if (ret % 16 == 0 && !writer.TryWriteToMovingBuffer(ref destination)) break;
+            ret++;
+            writer.WriteBits(bitToByte.ByteForBit(boolean), 1);
+        }
+        return ret;
+    }
+
+    private readonly struct BitToByte(byte trueVal, byte falseVal)
+    {
+        public byte ByteForBit(bool value) => value ? trueVal : falseVal;
     }
 
     private bool CheckIfLineWriteComplete()
@@ -146,7 +158,8 @@ internal class CcittDecoder : IJBigMmrFilter
         return true;
     }
 
-    private bool LineCompletelyWritten() => currentWritePosition >= lines.LineLength && writer.NoBitsWaitingToBeWritten();
+    private bool LineCompletelyWritten() => currentWritePosition >= lines.LineLength && 
+        writer.IsEmpty;
 
     private void ResetReaderForNextLine()
     {

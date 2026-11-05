@@ -27,8 +27,8 @@ public abstract class CcottEncodedBase: DisplayImageTest
     private byte[] GenerateImage()
     {
         var ret = new byte[32*2];
-        var bitWriter = new BitWriter();
-        var pos = 0;
+        var end = ret.AsSpan();
+        var bitWriter = new BitWritingBuffer();
 
         for (int k = 0; k < 2; k++)
         {
@@ -37,11 +37,13 @@ public abstract class CcottEncodedBase: DisplayImageTest
                 for (int j = 0; j < 32; j++)
                 {
                     var bit = j / (i+1) % 2;
-                    pos += bitWriter.WriteBits((bit) & 1, 1, ret.AsSpan(pos));
+                    bitWriter.WriteBits((bit) & 1, 1);
+                    bitWriter.TryWriteToMovingBuffer(ref end);
                 }
             }
         }
-        bitWriter.FinishWrite(ret.AsSpan(pos));
+        bitWriter.AdvanceToWholeByte();
+        bitWriter.TryWriteToMovingBuffer(ref end);
         return ret;
     }
 }
