@@ -71,8 +71,9 @@ internal static class GenericRegionSegmentParser
                 bitmapTemplate);
 
             MQDecoder state = new MQDecoder();
+            reader.TempBridge((ref spb) =>
             new ArithmeticGenericRegionDecodeProcedure(bitmap, state, context, TpgdonContext(flags), DoNotSkip.Instance)
-                .Read(ref reader);
+                .Read(ref spb));
         }
     }
 

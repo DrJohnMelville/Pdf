@@ -38,8 +38,7 @@ internal abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
             new ArithmeticBitmapReaderContext(ComputeTemplate(template)), 0, this);
     }
 
-    public override void ReadFrom(ref SpanParsingBuffer source) => 
-        source.TempBridge((ref seq) => reader.Read(ref seq));
+    public override void ReadFrom(ref SpanParsingBuffer source) =>reader.Read(ref source);
 
     private BitmapTemplate ComputeTemplate(GenericRegionTemplate template)
     {

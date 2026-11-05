@@ -1,9 +1,7 @@
-﻿using System.Buffers;
-using Melville.JBig2.ArithmeticEncodings;
+﻿using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
-using Melville.Parsing.SequenceReaders;
-using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers;
 
@@ -21,27 +19,29 @@ internal static class PatternDictionarySegmentParser
         public bool UseMmr => BitOperations.CheckBit(data, 1);
         public GenericRegionTemplate HDTemplate => (GenericRegionTemplate)BitOperations.UnsignedInteger(data, 1, 3);
     }
-    public static PatternDictionarySegment Parse(SequenceReader<byte> reader)
+    public static PatternDictionarySegment Parse(SpanParsingBuffer reader)
     {
-        var flags = new PatternDictionaryFlags(reader.GetUInt8BigEndian());
-        byte width = reader.GetUInt8BigEndian();
-        var height = reader.GetUInt8BigEndian();
+        var flags = new PatternDictionaryFlags(reader.GetUInt8());
+        byte width = reader.GetUInt8();
+        var height = reader.GetUInt8();
         var largestGrayScale = reader.GetUInt32BigEndian();
 
-        var innerBitmap = new BinaryBitmap(height, (int)( width * (largestGrayScale + 1)));
+        var innerBitmap = new BinaryBitmap(height, (int)(width * (largestGrayScale + 1)));
         ReadBitmap(reader, flags, innerBitmap, width);
 
         return new PatternDictionarySegment(CreatePatternStrip(largestGrayScale, innerBitmap, width));
     }
 
-    private static void ReadBitmap(SequenceReader<byte> reader, PatternDictionaryFlags flags, BinaryBitmap innerBitmap, byte cellWidth)
+    private static void ReadBitmap(SpanParsingBuffer reader, PatternDictionaryFlags flags, BinaryBitmap innerBitmap, byte cellWidth)
     {
         if (flags.UseMmr)
-            reader.TempBridge((ref spb) =>innerBitmap.ReadMmrEncodedBitmap(ref spb, false));
+            innerBitmap.ReadMmrEncodedBitmap(ref reader, false);
         else
-            new ArithmeticGenericRegionDecodeProcedure(innerBitmap, new MQDecoder(), 
+
+            new ArithmeticGenericRegionDecodeProcedure(innerBitmap, new MQDecoder(),
                     CreatePatternContext(flags, cellWidth), 0, DoNotSkip.Instance)
                 .Read(ref reader);
+
     }
 
     private static ArithmeticBitmapReaderContext CreatePatternContext(PatternDictionaryFlags flags, byte cellWidth) =>

@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.JBig2.ArithmeticEncodings;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
@@ -34,7 +35,7 @@ internal readonly struct ArithmeticGenericRegionDecodeProcedure
         this.useSkip = useSkip;
     }
 
-    public void Read(ref SequenceReader<byte> source)
+    public void Read(ref SpanParsingBuffer source)
     {
         bool duplicatedLastRow = false;
         var template = context.ToIncrementalTemplate();
@@ -43,7 +44,7 @@ internal readonly struct ArithmeticGenericRegionDecodeProcedure
             ReadRow(ref source, i, ref duplicatedLastRow, ref template);
         }
     }
-    private void ReadRow(ref SequenceReader<byte> source, int row, scoped ref bool duplicatedLastRow,
+    private void ReadRow(ref SpanParsingBuffer source, int row, scoped ref bool duplicatedLastRow,
         scoped ref IncrementalTemplate incrementalTemplate)
     {
         if (ShouldCopyPriorRow(ref source, ref duplicatedLastRow))
@@ -52,18 +53,18 @@ internal readonly struct ArithmeticGenericRegionDecodeProcedure
             DecodeRow(ref source, row, ref incrementalTemplate);
     }
 
-    private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, scoped ref bool duplicatedLastRow) => 
+    private bool ShouldCopyPriorRow(ref SpanParsingBuffer source, scoped ref bool duplicatedLastRow) => 
         IsInTgbdMode() && ShouldDuplicateThisRow(ref source, ref duplicatedLastRow);
 
     private bool IsInTgbdMode() => tgbd != 0;
 
-    private bool ShouldDuplicateThisRow(scoped ref SequenceReader<byte> source, scoped ref bool duplicatedLastRow)
+    private bool ShouldDuplicateThisRow(scoped ref SpanParsingBuffer source, scoped ref bool duplicatedLastRow)
     {
         var bit = state.GetBit(ref source, ref context.GetContext(tgbd));
         return duplicatedLastRow ^= bit == 1;
     }
 
-    private void DecodeRow(ref SequenceReader<byte> source, int row, ref IncrementalTemplate template)
+    private void DecodeRow(ref SpanParsingBuffer source, int row, ref IncrementalTemplate template)
     {
         template.SetToPosition(bitmap, row, 0);
         var rowWriter = bitmap.StartWritingAt(row, 0);

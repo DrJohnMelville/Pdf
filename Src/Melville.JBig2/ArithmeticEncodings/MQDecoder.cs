@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System;
+using System.Buffers;
 using System.Diagnostics;
 
 namespace Melville.JBig2.ArithmeticEncodings;
@@ -24,52 +26,138 @@ internal class MQDecoder
     {
         if (IsUninitialized()) INITDEC(ref source);
     }
-
-    //a is shifted 16 bits left so it can interact with CHigh.  This means the lower 16 bytes of A should always be
-    // 0.  We use bit 1 as a sentinel value to detect then the decoder is not initialized.
-    private bool IsUninitialized() => a == UninitializedASentinelValue;
+ 
 
     public void INITDEC(ref SequenceReader<byte> source) // uses software convention pg 119
     {
         source.TryRead(out B);
         source.TryRead(out B1);
-        c = (uint) (B ^ 0xFF) << 16;
+        c = (uint)(B ^ 0xFF) << 16;
         BYTEIN(ref source);
         c <<= 7;
         ct -= 7;
         a = 0x8000_0000;
     }
-    
+
     private void BYTEIN(ref SequenceReader<byte> source) // software convention page 120
     {
         switch (B, B1)
         {
-            case (255, >0x8f):
+            case (255, > 0x8f):
                 ct = 8;
                 break;
-            case (255,_):
+            case (255, _):
                 InnerReadByte(ref source, 0xFE00, 9, 7);
                 break;
             default:
                 InnerReadByte(ref source, 0xFF00, 8, 8);
-                break;                
+                break;
         }
     }
-    
+
     private void InnerReadByte(ref SequenceReader<byte> source, int max, int byteOffset, byte nextCount)
-    { 
+    {
         B = B1;
         source.TryRead(out B1);
         c += (uint)(max - (B << byteOffset));
         ct = nextCount;
     }
-    
+
     // software convention page 120
     private byte DECODE(scoped ref SequenceReader<byte> source, scoped ref ContextEntry currentState)
     {
         ref var qeRow = ref QeComputer.Rows[currentState.I];
         a -= qeRow.Qe;
-        Debug.Assert((a & 0xFFFF) == 0 );
+        Debug.Assert((a & 0xFFFF) == 0);
+        byte ret;
+        if (c < a)
+        {
+            if ((a & 0x8000_0000) != 0) return currentState.MPS;
+            ret = MPS_EXCHANGE(ref currentState, ref qeRow);
+        }
+        else
+        {
+            c -= a;
+            ret = LPS_EXCHANGE(ref currentState, ref qeRow);
+        }
+
+        RENORMD(ref source);
+        return ret;
+    }
+
+    private void RENORMD(ref SequenceReader<byte> source)
+    {
+        Debug.Assert((a & 0xFFFF) == 0);
+        do
+        {
+            if (ct == 0) BYTEIN(ref source);
+            a <<= 1;
+            c <<= 1;
+            ct--;
+        } while ((a & 0x80000000) == 0);
+        Debug.Assert((a & 0xFFFF) == 0);
+
+    }
+
+// new methods
+    public int GetBit(scoped ref SpanParsingBuffer source, scoped ref ContextEntry context)
+    {
+        EnsureIsInitialized(ref source);
+        var ret = DECODE(ref source, ref context);
+        Debug.Assert(ret is 0 or 1);
+        return ret;
+    }
+
+    private void EnsureIsInitialized(ref SpanParsingBuffer source)
+    {
+        if (IsUninitialized()) INITDEC(ref source);
+    }
+
+    //a is shifted 16 bits left so it can interact with CHigh.  This means the lower 16 bytes of A should always be
+    // 0.  We use bit 1 as a sentinel value to detect then the decoder is not initialized.
+    private bool IsUninitialized() => a == UninitializedASentinelValue;
+
+    public void INITDEC(ref SpanParsingBuffer source) // uses software convention pg 119
+    {
+        source.TryGetUInt8(out B);
+        source.TryGetUInt8(out B1);
+        c = (uint)(B ^ 0xFF) << 16;
+        BYTEIN(ref source);
+        c <<= 7;
+        ct -= 7;
+        a = 0x8000_0000;
+    }
+
+    private void BYTEIN(ref SpanParsingBuffer source) // software convention page 120
+    {
+        switch (B, B1)
+        {
+            case (255, > 0x8f):
+                ct = 8;
+                break;
+            case (255, _):
+                InnerReadByte(ref source, 0xFE00, 9, 7);
+                break;
+            default:
+                InnerReadByte(ref source, 0xFF00, 8, 8);
+                break;
+        }
+    }
+
+    private void InnerReadByte(ref SpanParsingBuffer source, int max, int byteOffset, byte nextCount)
+    {
+        B = B1;
+        source.TryGetUInt8(out B1);
+        c += (uint)(max - (B << byteOffset));
+        ct = nextCount;
+    }
+
+    // software convention page 120
+    private byte DECODE(scoped ref SpanParsingBuffer source, scoped ref ContextEntry currentState)
+    {
+        ref var qeRow = ref QeComputer.Rows[currentState.I];
+        a -= qeRow.Qe;
+        Debug.Assert((a & 0xFFFF) == 0);
         byte ret;
         if (c < a)
         {
@@ -88,9 +176,9 @@ internal class MQDecoder
 
     private byte MPS_EXCHANGE(ref ContextEntry currentState, ref QeEntry qeRow)
     {
-        if (a < qeRow.Qe) 
+        if (a < qeRow.Qe)
             return ExchangeCommon(ref currentState, qeRow);
-        
+
         currentState.I = qeRow.NMPS;
         return currentState.MPS;
 
@@ -117,9 +205,9 @@ internal class MQDecoder
     }
 
 
-    private void RENORMD(ref SequenceReader<byte> source)
+    private void RENORMD(ref SpanParsingBuffer source)
     {
-        Debug.Assert((a & 0xFFFF) == 0 );
+        Debug.Assert((a & 0xFFFF) == 0);
         do
         {
             if (ct == 0) BYTEIN(ref source);
@@ -127,7 +215,7 @@ internal class MQDecoder
             c <<= 1;
             ct--;
         } while ((a & 0x80000000) == 0);
-        Debug.Assert((a & 0xFFFF) == 0 );
+        Debug.Assert((a & 0xFFFF) == 0);
 
     }
 }

@@ -3,6 +3,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.EncodedReaders;
 using Melville.JBig2.GenericRegionRefinements;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
@@ -24,8 +25,9 @@ internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecod
     protected override int ReadSymbol(ref SequenceReader<byte> source, ContextStateDict context) =>
         new SymbolIntegerDecoder(State, context).Read(ref source);
 
-    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) => 
-        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, DoNotSkip.Instance).Read(ref source);
+    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) =>
+        source.TempBridge((ref spb) =>
+        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, DoNotSkip.Instance).Read(ref spb));
 
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
     {

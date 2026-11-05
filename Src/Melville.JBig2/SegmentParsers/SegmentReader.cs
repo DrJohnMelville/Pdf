@@ -76,7 +76,7 @@ internal readonly struct SegmentReader
         return Header.SegmentType switch
         {
             SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
-            SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader),
+            SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader2),
 
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(Header, ref reader),
             SegmentType.EndOfPage => Segment.EndOfPage,
