@@ -11,7 +11,7 @@ public class HideOptionalImageOn : HideOptionalImageOff
 
     protected override PdfDirectObject OnOrOff() => KnownNames.ON;
 }
-public class HideOptionalImageOff: DisplayImageTest
+public class HideOptionalImageOff : DisplayImageTest
 {
     public HideOptionalImageOff() : this("Hide optional image and content")
     {
@@ -25,7 +25,7 @@ public class HideOptionalImageOff: DisplayImageTest
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
         var usageDictionary = new DictionaryBuilder()
-            .WithItem(KnownNames.CreatorInfo, new DictionaryBuilder().WithItem(KnownNames.Creator,"JDM").AsDictionary())
+            .WithItem(KnownNames.CreatorInfo, new DictionaryBuilder().WithItem(KnownNames.Creator, "JDM").AsDictionary())
             .AsDictionary();
 
         ocg = docCreator.LowLevelCreator.Add(new DictionaryBuilder().WithItem(KnownNames.Name, "OptionalGroup")
@@ -58,8 +58,8 @@ public class HideOptionalImageOff: DisplayImageTest
     {
         using (await csw.BeginMarkedRangeAsync(KnownNames.OC, PdfDirectObject.CreateName("OCLayer")))
         {
-            csw.MoveTo(0,0);
-            csw.LineTo(300,300);
+            csw.MoveTo(0, 0);
+            csw.LineTo(300, 300);
             csw.StrokePath();
         }
         await base.DoPaintingAsync(csw);
@@ -83,12 +83,12 @@ public class HideOptionalImageOff: DisplayImageTest
         var ret = new byte[256 * 256 * 3];
         var pos = 0;
         for (int i = 0; i < 256; i++)
-        for (int j = 0; j < 256; j++)
-        {
-            ret[pos++] = (byte)i;
-            ret[pos++] = (byte)j;
-            ret[pos++] = 0;
-        }
+            for (int j = 0; j < 256; j++)
+            {
+                ret[pos++] = (byte)i;
+                ret[pos++] = (byte)j;
+                ret[pos++] = 0;
+            }
         return ret;
     }
 }
