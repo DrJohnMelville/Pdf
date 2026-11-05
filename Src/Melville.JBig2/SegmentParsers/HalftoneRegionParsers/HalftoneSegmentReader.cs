@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
 using Melville.Parsing.StreamFilters;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
@@ -35,7 +36,7 @@ internal ref struct HalftoneSegmentReader
         this.dictionary = dictionary;
     }
 
-    public void ReadBitmap(ref SequenceReader<byte> reader, BinaryBitmap targetBitmap)
+    public void ReadBitmap(ref SpanParsingBuffer reader, BinaryBitmap targetBitmap)
     {
         FillWithBackground(targetBitmap);
 
@@ -66,7 +67,7 @@ internal ref struct HalftoneSegmentReader
         }
     }
 
-    private GrayScaleBitmap ReadGrayScaleBitmap(ref SequenceReader<byte> reader, Span<int> data)
+    private GrayScaleBitmap ReadGrayScaleBitmap(ref SpanParsingBuffer reader, Span<int> data)
     {
 
         var gsb = new GrayScaleBitmap(data, grayScaleWidth);
@@ -77,7 +78,7 @@ internal ref struct HalftoneSegmentReader
         var bitsPerValue = IntLog.CeilingLog2Of((uint)dictionary.ExportedSymbols.Length);
         var bitValue = 1 << (bitsPerValue - 1);
         
-        reader.TempBridge((ref spb) => bitPlane.ReadFrom(ref spb));
+        bitPlane.ReadFrom(ref reader);
         gsb.CopyBinaryBitmap(bitPlane, bitValue);
   
         var priorBitValue = bitValue;
@@ -85,7 +86,7 @@ internal ref struct HalftoneSegmentReader
         
         for (; bitValue > 0; bitValue >>= 1, priorBitValue >>= 1)
         {
-            reader.TempBridge((ref spb) => bitPlane.ReadFrom(ref spb));
+            bitPlane.ReadFrom(ref reader);
             gsb.ProcessBinaryBitmap(bitPlane, bitValue, priorBitValue);
         }
 

@@ -13,6 +13,7 @@ using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers;
 
@@ -64,10 +65,14 @@ internal readonly struct SegmentReader
 
     private Segment ReadFrom(in ReadOnlySequence<byte> data)
     {
-        var reader = new SequenceReader<byte>(data);
         using var rentedSegmentSpan = new PooledBuffer<Segment>(Header.ReferencedSegmentNumbers.Length);
         var referencedSegments = rentedSegmentSpan.AsSpan(0, Header.ReferencedSegmentNumbers.Length);
         LookupSegments(referencedSegments);
+
+
+        var reader = new SequenceReader<byte>(data);
+#warning duplicative and inefficient
+        var reader2 = new SpanParsingBuffer(data.ToArray());
         return Header.SegmentType switch
         {
             SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
@@ -86,7 +91,7 @@ internal readonly struct SegmentReader
                 GenericRegionSegmentParser.Parse(reader),
             SegmentType.ImmediateLosslessHalftoneRegion or SegmentType.ImmediateHalftoneRegion
                 or SegmentType.IntermediateHalftoneRegion=> 
-                HalftoneSegmentParser.Parse(reader, referencedSegments),
+                HalftoneSegmentParser.Parse(reader2, referencedSegments),
             SegmentType.ImmediateGenericRefinementRegion or SegmentType.ImmediateLosslessGenericRefinementRegion
                 or SegmentType.IntermediateGenericRefinementRegion =>
                 GenericRefinementRegionSegmentParser.Parse(reader, referencedSegments),

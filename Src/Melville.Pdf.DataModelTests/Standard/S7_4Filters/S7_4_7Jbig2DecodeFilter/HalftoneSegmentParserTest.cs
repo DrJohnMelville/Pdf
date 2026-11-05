@@ -4,6 +4,7 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -12,11 +13,7 @@ public class HalftoneSegmentParserTest
 {
     private static HalftoneSegment Parse(byte[] bits)
     {
-        var reader = new SequenceReader<byte>(
-            new ReadOnlySequence<byte>(
-                bits
-            )
-        );
+        var reader = new SpanParsingBuffer(bits);
         ReadOnlySpan<Segment> segs = new Segment[] { PatternDictionaryParserTest.SampleSegment("01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80") };
         return HalftoneSegmentParser.Parse(reader, segs);
     }

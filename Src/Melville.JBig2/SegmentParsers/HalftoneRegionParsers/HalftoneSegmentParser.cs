@@ -4,6 +4,7 @@ using System.IO;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
@@ -40,11 +41,12 @@ internal readonly struct HalftoneRegionFlags
 
 internal static class HalftoneSegmentParser
 {
-    public static HalftoneSegment Parse(SequenceReader<byte> reader, in ReadOnlySpan<Segment> segs)
+    public static HalftoneSegment Parse(SpanParsingBuffer reader, in ReadOnlySpan<Segment> segs)
     {
         var halfToneWriter = new HalftoneSegmentReader(
             RegionHeaderParser.Parse(ref reader),
-            new HalftoneRegionFlags(reader.GetUInt8BigEndian()),
+            new HalftoneRegionFlags(
+            reader.GetUInt8()),
             reader.GetUInt32BigEndian(),
             reader.GetUInt32BigEndian(),
             reader.GetInt32BigEndian(),
@@ -54,7 +56,7 @@ internal static class HalftoneSegmentParser
             GetHalftoneDictionary(segs));
         var bitmap = halfToneWriter.Header.CreateTargetBitmap();
         try
-        { 
+        {
             halfToneWriter.ReadBitmap(ref reader, bitmap);
         }
         catch (InvalidDataException)
