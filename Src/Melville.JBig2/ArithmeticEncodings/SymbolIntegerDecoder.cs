@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
@@ -13,20 +14,20 @@ internal readonly ref struct SymbolIntegerDecoder
         this.dict = dict;
     }
 
-    public int Read(ref SequenceReader<byte> source)
+    public int Read(ref SpanParsingBuffer source)
     {
         var ret = 1;
         while (NeedMoreBitsToFillMask(ret)) ret = ShiftBitIntoNumber(ref source, ret);
         return RemoveLengthMarkerBit(ret);
     }
 
-    private int ShiftBitIntoNumber(ref SequenceReader<byte> source, int ret) => 
+    private int ShiftBitIntoNumber(ref SpanParsingBuffer source, int ret) => 
         (ret << 1) | GetNextBit(ref source, ret);
 
     private bool NeedMoreBitsToFillMask(int ret) => ret < dict.ContextEntryCount;
 
     private int RemoveLengthMarkerBit(int ret) => ret - dict.ContextEntryCount;
 
-    private int GetNextBit(ref SequenceReader<byte> source, int context) => 
+    private int GetNextBit(ref SpanParsingBuffer source, int context) => 
         decoder.GetBit(ref source, ref dict.EntryForContext((int)context));
 }

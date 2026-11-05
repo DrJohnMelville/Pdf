@@ -19,11 +19,13 @@ internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecod
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
 
     protected override int Read(ref SequenceReader<byte> source, ContextStateDict context) =>
-        new TypicalIntegerDecoder(context, State).Read(ref source);
+        source.TempBridge((ref spb) =>
+        new TypicalIntegerDecoder(context, State).Read(ref spb));
         
 
     protected override int ReadSymbol(ref SequenceReader<byte> source, ContextStateDict context) =>
-        new SymbolIntegerDecoder(State, context).Read(ref source);
+        source.TempBridge((ref spb) =>
+        new SymbolIntegerDecoder(State, context).Read(ref spb));
 
     public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) =>
         source.TempBridge((ref spb) =>

@@ -2,6 +2,7 @@
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -40,6 +41,6 @@ public class ArithmeticDecoderTest
         }
     }
  
-    private static SequenceReader<byte> CrerateSequenceReader(string source) => 
-        new SequenceReader<byte>(new ReadOnlySequence<byte>(source.BitsFromHex()));
+    private static SpanParsingBuffer CrerateSequenceReader(string source) => 
+        new (source.BitsFromHex());
 }

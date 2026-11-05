@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Melville.StreamInterfaces.ParsingBuffers;
+using System.Buffers;
 using System.Diagnostics;
 
 namespace Melville.JBig2.ArithmeticEncodings;
@@ -22,7 +23,7 @@ internal struct TypicalIntegerDecoder
         (2, 0), (4, 4), (6, 20), (8, 84), (12, 340), (32, 4436)
     };
 
-    public int Read(ref SequenceReader<byte> source)
+    public int Read(ref SpanParsingBuffer source)
     {
         var sign = GetBit(ref source);
         var bitLen = PickBitLength(ref source);
@@ -30,7 +31,7 @@ internal struct TypicalIntegerDecoder
     }
 
     private int ReadInt(
-        ref SequenceReader<byte> source, int encodingMode)
+        ref SpanParsingBuffer source, int encodingMode)
     {
         var (bits, offset) = encodingModes[encodingMode];
         int value = 0;
@@ -42,7 +43,7 @@ internal struct TypicalIntegerDecoder
         return value + offset;
     }
 
-    private int PickBitLength(ref SequenceReader<byte> reader)
+    private int PickBitLength(ref SpanParsingBuffer reader)
     {
         int i = 0;
         while ((i < (encodingModes.Length - 1)) &&
@@ -50,7 +51,7 @@ internal struct TypicalIntegerDecoder
         return i;
     }
 
-    private bool LengthSelectionBitFound(ref SequenceReader<byte> source) =>
+    private bool LengthSelectionBitFound(ref SpanParsingBuffer source) =>
         GetBit(ref source) == 0;
 
     private int AssembleNumber(int sign, int magnitude) =>
@@ -61,7 +62,7 @@ internal struct TypicalIntegerDecoder
             _ => magnitude
         };
 
-    private int GetBit(ref SequenceReader<byte> source)
+    private int GetBit(ref SpanParsingBuffer source)
     {
         var bit = Decoder.GetBit(ref source, ref GetContext());
         UpdateContext(bit);
