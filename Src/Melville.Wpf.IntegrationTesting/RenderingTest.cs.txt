@@ -588,3 +588,5 @@ RenderingTest.cs_wpf-Jpeg2000ColorImage|2358655348
 RenderingTest.cs_Skia-Jpeg2000ColorImage|2647928454
 RenderingTest.cs_wpf-WithAnnotation|3576178036
 RenderingTest.cs_Skia-WithAnnotation|1689464111
+RenderingTest.cs_Skia-OptionalImageNoIntentBug|2650185880
+RenderingTest.cs_wpf-OptionalImageNoIntentBug|1628921656

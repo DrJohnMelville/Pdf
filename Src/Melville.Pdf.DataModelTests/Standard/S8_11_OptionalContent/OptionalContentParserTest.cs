@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.OptionalContent;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
@@ -18,18 +19,36 @@ public class OptionalContentParserTest
             .AsDictionary();
     
     [Fact]
+    public async Task AllVisibleIsCorrectBeforeAnyChanges()
+    {
+        var ocg = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.OCG)
+            .WithItem(KnownNames.Name, "Foo")
+            .WithItem(KnownNames.Intent, KnownNames.Design)
+            .AsDictionary();
+
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg))
+                .AsDictionary()
+            );
+        
+        Assert.False(await sut.IsGroupVisibleAsync(ocg));
+        Assert.False(sut.AllVisible());
+    }
+    [Fact]
     public async Task DefaultVisibilityAsync()
     {
-        
+
         var sut = await OptionalContentPropertiesParser.ParseAsync(
             new DictionaryBuilder()
                 .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2))
                 .AsDictionary()
             );
-        
-        Assert.False(await sut.IsGroupVisibleAsync(ocg1));
-        Assert.False(await sut.IsGroupVisibleAsync(ocg2));
-        Assert.False(sut.AllVisible());
+
+        Assert.True(await sut.IsGroupVisibleAsync(ocg1));
+        Assert.True(await sut.IsGroupVisibleAsync(ocg2));
+        Assert.True(sut.AllVisible());
     }
     [Fact]
     public async Task AllOffVisibilityAsync()
