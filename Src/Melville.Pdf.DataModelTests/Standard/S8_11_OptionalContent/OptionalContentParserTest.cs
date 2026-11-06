@@ -29,6 +29,7 @@ public class OptionalContentParserTest
         
         Assert.False(await sut.IsGroupVisibleAsync(ocg1));
         Assert.False(await sut.IsGroupVisibleAsync(ocg2));
+        Assert.False(sut.AllVisible());
     }
     [Fact]
     public async Task AllOffVisibilityAsync()

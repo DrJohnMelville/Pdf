@@ -16,7 +16,6 @@ internal partial class OptionalContentState : IOptionalContentState
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
     [AutoNotify] private OptionalContentConfiguration? selectedConfiguration;
     public event EventHandler<EventArgs>? SelectedContentChanged; 
-    private bool allVisible = true;
 
     public OptionalContentState(Dictionary<PdfDictionary, OptionalGroup> groupStates,
         IReadOnlyList<OptionalContentConfiguration> configurations)
@@ -26,11 +25,7 @@ internal partial class OptionalContentState : IOptionalContentState
         RegisterGroupStateChangeNotifications(groupStates);
     }
 
-    public bool AllVisible() => allVisible;
-    private void RecomputeAllVisible()
-    {
-        allVisible = groupStates.Values.All(i => i.Visible);
-    }
+    public bool AllVisible() => groupStates.Values.All(i => i.Visible);
 
     private void RegisterGroupStateChangeNotifications(Dictionary<PdfDictionary, OptionalGroup> groupStates)
     {
@@ -45,7 +40,6 @@ internal partial class OptionalContentState : IOptionalContentState
         {
             selectedConfiguration?.HandleRadioButtonExclusivity(og);
         } 
-        RecomputeAllVisible();
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
