@@ -70,13 +70,12 @@ internal readonly struct SegmentReader
         LookupSegments(referencedSegments);
 
 
-        var reader = new SequenceReader<byte>(data);
-#warning duplicative and inefficient
-        var reader2 = new SpanParsingBuffer(data.ToArray());
+        #warning duplicative and inefficient
+        var reader = new SpanParsingBuffer(data.ToArray());
         return Header.SegmentType switch
         {
-            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader2, referencedSegments).Parse(),
-            SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader2),
+            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
+            SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader),
 
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(Header, ref reader),
             SegmentType.EndOfPage => Segment.EndOfPage,
@@ -85,16 +84,16 @@ internal readonly struct SegmentReader
 
             SegmentType.ImmediateLosslessTextRegion or SegmentType.ImmediateTextRegion or 
                 SegmentType.IntermediateTextRegion=> 
-                TextRegionSegmentParser.Parse(reader2, referencedSegments),
+                TextRegionSegmentParser.Parse(reader, referencedSegments),
             SegmentType.ImmediateLosslessGenericRegion or SegmentType.ImmediateGenericRegion
                 or SegmentType.IntermediateGenericRegion=> 
-                GenericRegionSegmentParser.Parse(reader2),
+                GenericRegionSegmentParser.Parse(reader),
             SegmentType.ImmediateLosslessHalftoneRegion or SegmentType.ImmediateHalftoneRegion
                 or SegmentType.IntermediateHalftoneRegion=> 
-                HalftoneSegmentParser.Parse(reader2, referencedSegments),
+                HalftoneSegmentParser.Parse(reader, referencedSegments),
             SegmentType.ImmediateGenericRefinementRegion or SegmentType.ImmediateLosslessGenericRefinementRegion
                 or SegmentType.IntermediateGenericRefinementRegion =>
-                GenericRefinementRegionSegmentParser.Parse(reader2, referencedSegments),
+                GenericRefinementRegionSegmentParser.Parse(reader, referencedSegments),
             SegmentType.Extension => new ExtensionSegment(SegmentType.Extension),
             _ => throw new InvalidDataException("Unknown JBig2 Segment: " + Header.SegmentType)
         };

@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.JBig2.HuffmanTables;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -202,7 +203,7 @@ public class StandardHuffmanTest
     public void ReadStandardHuffman(object tableSelector, string data, int firstNum, int secondNum)
     {
         var table = StandardHuffmanTables.ArrayFromSelector((HuffmanTableSelection)tableSelector);
-        var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromBinary()));
+        var source = new SpanParsingBuffer(data.BitsFromBinary());
         var bitReader = new BitReader();
         Assert.Equal(firstNum, source.ReadHuffmanInt(bitReader, table));
         Assert.Equal(secondNum, source.ReadHuffmanInt(bitReader, table));
@@ -241,7 +242,7 @@ public class StandardHuffmanTest
 
                 try
                 {
-                    var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(buffer));
+                    var source = new SpanParsingBuffer(buffer);
                     var bitReader = new BitReader();
                     source.ReadHuffmanInt(bitReader, table);
                 }
