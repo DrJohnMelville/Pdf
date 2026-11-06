@@ -11,6 +11,7 @@ using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 using Melville.JBig2.SegmentParsers.SymbolDictonaries;
 using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
@@ -52,8 +53,8 @@ internal readonly struct SegmentReader
     }
 
     private ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSpanAsync() => 
-        Header.DataLength == 0xFFFFFFFF ? 
-            new ReadUnknownSegmentLength(source).ReadSegmentAsync() : 
+        Header.DataLength == 0xFFFFFFFF ?
+            source.TempBridgeAsync(i=>new ReadUnknownSegmentLength(i).ReadSegmentAsync()) : 
             ReadKnownLengthSegmentAsync();
 
     private async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadKnownLengthSegmentAsync()

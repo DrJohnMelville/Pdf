@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.JBig2.SegmentParsers;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -23,7 +25,7 @@ public class UnknownSegmentLengthTest
     public async Task TrivialMmrSegmentAsync(string source, int extraBytes)
     {
         var data = source.BitsFromHex();
-        var reader = PipeReader.Create(new ReadOnlySequence<byte>(data));
+        using var reader = new ParsingBuffer(new MemoryReader(data));
         var (ret, shouldAdvance) = await new ReadUnknownSegmentLength(reader).ReadSegmentAsync();
         ret.Length.Should().Be(data.Length-extraBytes);
 

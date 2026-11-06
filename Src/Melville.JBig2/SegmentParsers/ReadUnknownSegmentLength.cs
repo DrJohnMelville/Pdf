@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.SegmentParsers;
 
-internal readonly struct ReadUnknownSegmentLength(PipeReader reader)
+internal readonly struct ReadUnknownSegmentLengthOld(PipeReader reader)
 {
-    const int regionHeaderLength = 18;
+
+   const int regionHeaderLength = 18;
     private static ReadOnlySpan<byte> MmrEndSequence => [0x00, 0x00]; 
     private static ReadOnlySpan<byte> ArithEndSequence => [0xFF, 0xAC];
     private static ReadOnlySpan<byte> SelectEndSequence(bool isMMR) => isMMR ? MmrEndSequence : ArithEndSequence;
 
     public async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSegmentAsync()
     {
+
         var initial = await reader.ReadAtLeastAsync(regionHeaderLength).CA();
         ReadHeightAndType(initial.Buffer, out var height, out var isMMR);
         reader.AdvanceTo(initial.Buffer.Start, initial.Buffer.GetPosition(regionHeaderLength));
@@ -94,4 +98,42 @@ internal readonly struct ReadUnknownSegmentLength(PipeReader reader)
         var r2 = new SequenceReader<byte>(source.Slice(source.Length - 4));
         return declaredHeight == r2.GetUInt32BigEndian();
     }
+}
+
+internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
+{
+
+    const int regionHeaderLength = 18;
+    private static ReadOnlySpan<byte> MmrEndSequence => [0x00, 0x00];
+    private static ReadOnlySpan<byte> ArithEndSequence => [0xFF, 0xAC];
+    private static ReadOnlySpan<byte> SelectEndSequence(bool isMMR) => isMMR ? MmrEndSequence : ArithEndSequence;
+
+#warning I sholud be able to use TakeBytes to get rid of the shouldAdvance
+    public async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSegmentAsync()
+    {
+        await reader.EnsureBytesAsync(regionHeaderLength);
+        var endPoint = await FindEndPositionAsync(IsMMRSegment());
+        Memory<byte> memory = reader.PeekMemory(endPoint).ToArray();
+        EnsureRowsConsistent(memory.Span);
+#warning get rid of inefficency once the parsing buffer lasts long enough
+        reader.Advance(memory.Length);
+        return (new ReadOnlySequence<byte>(memory), false);
+    }
+
+    private bool IsMMRSegment() => (reader.Peek()[16] & 0x01) == 0x01;
+
+    private async ValueTask<int> FindEndPositionAsync(bool isMmr)
+    {
+        var endSeq = SelectEndSequence(isMmr);
+        var endPos = -1;
+        while ((endPos = reader.Peek().IndexOf(endSeq)) is < 0)
+        {
+            if (reader.DoneReadingSource)
+                throw new InvalidOperationException("Could Not find end of segment");
+            await reader.ReadBytesAsync();
+        }
+        return endPos + 6; // 2 byte for end of the tag and 4 bytes for the length.
+    }
+
+    private void EnsureRowsConsistent(Span<byte> ret) => ret[^4..].CopyTo(ret[4..]);
 }
