@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Parsing.SpanAndMemory;
 using Melville.StreamInterfaces;
+using System.Linq;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
@@ -19,7 +20,8 @@ internal readonly struct UiModelParser
     }
     public async ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ParseAsync(PdfArray? order)
     {
-        if (order is null or {Count:0} ) return Array.Empty<IOptionalContentDisplayGroup>();
+        if (order is null or {Count:0} ) return 
+                groupStates.Values.ToArray();
         var items = await order.AsDirectValuesAsync().CA();
         return await ParseMultipleOptionDisplayGroupsAsync(items).CA();
     }

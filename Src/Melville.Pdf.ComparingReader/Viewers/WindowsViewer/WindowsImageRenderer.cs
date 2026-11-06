@@ -8,6 +8,7 @@ using Windows.Storage.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
+using Melville.Pdf.Model.OptionalContent;
 
 namespace Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
 
@@ -15,7 +16,9 @@ public class WindowsImageRenderer : IImageRenderer
 {
     private readonly IPageSelector pageSel;
     private PdfDocument? document;
-    
+
+    public IOptionalContentState? OptionalContentState => null;
+
     public WindowsImageRenderer(IPageSelector pageSel)
     {
         this.pageSel = pageSel;

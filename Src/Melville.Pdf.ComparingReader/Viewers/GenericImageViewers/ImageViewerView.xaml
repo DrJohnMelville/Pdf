@@ -21,5 +21,23 @@
         <Image Stretch="Uniform" Source="{Binding Image}" />
         <TextBlock Text="{Binding Exception}" Background="Pink"
                    wpfHacks:VisibilityHack.CollapseIfWhitespace="{Binding Exception}"/>
+        <ToggleButton HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="PopupButton"
+                      wpfHacks:VisibilityHack.CollapseIfNull="{Binding OptionalContent}"
+                      >Optional Content</ToggleButton>
+        <Popup PlacementTarget="{Binding ElementName=PopupButton}" Placement="Bottom"
+               IsOpen="{Binding IsChecked, ElementName=PopupButton}">
+            <Border BorderBrush="Black" BorderThickness="1" Background="LightGray">
+                <StackPanel>
+                    <TreeView ItemsSource="{Binding OptionalContent, PresentationTraceSources.TraceLevel =High}">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <CheckBox Content="{Binding Name}" 
+                                          IsChecked="{Binding Visible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>
