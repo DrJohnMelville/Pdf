@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.SegmentParsers.GenericRegionParsers;
@@ -33,8 +34,7 @@ internal readonly struct SegmentReader
     
     public async ValueTask SkipOverAsync()
     {
-        var (span, shouldAdvance) = await ReadSpanAsync().CA();
-        if (shouldAdvance) source.AdvanceTo(span.End);
+         await ReadSpanAsync().CA();
     }
     public ValueTask<Segment> ReadFromAsync() =>
         Header.SegmentType switch
@@ -46,22 +46,25 @@ internal readonly struct SegmentReader
 
     private  async ValueTask<Segment> ReadDataFromAsync()
     {
-        var (sequence, shouldAdvance) = await ReadSpanAsync().CA();
-        var ret = ReadFrom(sequence);
-        if (shouldAdvance) source.AdvanceTo(sequence.End);
+        var memory = await ReadSpanAsync().CA();
+        var ret = ReadFrom(new ReadOnlySequence<byte>(memory));
         return ret;
     }
 
-    private ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSpanAsync() => 
+    private ValueTask<Memory<byte>> ReadSpanAsync() => 
         Header.DataLength == 0xFFFFFFFF ?
             source.TempBridgeAsync(i=>new ReadUnknownSegmentLength(i).ReadSegmentAsync()) : 
             ReadKnownLengthSegmentAsync();
 
-    private async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadKnownLengthSegmentAsync()
+    private async ValueTask<Memory<byte>> ReadKnownLengthSegmentAsync()
     {
-        var readResult = await source.ReadAtLeastAsync((int)Header.DataLength).CA();
-        var sequence = readResult.Buffer.Slice(0, Header.DataLength);
-        return (sequence, true);
+        var hlen = (int)Header.DataLength;
+
+        return await source.TempBridgeAsync(async spb =>
+        {
+            await spb.EnsureBytesAsync(hlen);
+            return (await spb.TakeBytesAsync(hlen)).ToArray();
+        });
     }
 
     private Segment ReadFrom(in ReadOnlySequence<byte> data)

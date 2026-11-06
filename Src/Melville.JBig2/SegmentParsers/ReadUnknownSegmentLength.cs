@@ -109,7 +109,7 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
     private static ReadOnlySpan<byte> SelectEndSequence(bool isMMR) => isMMR ? MmrEndSequence : ArithEndSequence;
 
 #warning I sholud be able to use TakeBytes to get rid of the shouldAdvance
-    public async ValueTask<(ReadOnlySequence<byte> Seq, bool shoudAdvance)> ReadSegmentAsync()
+    public async ValueTask<Memory<byte>> ReadSegmentAsync()
     {
         await reader.EnsureBytesAsync(regionHeaderLength);
         var endPoint = await FindEndPositionAsync(IsMMRSegment());
@@ -117,7 +117,7 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
         EnsureRowsConsistent(memory.Span);
 #warning get rid of inefficency once the parsing buffer lasts long enough
         reader.Advance(memory.Length);
-        return (new ReadOnlySequence<byte>(memory), false);
+        return memory;
     }
 
     private bool IsMMRSegment() => (reader.Peek()[16] & 0x01) == 0x01;

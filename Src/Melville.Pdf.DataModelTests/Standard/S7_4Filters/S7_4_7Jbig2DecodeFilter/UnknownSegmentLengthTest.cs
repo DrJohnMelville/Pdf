@@ -26,10 +26,10 @@ public class UnknownSegmentLengthTest
     {
         var data = source.BitsFromHex();
         using var reader = new ParsingBuffer(new MemoryReader(data));
-        var (ret, shouldAdvance) = await new ReadUnknownSegmentLength(reader).ReadSegmentAsync();
+        var ret = await new ReadUnknownSegmentLength(reader).ReadSegmentAsync();
         ret.Length.Should().Be(data.Length-extraBytes);
 
-        var arr = ret.ToArray();
+        var arr = ret.Span;
         arr[4].Should().Be(arr[^4]);
         arr[5].Should().Be(arr[^3]);
         arr[6].Should().Be(arr[^2]);
