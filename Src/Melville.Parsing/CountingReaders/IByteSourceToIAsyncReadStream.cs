@@ -90,6 +90,7 @@ public class ReaderFromPipe(PipeReader source) : IAsyncReader
         if (sourceSeq.Length > buffer.Length) sourceSeq = sourceSeq.Slice(0, buffer.Length);
         sourceSeq.CopyTo(buffer.Span);
         source.AdvanceTo(result.Buffer.Start, sourceSeq.End);
+        currentPosition = sourceSeq.End;
         return (int)sourceSeq.Length;
     }
 }

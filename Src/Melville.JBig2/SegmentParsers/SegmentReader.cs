@@ -60,7 +60,8 @@ internal readonly struct SegmentReader
     {
         var hlen = (int)Header.DataLength;
 
-        await source.EnsureBytesAsync(hlen);
+ //       await source.EnsureBytesAsync(hlen);
+#warning inefficient
         return (await source.TakeBytesAsync(hlen)).ToArray();
     }
 
