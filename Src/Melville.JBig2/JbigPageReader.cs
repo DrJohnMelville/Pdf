@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
-
+using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.JBig2;
 
@@ -47,8 +48,11 @@ public abstract class JbigPageReader
     /// <param name="pipe">The source data</param>
     public async ValueTask ProcessFileBitsAsync(PipeReader pipe)
     {
-        var segmentHeadReader = await FileHeaderParser.ReadFileHeaderAsync(pipe, storedSegments).CA();
-        await ReadSegmentsAsync(segmentHeadReader);
+        pipe.TempBridgeAsync(async spb =>
+        {
+            var segmentHeadReader = await FileHeaderParser.ReadFileHeaderAsync(spb, storedSegments).CA();
+            await ReadSegmentsAsync(segmentHeadReader);
+        });
     }
 
     /// <summary>
@@ -57,7 +61,8 @@ public abstract class JbigPageReader
     /// <param name="stream">The stream to read from</param>
     /// <param name="pages">The page to read</param>
     public  ValueTask ProcessSequentialSegmentsAsync(Stream stream, uint pages) => 
-        ReadSegmentsAsync(new SequentialSegmentHeaderReader(PipeReader.Create(stream), pages, storedSegments));
+        ReadSegmentsAsync(new SequentialSegmentHeaderReader(
+            new (stream.AsStreamReader()), pages, storedSegments));
 
     private async ValueTask ReadSegmentsAsync(SegmentHeaderReader segmentHeadReader)
     {

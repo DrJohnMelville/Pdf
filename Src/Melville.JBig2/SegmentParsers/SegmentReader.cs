@@ -21,11 +21,11 @@ namespace Melville.JBig2.SegmentParsers;
 
 internal readonly struct SegmentReader
 {
-    private readonly PipeReader source;
+    private readonly ParsingBuffer source;
     public readonly SegmentHeader Header;
     private readonly IReadOnlyDictionary<uint, Segment> priorSegments;
 
-    public SegmentReader(PipeReader source, SegmentHeader header, IReadOnlyDictionary<uint, Segment> priorSegments)
+    public SegmentReader(ParsingBuffer source, SegmentHeader header, IReadOnlyDictionary<uint, Segment> priorSegments)
     {
         this.source = source;
         this.Header = header;
@@ -53,18 +53,15 @@ internal readonly struct SegmentReader
 
     private ValueTask<Memory<byte>> ReadSpanAsync() => 
         Header.DataLength == 0xFFFFFFFF ?
-            source.TempBridgeAsync(i=>new ReadUnknownSegmentLength(i).ReadSegmentAsync()) : 
+            new ReadUnknownSegmentLength(source).ReadSegmentAsync() : 
             ReadKnownLengthSegmentAsync();
 
     private async ValueTask<Memory<byte>> ReadKnownLengthSegmentAsync()
     {
         var hlen = (int)Header.DataLength;
 
-        return await source.TempBridgeAsync(async spb =>
-        {
-            await spb.EnsureBytesAsync(hlen);
-            return (await spb.TakeBytesAsync(hlen)).ToArray();
-        });
+        await source.EnsureBytesAsync(hlen);
+        return (await source.TakeBytesAsync(hlen)).ToArray();
     }
 
     private Segment ReadFrom(in ReadOnlySequence<byte> data)

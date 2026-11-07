@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -16,19 +20,17 @@ public class FileParserTest
     private const string endofStripeData = "000000FF";
     private const string endOfFileHead = "00000006 33 00 01 00000000";
 
-    private async ValueTask<SegmentHeaderReader> ParseFileAsync(params string[] data)
-    {
-        return await FileHeaderParser.ReadFileHeaderAsync(new MemoryStream(BitStreamCreator.BitsFromHex(data)),
-            new Dictionary<uint, Segment>());
-    } 
+    private ParsingBuffer BufferFor(params ReadOnlySpan<string> data) =>
+        new(new MemoryReader(BitStreamCreator.BitsFromHex(data)));
 
     [Theory]
     [InlineData("01 00000003", 3u)]
     [InlineData("03", 0u)]
     public async Task ParseSequentialFileHeaderAsync(string typeAndPages, uint pages)
     {
-        var reader = await ParseFileAsync(magicNumber, typeAndPages,
+        using var buffer = BufferFor(magicNumber, typeAndPages,
             endOfStripeHead, endofStripeData, endOfPageHead, endOfFileHead);
+        var reader = await FileHeaderParser.ReadFileHeaderAsync(buffer, new Dictionary<uint,Segment>());
         await VerifySimpleFileAsync<SequentialSegmentHeaderReader>(pages, reader);
     }
     [Theory]
@@ -36,8 +38,9 @@ public class FileParserTest
     [InlineData("02", 0u)]
     public async Task ParseRandomAccessFileHeaderAsync(string typeAndPages, uint pages)
     {
-        var reader = await ParseFileAsync(magicNumber, typeAndPages,
+        using var buffer = BufferFor(magicNumber, typeAndPages,
             endOfStripeHead, endOfPageHead, endOfFileHead, endofStripeData);
+        var reader = await FileHeaderParser.ReadFileHeaderAsync(buffer, new Dictionary<uint, Segment>());
         await VerifySimpleFileAsync<RandomAccessSegmentHeaderReader>(pages, reader);
     }
 

@@ -67,6 +67,16 @@ public static class SequenceReaderShim
         reader.AdvanceTo(result.Buffer.GetPosition(buffer.RelativePosition));
         return ret;
     }
+    [Obsolete]
+    public static async ValueTask TempBridgeAsync(
+        this PipeReader reader, Func<ParsingBuffer, ValueTask> action)
+    {
+        var stream = new ReaderFromPipe(reader);
+        using var buffer = new ParsingBuffer(stream);
+        await action(buffer).CA();
+        var result = await reader.ReadAsync();
+        reader.AdvanceTo(result.Buffer.GetPosition(buffer.RelativePosition));
+    }
 }
 
 public class ReaderFromPipe(PipeReader source) : IAsyncReader

@@ -21,7 +21,7 @@ public static class BitStreamCreator
         return new string(ret);
     }
 
-    public static byte[] BitsFromHex(params string[] sources)
+    public static byte[] BitsFromHex(params ReadOnlySpan<string> sources)
     {
         return string.Join("", sources).BitsFromHex();
     }
