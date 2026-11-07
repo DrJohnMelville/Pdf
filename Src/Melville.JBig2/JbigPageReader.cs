@@ -7,6 +7,7 @@ using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
 
 namespace Melville.JBig2;
@@ -40,19 +41,11 @@ public abstract class JbigPageReader
     /// Read the requested pages from a stream
     /// </summary>
     /// <param name="stream">The jbig data</param>
-    public ValueTask ProcessFileBitsAsync(Stream stream) => ProcessFileBitsAsync((PipeReader)PipeReader.Create(stream)); 
-    
-    /// <summary>
-    /// Read the requested pages from a pipereader
-    /// </summary>
-    /// <param name="pipe">The source data</param>
-    public async ValueTask ProcessFileBitsAsync(PipeReader pipe)
+    public async ValueTask ProcessFileBitsAsync(Stream stream)
     {
-        pipe.TempBridgeAsync(async spb =>
-        {
-            var segmentHeadReader = await FileHeaderParser.ReadFileHeaderAsync(spb, storedSegments).CA();
-            await ReadSegmentsAsync(segmentHeadReader);
-        });
+        using var spb = new ParsingBuffer(stream.AsStreamReader());
+        var segmentHeadReader = await FileHeaderParser.ReadFileHeaderAsync(spb, storedSegments).CA();
+        await ReadSegmentsAsync(segmentHeadReader);
     }
 
     /// <summary>

@@ -30,10 +30,9 @@ public class ParseJBigFile
         Assert.Equal(Page1And2.Trim(), fact.GetPage(1).BitmapString());
         Assert.Equal(Page1And2.Trim(), fact.GetPage(2).BitmapString());
         Assert.Equal(Page3.Trim(), fact.GetPage(3).BitmapString());
-        
     }
     
-    private static PipeReader PipeData() => PipeReader.Create(new MemoryStream(data));
+    private static Stream PipeData() => new MemoryStream(data);
 
     private const string Page1And2 = """
         ................................................................
