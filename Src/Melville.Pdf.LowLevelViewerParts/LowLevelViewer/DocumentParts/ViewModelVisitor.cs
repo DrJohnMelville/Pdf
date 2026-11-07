@@ -55,7 +55,16 @@ public class ViewModelVisitor
         DocumentPart[] items)
     {
         if (nodeSubType.Equals(KnownNames.Image))
-            return new ImagePartViewModel($"{localPrefix}Image Stream", items, stream);
+        {
+            try
+            {
+                return new ImagePartViewModel($"{localPrefix}Image Stream", items, stream);
+            }
+            catch (Exception ex)
+            {
+              // if we get an exception, just use the orginary viewer.                
+            }
+        }
         if (nodeType.Equals(KnownNames.XRef))
             return new XrefPartViewModel($"{localPrefix}Xref Stream", items, stream);
         return new StreamPartViewModel($"{localPrefix}Stream", items, stream);

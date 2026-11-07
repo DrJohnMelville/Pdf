@@ -21,8 +21,15 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
 
     private async void OnSelectedFormatChanged(StreamDisplayFormat? newFormat)
     {
-        if (newFormat is not null)
-            Content = await newFormat.Creator(Source);
+        try
+        {
+            if (newFormat is not null)
+                Content = await newFormat.Creator(Source);
+        }
+        catch (Exception)
+        {
+            
+        }
     }
 
     private async void LoadFormats()
