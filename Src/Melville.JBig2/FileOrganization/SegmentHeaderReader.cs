@@ -34,7 +34,7 @@ internal class SequentialSegmentHeaderReader : SegmentHeaderReader
         base(pipe, pages, priorSegments)
     {
     }
-
+        
     protected override ValueTask<SegmentHeader> NextSegmentHeaderAsync() =>
         SegmentHeaderParser2.ParseAsync(Pipe);
 }

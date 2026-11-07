@@ -9,14 +9,14 @@ using System.IO.Pipelines;
 namespace Melville.Icc.Parser;
 
 /// <summary>
-/// Parses an ICC profile from a pipereader;
+/// Parses an ICC profile
 /// </summary>
 public readonly partial struct IccParser(IAsyncReader src)
 {
     private readonly ParsingBuffer source = new(src);
     
     /// <summary>
-    /// Parse an ICC profile from the PipeReader passed in the constructor.
+    /// Parse an ICC profile 
     /// </summary>
     /// <returns>ICC profile </returns>
     public async ValueTask<IccProfile> ParseAsync()

@@ -49,7 +49,7 @@ public abstract class JbigPageReader
     }
 
     /// <summary>
-    /// Read the s equential segments portion of a JBIG file (which is all that PDF stores
+    /// Read the sequential segments portion of a JBIG file (which is all that PDF stores
     /// </summary>
     /// <param name="stream">The stream to read from</param>
     /// <param name="pages">The page to read</param>

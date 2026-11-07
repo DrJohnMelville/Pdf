@@ -1,7 +1,10 @@
-﻿using System;
-using System.Buffers;
-using Melville.JBig2.FileOrganization;
+﻿using Melville.JBig2.FileOrganization;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
+using System.Buffers;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -37,7 +40,40 @@ public class SegmentHeaderParserTest
                 new uint[]{256,2,0x1e, 5, 0x200, 0x201, 0x202, 0x203, 0x204})
         }
     };
-    
+
+    [Fact]
+    public async Task Error()
+    {
+        var bits = ("00000234" +// id number
+            "40" + // flags
+            "e0 00 00 09" + // 9 referred segments in long format
+            "02 fd" + // retain bits
+            "0100 0002 001E 0005 0200 0201 0202 0203 0204" + // referred segments
+            "00 00 04 01" + // page number
+            "12345678") // segment length
+                .BitsFromHex();
+        var buffer = ReaderFromBytes(bits);
+        var header = SegmentHeaderParser.TryParse(ref buffer, out var _);
+
+    }
+
+    [Fact]
+    public async Task Error2()
+    {
+        var bits = ("00000234" +// id number
+            "40" + // flags
+            "e0 00 00 09" + // 9 referred segments in long format
+            "02 fd" + // retain bits
+            "0100 0002 001E 0005 0200 0201 0202 0203 0204" + // referred segments
+            "00 00 04 01" + // page number
+            "12345678") // segment length
+                .BitsFromHex();
+        var reader = new MemoryReader(bits);
+        using var buffer = new ParsingBuffer(reader);
+        var header = await SegmentHeaderParser2.ParseAsync(buffer);
+
+    }
+
     [Theory]
     [MemberData(nameof(SegmentHeaderExamples))]
     public void ReadSegment(byte[] data, object result1)
@@ -53,6 +89,24 @@ public class SegmentHeaderParserTest
         Assert.Equal(result.DataLength, header.DataLength);
         
     }
+
+    [Theory]
+    [MemberData(nameof(SegmentHeaderExamples))]
+    public async Task ReadSegment2(byte[] data, object result1)
+    {
+        var result = (SegmentHeader)result1;
+        var reader = new MemoryReader(data);
+        using var buffer = new ParsingBuffer(reader);
+        var header = await SegmentHeaderParser2.ParseAsync(buffer);
+
+        Assert.Equal(result.Number, header.Number);
+        Assert.Equal(result.SegmentType, header.SegmentType);
+        Assert.Equal(result.ReferencedSegmentNumbers, header.ReferencedSegmentNumbers);
+        Assert.Equal(result.Page, header.Page);
+        Assert.Equal(result.DataLength, header.DataLength);
+
+    }
+
 
     private void RequireEntireBlock(byte[] data)
     {
