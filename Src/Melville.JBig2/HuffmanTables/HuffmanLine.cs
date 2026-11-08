@@ -18,10 +18,6 @@ internal readonly struct HuffmanCode
         PrefixLength = prefixLength;
     }
 
-    [Obsolete]
-    public HuffmanCode AddBitToPattern(ref SequenceReader<byte> reader, BitReader bitState) =>
-        new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
-
     public HuffmanCode AddBitToPattern(ref SpanParsingBuffer reader, BitReader bitState) =>
         new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
 

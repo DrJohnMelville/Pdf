@@ -17,14 +17,6 @@ internal ref partial struct GenericRegionRefinementAlgorithm
     [FromConstructor] private readonly int ltpContext;
     private bool ltp = false;
 
-    [Obsolete]
-    public void Read(ref SequenceReader<byte> source)
-    {
-        var spb = new SpanParsingBuffer(source.UnreadSequence.ToArray());
-        Read(ref spb);
-        source.Advance(spb.RelativePosition);
-    }
-
     public void Read(ref SpanParsingBuffer source)
     {
         var incrementalTemplate = template.ToIncrementalTemplate();
