@@ -1,10 +1,7 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Numerics;
-using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
+﻿using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces.ParsingBuffers;
+using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 

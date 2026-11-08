@@ -1,6 +1,5 @@
 ﻿using Melville.Parsing;
 using Melville.Parsing.ParserMapping;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 

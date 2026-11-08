@@ -1,8 +1,6 @@
 ﻿using Melville.Fonts.SfntParsers.TableParserParts;
-using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
-using System.Buffers;
 using System.Numerics;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
