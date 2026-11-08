@@ -2,7 +2,11 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Melville.JBig2.FileOrganization;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.JBig2.JBigSorters;
 
@@ -14,10 +18,10 @@ namespace Melville.JBig2.JBigSorters;
 public class JBigSorter
 {
     private readonly byte[] sourceBuffer;
+    private readonly ParsingBuffer parsingBuffer;
     private readonly MemoryStream globals;
     private readonly MemoryStream specific;
     private readonly int desiredPage;
-    private int pos = 9;
     
     /// <summary>
     /// Sort a JBig into global and specific segments
@@ -32,23 +36,29 @@ public class JBigSorter
         this.globals = globals;
         this.specific = specific;
         this.desiredPage = desiredPage;
+        parsingBuffer = new ParsingBuffer(new MemoryReader(source));
     }
 
     /// <summary>
     /// Parse the source buffer and write out thee sorted segments to their respective buffers
     /// </summary>
-    public void Sort()
+    public async ValueTask SortAsync()
     {
+        await parsingBuffer.AdvanceAsync(9);
         var fileFlags = new FileFlags(sourceBuffer[8]);
-        SkipPageCount(fileFlags);
+        await SkipPageCount(fileFlags).CA();
         if (fileFlags.SequentialFileOrganization)
-            ParseSequential(); // empty loop is intentional
-        else ParseRandom();
+            await ParseSequentialAsync(); 
+        else await ParseRandom();
     }
 
-    private void ParseRandom()
+    private async Task ParseRandom()
     {
-        while (TryEnqueueOneHeader()) ; // empty loop
+        SegmentRecord sr;
+        do
+        {
+            sr = await ParseOneHeaderAsync().CA();
+        } while (TryEnqueueOneHeader(sr));
         while (segments.Count > 0)
             WriteSegment();
     }
@@ -57,26 +67,23 @@ public class JBigSorter
 
     private readonly Queue<SegmentRecord> segments = new();
 
-    private void ParseSequential()
+    private async ValueTask ParseSequentialAsync()
     {
         while (true)
         {
-            if (!TryEnqueueOneHeader()) return;
-            WriteSegment();
+            var header = await ParseOneHeaderAsync().CA();
+            if (!TryEnqueueOneHeader(header)) return;
+            await WriteSegment();
         }
     }
 
-    private bool TryEnqueueOneHeader() => TryEnqueueOneHeader(ParseOneHeader());
 
-    private SegmentRecord ParseOneHeader()
+    private async ValueTask<SegmentRecord> ParseOneHeaderAsync()
     {
-        var seq = new ReadOnlySequence<byte>(sourceBuffer.AsMemory(pos));
-        var reader = new SequenceReader<byte>(seq);
-        var startingPos = reader.Position;
-        SegmentHeaderParser.TryParse(ref reader, out var header);
-        var length = (int)seq.Slice(startingPos, reader.Position).Length;
-        var segmentRecord = new SegmentRecord(pos, length, header);
-        pos += length;
+        var startingPos = parsingBuffer.RelativePosition;
+        var header = await SegmentHeaderParser2.ParseAsync(parsingBuffer).CA();
+        var length = parsingBuffer.RelativePosition - startingPos;
+        var segmentRecord = new SegmentRecord((int)startingPos, (int)length, header);
         return segmentRecord;
     }
 
@@ -86,19 +93,20 @@ public class JBigSorter
         return segmentRecord.Header.SegmentType != SegmentType.EndOfFile;
     }
 
-    private void WriteSegment()
+    private ValueTask WriteSegment()
     {
         var header = segments.Dequeue();
         if (WantPage(header.Header.Page) && ! SegmentIsUnusedInPdf(header.Header))
             WriteSegment(header.Header, sourceBuffer.AsSpan(header.Position, header.Length), 
-                sourceBuffer.AsSpan(pos, (int)header.Header.DataLength));
-        pos += (int) header.Header.DataLength;
+                sourceBuffer.AsSpan((int)parsingBuffer.RelativePosition, (int)header.Header.DataLength));
+        return parsingBuffer.AdvanceAsync((int)header.Header.DataLength);
+        
     }
 
 
-    private void SkipPageCount(FileFlags fileFlags)
+    private ValueTask SkipPageCount(FileFlags fileFlags)
     {
-        if (!fileFlags.UnknownPageCount) pos += 4;
+        return (fileFlags.UnknownPageCount)?ValueTask.CompletedTask:parsingBuffer.AdvanceAsync(4);
     }
 
     private static bool SegmentIsUnusedInPdf(SegmentHeader readerHeader) => 

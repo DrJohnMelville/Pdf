@@ -49,9 +49,9 @@ internal static class SegmentHeaderParser2
     private static ValueTask<bool> HasMoreBytesToRead(ParsingBuffer reader)
     {
         // PDF stores the global segments of a JBig image in a separate stream, which allows them to
-        // be shared among multiple jbeg images.  These segments are stored in sequential fashion and
-        // do not have an end of file segmenet, the stream just ends.  Here we check if we have hit the end
-        // of the stream, and if so, then we can syntensize an end of file segment so the parser thinks it
+        // be shared among multiple JBig images.  These segments are stored in sequential fashion and
+        // do not have an end of file segment, the stream just ends.  Here we check if we have hit the end
+        // of the stream, and if so, then we can synthesize an end of file segment so the parser thinks it
         // has just come to the end of a file.
         return reader.TryEnsureBytesAsync(8);
     }

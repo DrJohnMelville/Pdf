@@ -1,5 +1,6 @@
 ﻿using Melville.JBig2.JBigSorters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 
@@ -22,7 +23,7 @@ public abstract class JBigBitStream: DisplayImageTest
         MemoryStream specific = new();
         
         var sorter = new JBigSorter(SourceBits(), global, specific,page); 
-        sorter.Sort();
+        await sorter.SortAsync().CA();
         global.Seek(0, SeekOrigin.Begin);
         specific.Seek(0, SeekOrigin.Begin);
         
