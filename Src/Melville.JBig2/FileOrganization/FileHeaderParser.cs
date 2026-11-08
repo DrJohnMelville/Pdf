@@ -37,7 +37,7 @@ internal static class FileHeaderParser
         var ret = new Queue<SegmentHeader>();
         while(true)
         {
-            var item = await SegmentHeaderParser2.ParseAsync(input).CA();
+            var item = await SegmentHeaderParser.ParseAsync(input).CA();
             ret.Enqueue(item);
             if (item.SegmentType == SegmentType.EndOfFile) return ret;
         } 

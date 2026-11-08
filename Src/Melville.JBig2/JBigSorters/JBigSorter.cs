@@ -81,7 +81,7 @@ public class JBigSorter
     private async ValueTask<SegmentRecord> ParseOneHeaderAsync()
     {
         var startingPos = parsingBuffer.RelativePosition;
-        var header = await SegmentHeaderParser2.ParseAsync(parsingBuffer).CA();
+        var header = await SegmentHeaderParser.ParseAsync(parsingBuffer).CA();
         var length = parsingBuffer.RelativePosition - startingPos;
         var segmentRecord = new SegmentRecord((int)startingPos, (int)length, header);
         return segmentRecord;

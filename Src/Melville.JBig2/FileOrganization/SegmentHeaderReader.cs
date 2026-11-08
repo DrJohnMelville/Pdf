@@ -36,7 +36,7 @@ internal class SequentialSegmentHeaderReader : SegmentHeaderReader
     }
         
     protected override ValueTask<SegmentHeader> NextSegmentHeaderAsync() =>
-        SegmentHeaderParser2.ParseAsync(Pipe);
+        SegmentHeaderParser.ParseAsync(Pipe);
 }
 
 internal class RandomAccessSegmentHeaderReader : SegmentHeaderReader
