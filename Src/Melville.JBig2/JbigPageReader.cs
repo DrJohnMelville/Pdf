@@ -59,8 +59,8 @@ public abstract class JbigPageReader
 
     private async ValueTask ReadSegmentsAsync(SegmentHeaderReader segmentHeadReader)
     {
-        while ((await segmentHeadReader.NextSegmentReaderAsync().CA() is { } reader) &&
-               reader.Header.SegmentType != SegmentType.EndOfFile)
+        while ((await segmentHeadReader.NextSegmentReaderAsync().CA() is { 
+                 Header.SegmentType: not SegmentType.EndOfFile} reader) )
         {
             if (WantPage(reader.Header.Page))
                 ProcessSegment(reader.Header, await reader.ReadFromAsync().CA());

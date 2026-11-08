@@ -33,6 +33,9 @@ internal static class SegmentHeaderParser2
 
     public static async ValueTask<SegmentHeader> ParseAsync(ParsingBuffer reader)
     {
+        if (!await HasMoreBytesToRead(reader).CA())
+            return new SegmentHeader(0, SegmentType.EndOfFile, 0, 0, []);
+
         var number = await reader.GetUInt32BigEndianAsync().CA();
         var flags = await reader.GetUInt8Async().CA();
         var references = await ReadSegmentAssociationFieldAsync(reader, SegmentReferenceSize(number)).CA();
@@ -41,6 +44,16 @@ internal static class SegmentHeaderParser2
 
         return new SegmentHeader(number, GetSegmentType(flags), pages, dataLength, references);
 
+    }
+
+    private static ValueTask<bool> HasMoreBytesToRead(ParsingBuffer reader)
+    {
+        // PDF stores the global segments of a JBig image in a separate stream, which allows them to
+        // be shared among multiple jbeg images.  These segments are stored in sequential fashion and
+        // do not have an end of file segmenet, the stream just ends.  Here we check if we have hit the end
+        // of the stream, and if so, then we can syntensize an end of file segment so the parser thinks it
+        // has just come to the end of a file.
+        return reader.TryEnsureBytesAsync(8);
     }
 
     private static ISizedReader PageAssociationSize(byte flags) =>
