@@ -1,4 +1,6 @@
 ﻿using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
 using System.Buffers;
 using System.IO.Pipelines;
 
@@ -7,11 +9,14 @@ namespace Melville.Parsing.VariableBitEncoding;
 /// <summary>
 /// Reads a PipeReader as bits instead of bytes.
 /// </summary>
-public readonly struct BitStreamReader
+public readonly struct BitStreamReader: IDisposable
 {
-    private readonly PipeReader pipe;
+    private readonly ParsingBuffer pipe;
     private readonly BitReader reader;
     private readonly int bits;
+
+    ///<inheritdoc/>
+    public void Dispose() => pipe.Dispose();
 
     /// <summary>
     /// Construct a BitStreamReader.
@@ -20,7 +25,7 @@ public readonly struct BitStreamReader
     /// <param name="bits">The number of bits to read in each number.</param>
     public BitStreamReader(Stream source, int bits) : this()
     {
-        pipe = PipeReader.Create(source);
+        pipe = new ParsingBuffer(source.AsStreamReader());
         reader = new BitReader();
         this.bits = bits;
     }
@@ -33,29 +38,13 @@ public readonly struct BitStreamReader
     {
         while (true)
         {
-            var span = await pipe.ReadAsync().CA();
-            if (TryRead(span.Buffer, out var ret)) return ret;
-            pipe.AdvanceTo(span.Buffer.Start, span.Buffer.End);
+            var spb = new SpanParsingBuffer(pipe.Peek());
+            if (reader.TryRead(bits, ref spb, out var intValue))
+            {
+                pipe.Advance((int)spb.RelativePosition);
+                return (uint)intValue;
+            }
+            await pipe.ReadBytesAsync();
         }
-    }
-
-    /// <summary>
-    /// Try to read a number from the given sequence.
-    /// </summary>
-    /// <param name="spanBuffer">The source data.</param>
-    /// <param name="output">the number composed the number of bits passed in the constructor
-    /// taken from the source buffer</param>
-    /// <returns>True if success, false if there is not enough data in the source sequence</returns>
-    private bool TryRead(in ReadOnlySequence<byte> spanBuffer, out uint output)
-    {
-        var seqReader = new SequenceReader<byte>(spanBuffer);
-        if (!reader.TryRead(bits, ref seqReader, out var intValue))
-        {
-            output = 0;
-            return false;
-        }
-        pipe.AdvanceTo(seqReader.Position);
-        output = (uint)intValue;
-        return true;
     }
 }

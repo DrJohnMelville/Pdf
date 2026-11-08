@@ -45,9 +45,6 @@ internal readonly struct HuffmanLine
         return code.IsEqualTo(other);
     }
 
-    [Obsolete]
-    public int ReadNum(ref SequenceReader<byte> source, BitReader bitState) =>
-        AdjustNumber(bitState.ForceRead(rangeLength, ref source));
     public int ReadNum(ref SpanParsingBuffer source, BitReader bitState) =>
         AdjustNumber(bitState.ForceRead(rangeLength, ref source));
     private int AdjustNumber(int raw) => rangeOffset + (rangeFactor * raw);

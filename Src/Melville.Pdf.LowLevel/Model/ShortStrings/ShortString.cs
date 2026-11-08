@@ -10,7 +10,6 @@ internal interface IShortString
     int Length();
     bool SameAs(in ReadOnlySpan<byte> other);
     string ValueAsString();
-    public bool CheckReaderFor(ref SequenceReader<byte> input, bool final, out bool result);
     void Fill(Span<byte> span);
 }
 
@@ -40,20 +39,6 @@ internal readonly struct ShortString<T> : IShortString where T : IPackedBytes
         Span<byte> chars = stackalloc byte[data.Length()];
         data.Fill(chars);
         return Encoding.UTF8.GetString(chars);
-    }
-
-    public bool CheckReaderFor(ref SequenceReader<byte> input, bool final, out bool result)
-    {
-        var len = data.Length();
-        Span<byte> inputSpan = stackalloc byte[len];
-        if (!input.TryCopyTo(inputSpan))
-        {
-            result = false;
-            return final;
-        }
-        input.Advance(len);
-        result = data.SameAs(inputSpan);
-        return true;
     }
 
     public void Fill(Span<byte> span) => data.Fill(span);

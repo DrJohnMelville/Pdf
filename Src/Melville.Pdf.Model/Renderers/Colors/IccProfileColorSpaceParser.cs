@@ -1,18 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.Icc.ColorTransforms;
+﻿using Melville.Icc.ColorTransforms;
 using Melville.Icc.Parser;
-
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Streams;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 

@@ -1,20 +1,15 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipelines;
-using System.Linq;
-using System.Threading.Tasks;
-using Melville.Icc.Model;
+﻿using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 using Melville.Icc.Parser;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.ObjectRentals;
-using Melville.Parsing.PipeReaders;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
+using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;

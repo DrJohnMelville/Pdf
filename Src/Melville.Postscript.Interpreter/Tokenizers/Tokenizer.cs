@@ -1,21 +1,13 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipelines;
-using System.Text;
-using System.Threading.Tasks;
-using Melville.INPC;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.PipeReaders;
-using Melville.Parsing.Streams;
-using Melville.Postscript.Interpreter.Values;
+﻿using Melville.Postscript.Interpreter.Values;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
