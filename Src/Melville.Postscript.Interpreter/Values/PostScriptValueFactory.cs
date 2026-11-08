@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Numbers;

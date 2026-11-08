@@ -4,7 +4,6 @@ using System.IO.Pipelines;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
 
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;

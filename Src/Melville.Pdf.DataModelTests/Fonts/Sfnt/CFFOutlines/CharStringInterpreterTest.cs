@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.INPC;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;

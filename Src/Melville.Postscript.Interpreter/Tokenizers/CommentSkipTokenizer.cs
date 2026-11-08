@@ -5,7 +5,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers
 {
     internal class CommentSkipTokenizer : WhiteSpaceSkipper
     {
-        // Essentially a comment is a special kind of whitespace that egins with the remainder of the line
+        // Essentially a comment is a special kind of whitespace that begins with the remainder of the line
         // plus any whitespace after that.  So we lop off the first line and then use the base method to skip
         // terminal whitespace.
         protected override bool TryFindLength(ReadOnlySpan<byte> source, out int length)

@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;

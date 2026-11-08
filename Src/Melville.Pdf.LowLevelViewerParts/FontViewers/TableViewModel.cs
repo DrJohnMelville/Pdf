@@ -2,7 +2,6 @@
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.INPC;
-using Melville.Parsing.CountingReaders;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 

@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Text;
 using Melville.Icc.Parser;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces.ParsingBuffers;
 

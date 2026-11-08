@@ -1,11 +1,8 @@
-﻿using System;
-using System.Buffers;
-using Melville.Parsing.CountingReaders;
-using Melville.Parsing.MultiplexSources;
+﻿using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Melville.StreamInterfaces;
-using Melville.StreamInterfaces.Streams;
-using Microsoft.CodeAnalysis;
+using System;
+using System.Buffers;
 
 
 namespace Melville.Parsing.LinkedLists;

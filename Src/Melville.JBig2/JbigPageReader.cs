@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
-using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;

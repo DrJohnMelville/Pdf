@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
-using Melville.Parsing.CountingReaders;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;

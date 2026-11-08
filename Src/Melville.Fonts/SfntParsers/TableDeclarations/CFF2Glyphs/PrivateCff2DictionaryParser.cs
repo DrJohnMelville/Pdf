@@ -1,6 +1,5 @@
 ﻿using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Hacks.Reflection;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.MultiplexSources;
 using Melville.StreamInterfaces;

@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;

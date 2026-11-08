@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Melville.Icc.Model.Tags;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.StreamInterfaces.ParsingBuffers;
 

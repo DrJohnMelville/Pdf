@@ -4,7 +4,6 @@ using Melville.INPC;
 using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.Decoder;
 
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.IStreamAdaptors;
 using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;

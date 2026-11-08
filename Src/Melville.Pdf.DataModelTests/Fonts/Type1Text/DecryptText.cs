@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Melville.Fonts.Type1TextParsers.EexecDecoding;
 using Melville.Hacks;
-using Melville.Parsing.CountingReaders;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.StreamFilters;

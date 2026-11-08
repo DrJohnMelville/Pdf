@@ -1,5 +1,4 @@
-﻿using Melville.Parsing.CountingReaders;
-using Melville.Parsing.LinkedLists;
+﻿using Melville.Parsing.LinkedLists;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;

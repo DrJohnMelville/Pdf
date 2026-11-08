@@ -1,5 +1,4 @@
-﻿using Melville.Parsing.CountingReaders;
-using Melville.StreamInterfaces;
+﻿using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.CodeAnalysis;
 using System.Buffers;
