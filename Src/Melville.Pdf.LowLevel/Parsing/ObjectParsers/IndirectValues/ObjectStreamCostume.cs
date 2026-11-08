@@ -11,5 +11,5 @@ internal readonly struct ObjectStreamCostume(PdfStream inner)
 {
     public ValueTask<int> CountAsync() => inner.GetOrDefaultAsync(KnownNames.N, 0);
     public ValueTask<int> FirstValueOffsetAsync() => inner.GetOrDefaultAsync(KnownNames.First, 0);
-    public ValueTask<IAsyncReader> ReaderAsync() => inner.ReaderForContentAsync();
+    public ValueTask<IPdfStreamReader> ReaderAsync() => inner.ReaderForContentAsync();
 }

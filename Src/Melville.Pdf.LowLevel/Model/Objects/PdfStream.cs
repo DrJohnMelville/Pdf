@@ -16,7 +16,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// <summary>
 /// This represents a PDF stream object.  It inherits from PdfDictionary because all
 /// PDF streams are also dictionaries.  It has a few extra methods to retrieve the
-/// associated data strea,.
+/// associated data stream.
 /// </summary>
 public class PdfStream : PdfDictionary
 {
@@ -53,9 +53,9 @@ public class PdfStream : PdfDictionary
     /// <param name="desiredFormat">The decoding level that is requested.</param>
     /// <param name="context">An optional context objext for the filters.</param>
     /// <returns></returns>
-    public async ValueTask<IAsyncReader> ReaderForContentAsync(
+    public async ValueTask<IPdfStreamReader> ReaderForContentAsync(
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
-            (await StreamContentAsync(desiredFormat, context)).AsStreamReader(true);
+           new WrapPdfStream(await StreamContentAsync(desiredFormat, context));
 
 #warning convert this to native readers.
     internal async ValueTask<Stream> StreamEncryptedContentAsync(

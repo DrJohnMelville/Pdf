@@ -6,43 +6,21 @@ using System.Threading.Tasks;
 using Melville.INPC;
 
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 internal readonly partial struct CMapStreamParser
 {
     private readonly List<uint> dictionary = new();
-    [FromConstructor] private readonly PipeReader pipe;
+    [FromConstructor] private readonly ParsingBuffer pipe;
     
     public async ValueTask<IMapCharacterToGlyph> ParseAsync()
     {
-        return new CharacterToGlyphArray(await ReadListAsync().CA());
-    }
-
-    private async ValueTask<IReadOnlyList<uint>> ReadListAsync()
-    {
-        while (await pipe.ReadAsync().CA() is { } result &&
-               (result.Buffer.Length > 1 || !result.IsCompleted))
+        while (await pipe.TryEnsureBytesAsync(2).CA())
         {
-            ProcessItems(result.Buffer);
+            dictionary.Add(pipe.GetUInt16BigEndian());
         }
-        return dictionary;
+        return new CharacterToGlyphArray(dictionary);
     }
-
-    private void ProcessItems(ReadOnlySequence<byte> buffer)
-    {
-        var reader = new SequenceReader<byte>(buffer);
-        while (CanReadUshort(reader)) dictionary.Add(ReadUShort(ref reader));
-        pipe.AdvanceTo(reader.Position, buffer.End);
-    }
-
-    private static uint ReadUShort(ref SequenceReader<byte> reader)
-    {
-        Trace.Assert(reader.TryRead(out var hiByte));
-        Trace.Assert(reader.TryRead(out var lowByte));
-        var value = (uint)((hiByte << 8) | lowByte);
-        return value;
-    }
-
-    private static bool CanReadUshort(in SequenceReader<byte> reader) => reader.Remaining >= 2;
 }

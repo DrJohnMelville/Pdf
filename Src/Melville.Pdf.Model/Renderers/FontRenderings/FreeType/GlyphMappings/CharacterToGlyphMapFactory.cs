@@ -144,8 +144,7 @@ internal readonly partial struct CharacterToGlyphMapFactory(IGenericFont iFont, 
 
     private static async ValueTask<IMapCharacterToGlyph> ParseCmapStreamAsync(PdfStream mapStream)
     {
-        await using var stream = await mapStream.StreamContentAsync().CA();
-        return await new CMapStreamParser(
-            PipeReader.Create(stream)).ParseAsync().CA();
+        using var stream = await mapStream.ContentParsingBufferAsync().CA();
+        return await new CMapStreamParser(stream).ParseAsync().CA();
     }
 }
