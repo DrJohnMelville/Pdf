@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.SkiaSharp;
+using Melville.StreamInterfaces.ParsingBuffers;
 using SkiaSharp;
 using Xunit;
 
@@ -38,15 +40,17 @@ public class BitmapWriting
     private static byte[] dest = Enumerable.Repeat((byte)12, 40000).ToArray();
         
     [Benchmark(Baseline = true)]
-    public void Generic() => TestWriter(new 
-        NBitByteWriter(new ComponentWriter(
-            new ClosedInterval(0, 255), new ClosedInterval[]
-            {
-                new (0,1), new (0,1), new (0,1)
-            }, DeviceRgb.Instance), 8, 100));
+    public void Direct() {
 
-    [Benchmark()]
-    public void Specialized() => TestWriter(FastBitmapWriterRGB8.Instance);
+        SpanParsingBuffer input = new(source);
+        var next = dest.AsSpan();
+        FastBitmapWriterRGB8.Instance.WriteBytes(ref input, ref next);
+    }
+
+    [Benchmark]
+    public void Old() => TestWriter(FastBitmapWriterRGB82.Instance);
+    [Benchmark]
+    public void Briged() => TestWriter(FastBitmapWriterRGB8.Instance);
 
     private static unsafe void TestWriter(IByteWriter writer)
     {
@@ -56,31 +60,5 @@ public class BitmapWriting
             var capDest = destPtr;
             writer.WriteBytes(ref capSrc, ref capDest, destPtr + 40000);
         }
-    }
-
-    public unsafe void StencilWriterTest()
-    {
-        var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(new byte[] { 0b1010_1100 }));
-        var dest = new byte[32];
-        var final = new byte[]
-        {
-            3, 2, 1, 255,
-            0, 0, 0, 0,
-            3, 2, 1, 255,
-            0, 0, 0, 0,
-            3, 2, 1, 255,
-            3, 2, 1, 255,
-            0, 0, 0, 0,
-            0, 0, 0, 0
-        };
-        fixed (byte* destptr = dest)
-        {
-            var captureDest = destptr;
-            new StencilWriter(new double[] {1.0,0.0}, new DeviceColor(1,2,3,255), 64)
-                .WriteBytes(ref source, ref captureDest, destptr+32);
-        }
-
-        Assert.Equal(final, dest);
-        
     }
 }

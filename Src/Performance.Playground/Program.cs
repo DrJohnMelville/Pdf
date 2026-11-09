@@ -1,13 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using Performance.Playground;
 using Performance.Playground.Rendering;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
  
 #pragma warning disable CS0162
 
-switch (0)
+switch (1)
 {
     case 0:
         Console.WriteLine("Begin");
@@ -16,12 +18,17 @@ switch (0)
         Console.ReadLine();
         break;
     case 1:
-        BenchmarkRunner.Run<PageRendering>();
+        var config = DefaultConfig.Instance
+    .AddJob(Job.Default.WithArguments(new MsBuildArgument[]
+    {
+        new MsBuildArgument("/p:GeneratePackageOnBuild=false")
+    }));
+        BenchmarkRunner.Run<BitmapWriting>(config);
         break;
     case 2:
         for (int i = 0; i < 1_000; i++)
         {
-            new BitmapWriting().Generic();
+
         }
         break;
 }

@@ -1,16 +1,44 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.INPC;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 [StaticSingleton]
-internal partial class FastBitmapWriterRGB8: IByteWriter
+internal partial class FastBitmapWriterRGB8 : IByteWriter
+{
+    public unsafe void WriteBytes(
+        ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        while (input.CurrentLength >= 3 && output.Length >= 4)
+        {
+            var inputSpan = input.Peek();
+            output[2] = inputSpan[0];
+            output[1] = inputSpan[1];
+            output[0] = inputSpan[2];
+            output[3] = 0xFF;
+            input.Advance(3);
+            output = output[4..];
+        }
+    }
+
+    public unsafe void WriteBytes(
+        scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
+    {
+        var inSpan = new SpanParsingBuffer(input.CurrentSpan);
+        var outSpan = new Span<byte>(output, 3+(int)(nextPos - output));
+        WriteBytes(ref inSpan, ref outSpan);
+    }
+}
+
+[StaticSingleton]
+internal partial class FastBitmapWriterRGB82: IByteWriter
 {
     public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         while (input.Remaining >= 3 && output < nextPos)
         {
-#warning -- I may be able to do this faster by reading a 4 byte uint with a extra byte and then fixing the resulting int and writing it directly to the outut buffer.
             input.TryRead(out output[2]);
             input.TryRead(out output[1]);
             input.TryRead(out *(output));
@@ -19,6 +47,7 @@ internal partial class FastBitmapWriterRGB8: IByteWriter
         }
     }
 }
+
 
 /*
  This is an AI chatbot item that could copy bytes a lot faster.
@@ -34,7 +63,7 @@ public static class PixelConverter
 {
     public static byte[] ExpandRgbToRgba(ReadOnlySpan<byte> rgbSource, byte alpha = 255)
     {
-        if (rgbSource.Length % 3 != 0)
+1        if (rgbSource.Length % 3 != 0)
             throw new ArgumentException("Source length must be a multiple of 3.");
 
         int pixelCount = rgbSource.Length / 3;

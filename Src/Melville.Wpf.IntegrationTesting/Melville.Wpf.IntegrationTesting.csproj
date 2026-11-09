@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net11.0-windows</TargetFramework>
-        
+		<UseAppHost>true</UseAppHost>
         <IsPackable>false</IsPackable>
         
     </PropertyGroup>

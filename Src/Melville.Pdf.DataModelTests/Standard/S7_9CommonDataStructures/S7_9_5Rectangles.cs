@@ -1,10 +1,9 @@
-﻿using System;
-using System.Numerics;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Payloads;
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures;
