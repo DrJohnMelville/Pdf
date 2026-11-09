@@ -16,23 +16,6 @@ using Melville.StreamInterfaces;
 
 namespace Performance.Playground.Rendering;
 
-[MemoryDiagnoser()]
-public class JbigParsing
-{
-    [Benchmark]
-    public async Task ParseJBigAsync()
-    {
-        var fact = new JbigAllPageReader();
-        await fact.ProcessFileBitsAsync(JBigSampleStreams.Get("042_24")!);
-        var page = fact.GetPage(1);
-        var (ary, _) = page.ColumnLocation(0);
-        var stream = new InvertingMemoryStream(ary, page.BufferLength());
-        var buffer = new byte[4096];
-        while ((await stream.ReadAsync(buffer.AsMemory())) > 0)
-        {
-        }
-    }
-}
 
 [MemoryDiagnoser()]
 public class CcittParsing

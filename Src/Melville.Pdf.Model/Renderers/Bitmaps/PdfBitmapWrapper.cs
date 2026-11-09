@@ -39,6 +39,8 @@ internal class PdfBitmapWrapper(
 #warning this is inefficient  we do use a buffer if it is there, but would like to stream partial values.
 
         var writer = byteWriter(finalColorSpace);
+
+#warning special case MemoryStream here because it has a buffer.
         ISequenceSource seq = source as ISequenceSource ?? await FillBufferAsync(source);
         var src = new SequenceReader<byte>(seq.AsSequence());
 

@@ -1,12 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.JBig2;
+﻿using Melville.JBig2;
 using Melville.JBig2.BinaryBitmaps;
-
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
+using System;
+using System.IO;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
@@ -34,6 +36,33 @@ internal class JbigToPdfAdapter: ICodecDefinition
 
         // in the JBIG spec 0 represents a white (background) pixel and 1 represents black,  Since this is the opposite of
         // how DeviceGray color palate works -- we will invert all the bits
-        return new InvertingMemoryStream(ary, page.BufferLength());
+        InvertSpan(ary.AsSpan(0, page.BufferLength()));
+
+        return new MemoryStream(ary, 0, page.BufferLength(), false, true);
     }
+
+    void InvertSpan(Span<byte> span)
+    {
+        var remainder = span.Length % Vector<byte>.Count;
+        if (remainder is > 0) InvertBytes(span[..remainder]);
+        InvertBytesFast(span[remainder..]);
+    }
+
+    private static void InvertBytesFast(Span<byte> span)
+    {
+        var bigSpan = MemoryMarshal.Cast<byte, Vector<byte>>(span);
+        for (int i = 0; i < bigSpan.Length; i++)
+        {
+            bigSpan[i] = ~bigSpan[i];
+        }
+    }
+
+    private static void InvertBytes(Span<byte> asSpan)
+    {
+        for (int i = 0; i < asSpan.Length; i++)
+        {
+            asSpan[i] = (byte)~asSpan[i];
+        }
+    }
+
 }
