@@ -29,21 +29,25 @@ internal class PdfBitmapWrapper(
 
     public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
-        var x = new BitmapWriter(buffer, Width, Height);
-        return InnerRenderAsync(x);
+        var copier = new BitmapWriter(buffer, Width, Height);
+        return InnerRenderAsync(copier);
     }
 
-    private async ValueTask InnerRenderAsync(BitmapWriter c)
+    private async ValueTask InnerRenderAsync(BitmapWriter copier)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
 #warning this is inefficient  we do use a buffer if it is there, but would like to stream partial values.
 
-        var row = 0;
-        var column = 0;
         var writer = byteWriter(finalColorSpace);
         ISequenceSource seq = source as ISequenceSource ?? await FillBufferAsync(source);
         var src = new SequenceReader<byte>(seq.AsSequence());
-        c.LoadLPixels(ref src, ref row, ref column, writer, out var readTo);
+
+        unsafe
+        {
+            var destPos = copier.Buffer;
+            copier.LoadPixels(ref src, ref destPos, writer, out var readTo);
+
+        }
         if (seq is IDisposable disp && seq != source) disp.Dispose();
     }
     async Task<ISequenceSource> FillBufferAsync(Stream source)
@@ -72,46 +76,22 @@ internal class PdfBitmapWrapper(
     }
 }
 
-internal readonly unsafe partial struct BitmapWriter
+internal readonly unsafe partial struct BitmapWriter(byte* buffer, int width, int height)
 {
-    [FromConstructor]private readonly byte* buffer;
-    [FromConstructor]private readonly int width;
-    [FromConstructor]private readonly int height;
-    public bool LoadLPixels(ref SequenceReader<byte> seq, ref int row, ref int col,
+    public byte* Buffer => buffer;
+    readonly byte* oneAfterEnd = -3 + buffer + (4 * width * height); // make sure we have enough room to write 4 bytes
+
+    public bool LoadPixels(ref SequenceReader<byte> seq, ref byte* destPos,
         IByteWriter writer, out SequencePosition sp)
     {
         sp = default;
-        if (!EnoughBytesToRead(seq.Length, writer.MinimumInputSize))
+        if (!EnoughBytesToRead(seq.Length))
             return false;
-        LoadBytes(ref row, ref col, writer, ref seq);
+        writer.WriteBytes(ref seq, ref destPos, oneAfterEnd);
         sp = seq.Position;
-        return row < height;
+        return destPos >= oneAfterEnd;
     }
 
-#warning make this safe with spans
-    private void LoadBytes(ref int row, ref int col, IByteWriter writer, ref SequenceReader<byte> seq)
-    {
-        while (EnoughBytesToRead(seq.Remaining, writer.MinimumInputSize))
-        {
-            byte* localPointer = buffer + PixelOffset(row, col);
-            byte* oneOffEnd = localPointer + ((width - col) * 4);
-            writer.WriteBytes(ref seq, ref localPointer, oneOffEnd);
-            if (oneOffEnd == localPointer)
-            {
-                row++;
-                if (row >= height) return;
-                col = 0;
-            }
-            else
-            {
-                col = width - (int)(oneOffEnd - localPointer) / 4;
-            }
-        }
-    }
-
-    private bool EnoughBytesToRead(long bytesRemaining, int minimumInput) => 
-        bytesRemaining >= minimumInput;
-
-    private int PixelOffset(int row, int col) => 4 * PixelPosition(row, col);
-    private int PixelPosition(int row, int col) => (col + (row * width));
+    private bool EnoughBytesToRead(long bytesRemaining) => 
+        bytesRemaining >= 0;
 }

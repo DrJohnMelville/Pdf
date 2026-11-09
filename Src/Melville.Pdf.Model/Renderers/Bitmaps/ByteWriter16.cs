@@ -13,6 +13,4 @@ internal class ByteWriter16(ComponentWriter writer) : ByteWriter(ushort.MaxValue
         }
     }
     private static int UIntFromBytes(byte high, byte low) => (high << 8)|low;
-
-    public override int MinimumInputSize => 2;
 }

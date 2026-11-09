@@ -18,8 +18,6 @@ internal partial class FastBitmapWriterRGB8: IByteWriter
             output += 4;
         }
     }
-    
-    public int MinimumInputSize => 3;
 }
 
 /*

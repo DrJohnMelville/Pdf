@@ -10,7 +10,6 @@ internal interface IByteWriter
 {
     unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, 
          byte* nextPos);
-    int MinimumInputSize { get; }
 }
 
 
@@ -90,6 +89,4 @@ internal abstract class ByteWriter: IByteWriter
     }
 
     private Dictionary<int, DeviceColor> cache = new(maxSize);
-
-    public abstract int MinimumInputSize { get; }
 }

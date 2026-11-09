@@ -11,6 +11,4 @@ internal class ByteWriter8(ComponentWriter writer) : ByteWriter(ushort.MaxValue,
             PushComponent(ref output, data);
         }
     }
-
-    public override int MinimumInputSize => 1;
 }

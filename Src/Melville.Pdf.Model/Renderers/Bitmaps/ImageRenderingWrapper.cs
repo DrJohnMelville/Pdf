@@ -28,7 +28,7 @@ internal readonly partial struct ImageRenderingWrapper
 
     private IByteWriter Wrap(IColorSpace finalColorspace)
     {
-        if (isImageMask) return new StencilWriter(decode, attr.FillColor);
+        if (isImageMask) return new StencilWriter(decode, attr.FillColor, attr.Width);
 
         if (CanUseFastWriter(finalColorspace)) return FastBitmapWriterRGB8.Instance;
 
@@ -40,7 +40,7 @@ internal readonly partial struct ImageRenderingWrapper
         {
             16 => new ByteWriter16(writer),
             8 => new ByteWriter8(writer),
-            _ => new NBitByteWriter(writer, bitsPerComponent)
+            _ => new NBitByteWriter(writer, bitsPerComponent,attr.Width)
         };
 
     private bool CanUseFastWriter(IColorSpace finalColorspace) =>

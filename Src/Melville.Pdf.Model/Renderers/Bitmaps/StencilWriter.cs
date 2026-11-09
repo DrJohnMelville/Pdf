@@ -9,10 +9,13 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal class StencilWriter : IByteWriter
 {
    private readonly uint zeroColor;
-    private readonly uint oneColor;
+   private readonly uint oneColor;
+   private readonly int rowWidth;
+    private int column;
     
-    public StencilWriter(IReadOnlyList<double>? decode, DeviceColor color)
+    public StencilWriter(IReadOnlyList<double>? decode, DeviceColor color, int rowWidth)
     {
+        this.rowWidth = rowWidth;
         var drawColor = color.AsPreMultiplied().AsArgbUint32();
         (zeroColor, oneColor) = ZeroIsMarkingValue(decode) ? (drawColor, 0u) : (0, drawColor);
     }
@@ -25,32 +28,23 @@ internal class StencilWriter : IByteWriter
         Debug.Assert(nextPos > output);
         uint* iOutput = (uint*)output;
         uint* nextOutput = (uint*)nextPos;
-        
-        var (sourceBytesInDestination, rem) = Math.DivRem((nextOutput - iOutput)-0, 8);
-        var sourceBytesToRead = Math.Min(sourceBytesInDestination, input.Remaining);
 
-        for (int i = 0; i < sourceBytesToRead; i++)
+        while (iOutput < nextOutput && input.TryRead(out var sourceByte))
         {
-            input.TryRead(out var data);
-            ExpandSourceByte(ref iOutput, data, 0);
+            ExpandSourceByte(ref iOutput, sourceByte);
+            column %= rowWidth;
         }
-        if (rem > 0 && input.TryRead(out var data1))
-        {
-            ExpandSourceByte(ref iOutput, data1, 0x80 >> (int)rem);
-        }
-
         output = (byte*)iOutput;
     }
 
-    private unsafe void ExpandSourceByte(ref uint* iOutput, byte sourceByte, int stop)
+    private unsafe void ExpandSourceByte(ref uint* iOutput, byte sourceByte)
     {
-        for (var currentBit = 0x80; currentBit > stop; currentBit >>= 1)
+        for (var currentBit = 0x80;
+            currentBit > 0 && column < rowWidth;
+            currentBit >>= 1, column++)
         {
             var decision = ((currentBit & sourceByte) == currentBit);
             *iOutput++ = decision ? oneColor : zeroColor;
         }
     }
-
-
-    public int MinimumInputSize => 1;
 }

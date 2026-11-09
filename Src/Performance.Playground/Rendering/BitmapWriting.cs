@@ -43,7 +43,7 @@ public class BitmapWriting
             new ClosedInterval(0, 255), new ClosedInterval[]
             {
                 new (0,1), new (0,1), new (0,1)
-            }, DeviceRgb.Instance), 8));
+            }, DeviceRgb.Instance), 8, 100));
 
     [Benchmark()]
     public void Specialized() => TestWriter(FastBitmapWriterRGB8.Instance);
@@ -76,7 +76,7 @@ public class BitmapWriting
         fixed (byte* destptr = dest)
         {
             var captureDest = destptr;
-            new StencilWriter(new double[] {1.0,0.0}, new DeviceColor(1,2,3,255))
+            new StencilWriter(new double[] {1.0,0.0}, new DeviceColor(1,2,3,255), 64)
                 .WriteBytes(ref source, ref captureDest, destptr+32);
         }
 
