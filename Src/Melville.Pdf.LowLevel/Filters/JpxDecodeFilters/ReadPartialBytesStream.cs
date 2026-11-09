@@ -7,7 +7,7 @@ using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream, ISequenceSource
+internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream
 {
     private ReadOnlyMemory<byte> source;
 
@@ -28,7 +28,8 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream, ISeq
       
         var bytes = image.Bytes.AsSpan();
         if (bytes.Length % bytesPerQuad != 0) throw new ArgumentException("Invalid length for JPX image");
-
+        
+        //start on the second pixel because the first one is in place.
         var sourceSpan = bytes[4..];
         var targetSpan = bytes[bytesPerQuad..];
         
@@ -53,5 +54,5 @@ internal class ReadPartialBytesStream: DefaultBaseStream, IImageSizeStream, ISeq
         return retLen;
     }
 
-    public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(source);
+    public ReadOnlyMemory<byte> AsSequence() => source;
 }

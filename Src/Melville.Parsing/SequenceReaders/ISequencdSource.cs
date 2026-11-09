@@ -9,11 +9,11 @@ namespace Melville.Parsing.SequenceReaders;
 /// This interface can be implemented by a class that already has the data in a buffer.
 /// This lets readers optionally reuse, rather than copying an existing buffer.
 /// </summary>
-public interface ISequenceSource
+public interface IInternalBufferBytes
 {
     /// <summary>
     /// The data for the complete stream from the current position as a sequence.
     /// </summary>
     /// <returns></returns>
-    ReadOnlySequence<byte> AsSequence();
+    ReadOnlyMemory<byte> AsMemory();
 }

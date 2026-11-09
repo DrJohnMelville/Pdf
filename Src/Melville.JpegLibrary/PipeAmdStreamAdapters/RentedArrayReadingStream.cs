@@ -5,7 +5,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-internal abstract class RentedArrayReadingStream : DefaultBaseStream, ISequenceSource
+internal abstract class RentedArrayReadingStream : DefaultBaseStream, IInternalBufferBytes
 {
     private readonly byte[] data;
     private int length;
@@ -16,6 +16,8 @@ internal abstract class RentedArrayReadingStream : DefaultBaseStream, ISequenceS
         this.length = length;
         Debug.Assert(this.data.Length >= this.length);
     }
+
+    public ReadOnlyMemory<byte> AsMemory() => data.AsMemory()[position..length];
 
     public ReadOnlySequence<byte> AsSequence() => new ReadOnlySequence<byte>(data.AsMemory(position, length-position));
 
@@ -35,4 +37,6 @@ internal abstract class RentedArrayReadingStream : DefaultBaseStream, ISequenceS
             ArrayPool<byte>.Shared.Return(data);
         }
     }
+
+    
 }

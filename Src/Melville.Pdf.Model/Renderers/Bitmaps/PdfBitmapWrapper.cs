@@ -41,8 +41,13 @@ internal class PdfBitmapWrapper(
         var writer = byteWriter(finalColorSpace);
 
 #warning special case MemoryStream here because it has a buffer.
-        ISequenceSource seq = source as ISequenceSource ?? await FillBufferAsync(source);
-        var src = new SequenceReader<byte>(seq.AsSequence());
+        var seq = source switch
+        {
+            IInternalBufferBytes ibb => ibb.AsMemory(),
+            MemoryStream ms when ms.TryGetBuffer(out var buffSeg) => buffSeg.AsMemory(),
+            _ => await FillBufferAsync(source)
+        };
+        var src = new SequenceReader<byte>(new ReadOnlySequence<byte>(seq));
 
         unsafe
         {
@@ -50,14 +55,14 @@ internal class PdfBitmapWrapper(
             copier.LoadPixels(ref src, ref destPos, writer, out var readTo);
 
         }
-        if (seq is IDisposable disp && seq != source) disp.Dispose();
     }
-    async Task<ISequenceSource> FillBufferAsync(Stream source)
+
+    async Task<ReadOnlyMemory<byte>> FillBufferAsync(Stream source)
     {
-        var buffer = new MultiMemoryBuffer();
-        using var memStr = buffer.CreateWriter();
-        await source.AsStreamReader().CopyToAsync(memStr);
-        return buffer;
+#warning terribly inefficent -- eventually we are going to stream these values.
+        var buffer = new MemoryStream();
+        await source.CopyToAsync(buffer);
+        return buffer.ToArray();
     }
 
     /// <inheritdoc />
