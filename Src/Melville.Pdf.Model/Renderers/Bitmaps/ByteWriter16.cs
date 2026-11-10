@@ -1,15 +1,18 @@
-﻿using System.Buffers;
+﻿using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
+using System.Buffers;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal class ByteWriter16(ComponentWriter writer) : ByteWriter(ushort.MaxValue, writer)
 {
-    public override unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
+    public override unsafe void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
     {
-        while (output < nextPos && input.TryPeek(out var high) && input.TryPeek(1, out var low))
+        while (!output.IsEmpty && input.CurrentLength >= 2)
         {
-            input.Advance(2);
-            PushComponent(ref output, UIntFromBytes(high, low));
+            PushComponent(ref output, input.GetUInt16BigEndian());
         }
     }
     private static int UIntFromBytes(byte high, byte low) => (high << 8)|low;

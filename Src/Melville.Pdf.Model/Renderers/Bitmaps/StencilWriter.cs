@@ -1,50 +1,50 @@
-﻿using System;
+﻿using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces.ParsingBuffers;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal class StencilWriter : IByteWriter
 {
-   private readonly uint zeroColor;
-   private readonly uint oneColor;
+   private readonly DeviceColor zeroColor;
+   private readonly DeviceColor oneColor;
    private readonly int rowWidth;
     private int column;
+
+    private static DeviceColor DefaultColor = new DeviceColor();
     
     public StencilWriter(IReadOnlyList<double>? decode, DeviceColor color, int rowWidth)
     {
         this.rowWidth = rowWidth;
-        var drawColor = color.AsPreMultiplied().AsArgbUint32();
-        (zeroColor, oneColor) = ZeroIsMarkingValue(decode) ? (drawColor, 0u) : (0, drawColor);
+        var drawColor = color.AsPreMultiplied();
+        (zeroColor, oneColor) = ZeroIsMarkingValue(decode) ? (drawColor, DefaultColor) : (DefaultColor, drawColor);
     }
 
     private static bool ZeroIsMarkingValue(IReadOnlyList<double>? decode) => 
         decode == null || decode.Count< 1  || decode[0] < 0.5;
     
-    public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
+    public unsafe void WriteBytes(scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
     {
-        Debug.Assert(nextPos > output);
-        uint* iOutput = (uint*)output;
-        uint* nextOutput = (uint*)nextPos;
 
-        while (iOutput < nextOutput && input.TryRead(out var sourceByte))
+        while (!output.IsEmpty && input.TryGetUInt8(out var sourceByte))
         {
-            ExpandSourceByte(ref iOutput, sourceByte);
+            ExpandSourceByte(ref output, sourceByte);
             column %= rowWidth;
         }
-        output = (byte*)iOutput;
     }
 
-    private unsafe void ExpandSourceByte(ref uint* iOutput, byte sourceByte)
+    private unsafe void ExpandSourceByte(ref Span<DeviceColor> output, byte sourceByte)
     {
         for (var currentBit = 0x80;
             currentBit > 0 && column < rowWidth;
             currentBit >>= 1, column++)
         {
             var decision = ((currentBit & sourceByte) == currentBit);
-            *iOutput++ = decision ? oneColor : zeroColor;
+            output[0] = decision ? oneColor : zeroColor;
+            output = output[1..];
         }
     }
 }

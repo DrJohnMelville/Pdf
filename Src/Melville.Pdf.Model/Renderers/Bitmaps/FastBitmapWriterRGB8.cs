@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.InteropServices;
 using Melville.INPC;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
@@ -8,7 +10,14 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 [StaticSingleton]
 internal partial class FastBitmapWriterRGB8 : IByteWriter
 {
-    public unsafe void WriteBytes(
+    public void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
+    {
+        var bytes = MemoryMarshal.AsBytes(output);
+        WriteBytes(ref input, ref bytes);
+        output = MemoryMarshal.Cast<byte, DeviceColor>(bytes);
+    }
+    public void WriteBytes(
         ref SpanParsingBuffer input, ref Span<byte> output)
     {
         while (input.CurrentLength >= 3 && output.Length >= 4)
@@ -22,32 +31,34 @@ internal partial class FastBitmapWriterRGB8 : IByteWriter
             output = output[4..];
         }
     }
-
-    public unsafe void WriteBytes(
-        scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
-    {
-        var inSpan = new SpanParsingBuffer(input.CurrentSpan);
-        var outSpan = new Span<byte>(output, 3+(int)(nextPos - output));
-        WriteBytes(ref inSpan, ref outSpan);
-    }
 }
 
 [StaticSingleton]
 internal partial class FastBitmapWriterRGB82: IByteWriter
 {
-    public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
+    public void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
     {
-        while (input.Remaining >= 3 && output < nextPos)
+        var bytes = MemoryMarshal.AsBytes(output);
+        WriteBytes(ref input, ref bytes);
+        output = MemoryMarshal.Cast<byte, DeviceColor>(bytes);
+    }
+    public void WriteBytes(
+        ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        while (input.CurrentLength >= 3 && output.Length >= 4)
         {
-            input.TryRead(out output[2]);
-            input.TryRead(out output[1]);
-            input.TryRead(out *(output));
+            var inputSpan = input.Peek();
+            output[2] = inputSpan[0];
+            output[1] = inputSpan[1];
+            output[0] = inputSpan[2];
             output[3] = 0xFF;
-            output += 4;
+            input.Advance(3);
+            output = output[4..];
         }
     }
 }
-
+#warning use Vectors to go faster.
 
 /*
  This is an AI chatbot item that could copy bytes a lot faster.

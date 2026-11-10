@@ -3,13 +3,14 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces.ParsingBuffers;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal interface IByteWriter
 {
-    unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, 
-         byte* nextPos);
+    unsafe void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output);
 }
 
 
@@ -28,9 +29,9 @@ internal abstract class ByteWriter: IByteWriter
     }
     
     public abstract unsafe void WriteBytes(
-        scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos);
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output);
 
-    protected unsafe void PushComponent(ref byte* output, int numerator)
+    protected unsafe void PushComponent(ref Span<DeviceColor> output, int numerator)
     {
         components[currentComponent++] = numerator;
         if (currentComponent >= components.Length)
@@ -41,14 +42,10 @@ internal abstract class ByteWriter: IByteWriter
         }
     }
 
-    public static unsafe void PushPixel(ref byte* output, in DeviceColor color)
+    public static unsafe void PushPixel(ref Span<DeviceColor> output, in DeviceColor color)
     {
-        fixed (DeviceColor* colorptr = &color)
-        {
-            *((uint*)output) = *((uint*)colorptr);
-            output += 3;
-            *(output++) = 255;
-        }
+        output[0] = color;
+        output = output[1..];
     }
 
     private const int maxSize = 10_000;

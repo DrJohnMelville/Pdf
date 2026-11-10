@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
@@ -47,12 +49,12 @@ internal class PdfBitmapWrapper(
             MemoryStream ms when ms.TryGetBuffer(out var buffSeg) => buffSeg.AsMemory(),
             _ => await FillBufferAsync(source)
         };
-        var src = new SequenceReader<byte>(new ReadOnlySequence<byte>(seq));
+        var src = new SpanParsingBuffer(seq.Span);
 
         unsafe
         {
             var destPos = copier.Buffer;
-            copier.LoadPixels(ref src, ref destPos, writer, out var readTo);
+            copier.LoadPixels(ref src, writer);
 
         }
     }
@@ -86,17 +88,14 @@ internal class PdfBitmapWrapper(
 internal readonly unsafe partial struct BitmapWriter(byte* buffer, int width, int height)
 {
     public byte* Buffer => buffer;
+    private readonly int width = width;
+    private readonly int height = height;
     readonly byte* oneAfterEnd = -3 + buffer + (4 * width * height); // make sure we have enough room to write 4 bytes
 
-    public bool LoadPixels(ref SequenceReader<byte> seq, ref byte* destPos,
-        IByteWriter writer, out SequencePosition sp)
+    public void LoadPixels(ref SpanParsingBuffer seq, IByteWriter writer)
     {
-        sp = default;
-        if (!EnoughBytesToRead(seq.Length))
-            return false;
-        writer.WriteBytes(ref seq, ref destPos, oneAfterEnd);
-        sp = seq.Position;
-        return destPos >= oneAfterEnd;
+        var bytes = new Span<DeviceColor>(buffer, width * height);
+        writer.WriteBytes(ref seq, ref bytes);
     }
 
     private bool EnoughBytesToRead(long bytesRemaining) => 

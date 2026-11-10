@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Melville.Pdf.ImageExtractor;
@@ -38,6 +39,7 @@ public class BitmapWriting
 {
     private static byte[] source = Enumerable.Repeat((byte)12, 30000).ToArray();
     private static byte[] dest = Enumerable.Repeat((byte)12, 40000).ToArray();
+    private static DeviceColor[] dest2 = new DeviceColor[1000];
         
     [Benchmark(Baseline = true)]
     public void Direct() {
@@ -54,11 +56,8 @@ public class BitmapWriting
 
     private static unsafe void TestWriter(IByteWriter writer)
     {
-        fixed (byte* destPtr = dest)
-        {
-            var capSrc = new SequenceReader<byte>(new ReadOnlySequence<byte>(source));
-            var capDest = destPtr;
-            writer.WriteBytes(ref capSrc, ref capDest, destPtr + 40000);
-        }
+            var capSrc = new SpanParsingBuffer(source);
+            var capDest = MemoryMarshal.Cast<byte, DeviceColor>(dest);
+            writer.WriteBytes(ref capSrc, ref capDest);
     }
 }
