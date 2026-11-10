@@ -29,42 +29,53 @@ internal class PdfBitmapWrapper(
     public bool DeclaredWithInterpolation => shouldRenderInterpolated;
     private IColorSpace finalColorSpace = colorSpace;
 
+
     public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
-        var copier = new BitmapWriter(buffer, Width, Height);
-        return InnerRenderAsync(copier);
+            using var bufferFactory = 
+            new UnsafeSizedBufferFactory<DeviceColor>((DeviceColor*)buffer, Width * Height);
+        return InnerRenderAsync(bufferFactory.Buffer);
     }
 
-    private async ValueTask InnerRenderAsync(BitmapWriter copier)
+    private async ValueTask InnerRenderAsync(SizedBuffer<DeviceColor> target)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
-#warning this is inefficient  we do use a buffer if it is there, but would like to stream partial values.
 
-        var writer = byteWriter(finalColorSpace);
-
-#warning special case MemoryStream here because it has a buffer.
-        var seq = source switch
+        switch (source)
         {
-            IInternalBufferBytes ibb => ibb.AsMemory(),
-            MemoryStream ms when ms.TryGetBuffer(out var buffSeg) => buffSeg.AsMemory(),
-            _ => await FillBufferAsync(source)
-        };
-        var src = new SpanParsingBuffer(seq.Span);
-
-        unsafe
-        {
-            var destPos = copier.Buffer;
-            copier.LoadPixels(ref src, writer);
-
+            case IInternalBufferBytes ibb:
+                WriteCompleteBuffer(ibb.AsMemory().Span, target);
+                break;
+            case MemoryStream ms when ms.TryGetBuffer (out var buffSeg) :
+                WriteCompleteBuffer(buffSeg.AsMemory().Span, target);
+                break;
+            default:
+                await StreamBitmapBitsAsync(source, target);
+                break;
         }
     }
 
-    async Task<ReadOnlyMemory<byte>> FillBufferAsync(Stream source)
+    void WriteCompleteBuffer(ReadOnlySpan<byte> input, SizedBuffer<DeviceColor> output)
     {
-#warning terribly inefficent -- eventually we are going to stream these values.
-        var buffer = new MemoryStream();
-        await source.CopyToAsync(buffer);
-        return buffer.ToArray();
+        var writer = byteWriter(finalColorSpace);
+        var src = new SpanParsingBuffer(input);
+        var dest = output.AsSpan();
+        writer.WriteBytes(ref src, ref dest);
+
+    }
+    async ValueTask StreamBitmapBitsAsync(Stream source, SizedBuffer<DeviceColor> target)
+    {
+        var writer = byteWriter(finalColorSpace);
+        using var sourceBuffer = new ParsingBuffer(source.AsStreamReader());
+        while (target.Length > 0 && (sourceBuffer.CurrentLength > 0 || !sourceBuffer.DoneReadingSource))
+        {
+            await sourceBuffer.ReadBytesAsync().CA();
+            var spanReader = new SpanParsingBuffer(sourceBuffer.Peek());
+            var targetSpan = target.AsSpan();
+            writer.WriteBytes(ref spanReader, ref targetSpan);
+            sourceBuffer.Advance((int)sourceBuffer.RelativePosition);
+            target = target[^targetSpan.Length..];
+        }
     }
 
     /// <inheritdoc />
@@ -83,21 +94,4 @@ internal class PdfBitmapWrapper(
                 $"JPX image has {components} components, but color space only supports {finalColorSpace.ExpectedComponents}")
         };
     }
-}
-
-internal readonly unsafe partial struct BitmapWriter(byte* buffer, int width, int height)
-{
-    public byte* Buffer => buffer;
-    private readonly int width = width;
-    private readonly int height = height;
-    readonly byte* oneAfterEnd = -3 + buffer + (4 * width * height); // make sure we have enough room to write 4 bytes
-
-    public void LoadPixels(ref SpanParsingBuffer seq, IByteWriter writer)
-    {
-        var bytes = new Span<DeviceColor>(buffer, width * height);
-        writer.WriteBytes(ref seq, ref bytes);
-    }
-
-    private bool EnoughBytesToRead(long bytesRemaining) => 
-        bytesRemaining >= 0;
 }
