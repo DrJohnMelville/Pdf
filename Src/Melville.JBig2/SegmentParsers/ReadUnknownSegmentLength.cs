@@ -24,10 +24,8 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
     {
         await reader.EnsureBytesAsync(regionHeaderLength);
         var endPoint = await FindEndPositionAsync(IsMMRSegment());
-        Memory<byte> memory = reader.PeekMemory(endPoint).ToArray();
+        Memory<byte> memory = await reader.TakeBytesAsync(endPoint).CA();
         EnsureRowsConsistent(memory.Span);
-#warning get rid of inefficency once the parsing buffer lasts long enough
-        reader.Advance(memory.Length);
         return memory;
     }
 
