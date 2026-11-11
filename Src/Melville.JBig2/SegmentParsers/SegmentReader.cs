@@ -46,7 +46,7 @@ internal readonly struct SegmentReader
     private  async ValueTask<Segment> ReadDataFromAsync()
     {
         var memory = await ReadSpanAsync().CA();
-        var ret = ReadFrom(new ReadOnlySequence<byte>(memory));
+        var ret = ReadFrom(memory.Span);
         return ret;
     }
 
@@ -61,15 +61,23 @@ internal readonly struct SegmentReader
         return (await source.TakeBytesAsync(hlen));
     }
 
-    private Segment ReadFrom(in ReadOnlySequence<byte> data)
+    private void LookupSegments(Span<Segment> segments)
+    {
+        Debug.Assert(segments.Length == Header.ReferencedSegmentNumbers.Length);
+        for (int i = 0; i < Header.ReferencedSegmentNumbers.Length; i++)
+        {
+            segments[i] = priorSegments[Header.ReferencedSegmentNumbers[i]];
+        }
+    }
+
+    private Segment ReadFrom(ReadOnlySpan<byte> data)
     {
         using var rentedSegmentSpan = new PooledBuffer<Segment>(Header.ReferencedSegmentNumbers.Length);
         var referencedSegments = rentedSegmentSpan.AsSpan(0, Header.ReferencedSegmentNumbers.Length);
         LookupSegments(referencedSegments);
 
+        var reader = new SpanParsingBuffer(data);
 
-        #warning duplicative and inefficient
-        var reader = new SpanParsingBuffer(data.ToArray());
         return Header.SegmentType switch
         {
             SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
@@ -97,12 +105,4 @@ internal readonly struct SegmentReader
         };
     }
 
-    private void LookupSegments(Span<Segment> segments)
-    {
-        Debug.Assert(segments.Length == Header.ReferencedSegmentNumbers.Length);
-        for (int i = 0; i < Header.ReferencedSegmentNumbers.Length; i++)
-        {
-            segments[i] = priorSegments[Header.ReferencedSegmentNumbers[i]];
-        }
-    }
 }
