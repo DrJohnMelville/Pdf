@@ -49,11 +49,11 @@ public class JBigSorter
         await SkipPageCountAsync(fileFlags).CA();
         if (fileFlags.SequentialFileOrganization)
             await ParseSequentialAsync(); 
-        else await ParseRandom();
+        else await ParseRandomAsync();
         parsingBuffer.Dispose();
     }
 
-    private async Task ParseRandom()
+    private async Task ParseRandomAsync()
     {
         SegmentRecord sr;
         do

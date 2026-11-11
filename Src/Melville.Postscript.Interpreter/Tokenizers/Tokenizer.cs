@@ -49,16 +49,6 @@ public partial class Tokenizer : ITokenSource
     }
 
     /// <summary>
-    /// Create a tokenizer from a stream.
-    /// </summary>
-    /// <param name="source">A stream containing the code to execute.</param>
-    [Obsolete("Prefer the IAsyncReader method for more efficency")]
-    public Tokenizer(Stream source) :
-        this(source.AsStreamReader())
-    {
-    }
-
-    /// <summary>
     /// Create a tokenizer from a string.
     /// </summary>
     /// <param name="source">The string containing the code to execute.</param>

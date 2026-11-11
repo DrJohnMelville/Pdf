@@ -9,6 +9,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -139,7 +140,7 @@ public class PostscriptEngine
     /// <param name="code">The program to execute</param>
     public async ValueTask ExecuteAsync(Stream code)
     {
-        using var tokenSource = new Tokenizer(code);
+        using var tokenSource = new Tokenizer(code.AsStreamReader());
         await ExecuteAsync(tokenSource);
     }
 
