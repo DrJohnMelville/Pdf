@@ -34,7 +34,7 @@ internal class PdfBitmapWrapper(
     private async ValueTask InnerRenderAsync(Memory<DeviceColor> target)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
-
+        
         switch (source)
         {
             case IInternalBufferBytes ibb:
@@ -67,7 +67,7 @@ internal class PdfBitmapWrapper(
             var spanReader = new SpanParsingBuffer(sourceBuffer.Peek());
             var targetSpan = target.Span;
             writer.WriteBytes(ref spanReader, ref targetSpan);
-            sourceBuffer.Advance((int)sourceBuffer.RelativePosition);
+            sourceBuffer.Advance((int)spanReader.RelativePosition);
             target = target[^targetSpan.Length..];
         }
     }

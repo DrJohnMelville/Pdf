@@ -2,6 +2,7 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
+using Melville.StreamInterfaces.Mixins;
 using Melville.TestHelpers.StringDatabase;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ public class RenderingTest
     [TestExecutor<STAThreadExecutor>]
     public async Task WpfRenderingTestAsync(string shortName, IPdfGenerator generator)
     {
+        RequireDisposal.TestNameIdentifier = () => $"Rendering Test: Wpf {shortName}";
         var computeWpfHashAsync = await ComputeWpfHashAsync(generator);
         hashes.AssertDatabase(computeWpfHashAsync, "wpf" + shortName);
     }
@@ -47,6 +49,7 @@ public class RenderingTest
     [MethodDataSource(nameof(GeneratorTests))]
     public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator)
     {
+        RequireDisposal.TestNameIdentifier = () => $"Rendering Test: Skia {shortName}";
         hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia" + shortName);
     }
 

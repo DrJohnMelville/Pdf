@@ -10,8 +10,8 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
 
 #if DEBUG
     private static readonly LightDebugCountingStrategy ProductionCounter = new();
-    private ProductionCountingStrategy counter = ProductionCounter;
-    //private ProductionCountingStrategy counter = new HeavyDebugCountingStrategy();
+ //   private ProductionCountingStrategy counter = ProductionCounter;
+    private ProductionCountingStrategy counter = new HeavyDebugCountingStrategy();
 
 #else
     private static readonly ProductionCountingStrategy ProductionCounter = new();

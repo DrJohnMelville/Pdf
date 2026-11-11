@@ -50,6 +50,7 @@ public class JBigSorter
         if (fileFlags.SequentialFileOrganization)
             await ParseSequentialAsync(); 
         else await ParseRandom();
+        parsingBuffer.Dispose();
     }
 
     private async Task ParseRandom()
@@ -60,7 +61,7 @@ public class JBigSorter
             sr = await ParseOneHeaderAsync().CA();
         } while (TryEnqueueOneHeader(sr));
         while (segments.Count > 0)
-            WriteSegmentAsync();
+            await WriteSegmentAsync().CA();
     }
 
     private record struct SegmentRecord(int Position, int Length, SegmentHeader Header);

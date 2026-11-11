@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.StreamInterfaces.Mixins;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -51,17 +52,26 @@ internal abstract partial class CountedMultiplexSource
         }
     }
 
-    private class HeavyDebugCountingStrategy:ProductionCountingStrategy
+    private readonly struct CreationInfo()
     {
-        private readonly ConcurrentDictionary<object, StackTrace> readers = new();
-        private StackTrace creationStack;
+        private readonly string testRunning = RequireDisposal.TestNameIdentifier();
+        private readonly StackTrace stack = new StackTrace(2);
+        public override string ToString() => $"""
+            Test Running: {testRunning},
+            Created at:
+            {stack}
+            """;
+    }
 
-        public HeavyDebugCountingStrategy() => creationStack = new StackTrace();
+    private class HeavyDebugCountingStrategy():ProductionCountingStrategy
+    {
+        private readonly ConcurrentDictionary<object, CreationInfo> readers = new();
+        private CreationInfo creationStack = new();
 
         public override T IssueTicket<T>(CountedMultiplexSource parent, T rawItem)
         {
             if (rawItem is null) return rawItem;
-            if (!readers.TryAdd(rawItem, new StackTrace()))
+            if (!readers.TryAdd(rawItem, new ()))
                 throw new InvalidOperationException("Inserted the same reader twice.");
             return base.IssueTicket(parent, rawItem);
         }

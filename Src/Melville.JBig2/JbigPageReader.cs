@@ -52,9 +52,12 @@ public abstract class JbigPageReader
     /// </summary>
     /// <param name="stream">The stream to read from</param>
     /// <param name="pages">The page to read</param>
-    public  ValueTask ProcessSequentialSegmentsAsync(Stream stream, uint pages) => 
-        ReadSegmentsAsync(new SequentialSegmentHeaderReader(
-            new (stream.AsStreamReader()), pages, storedSegments));
+    public async ValueTask ProcessSequentialSegmentsAsync(Stream stream, uint pages)
+    {
+        using var buffer = new ParsingBuffer(stream.AsStreamReader());
+        await ReadSegmentsAsync(new SequentialSegmentHeaderReader(
+                    buffer, pages, storedSegments));
+    }
 
     private async ValueTask ReadSegmentsAsync(SegmentHeaderReader segmentHeadReader)
     {
