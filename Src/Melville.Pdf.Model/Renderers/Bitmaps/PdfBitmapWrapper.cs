@@ -33,11 +33,11 @@ internal class PdfBitmapWrapper(
     public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
             using var bufferFactory = 
-            new UnsafeSizedBufferFactory<DeviceColor>((DeviceColor*)buffer, Width * Height);
-        return InnerRenderAsync(bufferFactory.Buffer);
+            new UnmanagedMemoryManager<DeviceColor>((DeviceColor*)buffer, Width * Height);
+        return InnerRenderAsync(bufferFactory.Memory);
     }
 
-    private async ValueTask InnerRenderAsync(SizedBuffer<DeviceColor> target)
+    private async ValueTask InnerRenderAsync(Memory<DeviceColor> target)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
 
@@ -55,15 +55,15 @@ internal class PdfBitmapWrapper(
         }
     }
 
-    void WriteCompleteBuffer(ReadOnlySpan<byte> input, SizedBuffer<DeviceColor> output)
+    void WriteCompleteBuffer(ReadOnlySpan<byte> input, Memory<DeviceColor> output)
     {
         var writer = byteWriter(finalColorSpace);
         var src = new SpanParsingBuffer(input);
-        var dest = output.AsSpan();
+        var dest = output.Span;
         writer.WriteBytes(ref src, ref dest);
 
     }
-    async ValueTask StreamBitmapBitsAsync(Stream source, SizedBuffer<DeviceColor> target)
+    async ValueTask StreamBitmapBitsAsync(Stream source, Memory<DeviceColor> target)
     {
         var writer = byteWriter(finalColorSpace);
         using var sourceBuffer = new ParsingBuffer(source.AsStreamReader());
@@ -71,7 +71,7 @@ internal class PdfBitmapWrapper(
         {
             await sourceBuffer.ReadBytesAsync().CA();
             var spanReader = new SpanParsingBuffer(sourceBuffer.Peek());
-            var targetSpan = target.AsSpan();
+            var targetSpan = target.Span;
             writer.WriteBytes(ref spanReader, ref targetSpan);
             sourceBuffer.Advance((int)sourceBuffer.RelativePosition);
             target = target[^targetSpan.Length..];

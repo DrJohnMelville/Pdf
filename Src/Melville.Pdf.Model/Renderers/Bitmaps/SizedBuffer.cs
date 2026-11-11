@@ -1,59 +1,54 @@
 ﻿using System;
+using System.Buffers;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public unsafe readonly struct SizedBuffer<T>
+// code stolen from https://github.com/mgravell/Pipelines.Sockets.Unofficial/blob/master/src/Pipelines.Sockets.Unofficial/UnsafeMemory.cs
+public sealed unsafe class UnmanagedMemoryManager<T> : MemoryManager<T>
+     where T : unmanaged
 {
-    private readonly T* basePtr;
-    public int Length { get; }
+    private readonly T* _pointer;
+    private readonly int _length;
 
-    public SizedBuffer(T* basePtr, int size)
+
+    /// <summary>
+    /// Create a new UnmanagedMemoryManager instance at the given pointer and size
+    /// </summary>
+    public UnmanagedMemoryManager(T* pointer, int length)
     {
-        if (size < 0)
-            throw new ArgumentException("Size cannot be less than 0");
-        this.basePtr = basePtr;
-        Length = size;
+        if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
+        _pointer = pointer;
+        _length = length;
     }
 
-    public SizedBuffer<T> Slice(int start)
+    /// <summary>
+    /// Create a new UnmanagedMemoryManager instance at the given pointer and size
+    /// </summary>
+    public UnmanagedMemoryManager(IntPtr pointer, int length) : this((T*)pointer.ToPointer(), length) { }
+
+    /// <summary>
+    /// Obtains a span that represents the region
+    /// </summary>
+    public override Span<T> GetSpan() => new Span<T>(_pointer, _length);
+
+    /// <summary>
+    /// Provides access to a pointer that represents the data (note: no actual pin occurs)
+    /// </summary>
+    public override MemoryHandle Pin(int elementIndex = 0)
     {
-        if ((uint)start > Length)
-            throw new InvalidOperationException("Start must be >= 0 and <= Length");
-        return new SizedBuffer<T>(basePtr + start, Length - start);
+        if ((uint)elementIndex >= _length)
+            throw new ArgumentOutOfRangeException(nameof(elementIndex));
+        return new MemoryHandle(_pointer + elementIndex);
     }
-    public SizedBuffer<T> Slice(int start, int length) => Slice(start).Take(length);
+    /// <summary>
+    /// Has no effect
+    /// </summary>
+    public override void Unpin() { }
 
-    public SizedBuffer<T> Take(int length)
-    {
-        if ((uint)length > Length)
-            throw new InvalidOperationException("new Length must be >= 0 and <= old length >Length");
-        return new SizedBuffer<T>(basePtr, length);
-
-    }
-
-    public SizedBuffer<T> this[Range range]
-    {
-        get
-        {
-            var (offset, length) = range.GetOffsetAndLength(Length);
-            // all range checking is done in the slice method.
-            return Slice(offset, length);
-        }
-    }
-
-    public Span<T> AsSpan() => new Span<T>(basePtr, Length);
-
-    public static implicit operator Span<T>(SizedBuffer<T> src) => src.AsSpan();
-}
-
-[Obsolete("This class is unsafe.  Try not to use it")]
-public unsafe struct UnsafeSizedBufferFactory<T>(T* pointer, int size): IDisposable
-{
-    public readonly SizedBuffer<T> Buffer { get; } = new SizedBuffer<T>(pointer, size);
-
-    public void Dispose()
-    {
-        // we have nothing to dispose, but this is the pattern for the buffer factories.
-    }
+    /// <summary>
+    /// Releases all resources associated with this object
+    /// </summary>
+    protected override void Dispose(bool disposing) { }
 }
