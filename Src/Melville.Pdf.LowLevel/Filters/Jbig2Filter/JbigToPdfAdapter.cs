@@ -30,7 +30,7 @@ internal class JbigToPdfAdapter: ICodecDefinition
         }
 
         await reader.ProcessSequentialSegmentsAsync(input, 1).CA();
-        await input.DisposeAsync().CA();
+        input.Dispose();
         var page = reader.GetPage(1);
         var (ary, _) = page.ColumnLocation(0);
 

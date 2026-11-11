@@ -11,7 +11,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TUnit.Core.Executors;
+
+//[assembly: Xunit.CollectionBehavior(DisableTestParallelization = true)]
+
+
 namespace Melville.Wpf.IntegrationTesting;
+
 
 [ClassDataSource<StringTestDatabase>(Shared = SharedType.PerClass)]
 public class RenderingTest
@@ -51,6 +56,15 @@ public class RenderingTest
     {
         RequireDisposal.TestNameIdentifier = () => $"Rendering Test: Skia {shortName}";
         hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia" + shortName);
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
     private static Task<string> ComputeSkiaHashAsync(IPdfGenerator generator) =>

@@ -55,5 +55,9 @@ internal class JpxToPdfAdapter : ICodecDefinition
         {
             return Stream.Null;
         }
+        finally
+        {
+            input.Dispose();
+        }
     }
 }
