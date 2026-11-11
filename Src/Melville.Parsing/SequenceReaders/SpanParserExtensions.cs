@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Melville.Parsing.SequenceReaders;
 
+/// <summary>
+/// Extensions for reading varioyus types out of a SpanParsingBuffer
+/// </summary>
 public static class SpanParserExtensions
 {
 
@@ -159,6 +162,10 @@ public static class SpanParserExtensions
     public static float ReadIEEE754Float(this ref SpanParsingBuffer reader) => 
         BitConverter.UInt32BitsToSingle(reader.GetUInt32BigEndian());
 
+    /// <summary>
+    /// Skup 4 bytes forward
+    /// </summary>
+    /// <param name="reader">The reader to skip forward.</param>
     public static void Skip32BitPad(ref this SpanParsingBuffer reader) => reader.Advance(4);
 
     /// <summary>

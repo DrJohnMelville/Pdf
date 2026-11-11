@@ -46,7 +46,7 @@ public class JBigSorter
     {
         await parsingBuffer.AdvanceAsync(9);
         var fileFlags = new FileFlags(sourceBuffer[8]);
-        await SkipPageCount(fileFlags).CA();
+        await SkipPageCountAsync(fileFlags).CA();
         if (fileFlags.SequentialFileOrganization)
             await ParseSequentialAsync(); 
         else await ParseRandom();
@@ -105,7 +105,7 @@ public class JBigSorter
     }
 
 
-    private ValueTask SkipPageCount(FileFlags fileFlags)
+    private ValueTask SkipPageCountAsync(FileFlags fileFlags)
     {
         return (fileFlags.UnknownPageCount)?ValueTask.CompletedTask:parsingBuffer.AdvanceAsync(4);
     }
