@@ -99,8 +99,7 @@ public abstract partial class StreamTestBase
         var (streamMock, innerStream) = await DisposeStreamRigAsync();
         streamMock.Verify(i => i.Close(), Times.Never);
         await innerStream.DisposeAsync();
-        streamMock.Verify(i => i.Close(), Times.AtLeast(1));
-#warning -- eventually we should be able to dispose exactly once
+        streamMock.Verify(i => i.Close(), Times.Once);
     }
 
     private async Task<(Mock<Stream> streamMock, Stream innerStream)> DisposeStreamRigAsync()
@@ -130,8 +129,7 @@ public abstract partial class StreamTestBase
 
         streamMock.Verify(i => i.Close(), Times.Never);
         innerStream.Dispose();
-        streamMock.Verify(i => i.Close(), Times.AtLeastOnce);
-#warning dispose exactly one time
+        streamMock.Verify(i => i.Close(), Times.Once);
     }
 
     private ValueTask<PdfStream> StreamWithEncodedBackEndAsync() =>

@@ -21,8 +21,7 @@ public static class StreamTest
 
     public static async Task VerifyStreamContentAsync(string src, Stream streamToRead)
     {
-#warning -- should be able to read into an exact buffer.
-        var buf = new byte[src.Length+200];
+        var buf = new byte[src.Length];
         var read = await streamToRead.ReadAtLeastAsync(buf, buf.Length, false);
         Assert.Equal(src, buf[..read].ExtendedAsciiString());
     }

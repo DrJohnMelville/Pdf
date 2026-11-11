@@ -58,10 +58,7 @@ internal readonly struct SegmentReader
     private async ValueTask<Memory<byte>> ReadKnownLengthSegmentAsync()
     {
         var hlen = (int)Header.DataLength;
-
- //       await source.EnsureBytesAsync(hlen);
-#warning inefficient
-        return (await source.TakeBytesAsync(hlen)).ToArray();
+        return (await source.TakeBytesAsync(hlen));
     }
 
     private Segment ReadFrom(in ReadOnlySequence<byte> data)

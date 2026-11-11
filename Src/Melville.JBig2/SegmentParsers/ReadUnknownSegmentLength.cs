@@ -19,7 +19,6 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
     private static ReadOnlySpan<byte> ArithEndSequence => [0xFF, 0xAC];
     private static ReadOnlySpan<byte> SelectEndSequence(bool isMMR) => isMMR ? MmrEndSequence : ArithEndSequence;
 
-#warning I sholud be able to use TakeBytes to get rid of the shouldAdvance
     public async ValueTask<Memory<byte>> ReadSegmentAsync()
     {
         await reader.EnsureBytesAsync(regionHeaderLength);

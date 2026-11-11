@@ -57,7 +57,6 @@ public class PdfStream : PdfDictionary
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
            new WrapPdfStream(await StreamContentAsync(desiredFormat, context));
 
-#warning convert this to native readers.
     internal async ValueTask<Stream> StreamEncryptedContentAsync(
         StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
     {

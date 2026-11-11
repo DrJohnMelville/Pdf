@@ -46,7 +46,7 @@ internal class FlateDecoder : IStreamFilterDefinition, IDisposable
         input.Advance(consumed);
         output = output[written..];
     }
-#warning dispose of the decder.
+
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
 
     public void Dispose()
