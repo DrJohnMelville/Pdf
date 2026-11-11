@@ -11,17 +11,17 @@ internal interface ISizedReader
 }
 
 [StaticSingleton]
-public partial class OneByteReader : ISizedReader
+internal partial class OneByteReader : ISizedReader
 {
     public async ValueTask<uint> ReadAsync(ParsingBuffer buff) => await buff.GetUInt8Async();
 }
 [StaticSingleton]
-public partial class TwoByteReader : ISizedReader
+internal partial class TwoByteReader : ISizedReader
 {
     public async ValueTask<uint> ReadAsync(ParsingBuffer buff) => await buff.GetUInt16BigEndianAsync();
 }
 [StaticSingleton]
-public partial class FourByteReader : ISizedReader
+internal partial class FourByteReader : ISizedReader
 {
     public ValueTask<uint> ReadAsync(ParsingBuffer buff) => buff.GetUInt32BigEndianAsync();
 }

@@ -48,7 +48,7 @@ internal class RunLengthDecoder : IStreamFilterDefinition
             Opcode => ReadOpcode(ref input),
             Literal => CopyLiteral(ref input, ref output),
             Repeat => WriteRepeats(ref output),
-            Terminated => false
+            _ => false
         };
     bool ReadOpcode(ref SpanParsingBuffer input)
     {

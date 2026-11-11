@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melville.StreamInterfaces.Streams;
+using System;
 using System.Buffers;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -6,6 +7,12 @@ using System.Runtime.InteropServices;
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 // code stolen from https://github.com/mgravell/Pipelines.Sockets.Unofficial/blob/master/src/Pipelines.Sockets.Unofficial/UnsafeMemory.cs
+/// <summary>
+/// This wraps a pointer and a length in a MemoryManager that can create a Memory&lt;T&gt; this is a little
+/// bit of a shim until I can create proper memory managers at all of the call sites.
+/// </summary>
+/// <typeparam name="T">The element type of the memory's created</typeparam>
+[Obsolete("See if I can come up with some safer alternatives.")]
 public sealed unsafe class UnmanagedMemoryManager<T> : MemoryManager<T>
      where T : unmanaged
 {

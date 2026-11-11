@@ -25,11 +25,20 @@ internal class WrapPdfStream(Stream inner) : IPdfStreamReader
     public ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default) =>
         inner.ReadAsync(buffer, cancellation);
 }
-
+/// <summary>
+/// Extension classes for creating a ParsingBuffer from a PdfStream.
+/// </summary>
 public static class ParsePdfStream
 {
     extension (PdfStream self)
     {
+        /// <summary>
+        /// Creates a parsing buffer for the content of this stream.  Disposing of the
+        /// ParsingBuffer will dispose of all the mechanism to decode the stream.
+        /// </summary>
+        /// <param name="desiredFormat">Format in which to read the stream.</param>
+        /// <param name="context">An optional context object for creating the decode filters.</param>
+        /// <returns>A ParsingBuffer that will read from the given stream.</returns>
         public async ValueTask<ParsingBuffer> ContentParsingBufferAsync(
             StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null)
         {

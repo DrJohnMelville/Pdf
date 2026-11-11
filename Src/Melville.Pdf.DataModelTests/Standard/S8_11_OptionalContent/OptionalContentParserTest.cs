@@ -19,7 +19,7 @@ public class OptionalContentParserTest
             .AsDictionary();
     
     [Fact]
-    public async Task AllVisibleIsCorrectBeforeAnyChanges()
+    public async Task AllVisibleIsCorrectBeforeAnyChangesAsync()
     {
         var ocg = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCG)

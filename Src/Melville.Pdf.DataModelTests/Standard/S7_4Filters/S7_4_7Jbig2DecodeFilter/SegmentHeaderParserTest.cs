@@ -43,7 +43,7 @@ public class SegmentHeaderParserTest
 
     [Theory]
     [MemberData(nameof(SegmentHeaderExamples))]
-    public async Task ReadSegment2(byte[] data, object result1)
+    public async Task ReadSegment2ReadSegmentAsync(byte[] data, object result1)
     {
         var result = (SegmentHeader)result1;
         var reader = new MemoryReader(data);

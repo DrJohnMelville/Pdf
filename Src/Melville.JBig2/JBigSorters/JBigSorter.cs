@@ -60,7 +60,7 @@ public class JBigSorter
             sr = await ParseOneHeaderAsync().CA();
         } while (TryEnqueueOneHeader(sr));
         while (segments.Count > 0)
-            WriteSegment();
+            WriteSegmentAsync();
     }
 
     private record struct SegmentRecord(int Position, int Length, SegmentHeader Header);
@@ -73,7 +73,7 @@ public class JBigSorter
         {
             var header = await ParseOneHeaderAsync().CA();
             if (!TryEnqueueOneHeader(header)) return;
-            await WriteSegment();
+            await WriteSegmentAsync();
         }
     }
 
@@ -93,7 +93,7 @@ public class JBigSorter
         return segmentRecord.Header.SegmentType != SegmentType.EndOfFile;
     }
 
-    private ValueTask WriteSegment()
+    private ValueTask WriteSegmentAsync()
     {
         var header = segments.Dequeue();
         if (WantPage(header.Header.Page) && ! SegmentIsUnusedInPdf(header.Header))

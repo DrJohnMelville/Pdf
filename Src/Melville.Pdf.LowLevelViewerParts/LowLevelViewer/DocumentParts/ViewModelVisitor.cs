@@ -60,7 +60,7 @@ public class ViewModelVisitor
             {
                 return new ImagePartViewModel($"{localPrefix}Image Stream", items, stream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
               // if we get an exception, just use the orginary viewer.                
             }

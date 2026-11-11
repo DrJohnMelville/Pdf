@@ -1,19 +1,13 @@
-﻿using System;
-using System.Buffers;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
-using Melville.INPC;
-using Melville.Parsing.LinkedLists;
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.SequenceReaders;
+﻿using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

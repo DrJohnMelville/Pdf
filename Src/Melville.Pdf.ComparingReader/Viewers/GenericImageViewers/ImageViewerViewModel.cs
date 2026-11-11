@@ -92,7 +92,7 @@ public partial class ImageViewerViewModel : IRenderer
                 ocs.SelectedContentChanged -= RerenderOptionalContent;
             OptionalContent = null;
             await renderer.SetSourceAsync(pdfBits, passwordSource);
-            await TrySetupOptionalContent();
+            await TrySetupOptionalContentAsync();
             return true;
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ public partial class ImageViewerViewModel : IRenderer
         }
     }
 
-    private async Task TrySetupOptionalContent()
+    private async Task TrySetupOptionalContentAsync()
     {
         if (renderer.OptionalContentState is { } ops)
         {

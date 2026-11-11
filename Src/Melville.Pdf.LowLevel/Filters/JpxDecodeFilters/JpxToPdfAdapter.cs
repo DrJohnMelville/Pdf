@@ -37,12 +37,12 @@ internal class JpxToPdfAdapter : ICodecDefinition
         //4/27/2024 the J2kReader has a race bug that occasionally deadlocks reads.  The
         //memory buffer does not deadlock.
 #warning see if this buffer is still needed.
-        var buffer = new byte[input.Length];
-        await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
-        await input.DisposeAsync().CA();
+        //var buffer = new byte[input.Length];
+        //await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
+        //await input.DisposeAsync().CA();
         try
         {
-            var independentImage = J2kImage.FromStream(new MemoryStream(buffer));
+            var independentImage = J2kImage.FromStream(input);
             if (context is IReportColorComponents colorSpace)
             {
                 await colorSpace.ReportColorComponentsAsync(

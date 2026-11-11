@@ -13,7 +13,7 @@ internal static class SegmentHeaderParser
 
     public static async ValueTask<SegmentHeader> ParseAsync(ParsingBuffer reader)
     {
-        if (!await HasMoreBytesToRead(reader).CA())
+        if (!await HasMoreBytesToReadAsync(reader).CA())
             return new SegmentHeader(0, SegmentType.EndOfFile, 0, 0, []);
 
         var number = await reader.GetUInt32BigEndianAsync().CA();
@@ -26,7 +26,7 @@ internal static class SegmentHeaderParser
 
     }
 
-    private static ValueTask<bool> HasMoreBytesToRead(ParsingBuffer reader)
+    private static ValueTask<bool> HasMoreBytesToReadAsync(ParsingBuffer reader)
     {
         // PDF stores the global segments of a JBig image in a separate stream, which allows them to
         // be shared among multiple JBig images.  These segments are stored in sequential fashion and
