@@ -7,7 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Melville.Linq.Statistics" />
 	  <PackageReference Include="System.Drawing.Common" />
 	</ItemGroup>
 

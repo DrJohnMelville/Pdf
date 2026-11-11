@@ -55,5 +55,6 @@ public class StringOrNameViewModel: DocumentPart
         text = item.Get<StringSpanSource>().GetSpan().ToArray();
     }
 
-    public override object? DetailView => new ByteStringViewModel(text);
+    private object? cachedView;
+    public override object? DetailView => cachedView ??= new ByteStringViewModel(text);
 }

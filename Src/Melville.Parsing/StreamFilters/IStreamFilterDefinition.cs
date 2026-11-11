@@ -8,11 +8,6 @@ using System.Reflection;
 namespace Melville.Parsing.StreamFilters;
 
 
-#warning get rid of this when we are done with the sequencereader.
-/// <summary>
-/// This is a temporaruy for shimming
-/// </summary>
-
 /// <summary>
 /// An interface that represents a filter that compresses or decompresses a stream.
 /// </summary>

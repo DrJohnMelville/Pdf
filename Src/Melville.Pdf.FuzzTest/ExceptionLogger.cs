@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Melville.INPC;
+using System.Collections.Generic;
 using System.IO;
-using Melville.INPC;
-using Melville.Linq.Statistics.FileWriter;
 
 namespace Melville.Pdf.FuzzTest;
 
@@ -15,9 +14,6 @@ public class ExceptionLogger
 
     public void WriteTo(Stream output)
     {
-        var writer = new ExcelFileWriter(output);
-        writer.AddObjectPage("Errors", exceptions);
-        writer.Save();
     }
 }
 
