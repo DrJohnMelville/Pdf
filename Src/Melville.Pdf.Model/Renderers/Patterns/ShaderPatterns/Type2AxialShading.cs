@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
@@ -24,7 +25,7 @@ internal sealed class Type2AxialShading : ParametricFunctionalShader
         denominator = (xDelta * xDelta) + (yDelta * yDelta);
     }
 
-    protected override uint GetColorFromShader(Vector2 patternVal)
+    protected override DeviceColor GetColorFromShader(Vector2 patternVal)
     {
         var tParameter =((xDelta * (patternVal.X - xBase)) + (yDelta * (patternVal.Y - yBase))) / denominator;
         return ColorFromT(tParameter).Color;

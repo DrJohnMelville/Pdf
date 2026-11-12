@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
@@ -15,13 +16,12 @@ internal sealed class Type3RadialShading : ParametricFunctionalShader
         computer = new RadialShadingComputer(coords);
     }
 
-    protected override uint GetColorFromShader(Vector2 patternVal)
+    protected override DeviceColor GetColorFromShader(Vector2 patternVal)
     {
         if (!computer.TParameterFor(patternVal, out double lowRoot, out double highRoot))
             return BackgroundColor; // object not hit.
         var (highCol, isBackground) = ColorFromT(highRoot);
-        var ret = isBackground? ColorFromT(lowRoot).Color : highCol;
-        return  ret;
+        return (isBackground ? ColorFromT(lowRoot).Color : highCol);
     }
 }
 

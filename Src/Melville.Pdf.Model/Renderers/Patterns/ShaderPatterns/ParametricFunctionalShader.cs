@@ -1,17 +1,18 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
 {
-    private const uint NotComputedYet = 0xDEADBEEF;
+    private static readonly DeviceColor NotComputedYet = new (0xDE, 0xAD, 0xBE, 0xEF);
     private readonly ClosedInterval domain;
     private readonly IPdfFunction function;
     private readonly bool extendLow;
     private readonly bool extendHigh;
-    private readonly uint[] buffer = new uint[1001];
+    private readonly DeviceColor[] buffer = new DeviceColor[1001];
 
     protected ParametricFunctionalShader(in CommonShaderValues values, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) : base(in values)
     {
@@ -26,7 +27,7 @@ internal abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
         buffer.AsSpan().Fill(NotComputedYet);
     }
     
-    protected (uint Color, bool IsBbackground) ColorFromT(double tParameter)
+    protected (DeviceColor Color, bool IsBbackground) ColorFromT(double tParameter)
     {
         return (tParameter, extendLow, extendHigh) switch
         {
@@ -40,25 +41,25 @@ internal abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
     
     
 
-    private uint ColorForValidT(double t)
+    private DeviceColor ColorForValidT(double t)
     {
         var mappedT = new ClosedInterval(0, 1).MapTo(domain, t);
         return GetValue(ref BufferSlotForT(mappedT), mappedT);
     }
 
-    private ref uint BufferSlotForT(double mappedT) => ref buffer[(int)(mappedT * 1000)];
+    private ref DeviceColor BufferSlotForT(double mappedT) => ref buffer[(int)(mappedT * 1000)];
 
-    private uint GetValue(ref uint bufferSpot, double mappedT)
+    private DeviceColor GetValue(ref DeviceColor bufferSpot, double mappedT)
     {
-        if (bufferSpot == NotComputedYet) bufferSpot = ColorFroMappedT(mappedT);
+        if (bufferSpot.Equals(NotComputedYet)) bufferSpot = ColorFroMappedT(mappedT);
         return bufferSpot;
     }
 
-    private uint ColorFroMappedT(double mappedT)
+    private DeviceColor ColorFroMappedT(double mappedT)
     {
         Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
         function.Compute(mappedT, rawColor);
         var deviceColor = ColorSpace.SetColor(rawColor);
-        return deviceColor.AsPreMultiplied().AsArgbUint32();
+        return deviceColor.AsPreMultiplied();
     }
 }

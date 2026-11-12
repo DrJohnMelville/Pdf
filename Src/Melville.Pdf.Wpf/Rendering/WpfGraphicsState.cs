@@ -129,7 +129,9 @@ internal class WpfNativeBrush: INativeBrush
         bmp.Lock();
         unsafe
         {
-            writer.RenderBits((uint*)bmp.BackBuffer, bmp.PixelWidth, bmp.PixelHeight);
+            var bytes = new Span<DeviceColor>(
+                (DeviceColor*)bmp.BackBuffer, bmp.PixelHeight * bmp.PixelWidth);
+            writer.RenderBits(bytes, bmp.PixelWidth, bmp.PixelHeight);
         }
 
         bmp.Unlock();

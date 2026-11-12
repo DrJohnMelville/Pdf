@@ -12,7 +12,7 @@ using Melville.StreamInterfaces;
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal readonly record struct CommonShaderValues(
-    Matrix3x2 PixelsToPattern, IColorSpace ColorSpace, RectInterval BBox, uint BackgroundColor)
+    Matrix3x2 PixelsToPattern, IColorSpace ColorSpace, RectInterval BBox, DeviceColor BackgroundColor)
 {
     
     private static readonly RectInterval defaultBBox = new(
@@ -39,10 +39,10 @@ internal readonly record struct CommonShaderValues(
         return common;
     }
 
-    private static async Task<uint> ComputeBackgroundAsync(
+    private static async Task<DeviceColor> ComputeBackgroundAsync(
         PdfDictionary shadingDictionary, IColorSpace colorSpace, bool supressBackground)
     {
-        if (supressBackground) return 0;        
+        if (supressBackground) return DeviceColor.Invisible;        
         var backGroundArray = 
             await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Background).CA() is { } arr
             ? await arr.CastAsync<double>().CA()
@@ -51,10 +51,9 @@ internal readonly record struct CommonShaderValues(
         return backGroundInt;
     }
 
-    private static uint ComputeBackgroundUint(IReadOnlyList<double> backGroundArray, IColorSpace colorSpace)
+    private static DeviceColor ComputeBackgroundUint(IReadOnlyList<double> backGroundArray, IColorSpace colorSpace)
     {
         return (backGroundArray.Count == colorSpace.ExpectedComponents?
-            colorSpace.SetColor(backGroundArray).AsPreMultiplied():DeviceColor.Invisible)
-            .AsArgbUint32();
+            colorSpace.SetColor(backGroundArray).AsPreMultiplied():DeviceColor.Invisible);
     }
 }

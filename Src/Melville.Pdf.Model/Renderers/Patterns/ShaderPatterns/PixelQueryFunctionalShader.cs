@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
@@ -8,34 +9,32 @@ internal abstract class PixelQueryFunctionalShader: IShaderWriter
     private readonly Matrix3x2 pixelsToPattern;
     protected IColorSpace ColorSpace { get; }
     private readonly RectInterval bboxInterval;
-    protected uint BackgroundColor { get; }
+    protected DeviceColor BackgroundColor { get; }
 
     protected PixelQueryFunctionalShader(in CommonShaderValues values)
     {
         (pixelsToPattern, ColorSpace, bboxInterval, BackgroundColor) = values;
     }
 
-    public unsafe void RenderBits(uint* bits, int width, int height)
+    public unsafe void RenderBits(Span<DeviceColor> bits, int width, int height)
     {
-        uint* pos = bits; 
+        int pos = 0;
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
-                uint desired = 0;
-                desired = ColorForPixel(new Vector2(j, i));
-                *pos++ = desired;
+                bits[pos++] = ColorForPixel(new Vector2(j, i)); ;
             }
         }
     }
 
-    private uint ColorForPixel(in Vector2 pixel)
+    private DeviceColor ColorForPixel(in Vector2 pixel)
     {
         var patternVal = Vector2.Transform(pixel, pixelsToPattern);
         return bboxInterval.OutOfRange(patternVal) ? 
-            0 : 
+            DeviceColor.Invisible : 
             GetColorFromShader(patternVal);
     }
 
-    protected abstract uint GetColorFromShader(Vector2 patternVal);
+    protected abstract DeviceColor GetColorFromShader(Vector2 patternVal);
 }

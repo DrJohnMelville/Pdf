@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
@@ -64,7 +65,7 @@ internal class Type1PdfFunctionShader : PixelQueryFunctionalShader
         Debug.Assert(this.function.Domain.Length == 2);
         Debug.Assert(this.function.Range.Length == ColorSpace.ExpectedComponents);
     }
-    protected override uint GetColorFromShader(Vector2 patternVal)
+    protected override DeviceColor GetColorFromShader(Vector2 patternVal)
     {
         var domainVal = Vector2.Transform(patternVal, patternToDomain);
         return domainInterval.OutOfRange(domainVal)
@@ -72,13 +73,13 @@ internal class Type1PdfFunctionShader : PixelQueryFunctionalShader
             : ComputeColorFromFunction(domainVal);
     }
 
-    private uint ComputeColorFromFunction(in Vector2 domainVal)
+    private DeviceColor ComputeColorFromFunction(in Vector2 domainVal)
     {
         Span<double> source = stackalloc double[2];
         Span<double> nativeColor = stackalloc double[function.Range.Length];
         source[0] = domainVal.X;
         source[1] = domainVal.Y;
         function.Compute(source, nativeColor);
-        return ColorSpace.SetColor(nativeColor).AsPreMultiplied().AsArgbUint32();
+        return ColorSpace.SetColor(nativeColor).AsPreMultiplied();
     }
 }

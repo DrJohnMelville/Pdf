@@ -9,6 +9,7 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 using Melville.StreamInterfaces;
 using Microsoft.VisualBasic;
 using SkiaSharp;
+using System.Runtime.InteropServices;
 
 namespace Melville.Pdf.SkiaSharp;
 
@@ -66,7 +67,9 @@ internal class SkiaNativeBrush: INativeBrush
             SKColorType.Bgra8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
         unsafe
         {
-            shader.RenderBits((uint*)bitmap.GetPixels().ToPointer(), bitmap.Width, bitmap.Height);
+            shader.RenderBits(
+                MemoryMarshal.Cast<byte, DeviceColor>(bitmap.GetPixelSpan()), 
+                bitmap.Width, bitmap.Height);
         }
 
         return new ImagePatternHolder(bitmap);

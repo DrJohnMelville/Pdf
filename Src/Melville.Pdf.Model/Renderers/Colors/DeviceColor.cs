@@ -6,7 +6,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 /// Melville.PDF's primary objective is to render to the screen.  Screen colors are represented
 /// by four bytes representing Red, Green, Blue, and Alpha in a SRGB colorspace.
 /// </summary>
-public readonly struct DeviceColor
+public readonly struct DeviceColor: IEquatable<DeviceColor>
 {
     // The ordering of these fields allows us to use a simple memory copy to copy device colors int
     // bitmaps.
@@ -102,10 +102,21 @@ public readonly struct DeviceColor
 
     ///<inheritdoc/>
     public override string ToString() => $"#{RedByte:X2}{GreenByte:X2}{BlueByte:X2}{Alpha:X2}";
+
+    /// <summary>
+    /// Premultiply this color by a given alpha byte
+    /// </summary>
+    /// <param name="alpha">the alpha from 0 (transparent) to 255 (opaque)</param>
+    /// <returns></returns>
     public DeviceColor PreMultipliedBy(byte alpha)
     {
         return new DeviceColor(PreMul(RedByte, alpha), PreMul(GreenByte, alpha), PreMul(BlueByte, alpha),
             alpha);
     }
     byte PreMul(byte redByte, byte alpha) => (byte)((redByte * alpha) >> 8);
+
+    ///<inheritdoc/>
+    public bool Equals(DeviceColor other) =>
+        RedByte == other.RedByte && BlueByte == other.BlueByte &&
+            GreenByte == other.GreenByte && Alpha == other.Alpha;
 }
