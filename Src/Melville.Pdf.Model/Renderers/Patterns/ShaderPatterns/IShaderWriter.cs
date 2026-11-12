@@ -1,4 +1,7 @@
-﻿namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
+﻿using Melville.Pdf.Model.Renderers.Colors;
+using System;
+
+namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 /// <summary>
 ///Unsafe and async do not play well together.  The idea is to have an async factory that
@@ -14,5 +17,5 @@ public interface IShaderWriter
     /// <param name="bits">The bits of the bitmap -- must be height * width long.</param>
     /// <param name="width">Width </param>
     /// <param name="height"></param>
-    unsafe void RenderBits(uint* bits, int width, int height);
+    unsafe void RenderBits(Span<DeviceColor> bits, int width, int height);
 }
