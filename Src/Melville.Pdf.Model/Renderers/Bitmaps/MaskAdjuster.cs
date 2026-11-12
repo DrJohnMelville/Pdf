@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -8,23 +9,23 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal abstract partial class MaskAdjuster : IPdfBitmap
 {
     [FromConstructor][DelegateTo] private readonly IPdfBitmap innerBitmap;
-    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
+    public async ValueTask RenderPbgraAsync(Memory<DeviceColor> buffer)
     {
-        return new ValueTask(
-            innerBitmap.RenderPbgraAsync(buffer).AsTask()
-                .ContinueWith(ApplyFilter, (IntPtr)buffer));
+        await innerBitmap.RenderPbgraAsync(buffer);
+        AdjustOutput(buffer);
     }
-    private unsafe void ApplyFilter(Task _, object? targetPtr)
+
+    private unsafe void AdjustOutput(Memory<DeviceColor> buffer)
     {
-        // in this case I know targetPtr is not null but the 
-        byte* target = (byte*)(IntPtr)targetPtr!;
-        AdjustTarget(target);
+        var pointer = buffer.GetPointer();
+        AdjustTarget((byte*)pointer);
     }
 
     protected abstract unsafe void AdjustTarget(byte* target);
 
     protected unsafe void ApplyAlphaToTarget(byte alpha, ref byte* target)
     {
+#warning use SIMD here? 
         switch (alpha)
         {
             case 255: break;

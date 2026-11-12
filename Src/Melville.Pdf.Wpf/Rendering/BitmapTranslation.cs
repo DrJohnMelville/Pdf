@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Wpf.Rendering
 {
@@ -35,7 +36,12 @@ namespace Melville.Pdf.Wpf.Rendering
             return ret;
    
         }
-        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, WriteableBitmap wb) =>
-            bitmap.RenderPbgraAsync((byte*)wb.BackBuffer.ToPointer());
+        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, WriteableBitmap wb)
+        {
+#warning this is a memory leak, need a safe way to get the span.
+            var mgr = new UnmanagedMemoryManager<DeviceColor>(
+                (DeviceColor*)wb.BackBuffer.ToPointer(), bitmap.TotalPixels());
+            return bitmap.RenderPbgraAsync(mgr.Memory);
+        }
     }
 }

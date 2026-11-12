@@ -24,14 +24,7 @@ internal class PdfBitmapWrapper(
     private IColorSpace finalColorSpace = colorSpace;
 
 
-    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
-    {
-            using var bufferFactory = 
-            new UnmanagedMemoryManager<DeviceColor>((DeviceColor*)buffer, Width * Height);
-        return InnerRenderAsync(bufferFactory.Memory);
-    }
-
-    private async ValueTask InnerRenderAsync(Memory<DeviceColor> target)
+    public async ValueTask RenderPbgraAsync(Memory<DeviceColor> target)
     {
         using var source = await attr.Stream.StreamContentAsync(context: this).CA();
         

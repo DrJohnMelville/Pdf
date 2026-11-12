@@ -1,5 +1,6 @@
 ﻿
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 using SkiaSharp;
 
@@ -26,9 +27,11 @@ namespace Melville.Pdf.SkiaSharp
             new(new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Bgra8888,
                 SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
 
-        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) =>
-            bitmap.RenderPbgraAsync((byte*)skBitmap.GetPixels().ToPointer());
-
-
+        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap)
+        {
+            byte* v = (byte*)skBitmap.GetPixels().ToPointer();
+            using var mgr = new UnmanagedMemoryManager<DeviceColor> ((DeviceColor*)v, bitmap.TotalPixels());
+            return bitmap.RenderPbgraAsync(mgr.Memory);
+        }
     }
 }

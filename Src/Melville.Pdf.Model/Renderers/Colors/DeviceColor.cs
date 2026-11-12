@@ -99,4 +99,7 @@ public readonly struct DeviceColor
         newAlpha < 1.0?
         new(RedByte, GreenByte, BlueByte, (byte)(1.0 * Alpha * newAlpha)):
         this;
+
+    ///<inheritdoc/>
+    public override string ToString() => $"#{RedByte:X2}{GreenByte:X2}{BlueByte:X2}{Alpha:X2}";
 }

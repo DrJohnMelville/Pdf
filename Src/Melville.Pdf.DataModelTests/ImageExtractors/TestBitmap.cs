@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors
@@ -32,15 +34,13 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
         public int Width { get; }
         public int Height { get; }
         public bool DeclaredWithInterpolation { get; }
-        public unsafe ValueTask RenderPbgraAsync(byte* buffer)
+        public unsafe ValueTask RenderPbgraAsync(Memory<DeviceColor> target)
         {
-            int length = Width * Height;
-            for (int i = 0; i < length; i++)
+            var buffer = target.Span;
+            for (int i = 0; i < buffer.Length && i < data.Length; i++)
             {
-                *buffer++ = data[i];
-                *buffer++ = data[i];
-                *buffer++ = data[i];
-                *buffer++ = data[i];
+                var value = data[i];
+                buffer[i] = new DeviceColor(value, value, value, value);
             }
             return ValueTask.CompletedTask;
         }

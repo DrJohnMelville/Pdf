@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
@@ -30,7 +32,7 @@ public interface IPdfBitmap
     /// </summary>
     /// <param name="buffer">A byte pointer which must point to the beginning of a buffer that
     /// is Width * Height *4 bytes long</param>
-    unsafe ValueTask RenderPbgraAsync(byte* buffer);
+    ValueTask RenderPbgraAsync(Memory<DeviceColor> buffer);
 }
 
 /// <summary>
@@ -48,10 +50,12 @@ public static class RenderToArrayImpl
     {
         Debug.Assert(target.Length >= bitmap.ReqiredBufferSize());
         var handle = GCHandle.Alloc(target, GCHandleType.Pinned);
-        byte* pointer = (byte*)handle.AddrOfPinnedObject();
-        return new(bitmap.RenderPbgraAsync(pointer).AsTask().ContinueWith(_ => handle.Free()));
+        var pointer = (DeviceColor*)handle.AddrOfPinnedObject();
+        using var memOwner = new UnmanagedMemoryManager<DeviceColor>(pointer, bitmap.TotalPixels());
+        return new(bitmap.RenderPbgraAsync(memOwner.Memory).AsTask().ContinueWith(_ => handle.Free()));
     }
 
+#warning try to get rid of this
     /// <summary>
     /// Render the bitmap to a C# array
     /// </summary>

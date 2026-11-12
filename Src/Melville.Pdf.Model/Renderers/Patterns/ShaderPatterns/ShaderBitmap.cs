@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
@@ -17,9 +19,10 @@ internal class ShaderBitmap : IPdfBitmap
     }
 
     public bool DeclaredWithInterpolation => true;
-    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
+    public unsafe ValueTask RenderPbgraAsync(Memory<DeviceColor> buffer)
     {
-        source.RenderBits((uint*)buffer, Width, Height);
+        var ptr = buffer.GetPointer();
+        source.RenderBits((uint*)ptr, Width, Height);
         return ValueTask.CompletedTask;
     }
 }

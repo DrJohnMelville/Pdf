@@ -3,6 +3,7 @@ using System.Numerics;
 using Melville.INPC;
 
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.ImageExtractor.ImageCollapsing;
@@ -17,7 +18,7 @@ internal partial class HorizontalBitmapStrip : BitmapStrip
     public override Vector2 PositionTopRight => LastChild.PositionTopRight;
 
 
-    protected override async ValueTask RenderPbgraAsync(PointerHolder buffer) =>
+    public override async ValueTask RenderPbgraAsync(Memory<DeviceColor> buffer) =>
         RenderPbgra(buffer, await RenderSubImagesAsync());
 
     private async Task<RenderedImage[]> RenderSubImagesAsync()
@@ -25,17 +26,18 @@ internal partial class HorizontalBitmapStrip : BitmapStrip
         var renderings = new RenderedImage[componentBitmaps.Count];
         for (int i = 0; i < componentBitmaps.Count; i++)
         {
-            renderings[i] = new RenderedImage(componentBitmaps[i].Width * 4,
-                await componentBitmaps[i].AsByteArrayAsync().CA());
+            var pixels = new DeviceColor[componentBitmaps[i].TotalPixels()];
+            await componentBitmaps[i].RenderPbgraAsync(pixels);
+            renderings[i] = new RenderedImage(componentBitmaps[i].Width , pixels);
         }
 
         return renderings;
     }
 
-    private unsafe void RenderPbgra(PointerHolder buffer, RenderedImage[] renderings)
-        => CopyInterlacedRows(renderings, buffer.BasePointer());
+    private unsafe void RenderPbgra(Memory<DeviceColor> buffer, RenderedImage[] renderings)
+        => CopyInterlacedRows(renderings, buffer);
 
-    private unsafe void CopyInterlacedRows(RenderedImage[] renderings, byte* target)
+    private unsafe void CopyInterlacedRows(RenderedImage[] renderings, Memory<DeviceColor> target)
     {
         for (int row = 0; row < Height; row++)
         {
@@ -49,15 +51,12 @@ internal partial class HorizontalBitmapStrip : BitmapStrip
 
 internal readonly partial struct RenderedImage
 {
-    [FromConstructor] private readonly int RowLength;
-    [FromConstructor] private readonly byte[] Data;
+    [FromConstructor] private readonly int Width;
+    [FromConstructor] private readonly DeviceColor[] Data;
 
-    public unsafe void CopySegmentTo(ref byte* target, int row)
+    public void CopySegmentTo(ref Memory<DeviceColor> target, int row)
     {
-        GetRow(row).CopyTo(new Span<byte>(target, RowLength));
-        target += RowLength;
+        Data.AsSpan(row * Width, Width).CopyTo(target.Span);
+        target = target[Width..];
     }
-
-    [Pure]
-    private Span<byte> GetRow(int row) => Data.AsSpan(row * RowLength, RowLength);
 }

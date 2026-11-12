@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 using System.Numerics;
 
 namespace Melville.Pdf.ImageExtractor.ImageCollapsing;
@@ -50,18 +51,5 @@ internal abstract partial class BitmapStrip : IExtractedBitmap
         _=> new T().AddNext(prior).AddNext(next)
     };
 
-    public unsafe ValueTask RenderPbgraAsync(byte* buffer) =>
-        RenderPbgraAsync(new PointerHolder(buffer));
-
-    protected abstract ValueTask RenderPbgraAsync(PointerHolder buffer);
-
-    protected readonly unsafe partial struct PointerHolder
-    {
-        [FromConstructor] private readonly byte* root;
-
-        public ValueTask WriteToStreamAsync(long offset, IPdfBitmap item) =>
-            item.RenderPbgraAsync(root + offset);
-
-        public byte* BasePointer() => root;
-    }
+    public abstract ValueTask RenderPbgraAsync(Memory<DeviceColor> buffer);
 }
