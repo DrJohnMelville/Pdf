@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -13,7 +14,7 @@ internal partial class SelfMaskAdjuster<TMaskType>: MaskAdjuster
         byte* end = target + totalPixels;
         while (target < end)
         {
-            ApplyAlphaToTarget(maskType.AlphaForByte(0, target), ref target);
+            ApplyAlphaToTarget(maskType.AlphaForByte(0, *((DeviceColor*)target)), ref target);
         }
     }
 }

@@ -46,13 +46,10 @@ public static class RenderToArrayImpl
     /// </summary>
     /// <param name="bitmap">Bitmap to render</param>
     /// <param name="target">array to fill with the bitmap bits</param>
-    public static unsafe ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
+    public static ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
     {
-        Debug.Assert(target.Length >= bitmap.ReqiredBufferSize());
-        var handle = GCHandle.Alloc(target, GCHandleType.Pinned);
-        var pointer = (DeviceColor*)handle.AddrOfPinnedObject();
-        using var memOwner = new UnmanagedMemoryManager<DeviceColor>(pointer, bitmap.TotalPixels());
-        return new(bitmap.RenderPbgraAsync(memOwner.Memory).AsTask().ContinueWith(_ => handle.Free()));
+        using var memOwner = new ByteArrayMemoryManager(target);
+        return bitmap.RenderPbgraAsync(memOwner.Memory);
     }
 
 #warning try to get rid of this
@@ -78,5 +75,19 @@ public static class RenderToArrayImpl
         var ret = new DeviceColor[bitmap.TotalPixels()];
         await bitmap.RenderPbgraAsync(ret).CA();
         return ret;
+    }
+}
+
+internal class ByteArrayMemoryManager(byte[] bytes) : MemoryManager<DeviceColor> 
+{
+    protected override void Dispose(bool disposing)
+    {
+    }
+    public override Span<DeviceColor> GetSpan() =>
+        MemoryMarshal.Cast<byte, DeviceColor>(bytes.AsSpan());
+
+    public override MemoryHandle Pin(int elementIndex = 0) => throw new NotImplementedException();
+    public override void Unpin()
+    {
     }
 }

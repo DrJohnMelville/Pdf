@@ -12,20 +12,17 @@ internal partial class ArbitrarySizeMaskAdjuster<TMaskType> : MaskAdjuster
 
     protected override unsafe void AdjustTarget(byte* target)
     {
-        fixed (byte* maskBytes = mask.Mask)
+        for (int row = 0; row < Height; row++)
         {
-            for (int row = 0; row < Height; row++)
+            int rowPtr = mask.PixelOffset(MaskRow(row), 0);
+            int maskRow = MaskRow(row);
+            for (int col = 0; col < Width; col++)
             {
-                byte* rowPtr = maskBytes + mask.PixelOffset(MaskRow(row), 0);
-                for (int col = 0; col < Width; col++)
-                {
-                    var maskLocation = rowPtr + (4 * MaskCol(col));
-                    ApplyAlphaToTarget(
-                        maskType.AlphaForByte(target[3], maskLocation)
-                        , ref target);
-                }
+                var maskLocation = rowPtr + MaskCol(col);
+                ApplyAlphaToTarget(
+                    maskType.AlphaForByte(target[3], mask.PixelAt(maskLocation))
+                    , ref target);
             }
-
         }
     }
 

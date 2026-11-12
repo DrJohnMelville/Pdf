@@ -11,20 +11,19 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal readonly struct MaskBitmap
 {
-    public byte[] Mask { get; }
+    private DeviceColor[] Mask { get; }
     public int Width { get; }
     public int Height { get; }
 
-    private MaskBitmap(byte[] mask, int width, int height)
+    private MaskBitmap(DeviceColor[] mask, int width, int height)
     {
         Mask = mask;
         Width = width;
         Height = height;
     }
-    
-    public ReadOnlySpan<byte> PixelAt(int row, int col) =>
-        PixelAt(PixelOffset(row, col));
-    public ReadOnlySpan<byte> PixelAt(int index) => Mask.AsSpan(index, 4);
+
+    //    public ReadOnlySpan<byte> PixelAt(int index) => Mask.AsSpan(index, 4);
+    public DeviceColor PixelAt(int index) => Mask[index];
 
     public int PixelOffset(int row, int col)
     {
@@ -32,13 +31,14 @@ internal readonly struct MaskBitmap
         Debug.Assert(row < Height);
         Debug.Assert(col >= 0);
         Debug.Assert(col < Width);
-        return 4 * (col + (row * Width));
+        return (col + (row * Width));
     }
 
     public static async ValueTask<MaskBitmap> CreateAsync(PdfStream stream, IHasPageAttributes page)
     {
         var wrapped = await stream.WrapForRenderingAsync(page, DeviceColor.Black).CA();
-        var buffer = await wrapped.AsByteArrayAsync().CA();
+        var buffer = new DeviceColor[wrapped.TotalPixels()];
+        await wrapped.RenderPbgraAsync(buffer).CA();
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
     }
 

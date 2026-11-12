@@ -38,10 +38,10 @@ internal readonly struct ColorRangeMaskType : IMaskType
         return colorSpace.SetColor(color);
     }
 
-    public unsafe byte AlphaForByte(byte alpha, in byte* maskPixel) =>
-        blueRange.IsInRange(maskPixel[0]) &&
-        greenRange.IsInRange(maskPixel[1]) &&
-        redRange.IsInRange(maskPixel[2])
+    public unsafe byte AlphaForByte(byte alpha, DeviceColor maskPixel) =>
+        blueRange.IsInRange(maskPixel.BlueByte) &&
+        greenRange.IsInRange(maskPixel.GreenByte) &&
+        redRange.IsInRange(maskPixel.RedByte)
             ? (byte)0
             : (byte)255;
 }
