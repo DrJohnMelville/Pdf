@@ -41,31 +41,6 @@ public interface IPdfBitmap
 public static class RenderToArrayImpl
 {
     /// <summary>
-    /// Copies a bitmap to an appropriately sized C# array by pinning the array and rendering
-    /// tp the resulting pointer.
-    /// </summary>
-    /// <param name="bitmap">Bitmap to render</param>
-    /// <param name="target">array to fill with the bitmap bits</param>
-    public static ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
-    {
-        using var memOwner = new ByteArrayMemoryManager(target);
-        return bitmap.RenderPbgraAsync(memOwner.Memory);
-    }
-
-#warning try to get rid of this
-    /// <summary>
-    /// Render the bitmap to a C# array
-    /// </summary>
-    /// <param name="bitmap">The bitmap to render.</param>
-    /// <returns>A byte array containing the bitmap as argb quadruples</returns>
-    public static async ValueTask<byte[]> AsByteArrayAsync(this IPdfBitmap bitmap)
-    {
-        var ret = new byte[bitmap.ReqiredBufferSize()];
-        await CopyToArrayAsync(bitmap, ret).CA();
-        return ret;
-    }
-
-    /// <summary>
     /// Render the bitmap to a C# array
     /// </summary>
     /// <param name="bitmap">The bitmap to render.</param>
@@ -75,19 +50,5 @@ public static class RenderToArrayImpl
         var ret = new DeviceColor[bitmap.TotalPixels()];
         await bitmap.RenderPbgraAsync(ret).CA();
         return ret;
-    }
-}
-
-internal class ByteArrayMemoryManager(byte[] bytes) : MemoryManager<DeviceColor> 
-{
-    protected override void Dispose(bool disposing)
-    {
-    }
-    public override Span<DeviceColor> GetSpan() =>
-        MemoryMarshal.Cast<byte, DeviceColor>(bytes.AsSpan());
-
-    public override MemoryHandle Pin(int elementIndex = 0) => throw new NotImplementedException();
-    public override void Unpin()
-    {
     }
 }

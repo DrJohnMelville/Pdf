@@ -1,4 +1,6 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.Model.Renderers.Colors;
+using System;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -10,8 +12,10 @@ internal partial class ArbitrarySizeMaskAdjuster<TMaskType> : MaskAdjuster
     [FromConstructor] private readonly MaskBitmap mask;
     [FromConstructor] private readonly TMaskType maskType;
 
-    protected override unsafe void AdjustTarget(byte* target)
+    protected override unsafe void AdjustTarget(Memory<DeviceColor> target)
     {
+        int targetPos = 0;
+        var targetSpan = target.Span;
         for (int row = 0; row < Height; row++)
         {
             int rowPtr = mask.PixelOffset(MaskRow(row), 0);
@@ -19,9 +23,10 @@ internal partial class ArbitrarySizeMaskAdjuster<TMaskType> : MaskAdjuster
             for (int col = 0; col < Width; col++)
             {
                 var maskLocation = rowPtr + MaskCol(col);
-                ApplyAlphaToTarget(
-                    maskType.AlphaForByte(target[3], mask.PixelAt(maskLocation))
-                    , ref target);
+                ref var tp = ref targetSpan[targetPos++];
+                ApplyAlphaTo(
+                    maskType.AlphaForByte(tp.Alpha, mask.PixelAt(maskLocation))
+                    , ref tp);
             }
         }
     }

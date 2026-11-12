@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Melville.INPC;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps
 {
@@ -16,28 +17,13 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps
         Debug.Assert(mask.Width == Width);
     }
 #endif
-#warning -- make this method safe;
-        protected override unsafe void AdjustTarget(byte* target)
+        protected override unsafe void AdjustTarget(Memory<DeviceColor> target)
         {
-            var end = this.TotalPixels();
-
-            for (int i = 0; i < end; i++)
+            var targetSpan = target.Span; 
+            for (int i = 0; i < targetSpan.Length; i++)
             {
-                ApplyAlphaToTarget(maskType.AlphaForByte(target[3],mask.PixelAt(i)), ref target);    
+                ApplyAlphaTo(mask.PixelAt(i).GreenByte, ref targetSpan[i]);
             }
-
-            //var totalPixels = this.ReqiredBufferSize();
-            //fixed (byte* maskBytes = mask.Mask)
-            //{
-            //    byte* end = maskBytes + totalPixels;
-            //    for (byte* i = maskBytes; i < end; i+=4)
-            //    {
-            //        ApplyAlphaToTarget(
-            //            maskType.AlphaForByte(target[3], i),
-            //            ref target);
-            //    }
-
-            //}
         }
     }
 }

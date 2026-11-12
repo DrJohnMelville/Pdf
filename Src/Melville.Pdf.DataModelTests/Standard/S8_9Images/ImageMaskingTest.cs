@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -20,9 +21,11 @@ public class ImageMaskingTest
             .AsStream(imageBytes);
 
         var result = await (await image.WrapForRenderingAsync(DeviceColor.Black))
-            .AsByteArrayAsync();
-        return result;
+            .AsDeviceColorArrayAsync();
+
+        return MemoryMarshal.Cast<DeviceColor, byte>(result).ToArray();
     }
+
 
     private static DictionaryBuilder GrayImageBuilder(int width, int height)
     {

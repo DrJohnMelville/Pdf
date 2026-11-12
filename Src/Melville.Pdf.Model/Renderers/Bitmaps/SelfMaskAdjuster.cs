@@ -8,13 +8,12 @@ internal partial class SelfMaskAdjuster<TMaskType>: MaskAdjuster
 {
     [FromConstructor] private readonly TMaskType maskType;
 
-    protected override unsafe void AdjustTarget(byte* target)
+    protected override unsafe void AdjustTarget(System.Memory<DeviceColor> target)
     {
-        var totalPixels = this.ReqiredBufferSize();
-        byte* end = target + totalPixels;
-        while (target < end)
+        var targetSpan = target.Span;
+        for (int i = 0; i < target.Length; i++)
         {
-            ApplyAlphaToTarget(maskType.AlphaForByte(0, *((DeviceColor*)target)), ref target);
+            ApplyAlphaTo(maskType.AlphaForByte(0, targetSpan[i]), ref targetSpan[i]);
         }
     }
 }

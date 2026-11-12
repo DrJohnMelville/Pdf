@@ -102,4 +102,10 @@ public readonly struct DeviceColor
 
     ///<inheritdoc/>
     public override string ToString() => $"#{RedByte:X2}{GreenByte:X2}{BlueByte:X2}{Alpha:X2}";
+    public DeviceColor PreMultipliedBy(byte alpha)
+    {
+        return new DeviceColor(PreMul(RedByte, alpha), PreMul(GreenByte, alpha), PreMul(BlueByte, alpha),
+            alpha);
+    }
+    byte PreMul(byte redByte, byte alpha) => (byte)((redByte * alpha) >> 8);
 }
