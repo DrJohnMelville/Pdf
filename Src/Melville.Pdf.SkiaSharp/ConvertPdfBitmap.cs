@@ -3,6 +3,8 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.StreamInterfaces;
 using SkiaSharp;
+using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace Melville.Pdf.SkiaSharp
 {
@@ -27,11 +29,24 @@ namespace Melville.Pdf.SkiaSharp
             new(new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Bgra8888,
                 SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
 
-        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap)
+        private static async ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap)
         {
-            byte* v = (byte*)skBitmap.GetPixels().ToPointer();
-            using var mgr = new UnmanagedMemoryManager<DeviceColor> ((DeviceColor*)v, bitmap.TotalPixels());
-            return bitmap.RenderPbgraAsync(mgr.Memory);
+            using var mgr = new SkiaBitmapMemoryManager(skBitmap);
+            await bitmap.RenderPbgraAsync(mgr.Memory);
         }
+    }
+}
+
+internal class SkiaBitmapMemoryManager(SKBitmap source): MemoryManager<DeviceColor>
+{
+    protected override void Dispose(bool disposing)
+    {
+    }
+    public override Span<DeviceColor> GetSpan() => 
+        MemoryMarshal.Cast<byte, DeviceColor>(source.GetPixelSpan());
+
+    public override MemoryHandle Pin(int elementIndex = 0) => throw new NotImplementedException();
+    public override void Unpin()
+    {
     }
 }

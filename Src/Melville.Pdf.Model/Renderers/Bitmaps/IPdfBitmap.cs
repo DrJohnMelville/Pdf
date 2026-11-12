@@ -67,4 +67,16 @@ public static class RenderToArrayImpl
         await CopyToArrayAsync(bitmap, ret).CA();
         return ret;
     }
+
+    /// <summary>
+    /// Render the bitmap to a C# array
+    /// </summary>
+    /// <param name="bitmap">The bitmap to render.</param>
+    /// <returns>A byte array containing the bitmap as argb quadruples</returns>
+    public static async ValueTask<DeviceColor[]> AsDeviceColorArrayAsync(this IPdfBitmap bitmap)
+    {
+        var ret = new DeviceColor[bitmap.TotalPixels()];
+        await bitmap.RenderPbgraAsync(ret).CA();
+        return ret;
+    }
 }

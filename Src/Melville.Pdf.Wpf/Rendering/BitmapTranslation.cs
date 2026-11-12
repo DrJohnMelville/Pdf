@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Buffers;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -19,29 +20,43 @@ namespace Melville.Pdf.Wpf.Rendering
         public static async ValueTask<BitmapSource> ToWpfBitmapAsync(this IPdfBitmap bitmap)
         {
             var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
-            ret.Lock();
+            using var bmpToMempry = new WriteableBitmapMemoryManager(ret);
             try
             {
-                await FillBitmapAsync(bitmap, ret);
+                await bitmap.RenderPbgraAsync(bmpToMempry.Memory);
+                ret.AddDirtyRect(new Int32Rect(0, 0, bitmap.Width, bitmap.Height));
             }
             catch (InvalidOperationException)
             {
                 // if we cannot decode just print what we have
             }
-            finally
-            {
-                ret.AddDirtyRect(new Int32Rect(0,0,bitmap.Width, bitmap.Height));
-                ret.Unlock();
-            }
             return ret;
    
         }
-        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, WriteableBitmap wb)
+    }
+}
+
+internal class WriteableBitmapMemoryManager: MemoryManager<DeviceColor>
+{
+    private readonly WriteableBitmap source;
+    public WriteableBitmapMemoryManager(WriteableBitmap source)
+    {
+        this.source = source;
+        source.Lock();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-#warning this is a memory leak, need a safe way to get the span.
-            var mgr = new UnmanagedMemoryManager<DeviceColor>(
-                (DeviceColor*)wb.BackBuffer.ToPointer(), bitmap.TotalPixels());
-            return bitmap.RenderPbgraAsync(mgr.Memory);
+            source.Unlock();
         }
+    }
+    public unsafe override Span<DeviceColor> GetSpan() =>
+        new Span<DeviceColor>(
+            (DeviceColor*)source.BackBuffer.ToPointer(), source.PixelWidth * source.PixelHeight);
+    public unsafe override MemoryHandle Pin(int elementIndex = 0) => throw new NotImplementedException();
+  
+    public override void Unpin()
+    {
     }
 }

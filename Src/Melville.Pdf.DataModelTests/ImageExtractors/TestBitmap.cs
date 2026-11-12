@@ -18,14 +18,10 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
             Assert.Equal(width, bmp.Width);
             Assert.Equal(height, bmp.Height);
             Assert.Equal(width * height, data.Length);
-            var result = await bmp.AsByteArrayAsync();
-            for (int i = 0; i < data.Length; i++)
+            var result = await bmp.AsDeviceColorArrayAsync();
+            foreach (var (i,item) in data.Index())
             {
-                var baseIndex = i * 4;
-                Assert.Equal(data[i], result[baseIndex+0]);
-                Assert.Equal(data[i], result[baseIndex+1]);
-                Assert.Equal(data[i], result[baseIndex+2]);
-                Assert.Equal(data[i], result[baseIndex+3]);
+                Assert.Equal(new DeviceColor(item,item,item,item), result[i]);
             }
         }
     }
