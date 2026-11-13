@@ -47,7 +47,7 @@ internal class PdfBitmapWrapper(
         var writer = byteWriter(finalColorSpace);
         var src = new SpanParsingBuffer(input);
         var dest = output.Span;
-        writer.WriteBytes(ref src, ref dest);
+        writer.WriteBytes(ref src, ref dest, true);
 
     }
     async ValueTask StreamBitmapBitsAsync(Stream source, Memory<DeviceColor> target)
@@ -59,7 +59,7 @@ internal class PdfBitmapWrapper(
             await sourceBuffer.ReadBytesAsync().CA();
             var spanReader = new SpanParsingBuffer(sourceBuffer.Peek());
             var targetSpan = target.Span;
-            writer.WriteBytes(ref spanReader, ref targetSpan);
+            writer.WriteBytes(ref spanReader, ref targetSpan, sourceBuffer.DoneReadingSource);
             sourceBuffer.Advance((int)spanReader.RelativePosition);
             target = target[^targetSpan.Length..];
         }

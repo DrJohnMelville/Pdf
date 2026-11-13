@@ -8,7 +8,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal class ByteWriter16(ComponentWriter writer) : ByteWriter(ushort.MaxValue, writer)
 {
     public override unsafe void WriteBytes(
-        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool isFinal)
     {
         while (!output.IsEmpty && input.CurrentLength >= 2)
         {

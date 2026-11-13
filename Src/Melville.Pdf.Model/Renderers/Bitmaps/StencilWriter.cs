@@ -26,7 +26,8 @@ internal class StencilWriter : IByteWriter
     private static bool ZeroIsMarkingValue(IReadOnlyList<double>? decode) => 
         decode == null || decode.Count< 1  || decode[0] < 0.5;
     
-    public unsafe void WriteBytes(scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
+    public unsafe void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool isFinal)
     {
 
         while (!output.IsEmpty && input.TryGetUInt8(out var sourceByte))

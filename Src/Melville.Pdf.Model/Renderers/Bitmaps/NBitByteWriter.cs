@@ -11,8 +11,8 @@ internal class NBitByteWriter(ComponentWriter writer, int bits, int lineWidth) :
     private static byte MaxValueForBits(int bits) => (byte)((1 << bits) - 1);
     int currentCol = 0;
 
-    public override unsafe void WriteBytes(
-        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output)
+    public override void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool isFinal)
     {
         while (!output.IsEmpty && input.TryGetUInt8(out var readVal))
         {
@@ -21,7 +21,7 @@ internal class NBitByteWriter(ComponentWriter writer, int bits, int lineWidth) :
         }
     }
 
-    private unsafe void PushSingleByte(ref Span<DeviceColor> output, byte readVal)
+    private void PushSingleByte(ref Span<DeviceColor> output, byte readVal)
     {
         for (var bitsLeft = 8;  
             bitsLeft > 0 && !output.IsEmpty && currentCol < lineWidth;

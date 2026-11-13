@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal interface IByteWriter
 {
     unsafe void WriteBytes(
-        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output);
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool final);
 }
 
 
@@ -28,10 +28,10 @@ internal abstract class ByteWriter: IByteWriter
         components = new int[componentWriter.ColorComponentCount];
     }
     
-    public abstract unsafe void WriteBytes(
-        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output);
+    public abstract void WriteBytes(
+        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool isFinal);
 
-    protected unsafe void PushComponent(ref Span<DeviceColor> output, int numerator)
+    protected void PushComponent(ref Span<DeviceColor> output, int numerator)
     {
         components[currentComponent++] = numerator;
         if (currentComponent >= components.Length)
