@@ -25,9 +25,13 @@ internal class PdfFileStreamSource: IStreamDataSource
 
     public Stream OpenRawStream(long streamLength) => 
         parsingFileOwner.SubsetStream(sourceFilePosition, streamLength);
+    public IPdfStreamReader OpenRawReader(long streamLength) =>
+        parsingFileOwner.SubsetIAsyncReader(sourceFilePosition, streamLength);
+
 
     public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName) => 
         decryptor.NamedCipher(cryptFilterName).Decrypt().CryptStream(encryptedStream);
     public Stream WrapStreamWithDecryptor(Stream encryptedStream) => 
         decryptor.StreamCipher().Decrypt().CryptStream(encryptedStream);
+
 }

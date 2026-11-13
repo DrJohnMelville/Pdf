@@ -32,10 +32,10 @@ internal sealed partial class ParsingFileOwner : IDisposable
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
-    public IAsyncReader SubsetIAsyncReader(long offset) =>
-        source.ReaderFrom(AdjustOffsetForPreHeaderBytes(offset));
+    public IPdfStreamReader SubsetIAsyncReader(long offset, long length = long.MaxValue) =>
+        new RentedReader(source.ReaderFrom(AdjustOffsetForPreHeaderBytes(offset)), length);
 
-    public DisposableParsingReader SubsetReader(long offset, int objectNumber = -1, int generation = -1)
+    public DisposableParsingReader SubsetParsingReader(long offset, int objectNumber = -1, int generation = -1)
     {
         var ret = new DisposableParsingReader(this, source.ReaderFrom(AdjustOffsetForPreHeaderBytes(offset)));
         ret.Buffer.RelativePosition = offset;

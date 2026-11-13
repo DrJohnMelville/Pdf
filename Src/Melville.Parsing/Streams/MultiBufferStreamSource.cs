@@ -1,17 +1,18 @@
 ﻿using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces.Memory;
 
 namespace Melville.Parsing.Streams;
 
 /// <summary>
 /// This is struct is used to allow many different types to convert implicitly to a multibufferstream
 /// </summary>
-public readonly partial struct MultiBufferStreamSource
+public readonly struct MultiBufferStreamSource(byte[] source)
 {
     /// <summary>
-    /// Tuhe source of the bits for the source
+    /// The source of the bits for the source
     /// </summary>
-    [FromConstructor] private readonly byte[] source;
+    public byte[] Source { get; } = source;
 
     /// <summary>
     /// The MultiBufferStream that contains the data.
@@ -20,7 +21,7 @@ public readonly partial struct MultiBufferStreamSource
     {
         get
         {
-            return new MemoryStream(source);
+            return new MemoryStream(Source);
         }
     }
 

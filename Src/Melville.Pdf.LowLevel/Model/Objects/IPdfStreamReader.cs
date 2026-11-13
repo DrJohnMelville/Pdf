@@ -1,6 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
+using Melville.StreamInterfaces.Streams;
 using System;
 using System.IO;
 using System.Threading;
@@ -25,25 +26,28 @@ internal class WrapPdfStream(Stream inner) : IPdfStreamReader
     public ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default) =>
         inner.ReadAsync(buffer, cancellation);
 }
+
 /// <summary>
-/// Extension classes for creating a ParsingBuffer from a PdfStream.
+/// Shim code for transitioning streams to readers.
 /// </summary>
-public static class ParsePdfStream
+public static class ReaderStreamBridge
 {
-    extension (PdfStream self)
+    extension (Stream self)
     {
         /// <summary>
-        /// Creates a parsing buffer for the content of this stream.  Disposing of the
-        /// ParsingBuffer will dispose of all the mechanism to decode the stream.
+        /// Shim code for transitioning streams to readers.
         /// </summary>
-        /// <param name="desiredFormat">Format in which to read the stream.</param>
-        /// <param name="context">An optional context object for creating the decode filters.</param>
-        /// <returns>A ParsingBuffer that will read from the given stream.</returns>
-        public async ValueTask<ParsingBuffer> ContentParsingBufferAsync(
-            StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null)
-        {
-            IAsyncReader reader = await self.ReaderForContentAsync(StreamFormat.PlainText, context);
-            return new ParsingBuffer(reader).WithDisposedDependency(reader);
-        }
+        [Obsolete("This is for the stream / reader transition only/")]
+        public IPdfStreamReader AsReaderInefficient() => new WrapPdfStream(self);
+       
+    }
+
+    extension (IAsyncReader self)
+    {
+        /// <summary>
+        /// Shim code for transitioning streams to readers.
+        /// </summary>
+        [Obsolete("This is for the stream / reader transition only/")]
+        public Stream AsStreamInefficient() => self.AsStream();
     }
 }

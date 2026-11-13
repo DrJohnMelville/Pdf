@@ -1,14 +1,36 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Melville.Parsing.Streams.Bases;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 internal partial class ParsingFileOwner
 {
+
+    public partial class RentedReader (IAsyncReader reader, long length) : IPdfStreamReader, IStreamLength, IStreamPosition
+    {
+        public long Length { get; } = length;
+
+        public long Position { get; private set; }
+
+        public void Dispose() => (reader as IDisposable)?.Dispose();
+
+        public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
+        {
+            buffer = buffer.TakeMax(ClampToInt(Length - Position));
+            if (buffer.IsEmpty) return 0;
+            var ret = await reader.ReadAsync(buffer);
+            Position += ret;
+            return ret;
+        }
+
+        public int ClampToInt(long value) => (int)long.Clamp(value, 0, int.MaxValue);
+    }
 
     public partial class RentedStream: DefaultBaseStream
     {
@@ -27,7 +49,7 @@ internal partial class ParsingFileOwner
         {
             var avail = nextPosition - baseStream.Position;
             if (avail <= 0) return 0;
-            if (avail < buffer.Length) buffer = buffer[..(int)avail];
+            buffer = buffer.TakeMax((int)avail);
             return baseStream.Read(buffer);
         }
 

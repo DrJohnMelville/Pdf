@@ -58,7 +58,7 @@ internal readonly struct PdfTrailerParser(
 
     private async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync()
     {
-        using var parsingReader = source.SubsetReader(xrefPosition);
+        using var parsingReader = source.SubsetParsingReader(xrefPosition);
 
         using var buffer = parsingReader.Buffer;
 
