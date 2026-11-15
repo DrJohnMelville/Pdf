@@ -14,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 internal partial class ParsingFileOwner
 {
 
-    public partial class RentedReader (IMultiplexReader reader, long length) : IPdfStreamReader, IStreamLength, IStreamPosition
+    public partial class RentedReader (IMultiplexReader reader, long length) : IPdfStreamReader, ISeekableStream, IStreamLength, IStreamPosition
     {
         public long Length { get; } = length;
 
@@ -32,6 +32,8 @@ internal partial class ParsingFileOwner
         }
 
         public int ClampToInt(long value) => (int)long.Clamp(value, 0, int.MaxValue);
+        public void Seek(long position) => reader.Seek(position);
+
     }
 
     public partial class RentedStream: DefaultBaseStream

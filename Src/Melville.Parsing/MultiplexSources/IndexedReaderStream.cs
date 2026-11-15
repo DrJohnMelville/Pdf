@@ -94,13 +94,12 @@ internal class IndexedReaderStream :
 }
 
 internal class IndexedReader(IIndexedReader inner, long basePosition): 
-    IMultiplexReader, ISyncReader, IHasSourceTicket
+    IMultiplexReader, ISyncReader, IHasSourceTicket, IDisposable
 {
     IIndexedReader inner = inner;
     readonly long basePosition = basePosition;
     long absolutePosition = basePosition;
     CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
-
 
     int BumpPosition (int delta)
     {

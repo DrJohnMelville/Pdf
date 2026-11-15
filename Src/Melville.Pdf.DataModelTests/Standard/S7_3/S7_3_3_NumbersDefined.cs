@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.StreamInterfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -24,11 +25,13 @@ public class S7_3_3_NumbersDefined
     [InlineData("+123.6", 123.6)]
     [InlineData("4.", 4)]
     [InlineData("-.002", -0.002)]
-    public Task SpecExample2ItemsAsync(string input, double value) =>
-        ParseNumberSucceedAsync(input, (int)Math.Round(value, MidpointRounding.AwayFromZero),
-            value);
-    
-    
+    public async Task SpecExample2ItemsAsync(string input, double value)
+    {
+        await ParseNumberSucceedAsync(input, (int)Math.Round(value, MidpointRounding.AwayFromZero),
+                    value);
+    }
+
+
     [Theory]
     [InlineData("%comment\r\n34/", 34, 34)]
     // from standard sec
