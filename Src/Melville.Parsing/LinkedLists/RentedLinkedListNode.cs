@@ -5,7 +5,7 @@ namespace Melville.Parsing.LinkedLists;
 
 internal class RentedLinkedListNode: LinkedListNode
 {
-    private readonly byte[] buffer;
+    private byte[] buffer;
 
     public RentedLinkedListNode(byte[] rentedBuffer) : 
         base(new ReadOnlyMemory<byte>(rentedBuffer))
@@ -15,7 +15,8 @@ internal class RentedLinkedListNode: LinkedListNode
 
     public override void Dispose()
     {
-        ArrayPool<byte>.Shared.Return(buffer);
+        //ArrayPool<byte>.Shared.Return(buffer);
+       // buffer = null;
         base.Dispose();
     }
     public override ValueTask<int> FillFromAsync(Stream s, int startAt) => 

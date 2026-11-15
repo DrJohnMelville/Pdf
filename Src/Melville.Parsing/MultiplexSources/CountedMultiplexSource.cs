@@ -54,7 +54,7 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
     public Stream ReadFrom(long position) => 
         counter.IssueTicket(this, ReadFromOverride(position));
 
-    public IAsyncReader ReaderFrom(long position) =>
+    public IMultiplexReader ReaderFrom(long position) =>
         counter.IssueTicket(this, ReaderFromOverride(position));
 
     public void TryRelease(IHasSourceTicket item) => counter.CancelTicket(this, item);
@@ -65,7 +65,7 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
     public abstract long Length { get; }
 
     protected abstract Stream ReadFromOverride(long position);
-    protected abstract IAsyncReader ReaderFromOverride(long position);
+    protected abstract IMultiplexReader ReaderFromOverride(long position);
 
     protected abstract void CleanUp();
 

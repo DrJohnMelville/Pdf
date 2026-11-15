@@ -160,7 +160,7 @@ internal abstract class LinkedList: CountedMultiplexSource
         if (position > 0) ret.Seek(position, SeekOrigin.Begin);
         return ret;
     }
-    protected override IAsyncReader ReaderFromOverride(long position)
+    protected override IMultiplexReader ReaderFromOverride(long position)
     {
         var ret = new LinkedListIStream.LinkedListReader(this);
         if (position is not 0) ret.Seek(position);

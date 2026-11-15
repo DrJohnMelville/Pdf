@@ -21,20 +21,30 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
     protected override Stream ReadFromOverride(long position) =>
         new Wrapper(false,false, false);
 
-    protected override IAsyncReader ReaderFromOverride(long position) =>
+    protected override IMultiplexReader ReaderFromOverride(long position) =>
         new ReaderWrapper();
 
     protected override void CleanUp() => CleanUps++;
 
-    private partial class ReaderWrapper : IAsyncReader, IDisposable, IHasSourceTicket
+    private partial class ReaderWrapper : IMultiplexReader, IDisposable, IHasSourceTicket
     {
         CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
 
+        public long Length => throw new NotImplementedException();
+
+        public long Position => throw new NotImplementedException();
+
+        public void Seek(long position)
+        {
+            throw new NotImplementedException();
+        }
         public ValueTask<int> ReadAsync(
             Memory<byte> buffer, CancellationToken cancellation = default) =>
             ValueTask.FromResult(0);
 
         public void Dispose() => ((IHasSourceTicket)this).SourceTicket.Release(this);
+
+        
     }
 
     [FromConstructor]

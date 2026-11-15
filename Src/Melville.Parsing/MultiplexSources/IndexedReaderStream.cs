@@ -94,7 +94,7 @@ internal class IndexedReaderStream :
 }
 
 internal class IndexedReader(IIndexedReader inner, long basePosition): 
-    IAsyncReader, ISyncReader, ISeekableStream, IStreamPosition, IDisposable, IStreamLength, IHasSourceTicket
+    IMultiplexReader, ISyncReader, IHasSourceTicket
 {
     IIndexedReader inner = inner;
     readonly long basePosition = basePosition;

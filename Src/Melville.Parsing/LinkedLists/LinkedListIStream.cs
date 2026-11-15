@@ -35,11 +35,13 @@ public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposa
     /// <inheritdoc/>
     public long Length => data.Length;
 
+    /// <inheritdoc/>
+    public long Position => position.GlobalPosition;
 
     /// <summary>
     /// This reader reads from a MultiBuffer
     /// </summary>
-    public class LinkedListReader : LinkedListIStream, ISyncReader, IAsyncReader
+    public class LinkedListReader : LinkedListIStream, ISyncReader, IMultiplexReader
     {
 
         internal LinkedListReader(LinkedList data) : base(data)
@@ -57,6 +59,7 @@ public closed class LinkedListIStream : ISeekableStream, IStreamLength, IDisposa
         {
             return ValueTask.FromResult(Read(buffer.Span));
         }
+        
     }
 
     /// <summary>

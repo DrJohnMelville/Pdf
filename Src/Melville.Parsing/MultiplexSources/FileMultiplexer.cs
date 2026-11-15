@@ -23,7 +23,7 @@ internal class FileMultiplexer : CountedMultiplexSource, IIndexedReader
     protected override Stream ReadFromOverride(long position) => 
         new IndexedReaderStream(this, position);
 
-    protected override IAsyncReader ReaderFromOverride(long position)
+    protected override IMultiplexReader ReaderFromOverride(long position)
     {
         return new IndexedReader(this, position);
     }

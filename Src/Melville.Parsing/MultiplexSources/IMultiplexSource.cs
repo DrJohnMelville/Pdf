@@ -20,7 +20,7 @@ public interface IMultiplexSource : IDisposable
     /// Create a multiplexed reader that begins at a given position.  The readers are threadsafe
     /// </summary>
     /// <param name="position"></param>
-    IAsyncReader ReaderFrom(long position);
+    IMultiplexReader ReaderFrom(long position);
  
     /// <summary>
     /// Create a parsing buffer starting at the given location.  The buffer disposes 
@@ -47,4 +47,9 @@ public interface IMultiplexSource : IDisposable
     /// source should begin</param>
     /// <returns>A, IMultiplexSource that shares data with this one, but with an offset</returns>
     IMultiplexSource OffsetFrom(uint offset);
+}
+
+public interface IMultiplexReader: IAsyncReader, ISeekableStream, IStreamPosition, IStreamLength
+{
+
 }

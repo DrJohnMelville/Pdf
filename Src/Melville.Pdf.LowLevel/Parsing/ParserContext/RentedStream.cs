@@ -2,17 +2,19 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Melville.IntersectionTypes;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
+
 internal partial class ParsingFileOwner
 {
 
-    public partial class RentedReader (IAsyncReader reader, long length) : IPdfStreamReader, IStreamLength, IStreamPosition
+    public partial class RentedReader (IMultiplexReader reader, long length) : IPdfStreamReader, IStreamLength, IStreamPosition
     {
         public long Length { get; } = length;
 
