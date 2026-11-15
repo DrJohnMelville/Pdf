@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.ObjectRentals;
@@ -106,7 +107,7 @@ public abstract partial class StreamTestBase
     {
         var streamMock = new Mock<Stream>();
         streamMock.SetupGet(i => i.CanRead).Returns(true);
-        var strSourceMock = MockStreamSource(streamMock.Object);
+       var strSourceMock = MockStreamSource(streamMock.Object);
 
         var PdfValueStream = StreamBuilder().AsStream(strSourceMock.Object);
         var innerStream = await PdfValueStream.StreamContentAsync();
@@ -116,7 +117,12 @@ public abstract partial class StreamTestBase
     private static Mock<IStreamDataSource> MockStreamSource(Stream readFrom)
     {
         var strSourceMock = new Mock<IStreamDataSource>();
+        var readerMock = new Mock<IPdfStreamReader>();
+        readerMock.Setup(i => i.ReadAsync(It.IsAny<Memory<Byte>>(), It.IsAny<CancellationToken>())).Returns(
+            (Memory<byte> m, CancellationToken ct) => readFrom.ReadAsync(m, ct));
+        readerMock.Setup(i => i.Dispose()).Callback(() => readFrom.Dispose());
         strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).Returns(readFrom);
+        strSourceMock.Setup(i => i.OpenRawReader(It.IsAny<long>())).Returns(readerMock.Object);
         strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
         strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
         return strSourceMock;

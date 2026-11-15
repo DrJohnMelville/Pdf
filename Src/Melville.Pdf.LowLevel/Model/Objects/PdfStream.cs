@@ -28,7 +28,8 @@ public class PdfStream : PdfDictionary
         this.source = source;
     }
 
-    private async ValueTask<Stream> SourceStreamAsync() => 
+    private async ValueTask<Stream> SourceStreamAsync() =>
+//        source.OpenRawReader(await DeclaredLengthAsync().CA()).AsStream();  
         source.OpenRawStream(await DeclaredLengthAsync().CA());
 
     /// <summary>
