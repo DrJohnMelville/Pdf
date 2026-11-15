@@ -12,11 +12,11 @@ internal class RentedLinkedListNode: LinkedListNode
     {
         buffer = rentedBuffer;
     }
-
+    
     public override void Dispose()
     {
-        //ArrayPool<byte>.Shared.Return(buffer);
-       // buffer = null;
+        ArrayPool<byte>.Shared.Return(buffer);
+        buffer = Array.Empty<byte>();
         base.Dispose();
     }
     public override ValueTask<int> FillFromAsync(Stream s, int startAt) => 
