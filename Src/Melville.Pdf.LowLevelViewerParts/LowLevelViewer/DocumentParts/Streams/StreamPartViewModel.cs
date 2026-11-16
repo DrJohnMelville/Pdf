@@ -64,7 +64,7 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
 
     public async ValueTask<object> LoadBytesAsync(PdfStream stream, StreamFormat fmt)
     {
-        await using var streamData = await stream.StreamContentAsync(fmt);
+        using var streamData = await stream.StreamContentAsync(fmt);
         var final = new MemoryStream();
         await streamData.CopyToAsync(final);
         return new ByteStringViewModel(final.ToArray());
