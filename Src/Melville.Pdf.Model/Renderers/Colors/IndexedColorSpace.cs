@@ -56,7 +56,7 @@ internal partial class IndexedColorSpace: IColorSpace
     private static async ValueTask<DeviceColor[]> GetValuesFromStreamAsync(
         PdfStream pdfStream, IColorSpace baseColorSpace, int length)
     {
-        await using var stream = await pdfStream.StreamContentAsync().CA();
+        using var stream = await pdfStream.StreamContentAsync().CA();
         var ms = new MemoryStream();
         await stream.CopyToAsync(ms).CA();
         return GetValues(ms.GetBuffer().AsSpan(0, (int)ms.Length), baseColorSpace, length);

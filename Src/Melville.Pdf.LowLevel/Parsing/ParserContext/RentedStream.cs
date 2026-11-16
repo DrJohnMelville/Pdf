@@ -14,25 +14,33 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 internal partial class ParsingFileOwner
 {
 
-    public partial class RentedReader (IMultiplexReader reader, long length) : IPdfStreamReader, ISeekableStream, IStreamLength, IStreamPosition
+    public partial class RentedReader : IPdfStreamReader, ISeekableStream, IStreamLength, IStreamPosition
     {
-        public long Length { get; } = length;
+        private readonly IMultiplexReader reader;
+        private readonly long startPosition;
+        private readonly long nextPosition;
 
-        public long Position { get; private set; }
+        public RentedReader(IMultiplexReader reader, long length)
+        {
+            this.reader = reader;
+            startPosition = reader.Position;
+            nextPosition = startPosition + length;
+        }
+
+        public long Length => nextPosition - startPosition;
+
+        public long Position => reader.Position - startPosition;
 
         public void Dispose() => (reader as IDisposable)?.Dispose();
 
         public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
         {
             buffer = buffer.TakeMax(ClampToInt(Length - Position));
-            if (buffer.IsEmpty) return 0;
-            var ret = await reader.ReadAsync(buffer);
-            Position += ret;
-            return ret;
+            return buffer.IsEmpty ? 0 : await reader.ReadAsync(buffer).CA();
         }
 
         public int ClampToInt(long value) => (int)long.Clamp(value, 0, int.MaxValue);
-        public void Seek(long position) => reader.Seek(position);
+        public void Seek(long position) => reader.Seek(position + startPosition);
 
     }
 

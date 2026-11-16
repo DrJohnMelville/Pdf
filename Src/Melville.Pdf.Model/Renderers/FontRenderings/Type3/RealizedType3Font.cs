@@ -31,7 +31,7 @@ internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
     private async ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)
     {
-        await using var readFrom = await characters[glyph].StreamContentAsync().CA();
+        using var readFrom = await characters[glyph].StreamContentAsync().CA();
         return await target.RenderType3CharacterAsync(
             readFrom, fontMatrix, rawFont).CA();
     }

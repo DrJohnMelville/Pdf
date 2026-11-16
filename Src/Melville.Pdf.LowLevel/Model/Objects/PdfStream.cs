@@ -41,7 +41,6 @@ public class PdfStream : PdfDictionary
     private async ValueTask<Stream> SourceStreamAsync() =>
     source.OpenRawStream(await DeclaredLengthAsync().CA());
 #endif
-    //1 . swapping to ORR cause dispose bugs
     // 2. Swapping to ORR messes up font parsing.
 
     /// <summary>

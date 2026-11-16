@@ -82,7 +82,7 @@ public partial class CMapFactory
 
     internal async ValueTask<bool> ReadFromPdfValueAsync(PdfDirectObject encoding)
     {
-        var cSharpStream = encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
+        using var cSharpStream = encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
             await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA();
         if (cSharpStream is null) return false;
 
