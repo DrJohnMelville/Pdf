@@ -23,8 +23,6 @@ internal class PdfFileStreamSource: IStreamDataSource
         this.decryptor = decryptor;
     }
 
-    public Stream OpenRawStream(long streamLength) => 
-        parsingFileOwner.SubsetStream(sourceFilePosition, streamLength);
     public IPdfStreamReader OpenRawReader(long streamLength) =>
         parsingFileOwner.SubsetIAsyncReader(sourceFilePosition, streamLength);
 

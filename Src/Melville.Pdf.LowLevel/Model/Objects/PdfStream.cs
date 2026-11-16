@@ -29,7 +29,6 @@ public class PdfStream : PdfDictionary
     }
 
 
-#if true
     private async ValueTask<Stream> SourceStreamAsync()
     {
         var streamLength = await DeclaredLengthAsync().CA();
@@ -37,10 +36,6 @@ public class PdfStream : PdfDictionary
         Stream ret = reader.AsStream();
         return ret;
     }
-#else
-    private async ValueTask<Stream> SourceStreamAsync() =>
-    source.OpenRawStream(await DeclaredLengthAsync().CA());
-#endif
     // 2. Swapping to ORR messes up font parsing.
 
     /// <summary>

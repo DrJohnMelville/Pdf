@@ -121,7 +121,6 @@ public abstract partial class StreamTestBase
         readerMock.Setup(i => i.ReadAsync(It.IsAny<Memory<Byte>>(), It.IsAny<CancellationToken>())).Returns(
             (Memory<byte> m, CancellationToken ct) => readFrom.ReadAsync(m, ct));
         readerMock.Setup(i => i.Dispose()).Callback(() => readFrom.Dispose());
-        strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).Returns(readFrom);
         strSourceMock.Setup(i => i.OpenRawReader(It.IsAny<long>())).Returns(readerMock.Object);
         strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
         strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
