@@ -56,7 +56,7 @@ public class RenderingTest
     {
         RequireDisposal.TestNameIdentifier = () => $"Rendering Test: Skia {shortName}";
         hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia" + shortName);
-
+#warning get rid of this after cleaning up disposal
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();

@@ -28,9 +28,21 @@ public class PdfStream : PdfDictionary
         this.source = source;
     }
 
+
+#if true
+    private async ValueTask<Stream> SourceStreamAsync()
+    {
+        var streamLength = await DeclaredLengthAsync().CA();
+        IPdfStreamReader reader = source.OpenRawReader(streamLength);
+        Stream ret = reader.AsStream();
+        return ret;
+    }
+#else
     private async ValueTask<Stream> SourceStreamAsync() =>
-//        source.OpenRawReader(await DeclaredLengthAsync().CA()).AsStream();  
-        source.OpenRawStream(await DeclaredLengthAsync().CA());
+    source.OpenRawStream(await DeclaredLengthAsync().CA());
+#endif
+    //1 . swapping to ORR cause dispose bugs
+    // 2. Swapping to ORR messes up font parsing.
 
     /// <summary>
     /// The on disk length of the stream as declared in the stream dictionary.

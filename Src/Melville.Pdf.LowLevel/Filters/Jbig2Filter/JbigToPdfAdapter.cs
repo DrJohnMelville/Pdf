@@ -25,7 +25,7 @@ internal class JbigToPdfAdapter: ICodecDefinition
             dict.TryGetValue(KnownNames.JBIG2Globals, out var globalsTask) &&
             (await globalsTask.CA()).TryGet(out PdfStream? globals))
         {
-            await using var globalStream = await globals.StreamContentAsync().CA();
+            using var globalStream = await globals.StreamContentAsync().CA();
             await reader.ProcessSequentialSegmentsAsync(globalStream, 1).CA();
         }
 
