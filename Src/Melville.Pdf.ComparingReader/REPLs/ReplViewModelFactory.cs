@@ -44,7 +44,7 @@ public readonly struct ReplViewModelFactory
 
     private static async Task<string> ReadContentStringAsync(PdfStream stream)
     {
-        await using var source = await stream.StreamContentAsync();
+        using var source = await stream.StreamContentAsync();
         return await ReadContentStringAsync(source);
     }
 

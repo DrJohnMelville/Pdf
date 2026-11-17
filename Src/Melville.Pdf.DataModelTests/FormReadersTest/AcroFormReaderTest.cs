@@ -55,10 +55,10 @@ public class AcroFormReaderTest
         ((IPdfTextBox)frm.Fields[0]).StringValue = "FooBar";
 
         using var stream = WritableBuffer.Create();
-        await using var writer = stream.WritingStream();
+        using var writer = stream.WritingStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(writer);
 
-        await using var source = (stream).ReadFrom(0);
+        using var source = (stream).ReadFrom(0);
         var f2 = await FormReaderFacade.ReadFormAsync(source);
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
@@ -69,10 +69,10 @@ public class AcroFormReaderTest
         ((IPdfTextBox)frm.Fields[0]).StringValue = "Foo\x2013Bar";
 
         using var stream = WritableBuffer.Create();
-        await using var writer = stream.WritingStream();
+        using var writer = stream.WritingStream();
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(writer);
 
-        await using var source = stream.ReadFrom(0);
+        using var source = stream.ReadFrom(0);
         var f2 = await FormReaderFacade.ReadFormAsync(source);
         f2.Fields[0].Value.DecodedString().Should().Be("Foo\x2013Bar");
     }

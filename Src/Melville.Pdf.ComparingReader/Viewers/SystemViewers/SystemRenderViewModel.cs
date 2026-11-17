@@ -38,7 +38,7 @@ public partial class SystemRenderViewModel: IRenderer
     {
         if (savedTarget == null) return null;
         var name = UniquePdfName();
-        await using (var file = File.OpenWrite(name))
+        using (var file = File.OpenWrite(name))
         {
             savedTarget.Seek(0, SeekOrigin.Begin);
             await savedTarget.CopyToAsync(file);

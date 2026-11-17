@@ -59,7 +59,7 @@ public partial class ReplViewModel
         if (buffer.Length == 0) return;
 
         var target = WritableBuffer.Create();
-        await using var writer = target.WritingStream();
+        using var writer = target.WritingStream();
         await writer.WriteAsync(buffer);
         var doc = await new PdfLowLevelReader().ReadFromAsync(buffer);
         await WriteStreamModificationBlockAsync(doc, await CreateReplacementStreamAsync(newValue), writer);                                                                       
@@ -99,7 +99,7 @@ public partial class ReplViewModel
         if (outputFile is null) return;
         var doc = new PdfDocument(await new PdfLowLevelReader().ReadFromAsync(buffer));
         var pageObj = await (await doc.PagesAsync()).GetPageAsync(page.Page);
-        await using var output = await outputFile.CreateWrite();
+        using var output = await outputFile.CreateWrite();
         await new PageExtractor(new PdfPage(pageObj.LowLevel), ContentStreamText).WriteAsync(output);
     }
 }

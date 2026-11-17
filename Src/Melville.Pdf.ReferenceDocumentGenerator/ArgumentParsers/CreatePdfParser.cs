@@ -15,7 +15,7 @@ public class PdfGenerationParser: IArgumentParser
     public async ValueTask<IArgumentParser?> ParseArgumentAsync(string argument, IRootParser root)
     {
         Console.WriteLine("Generating: " + Prefix);
-        await using (var targetStream = root.Target.CreateTargetStream())
+        using (var targetStream = root.Target.CreateTargetStream())
         {
             await generator.WritePdfAsync(targetStream);
         }

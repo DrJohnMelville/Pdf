@@ -82,10 +82,9 @@ internal sealed class PdfStringWriter : ISpacedStringBuilder
     private Matrix3x2 IncrementAlongActiveVector(double width) =>
         Matrix3x2.CreateTranslation((float)width, 0.0f);
 
-    public ValueTask DisposeAsync()
+    public void Dispose()
     {
         ArrayPool<uint>.Shared.Return(buffer);
         writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
-        return ValueTask.CompletedTask;
     }
 }

@@ -17,14 +17,14 @@ public static class BuilderShortcuts
     {
         var doc = creator.CreateDocument(major, minor);
         using var output = WritableBuffer.Create();
-        await using var writer = output.WritingStream();
+        using var writer = output.WritingStream();
         await doc.WriteToAsync(writer);
         return output.ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7)
     {
-        await using var asStreamAsync = await AsStreamAsync(creator, major, minor);
+        using var asStreamAsync = await AsStreamAsync(creator, major, minor);
         return asStreamAsync.ReadToArray();
     }
 
@@ -38,14 +38,14 @@ public static class BuilderShortcuts
     {
         var doc = creator;
         using var output = WritableBuffer.Create();
-        await using var writer = output.WritingStream();
+        using var writer = output.WritingStream();
         await doc.WriteToAsync(writer);
         return output.ReadFrom(0);
     }
 
     public static async Task<byte[]> AsBytesAsync(this PdfLowLevelDocument creator)
     {
-        await using var stream = await AsStreamAsync(creator);
+        using var stream = await AsStreamAsync(creator);
         return stream.ReadToArray();
     }
 

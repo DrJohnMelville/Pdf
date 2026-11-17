@@ -37,9 +37,9 @@ internal partial class AcroFieldWithAppearance: AcroFormField
         await (await templateStream.StreamContentAsync().CA()).CopyToAsync(original).CA();
 
         using var stm = WritableBuffer.Create();
-        await using var writer = stm.WritingStream();
+        using var writer = stm.WritingStream();
         WriteNewAppearnce(appearanceString, writer, textValue.Span, AsSpan(original));
-        await using var reader = stm.ReadFrom(0);
+        using var reader = stm.ReadFrom(0);
         target.ReplaceReferenceObject(apStreamRef, builder.AsStream(reader));
     }
 

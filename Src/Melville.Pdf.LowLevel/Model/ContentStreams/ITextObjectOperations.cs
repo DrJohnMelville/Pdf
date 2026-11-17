@@ -64,7 +64,7 @@ public interface ITextObjectOperations
 /// between the calls to GetSpacedStringBuilder and DisposeAsync.  Behavior is undefined
 /// in all of these error cases
 /// </summary>
-public interface ISpacedStringBuilder: IAsyncDisposable
+public interface ISpacedStringBuilder: IDisposable
 {
     /// <summary>
     /// Provide a double value to the spaced string builder.

@@ -49,7 +49,7 @@ public class S7_5_7ObjectStreamExtends
         4 0 obj (Placehoder stream) endobj
  
         """);
-        await using var r2 = mbs.CreateReader();
+        using var r2 = mbs.CreateReader();
         var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
@@ -79,7 +79,7 @@ public class S7_5_7ObjectStreamExtends
         endstream
  
         """);
-        await using var r2 = mbs.CreateReader();
+        using var r2 = mbs.CreateReader();
         var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
 
@@ -111,7 +111,7 @@ public class S7_5_7ObjectStreamExtends
         endstream
  
         """);
-            await using var r2 = mbs.CreateReader();
+            using var r2 = mbs.CreateReader();
             var reader = await new PdfLowLevelReader().ReadFromAsync(r2);
             Assert.Equal("1234", (await reader.Objects[(2, 0)].LoadValueAsync()).ToString());
             Assert.Equal("NewStr", (await reader.Objects[(3, 0)].LoadValueAsync()).ToString());

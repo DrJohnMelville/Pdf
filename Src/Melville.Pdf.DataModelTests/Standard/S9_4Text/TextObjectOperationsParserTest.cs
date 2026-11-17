@@ -69,15 +69,14 @@ public partial class TextObjectOperationsParserTest : ParserTest
                 .Returns((ReadOnlyMemory<byte> i) => CheckMemoryAsync(i, "s"u8));
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(4.0)).Returns(ValueTask.CompletedTask);
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(5.0)).Returns(ValueTask.CompletedTask);
-            ret.InSequence(seq).Setup(i => i.DisposeAsync()).Returns(FinishAsync(ret));
+            ret.InSequence(seq).Setup(i => i.Dispose()).Callback(()=>FinishAsync(ret));
             return ret.Object;
         }
 
-        private ValueTask FinishAsync(Mock<ISpacedStringBuilder> ret)
+        private void FinishAsync(Mock<ISpacedStringBuilder> ret)
         {
             ret.VerifyAll();
             SetCalled();
-            return ValueTask.CompletedTask;
         }
 
         private ValueTask CheckMemoryAsync(ReadOnlyMemory<byte> actual, ReadOnlySpan<byte> expected)

@@ -41,7 +41,7 @@ public readonly struct RenderToDrawingGroup
     {
         using var source = WriteToBufferStream(
             DrawingGroupToBitmap(await RenderAsync()));
-        await using var sourceStream = source.ReadFrom(0);
+        using var sourceStream = source.ReadFrom(0);
         await sourceStream.CopyToAsync(stream);
     }
 

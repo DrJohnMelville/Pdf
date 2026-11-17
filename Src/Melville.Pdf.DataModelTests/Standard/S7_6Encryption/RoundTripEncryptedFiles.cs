@@ -33,7 +33,7 @@ public class RoundTripEncryptedFiles
     private async Task TestEncryptedFileAsync(CreatePdfParser gen, int V, int R, int keyLengthInBits)
     {
         using var asMultiBufAsync = await gen.AsMultiBufAsync();
-        await using var target = asMultiBufAsync.ReadFrom(0);
+        using var target = asMultiBufAsync.ReadFrom(0);
         await VerifyUserPasswordWorksAsync(V, R, keyLengthInBits, gen.HelpText, target);
         await ParseTargetAsync(target, PasswordType.Owner, "Owner");
     }
@@ -59,7 +59,7 @@ public class RoundTripEncryptedFiles
 
     private async ValueTask VerifyStreamContainsAsync(PdfStream ps, string text)
     {
-        await using var stream = await ps.StreamContentAsync(StreamFormat.PlainText);
+        using var stream = await ps.StreamContentAsync(StreamFormat.PlainText);
         var streamSource = await new StreamReader(stream).ReadToEndAsync();
         Assert.Contains(text, streamSource);
     }

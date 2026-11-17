@@ -14,7 +14,7 @@ public class ThreadingBug
 {
     public async Task ReadMultiAsync()
     {
-        await using var readFile = ReadFile();
+        using var readFile = ReadFile();
         using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(
                     readFile), WindowsDefaultFonts.Instance);

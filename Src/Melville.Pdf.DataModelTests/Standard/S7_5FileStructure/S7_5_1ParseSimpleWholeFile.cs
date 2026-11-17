@@ -23,7 +23,7 @@ public class S7_5_1ParseSimpleWholeFile
         using var pipeWriter = target.WritingPipe();
         var writer = new LowLevelDocumentWriter(pipeWriter, doc);
         await writer.WriteAsync();
-        await using var reader = target.ReadFrom(0);
+        using var reader = target.ReadFrom(0);
         return  reader.ReadToArray().ExtendedAsciiString();
     }
     private async Task<string> OutputTwoItemDocumentAsync(byte majorVersion = 1, byte minorVersion = 7)

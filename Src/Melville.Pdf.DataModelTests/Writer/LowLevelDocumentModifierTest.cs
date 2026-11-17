@@ -32,7 +32,7 @@ public class LowLevelDocumentModifierTest
     private async Task<PdfLoadedLowLevelDocument> LoadedDocumentAsync(PdfLowLevelDocument doc)
     {
         using var ms = WritableBuffer.Create();
-        await using var writer = ms.WritingStream();
+        using var writer = ms.WritingStream();
         await doc.WriteToAsync(writer);
         using var readFrom = ms.ReadFrom(0);
         return await new PdfLowLevelReader().ReadFromAsync(readFrom);

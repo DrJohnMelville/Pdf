@@ -73,7 +73,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     public async Task<byte[]> GetTableBytesAsync(TableRecord table)
     {
         var ret = new byte[table.Length];
-        await using var stream = source.ReadFrom(table.Offset);
+        using var stream = source.ReadFrom(table.Offset);
         await ret.FillBufferAsync(0, ret.Length, stream).CA();
         return ret;
     }

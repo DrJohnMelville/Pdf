@@ -23,7 +23,7 @@ internal static class StreamWriter
     {
         var rawStream = await item.StreamEncryptedContentAsync(
             StreamFormat.DiskRepresentation, encryptor, null).CA();
-        await using var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
+        using var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
         DictionaryWriter.Write(innerWriter, 
             MergeDictionaryItems(item.RawItems, (KnownNames.Length, diskrep.Length)));
@@ -51,7 +51,7 @@ internal static class StreamWriter
         if (rawStream.Length > 0) return rawStream;
 
         using var mbs = WritableBuffer.Create();
-        await using var writer = mbs.WritingStream();
+        using var writer = mbs.WritingStream();
         await rawStream.CopyToAsync(writer).CA();
         await rawStream.DisposeAsync().CA();
         return (mbs).ReadFrom(0);

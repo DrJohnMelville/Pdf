@@ -21,7 +21,7 @@ public class S7_5_6IncrementalUpdates
         create(creator);
         var doc = creator.CreateDocument(); 
         var source = WritableBuffer.Create();
-        await using var writer = source.WritingStream();
+        using var writer = source.WritingStream();
         await doc.WriteToAsync(writer);
 
 

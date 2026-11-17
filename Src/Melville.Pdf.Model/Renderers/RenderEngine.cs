@@ -239,7 +239,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
-        await using var writer = GetSpacedStringBuilder();
+        using var writer = GetSpacedStringBuilder();
         await writer.SpacedStringComponentAsync(decodedString).CA();
     }
 

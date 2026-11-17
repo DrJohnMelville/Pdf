@@ -141,7 +141,7 @@ public class MultiBufferStreamTest
     {
         using var sut = CreateStream("ABCDE");
         var ret = new byte[5];
-        await using var reader = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
         Assert.Equal(5, await reader.ReadAsync(ret, 0, 5, TestContext.Current.CancellationToken));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
     }
@@ -149,7 +149,7 @@ public class MultiBufferStreamTest
     public async Task ReadAsyncFromMemoryAsync()
     {
         using var sut = CreateStream("ABCDE");
-        await using var reader = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
 
         var ret = new byte[5];
         Assert.Equal(5, await reader.ReadAsync(ret.AsMemory(), TestContext.Current.CancellationToken));
@@ -182,12 +182,12 @@ public class MultiBufferStreamTest
     public async Task WriteAndReadSingleBufferAsync()
     {
         using var sut = CreateEmptyStream(10);
-        await using var writer = sut.WritingStream();
+        using var writer = sut.WritingStream();
         Assert.Equal(0, sut.Length);
         await writer.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5, TestContext.Current.CancellationToken);
         Assert.Equal(5, sut.Length);
         var ret = new byte[10];
-        await using var readFrom = sut.ReadFrom(0);
+        using var readFrom = sut.ReadFrom(0);
         Assert.Equal(5, await readFrom.ReadAsync(ret, 0, 10, TestContext.Current.CancellationToken));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
     }

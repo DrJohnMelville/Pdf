@@ -150,7 +150,7 @@ public class S7_5_7ObjectStreams
         
         // string is not encoded inside stream
         var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfStream>();
-        await using var streamContentAsync = await objSter.StreamContentAsync();
+        using var streamContentAsync = await objSter.StreamContentAsync();
         var strText = await new StreamReader(streamContentAsync).ReadToEndAsync(TestContext.Current.CancellationToken);
         Assert.Contains(strText, strText);
     }

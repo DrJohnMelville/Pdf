@@ -7,7 +7,7 @@ namespace Melville.Pdf.ComparingReader.Viewers.ContentStreamOperationsFilters;
 internal class NopSpacedStringBuilder : ISpacedStringBuilder
 {
     /// <inheritdoc />
-    public ValueTask DisposeAsync() => default;
+    public void Dispose() { }
 
     /// <inheritdoc />
     public ValueTask SpacedStringComponentAsync(double value) => default;

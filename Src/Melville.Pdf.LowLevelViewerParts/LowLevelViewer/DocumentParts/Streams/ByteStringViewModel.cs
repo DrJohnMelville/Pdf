@@ -58,7 +58,7 @@ public partial class ByteStringViewModel
     {
         var target = fileDlg.GetSaveFile(null, "", "All Files (*.*)|*.*", "Write stream to file");
         if (target == null) return;
-        await using var targetStream = await target.CreateWrite();
+        using var targetStream = await target.CreateWrite();
         await targetStream.WriteAsync(Bytes.AsMemory());
     }
 

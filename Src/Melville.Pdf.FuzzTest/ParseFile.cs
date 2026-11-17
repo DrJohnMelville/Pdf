@@ -28,7 +28,7 @@ public static class ParseFile
     public static async ValueTask DoAsync(string fileName, ExceptionLogger logger)
     {
         ClearLine();
-        await using var stream = File.OpenRead(fileName);
+        using var stream = File.OpenRead(fileName);
         await DoAsync(stream, fileName, logger); 
     }
 

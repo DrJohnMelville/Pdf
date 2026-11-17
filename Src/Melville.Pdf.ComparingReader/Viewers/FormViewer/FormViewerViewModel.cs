@@ -42,7 +42,7 @@ public partial class FormViewerViewModel: IRenderer
         var output = dlg.GetSaveFile(null, "pdf", "Pdf File (*.pdf)|*.pdf", "Select a File to write too");
         if (output == null || Form == null) return;
 
-        await using var outputStream = await output.CreateWrite();
+        using var outputStream = await output.CreateWrite();
         await (await Form.CreateModifiedDocumentAsync().CA()).WriteToWithXrefStreamAsync(outputStream);
     }
 }

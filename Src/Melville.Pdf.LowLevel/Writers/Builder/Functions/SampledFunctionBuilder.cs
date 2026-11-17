@@ -155,7 +155,7 @@ public readonly struct SampledFunctionBuilder
     private async ValueTask<Stream> SamplesStreamAsync()
     {
         using var ret = WritableBuffer.Create();
-        await using var writingStream = ret.WritingStream();
+        using var writingStream = ret.WritingStream();
         var bitWriter = new BitStreamWriter(writingStream, bitsPerSample);
         WriteSamplesToWriter(bitWriter);
         await bitWriter.FinishAsync().CA();
@@ -213,7 +213,7 @@ public readonly struct SampledFunctionBuilder
     /// <returns>The resulting function, as a PDF stream</returns>
     public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members)
     {
-        await using var samples = await SamplesStreamAsync().CA();
+        using var samples = await SamplesStreamAsync().CA();
         return DictionaryEntries(members).AsStream(samples);
     }
 }

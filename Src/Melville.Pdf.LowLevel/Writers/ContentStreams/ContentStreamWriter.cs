@@ -254,7 +254,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
         destPipe.WriteInlineImageDict(inlineImage);
-        await using (var str = await DiskRepresentationAsync(inlineImage).CA())
+        using (var str = await DiskRepresentationAsync(inlineImage).CA())
         {
             await destPipe.WriteStreamContentAsync(str).CA();
         }
@@ -336,11 +336,10 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         return ValueTask.CompletedTask;
     }
 
-    ValueTask IAsyncDisposable.DisposeAsync()
+    void IDisposable.Dispose()
     {
         destPipe.WriteChar(']');
         destPipe.WriteOperator("TJ"u8);
-        return ValueTask.CompletedTask;
     }
 
     #endregion

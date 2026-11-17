@@ -381,7 +381,7 @@ internal static partial class ContentStreamParsingOperations
         IContentStreamOperations target, PostscriptValue arrayTop, OperandStack stack)
     {
         Debug.Assert(IsArrayTopMarker(arrayTop));
-        await using (var builder = target.GetSpacedStringBuilder())
+        using (var builder = target.GetSpacedStringBuilder())
         {
             for (int i = 1; i < stack.Count; i++)
             {

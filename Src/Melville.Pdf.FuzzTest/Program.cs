@@ -29,7 +29,7 @@ public static class Program
         }
         Console.WriteLine();
         Console.WriteLine("Writing file");
-        await using var output = File.Create(@"C:\Users\jmelv\Documents\Scratch\PDF torture test\Errors.xlsx");
+        using var output = File.Create(@"C:\Users\jmelv\Documents\Scratch\PDF torture test\Errors.xlsx");
         logger.WriteTo(output);
         Console.WriteLine("Done");
     }

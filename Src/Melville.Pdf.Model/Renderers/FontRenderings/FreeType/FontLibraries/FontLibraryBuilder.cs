@@ -23,7 +23,7 @@ internal readonly struct FontLibraryBuilder
     {
         foreach (var fontFile in Directory.EnumerateFiles(fontFolder))
         {
-            await using var file = File.OpenRead(fontFile);
+            using var file = File.OpenRead(fontFile);
             using var multiplex = MultiplexSourceFactory.Create(file);
             var fonts = await RootFontParser.ParseAsync(multiplex).CA();
             int index = 0;

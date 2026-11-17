@@ -27,7 +27,7 @@ public static class CreatePdfParserOperations
     public static async ValueTask<IMultiplexSource> AsMultiBufAsync(this CreatePdfParser source)
     {
         var target = WritableBuffer.Create();
-        await using var writer = target.WritingStream();
+        using var writer = target.WritingStream();
         await source.WritePdfAsync(writer);
         return target;
     }

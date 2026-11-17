@@ -29,7 +29,7 @@ public static class IccProfileColorSpaceParser
         {
             if (!HasExplicitAlternateRgbColorSpace(stream, altName))
             {
-                await using var content = await stream.StreamContentAsync().CA();
+                using var content = await stream.StreamContentAsync().CA();
                 return await ParseAsync(content).CA();
             }
         }

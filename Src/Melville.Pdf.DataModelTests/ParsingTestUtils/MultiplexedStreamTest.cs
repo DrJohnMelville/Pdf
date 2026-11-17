@@ -57,8 +57,8 @@ public class MultiplexedStreamTest: IDisposable
     [Fact]
     public async Task AsyncInterleavedReadAsync()
     {
-        await using var reader = sut.ReadFrom(0);
-        await using var reader2 = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
+        using var reader2 = sut.ReadFrom(0);
         VerifyRead(reader, 0, 1, 2, 3);
         await VerifyReadAsync(reader2, 0, 1, 2, 3);
         await VerifyReadAsync(reader, 4,5,6,7,8,9);
@@ -67,7 +67,7 @@ public class MultiplexedStreamTest: IDisposable
     [Fact]
     public async Task SimpleReadAsync()
     {
-        await using var reader = sut.ReadFrom(0);
+        using var reader = sut.ReadFrom(0);
         await VerifyReadAsync(reader, 0, 1, 2, 3);
         await VerifyReadAsync(reader, 4,5,6,7,8,9);
     }

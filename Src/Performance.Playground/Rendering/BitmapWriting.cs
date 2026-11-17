@@ -25,7 +25,7 @@ public class ImageExtraction
         await foreach (var image in doc.CollapsedImagesFromAsync())
         {
             var skBitmap = await image.ToSkBitmapAsync();
-            await using var output = File.Create(@"C:\Users\jmelv\Documents\Scratch\Output" + $"\\{index++}.jpg");
+            using var output = File.Create(@"C:\Users\jmelv\Documents\Scratch\Output" + $"\\{index++}.jpg");
             skBitmap.Encode(SKEncodedImageFormat.Jpeg, 90).SaveTo(output);
         }
 

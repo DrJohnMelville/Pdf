@@ -19,7 +19,7 @@ public class SkiaRenderer: MelvillePdfRenderer
     protected override async ValueTask<ImageSource> RenderAsync(DocumentRenderer source, int page)
     {
         using var buffer = WritableBuffer.Create();
-        await using var writer = buffer.WritingStream();
+        using var writer = buffer.WritingStream();
         await RenderWithSkia.ToPngStreamAsync(
             source.WithOutputWrapper(ContentStreamOperationFilter.Wrap), page, writer, -1, 4096);
         return BitmapFrame.Create(buffer.ReadFrom(0), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);

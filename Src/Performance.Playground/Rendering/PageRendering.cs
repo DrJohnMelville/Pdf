@@ -25,7 +25,7 @@ public class PageRendering
     [GlobalSetup]
     public async Task CreateStreamAsync()
     {
-        await using var writer = data.WritingStream();
+        using var writer = data.WritingStream();
         await new EmbeddedTrueType().WritePdfAsync(writer);
     }
     
