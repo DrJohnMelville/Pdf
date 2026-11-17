@@ -49,8 +49,8 @@ namespace Melville.Parsing.StreamFilters
         private async ValueTask PrepareForNextReadAsync(int localWritten)
         {
             if (PriorReadSucceeded(localWritten)) return;
-            if (current != null) await current.DisposeAsync().CA();
-            current = await GetNextStreamAsync().CA();;
+            current?.Dispose();
+           current = await GetNextStreamAsync().CA();;
         }
 
         private static bool PriorReadSucceeded(int localWritten) => localWritten > 0;

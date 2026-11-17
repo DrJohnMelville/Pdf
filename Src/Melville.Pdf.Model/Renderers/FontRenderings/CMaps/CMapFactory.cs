@@ -106,7 +106,7 @@ public partial class CMapFactory
         }
         finally
         {
-            await source.DisposeAsync().CA();
+            source.Dispose();
         }
 
     }

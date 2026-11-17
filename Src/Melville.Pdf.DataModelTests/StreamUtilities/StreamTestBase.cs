@@ -99,7 +99,7 @@ public abstract partial class StreamTestBase
     { 
         var (streamMock, innerStream) = await DisposeStreamRigAsync();
         streamMock.Verify(i => i.Close(), Times.Never);
-        await innerStream.DisposeAsync();
+        innerStream.Dispose();
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
@@ -159,6 +159,6 @@ public abstract partial class StreamTestBase
         var buf = new byte[source.Length+200];
         var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);
         Assert.Equal(source, buf[..read].ExtendedAsciiString());
-        await streamToRead.DisposeAsync();
+        streamToRead.Dispose();
     }
 }

@@ -41,7 +41,7 @@ internal class JpxToPdfAdapter : ICodecDefinition
 
         //var buffer = new byte[input.Length];
         //await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
-        //await input.DisposeAsync().CA();
+        //input.Dispose().CA();
         try
         {
             var independentImage = J2kImage.FromStream(input);

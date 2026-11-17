@@ -53,7 +53,7 @@ internal static class StreamWriter
         using var mbs = WritableBuffer.Create();
         using var writer = mbs.WritingStream();
         await rawStream.CopyToAsync(writer).CA();
-        await rawStream.DisposeAsync().CA();
+        rawStream.Dispose();
         return (mbs).ReadFrom(0);
     }
 }

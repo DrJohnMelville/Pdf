@@ -100,8 +100,7 @@ internal partial class ParsingFileOwner
 
         public override async ValueTask DisposeAsync()
         {
-            await baseStream.DisposeAsync().CA();
-            await base.DisposeAsync().CA();
+            Dispose(true);
         }
     }
 }
