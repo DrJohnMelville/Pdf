@@ -42,9 +42,12 @@ internal partial class ConcreteCountedMultiplexSource : CountedMultiplexSource
             Memory<byte> buffer, CancellationToken cancellation = default) =>
             ValueTask.FromResult(0);
 
-        public void Dispose() => ((IHasSourceTicket)this).SourceTicket.Release(this);
 
-        
+        public int Read(Span<byte> buffer)
+        {
+            return 0;
+        }
+        public void Dispose() => ((IHasSourceTicket)this).SourceTicket.Release(this);
     }
 
     [FromConstructor]

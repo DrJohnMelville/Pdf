@@ -161,8 +161,8 @@ public static class ParseMapSetDataOperations
         var memory = new MemoryStream();
         await s.CopyToAsync(memory).CA();
         map.SetDataInternal(memory.ToArray());
-        memory.Dispose().CA();
-        s.Dispose().CA();
+        memory.Dispose();
+        s.Dispose();
     }
 #else
     public static ValueTask SetDataAsync(this ParseMap? map, Stream s)

@@ -49,7 +49,7 @@ public interface IMultiplexSource : IDisposable
     IMultiplexSource OffsetFrom(uint offset);
 }
 
-public interface IMultiplexReader: IAsyncReader, ISeekableStream, IStreamPosition, IStreamLength
+public interface IMultiplexReader: IAsyncReader, ISyncReader, ISeekableStream, IStreamPosition, IStreamLength
 {
 
 }

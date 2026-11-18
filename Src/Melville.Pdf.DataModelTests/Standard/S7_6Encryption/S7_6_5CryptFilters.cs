@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 
@@ -27,7 +28,10 @@ public class S7_6_5CryptFilters
         Assert.Equal(3, doc.Objects.Count);
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].LoadValueAsync()).ToString());
         using var streamContentAsync = await (await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().StreamContentAsync();
-        Assert.Equal("plaintext stream", await streamContentAsync.ReadAsStringAsync());
+
+        var result = await new StreamReader(streamContentAsync).ReadToEndAsync();
+
+        Assert.Equal("plaintext stream", result);
         }
 
     private PdfStream InsertedStream(

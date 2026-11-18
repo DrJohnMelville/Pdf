@@ -39,6 +39,12 @@ internal partial class ParsingFileOwner
             return buffer.IsEmpty ? 0 : await reader.ReadAsync(buffer).CA();
         }
 
+        public int Read(Span<byte> buffer)
+        {
+            buffer = buffer.TakeMax(ClampToInt(Length - Position));
+            return reader.Read(buffer);
+        }
+
         public int ClampToInt(long value) => (int)long.Clamp(value, 0, int.MaxValue);
         public void Seek(long position) => reader.Seek(position + startPosition);
 
