@@ -34,17 +34,18 @@ internal class JpxToPdfAdapter : ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context)
     {
-        //4/27/2024 the J2kReader has a race bug that occasionally deadlocks reads.  The
-        //memory buffer does not deadlock.
-
-        // commented out of 11/11/2026 to see if the deadlock is still there
-
-        //var buffer = new byte[input.Length];
-        //await buffer.FillBufferAsync(0, (int)input.Length, input).CA();
-        //input.Dispose().CA();
+        //J2KiMAGE.FromStream just reads the whole stream into a byte Array.
+        //Eventually We can do better by renting an array and using that.
+        // we can also handle streams that do and do not know their length.
         try
         {
-            var independentImage = J2kImage.FromStream(input);
+#warning be smarter than this about the buffer
+            var stream = new MemoryStream();
+            await input.CopyToAsync(stream).CA();
+            input.Dispose();
+            var bytes = stream.ToArray() ;
+
+            var independentImage = J2kImage.FromBytes(bytes);
             if (context is IReportColorComponents colorSpace)
             {
                 await colorSpace.ReportColorComponentsAsync(

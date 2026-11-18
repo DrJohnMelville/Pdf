@@ -52,7 +52,6 @@ internal partial class FilterProcessor: FilterProcessorBase
 
         return ret;
     }
-#if false
     protected override async ValueTask<Stream> DecodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
     {
@@ -69,24 +68,5 @@ internal partial class FilterProcessor: FilterProcessorBase
 
         return ret.AsStreamInefficient();
     }
-#else
-    protected override async ValueTask<Stream> DecodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
-    {
-        var firstFilter = Math.Max(0, (int)sourceFormat+1);
-        var oneMoreThanLastFilter = Math.Min((int)targetFormat, filters.Count);
-        if (firstFilter >= oneMoreThanLastFilter) return source;
-        var ret = source;
-        for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
-        {
-            ret = await singleFilter.DecodeAsync(ret, 
-                await filters[i].LoadValueAsync().CA(), 
-                await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
-        }
-
-//        return ret;
-        return ret.AsReaderInefficient().AsStreamInefficient();
-    }
-#endif
     private PdfIndirectObject TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfDirectObject.CreateNull();
 }
