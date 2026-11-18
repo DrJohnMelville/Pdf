@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -56,5 +57,10 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         using var streamContentAsync = await stream.StreamContentAsync();
         Assert.Equal("This is an encrypted stream", await new StreamReader(
             streamContentAsync).ReadToEndAsync());
+
+        using var sc2 = await stream.StreamContentAsync();
+        Assert.Equal("This is an encrypted stream", await new StreamReader(
+            new OneCharAtATimeStream(sc2)).ReadToEndAsync());
+
     }
 }

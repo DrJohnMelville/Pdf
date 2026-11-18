@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 
@@ -25,5 +26,6 @@ internal class AesDecryptor: ICipherOperations
         return ms.ToArray();
     }
 
-    public Stream CryptStream(Stream input) => new AesDecodeStream(input, encryptor);
+    public Stream CryptStream(Stream input) => new AesDecodeReader(
+        input.AsReaderInefficient(), encryptor).AsStreamInefficient();
 }
