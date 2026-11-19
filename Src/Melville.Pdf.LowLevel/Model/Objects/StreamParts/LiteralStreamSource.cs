@@ -23,7 +23,8 @@ internal class LiteralStreamSource(MultiBufferStreamSource source, StreamFormat 
         encryptedStream;
 }
 
-internal class PdfMemoryReader(Memory<byte> source) : MemoryReader(source), IPdfStreamReader
+#warning this needs to implement the interfact for bitmap to grab the bits directly
+internal class PdfMemoryReader(ReadOnlyMemory<byte> source) : MemoryReader(source), IPdfStreamReader
 {
     public void Dispose()
     {
