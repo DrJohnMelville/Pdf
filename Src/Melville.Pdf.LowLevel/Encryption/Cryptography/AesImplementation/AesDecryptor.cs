@@ -24,6 +24,6 @@ internal class AesDecryptor: ICipherOperations
         return ret.AsSpan(0, len);
     }
 
-    public Stream CryptStream(Stream input) => new AesDecodeReader(
-        input.AsReaderInefficient(), encryptor).AsStreamInefficient();
+    public IPdfStreamReader CryptStream(IPdfStreamReader input) => 
+        new AesDecodeReader(input, encryptor);
 }

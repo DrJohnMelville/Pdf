@@ -42,7 +42,7 @@ internal partial class FilterProcessor: FilterProcessorBase
     {
         var inclusiveUpperBound = Math.Min(filters.Count-1, (int)sourceFormat);
         var exclusiveLowerBound = Math.Max((int)targetFormat, -1);
-        var ret = source;
+        var ret = source.AsReaderInefficient();
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
             ret = await singleFilter.EncodeAsync(ret, 
@@ -50,7 +50,7 @@ internal partial class FilterProcessor: FilterProcessorBase
                 await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
         }
 
-        return ret;
+        return ret.AsStreamInefficient();
     }
     protected override async ValueTask<Stream> DecodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)

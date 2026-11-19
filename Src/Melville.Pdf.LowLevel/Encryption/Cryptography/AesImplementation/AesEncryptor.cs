@@ -35,10 +35,8 @@ internal class AesEncryptor : ICipherOperations
         return final.AsSpan(0, blockLength + length);
     }
 
-    public Stream CryptStream(Stream input)
-    {
-        return new AesEncryptingReader(input.AsReaderInefficient(), encryptor).AsStreamInefficient();
-    }
+    public IPdfStreamReader CryptStream(IPdfStreamReader input) =>
+        new AesEncryptingReader(input, encryptor);
 }
 
 internal class AesEncryptingReader : IPdfStreamReader

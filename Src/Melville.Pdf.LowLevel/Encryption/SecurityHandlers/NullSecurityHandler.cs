@@ -26,5 +26,5 @@ internal partial class NullSecurityHandler:
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;
     public Span<byte> CryptSpan(Span<byte> input) => input;
-    public Stream CryptStream(Stream input) => input;
+    public IPdfStreamReader CryptStream(IPdfStreamReader input) => input;
 }

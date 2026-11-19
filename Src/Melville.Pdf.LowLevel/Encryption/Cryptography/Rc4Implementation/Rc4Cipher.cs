@@ -20,8 +20,8 @@ internal class Rc4Cipher: ICipherOperations, ICipher
         return input;
     }
 
-    public Stream CryptStream(Stream input) => 
-        new Rc4Reader(input.AsReaderInefficient(), cryptoImplementation).AsStreamInefficient();
+    public IPdfStreamReader CryptStream(IPdfStreamReader input) => 
+        new Rc4Reader(input, cryptoImplementation);
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;
 }

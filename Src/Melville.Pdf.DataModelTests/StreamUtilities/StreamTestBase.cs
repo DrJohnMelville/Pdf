@@ -123,7 +123,9 @@ public abstract partial class StreamTestBase
         readerMock.Setup(i => i.Dispose()).Callback(() => readFrom.Dispose());
         strSourceMock.Setup(i => i.OpenRawReader(It.IsAny<long>())).Returns(readerMock.Object);
         strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
-        strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
+        strSourceMock.Setup(
+            i => i.WrapStreamWithDecryptor(It.IsAny<IPdfStreamReader>())).Returns((IPdfStreamReader s) => s);
+
         return strSourceMock;
     }
 

@@ -19,7 +19,7 @@ internal interface ICipherOperations
     /// ciphertext , then this function is allowed to do the decryption in place and return the original span
     /// </summary>
     Span<byte> CryptSpan(Span<byte> input);
-    Stream CryptStream(Stream input);
+    IPdfStreamReader CryptStream(IPdfStreamReader input);
 }
 
 internal interface ICipher

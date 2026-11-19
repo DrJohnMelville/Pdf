@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 internal interface IStreamDataSource
 {
     IPdfStreamReader OpenRawReader(long streamLength);
-    Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName);
-    Stream WrapStreamWithDecryptor(Stream encryptedStream);
+    IPdfStreamReader WrapStreamWithDecryptor(IPdfStreamReader encryptedStream, PdfDirectObject cryptFilterName);
+    IPdfStreamReader WrapStreamWithDecryptor(IPdfStreamReader encryptedStream);
     StreamFormat SourceFormat { get; }
 }

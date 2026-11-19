@@ -39,11 +39,13 @@ internal class DefaultEncryptionFilterProcessor : FilterProcessorBase
 
     protected override async ValueTask<Stream> EncodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-        TryEncrypt(await innerProcessor.StreamInDesiredEncodingAsync(source, sourceFormat, targetFormat).CA(),
-            sourceFormat, targetFormat);
+        TryEncrypt(
+            (await innerProcessor.StreamInDesiredEncodingAsync(source, sourceFormat, targetFormat).CA())
+            .AsReaderInefficient(),
+            sourceFormat, targetFormat).AsStreamInefficient();
 
-    private Stream TryEncrypt(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
+    private IPdfStreamReader TryEncrypt(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
         ShouldEncrypt(sourceFormat, targetFormat) ? 
             encryptor.StreamCipher().Encrypt().CryptStream(source)
             : source;
@@ -60,7 +62,7 @@ internal class DefaultEncryptionFilterProcessor : FilterProcessorBase
 
     private Stream TryDecrypt(Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
         ShouldDecrypt(sourceFormat, targetFormat)
-            ? streamSource.WrapStreamWithDecryptor(source)
+            ? streamSource.WrapStreamWithDecryptor(source.AsReaderInefficient()).AsStreamInefficient()
             : source;
 
     private static bool ShouldDecrypt(StreamFormat sourceFormat, StreamFormat targetFormat) =>

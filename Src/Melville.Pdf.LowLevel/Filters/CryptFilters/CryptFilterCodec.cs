@@ -24,8 +24,8 @@ internal class CryptSingleFilter: IApplySingleFilter
             
     }
 
-    public async ValueTask<Stream> EncodeAsync(
-        Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+    public async ValueTask<IPdfStreamReader> EncodeAsync(
+        IPdfStreamReader source, PdfDirectObject filter, PdfDirectObject parameter,
         object? context)
     {
         return (filter.Equals(KnownNames.Crypt)) ? 
@@ -40,7 +40,7 @@ internal class CryptSingleFilter: IApplySingleFilter
         return ret;
     }
 
-    public async ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+    public async ValueTask<IPdfStreamReader> DecodeAsync(IPdfStreamReader source, PdfDirectObject filter, PdfDirectObject parameter,
         object? context)
     {
         return (filter.Equals(KnownNames.Crypt)) ? 

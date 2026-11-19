@@ -16,9 +16,10 @@ internal class LiteralStreamSource(MultiBufferStreamSource source, StreamFormat 
     public IPdfStreamReader OpenRawReader(long streamLength) =>
         new PdfMemoryReader(source.Source.AsMemory());
 
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName) =>
+    public IPdfStreamReader WrapStreamWithDecryptor(
+        IPdfStreamReader encryptedStream, PdfDirectObject cryptFilterName) =>
         encryptedStream;
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream) =>
+    public IPdfStreamReader WrapStreamWithDecryptor(IPdfStreamReader encryptedStream) =>
         encryptedStream;
 }
 
