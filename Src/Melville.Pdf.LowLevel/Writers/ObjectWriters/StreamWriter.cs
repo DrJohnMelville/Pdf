@@ -48,7 +48,14 @@ internal static class StreamWriter
 
     private static async Task<Stream> EnsureStreamHasKnownLengthAsync(Stream rawStream)
     {
-        if (rawStream.Length > 0) return rawStream;
+        try
+        {
+            if (rawStream.Length > 0) return rawStream;
+        }
+        catch (NotSupportedException)
+        {
+            
+        }
 
         using var mbs = WritableBuffer.Create();
         using var writer = mbs.WritingStream();

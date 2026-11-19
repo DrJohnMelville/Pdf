@@ -94,10 +94,7 @@ internal class AesDecodeReader : IPdfStreamReader
         //ask for one byte more than we need.  This means that either we will have a byte
         //after the current one, and we know we are not at the end, or the DoneReadingSource
         //value will let you know that no more values are available.
-        while (source.CurrentLength <= size && !source.DoneReadingSource)
-        {
-            source.DangerousReadBytesSync();
-        }
+        source.DangerousEnsureBytesSync(size + 1);
         return source.CurrentLength >= size;
     }
 
