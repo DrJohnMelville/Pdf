@@ -18,16 +18,17 @@ internal partial class PredictorCodec : ICodecDefinition
     private const int TiffPredictor2 = 2;
     private const int NoPredictor = 1;
 
-    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context)
-    {
+    public async ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(
+        IPdfStreamReader data, PdfDirectObject parameters, object? context)
+    { 
         var filter = await PredictionFilterAsync(parameters, true).CA();
-        return filter == null ? data : ReadingFilterStream.Wrap(data, filter);
+        return filter == null ? data : new PdfFilteredReader(data, filter);
     }
         
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context)
+    public async ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(IPdfStreamReader input, PdfDirectObject parameters, object? context)
     {
         var filter = await PredictionFilterAsync(parameters, false).CA();
-        return filter == null ? input : ReadingFilterStream.Wrap(input, filter);
+        return filter == null ? input : new PdfFilteredReader(input, filter);
     }
 
     private async ValueTask<IStreamFilterDefinition?> PredictionFilterAsync(

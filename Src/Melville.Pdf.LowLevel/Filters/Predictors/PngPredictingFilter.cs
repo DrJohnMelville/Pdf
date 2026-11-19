@@ -23,8 +23,11 @@ internal abstract class PngPredictingFilter: IStreamFilterDefinition
         return false;
     }
 
-    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
+    {
         Convert(ref input, ref output);
+        return input.CurrentLength is 0;
+    }
 
     protected abstract bool TryGetByte(ref SpanParsingBuffer source, out byte byteToWrite);
 }

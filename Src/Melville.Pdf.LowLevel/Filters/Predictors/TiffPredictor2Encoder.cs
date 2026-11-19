@@ -59,7 +59,11 @@ internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
         return false;
     }
 
-    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) => Convert(ref input, ref output);
+    public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
+    {
+        Convert(ref input, ref output);
+        return input.CurrentLength == 0 && writer.NothingToWrite;
+    }
 
     private int ComputeFilterResult(int readValue) => ComputeAdjustedValue(readValue, ref buffer[SelectBufferSlot()]);
 

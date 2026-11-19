@@ -43,10 +43,11 @@ internal class CodecDefinition : ICodecDefinition
         IPdfStreamReader input, PdfDirectObject parameters, object? context) =>
         new PdfFilteredReader(input, await decoder(parameters).CA());
 
-    private class PdfFilteredReader(IPdfStreamReader source, IStreamFilterDefinition filter) :
-        FilteredReader(source, filter), IPdfStreamReader
-    {
-    }
+}
+
+internal class PdfFilteredReader(IPdfStreamReader source, IStreamFilterDefinition filter) :
+    FilteredReader(source, filter), IPdfStreamReader
+{
 }
 
 internal readonly struct CodecDeclaration
