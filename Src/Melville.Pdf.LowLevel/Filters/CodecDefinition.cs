@@ -12,16 +12,8 @@ namespace Melville.Pdf.LowLevel.Filters;
 
 internal interface ICodecDefinition
 {
-#warning get rid of these
-    ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) =>
-        throw new NotSupportedException("On the way out");
-    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context) =>
-        throw new NotSupportedException("On the way out");
-
-    async ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(IPdfStreamReader data, PdfDirectObject parameters, object? context) =>
-        (await this.EncodeOnReadStreamAsync(data.AsStreamInefficient(), parameters, context).CA()).AsReaderInefficient();
-    async ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(IPdfStreamReader input, PdfDirectObject parameters, object? context) =>
-        (await this.DecodeOnReadStreamAsync(input.AsStreamInefficient(), parameters, context).CA()).AsReaderInefficient();
+    ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(IPdfStreamReader data, PdfDirectObject parameters, object? context);
+    ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(IPdfStreamReader input, PdfDirectObject parameters, object? context);
 }
 
 internal class CodecDefinition : ICodecDefinition
