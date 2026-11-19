@@ -1,19 +1,27 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.INPC;
-
+﻿using Melville.INPC;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
 internal interface ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context);
-    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context);
+#warning get rid of these
+    ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) =>
+        throw new NotSupportedException("On the way out");
+    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context) =>
+        throw new NotSupportedException("On the way out");
+
+    async ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(IPdfStreamReader data, PdfDirectObject parameters, object? context) =>
+        (await this.EncodeOnReadStreamAsync(data.AsStreamInefficient(), parameters, context).CA()).AsReaderInefficient();
+    async ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(IPdfStreamReader input, PdfDirectObject parameters, object? context) =>
+        (await this.DecodeOnReadStreamAsync(input.AsStreamInefficient(), parameters, context).CA()).AsReaderInefficient();
 }
 
 internal class CodecDefinition: ICodecDefinition

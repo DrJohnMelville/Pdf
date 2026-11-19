@@ -31,7 +31,17 @@ public readonly struct MultiBufferStreamSource(byte[] source)
     /// <param name="mbs">The source data</param>
     public static implicit operator MultiBufferStreamSource(Stream mbs)
     {
-        using var str = mbs.Length> 0 ?new MemoryStream((int)mbs.Length):new MemoryStream();
+        long length;
+        try
+        {
+            length = mbs.Length;
+        }
+        catch (Exception)
+        {
+
+            length = 0;
+        }
+        using var str = length> 0 ?new MemoryStream((int)mbs.Length):new MemoryStream();
         mbs.CopyTo(str);
         mbs.Dispose();
         return new(str.ToArray());

@@ -11,18 +11,19 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 [StaticSingleton()]
 internal partial class SinglePredictionFilter : IApplySingleFilter
 {
-    public async ValueTask<Stream> EncodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+    public async ValueTask<IPdfStreamReader> EncodeAsync(IPdfStreamReader source, PdfDirectObject filter, PdfDirectObject parameter,
         object? context)
     {
+#warning remove the casts once we do not need the interface defined methods on the predictorCodec and StaticSingleFilter
         var sourceWithPredictionApplied = 
-            await PredictorCodec.Instance.EncodeOnReadStreamAsync(source, parameter, context).CA();
-        return await StaticSingleFilter.Instance.EncodeAsync(sourceWithPredictionApplied, filter, parameter, context).CA();
+            await ((ICodecDefinition)PredictorCodec.Instance).EncodeOnReadStreamAsync(source, parameter, context).CA();
+        return await ((IApplySingleFilter)StaticSingleFilter.Instance).EncodeAsync(sourceWithPredictionApplied, filter, parameter, context).CA();
     }
 
-    public async ValueTask<Stream> DecodeAsync(Stream source, PdfDirectObject filter, PdfDirectObject parameter,
+    public async ValueTask<IPdfStreamReader> DecodeAsync(IPdfStreamReader source, PdfDirectObject filter, PdfDirectObject parameter,
         object? context)
     {
-        var decodedSource = await StaticSingleFilter.Instance.DecodeAsync(source, filter, parameter, context).CA();
-        return await PredictorCodec.Instance.DecodeOnReadStreamAsync(decodedSource, parameter, context).CA();
+        var decodedSource = await ((IApplySingleFilter)StaticSingleFilter.Instance).DecodeAsync(source, filter, parameter, context).CA();
+        return await ((ICodecDefinition)PredictorCodec.Instance).DecodeOnReadStreamAsync(decodedSource, parameter, context).CA();
     }
 }
