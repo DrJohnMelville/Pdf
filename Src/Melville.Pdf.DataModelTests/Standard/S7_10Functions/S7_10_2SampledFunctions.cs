@@ -55,7 +55,8 @@ public class S7_10_2SampledFunctions
         await str.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 1, 10);
         await str.VerifyPdfDoubleArrayAsync(KnownNames.Decode, 0, 255);
         using var streamToRead = await str.StreamContentAsync(StreamFormat.ImplicitEncryption);
-        await StreamTest.VerifyStreamContentAsync("00050A0F14191E23282D3237", streamToRead);
+        await StreamTest.VerifyStreamContentAsync("00050A0F14191E23282D3237", 
+            streamToRead.AsReaderInefficient());
     }
 
     [Theory]

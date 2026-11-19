@@ -30,10 +30,7 @@ internal class RunLengthDecoder : IStreamFilterDefinition
 
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output)
     {
-        while (output.Length > 0)
-        {
-            if (!ProcessOpcode(ref input, ref output)) return state == Terminated;
-        }
+        while (output.Length > 0 && ProcessOpcode(ref input, ref output)) { }
         return state == Terminated || DetectImplicitEndInsideFinalConvert(ref input);
     }
 

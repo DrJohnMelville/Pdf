@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.StreamFilters;
+﻿using CoreJ2K.Util;
+using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
@@ -42,7 +43,13 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
     }
 
     public bool FinalConvert(ref SpanParsingBuffer input, ref Span<byte> output) =>
-        Convert(ref input, ref output);
+        Convert(ref input, ref output) || OutOfData(input.CurrentLength);
+
+    bool OutOfData(int inputlength) => NoCodeToWrite() && inputlength == 0;
+    // Notice that BitReader takes source bits one byte at a time.  All LZW code words are at least 9
+    // bits, so every code read must read at least one byte from the input stream.  Thus if there are
+    // no more characters in the input stream, then there is not an entire code waiting in the bit
+    // reader.
 
     private void ResetDictionary()
     {
@@ -97,8 +104,12 @@ internal class LzwDecodeFilter : IStreamFilterDefinition
     }
     private void TryWriteCurrentCode(ref Span<byte> destination)
     {
-        if (codeBeingWritten == EmptyCode || codeBeingWritten == lastWrittenIndex) return;
-        lastWrittenIndex = dictionary.WriteChars(codeBeingWritten, ref destination, lastWrittenIndex);    
+        if (NoCodeToWrite()) return;
+        lastWrittenIndex = dictionary.WriteChars(codeBeingWritten, ref destination, lastWrittenIndex);
     }
 
+    private bool NoCodeToWrite()
+    {
+        return codeBeingWritten == EmptyCode || codeBeingWritten == lastWrittenIndex;
+    }
 }

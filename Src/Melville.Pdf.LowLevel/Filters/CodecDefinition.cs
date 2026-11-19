@@ -24,7 +24,7 @@ internal interface ICodecDefinition
         (await this.DecodeOnReadStreamAsync(input.AsStreamInefficient(), parameters, context).CA()).AsReaderInefficient();
 }
 
-internal class CodecDefinition: ICodecDefinition
+internal class CodecDefinition : ICodecDefinition
 {
     private readonly Func<PdfDirectObject, ValueTask<IStreamFilterDefinition>> encoder;
     private readonly Func<PdfDirectObject, ValueTask<IStreamFilterDefinition>> decoder;
@@ -35,18 +35,26 @@ internal class CodecDefinition: ICodecDefinition
         this.decoder = decoder.Creator;
     }
 
-    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) =>
-        ReadingFilterStream.Wrap(data, await encoder(parameters).CA());
+    public async ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(
+        IPdfStreamReader data, PdfDirectObject parameters, object? context) =>
+        new PdfFilteredReader(data, await encoder(parameters).CA());
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context) =>
-        ReadingFilterStream.Wrap(input, await decoder(parameters).CA());
+    public async ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(
+        IPdfStreamReader input, PdfDirectObject parameters, object? context) =>
+        new PdfFilteredReader(input, await decoder(parameters).CA());
+
+    private class PdfFilteredReader(IPdfStreamReader source, IStreamFilterDefinition filter) :
+        FilteredReader(source, filter), IPdfStreamReader
+    {
+    }
 }
 
 internal readonly struct CodecDeclaration
 {
     public Func<PdfDirectObject, ValueTask<IStreamFilterDefinition>> Creator { get; }
 
-    public CodecDeclaration(Func<PdfDirectObject, ValueTask<IStreamFilterDefinition>> creator) => Creator = creator;
+    public CodecDeclaration(Func<PdfDirectObject, ValueTask<IStreamFilterDefinition>> creator) => 
+        Creator = creator;
     public CodecDeclaration(Func<PdfDirectObject, IStreamFilterDefinition> creator) :
         this(i => ValueTask.FromResult(creator(i))){ }
     public CodecDeclaration(IStreamFilterDefinition filter): 

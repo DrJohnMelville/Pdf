@@ -40,8 +40,11 @@ internal class CcittDecoder : IJBigMmrFilter
     }
     private bool DoneReadingLine() => a0IsNextPixelToWrite >= lines.LineLength;
 
-    public bool FinalConvert(ref SpanParsingBuffer source, ref Span<byte> destination) =>
+    public bool FinalConvert(ref SpanParsingBuffer source, ref Span<byte> destination)
+    {
         Convert(ref source, ref destination);
+        return source.CurrentLength == 0 && !DoneReadingLine();
+    }
 
     private int a0IsNextPixelToWrite = -1;
     private bool ReadLine(ref SpanParsingBuffer source)

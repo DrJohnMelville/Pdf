@@ -10,6 +10,7 @@ namespace Melville.Parsing.StreamFilters;
 /// <summary>
 ///  Wraps a stream and decodes/encodes with a given filter upon reading.
 /// </summary>
+[Obsolete("This should move to the reader")]
 public class ReadingFilterStream : DefaultBaseStream
 {
     private readonly IStreamFilterDefinition filter;

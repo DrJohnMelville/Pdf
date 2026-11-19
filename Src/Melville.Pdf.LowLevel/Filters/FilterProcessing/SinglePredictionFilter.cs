@@ -17,13 +17,13 @@ internal partial class SinglePredictionFilter : IApplySingleFilter
 #warning remove the casts once we do not need the interface defined methods on the predictorCodec and StaticSingleFilter
         var sourceWithPredictionApplied = 
             await ((ICodecDefinition)PredictorCodec.Instance).EncodeOnReadStreamAsync(source, parameter, context).CA();
-        return await ((IApplySingleFilter)StaticSingleFilter.Instance).EncodeAsync(sourceWithPredictionApplied, filter, parameter, context).CA();
+        return await StaticSingleFilter.Instance.EncodeAsync(sourceWithPredictionApplied, filter, parameter, context).CA();
     }
 
     public async ValueTask<IPdfStreamReader> DecodeAsync(IPdfStreamReader source, PdfDirectObject filter, PdfDirectObject parameter,
         object? context)
     {
-        var decodedSource = await ((IApplySingleFilter)StaticSingleFilter.Instance).DecodeAsync(source, filter, parameter, context).CA();
+        var decodedSource = await StaticSingleFilter.Instance.DecodeAsync(source, filter, parameter, context).CA();
         return await ((ICodecDefinition)PredictorCodec.Instance).DecodeOnReadStreamAsync(decodedSource, parameter, context).CA();
     }
 }

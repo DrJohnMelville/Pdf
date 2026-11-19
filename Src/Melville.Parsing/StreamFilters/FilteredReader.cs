@@ -9,7 +9,8 @@ namespace Melville.Parsing.StreamFilters;
 /// </summary>
 /// <param name="inner">Source of the encoded data.</param>
 /// <param name="filter">An IStreamFilterDefinition to do the decoding.</param>
-public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) : IAsyncReader, IDisposable
+public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) : 
+    IAsyncReader, ISyncReader, IDisposable
 {
     private ParsingBuffer input = new ParsingBuffer(inner);
     bool isDone = false;
@@ -19,22 +20,32 @@ public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) 
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation = default)
     {
         int bytesRead = 0;
-        while (!isDone && !buffer.IsEmpty && (bytesRead += TryReadFromBuffer(buffer)) is 0)
+        while (!isDone && !buffer.IsEmpty && (bytesRead += TryReadFromBuffer(buffer.Span)) is 0)
             await input.ReadBytesAsync();
         return bytesRead;
     }
 
-    int TryReadFromBuffer(Memory<byte> target)
+    public int Read(Span<byte> buffer)
+    {
+        int bytesRead = 0;
+        while (!isDone && !buffer.IsEmpty && (bytesRead += TryReadFromBuffer(buffer)) is 0)
+            input.DangerousReadBytesSync();
+        return bytesRead;
+    }
+
+
+    int TryReadFromBuffer(Span<byte> target)
     {
         var reader = new SpanParsingBuffer(input.Peek());
-        var targetSpan = target.Span;
+        var targetSpan = target;
         isDone = input.DoneReadingSource ?
             filter.FinalConvert(ref reader, ref targetSpan) :
             filter.Convert(ref reader, ref targetSpan);
-        input.Advance((int) reader.RelativePosition);
+        input.Advance((int)reader.RelativePosition);
         return target.Length - targetSpan.Length;
 
     }
+
     ///<inheritdoc/>
     public void Dispose()
     {
@@ -42,4 +53,5 @@ public class FilteredReader(IAsyncReader inner, IStreamFilterDefinition filter) 
         (filter as IDisposable)?.Dispose();
         (inner as IDisposable)?.Dispose();
     }
+
 }
