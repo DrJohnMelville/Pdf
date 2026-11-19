@@ -2,6 +2,7 @@
 using Melville.JBig2.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.StreamInterfaces;
 using System;
 using System.IO;
@@ -14,10 +15,11 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
 internal class JbigToPdfAdapter: ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters, object? context) => 
+    public ValueTask<IPdfStreamReader> EncodeOnReadStreamAsync(IPdfStreamReader data, PdfDirectObject parameters, object? context) => 
         throw new NotSupportedException();
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters, object? context)
+    public async ValueTask<IPdfStreamReader> DecodeOnReadStreamAsync(
+            IPdfStreamReader input, PdfDirectObject parameters, object? context)
     {
         var reader = new JbigExplicitPageReader();
         reader.RequestPage(1);
@@ -25,7 +27,7 @@ internal class JbigToPdfAdapter: ICodecDefinition
             dict.TryGetValue(KnownNames.JBIG2Globals, out var globalsTask) &&
             (await globalsTask.CA()).TryGet(out PdfStream? globals))
         {
-            using var globalStream = await globals.StreamContentAsync().CA();
+            using var globalStream = (await globals.StreamContentAsync().CA()).AsReaderInefficient();
             await reader.ProcessSequentialSegmentsAsync(globalStream, 1).CA();
         }
 
@@ -38,7 +40,7 @@ internal class JbigToPdfAdapter: ICodecDefinition
         // how DeviceGray color palate works -- we will invert all the bits
         InvertSpan(ary.AsSpan(0, page.BufferLength()));
 
-        return new MemoryStream(ary, 0, page.BufferLength(), false, true);
+        return new PdfMemoryReader(ary.AsMemory(0, page.BufferLength()));
     }
 
     void InvertSpan(Span<byte> span)

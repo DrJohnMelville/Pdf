@@ -50,11 +50,11 @@ public abstract class JbigPageReader
     /// <summary>
     /// Read the sequential segments portion of a JBIG file (which is all that PDF stores
     /// </summary>
-    /// <param name="stream">The stream to read from</param>
+    /// <param name="reader">The stream to read from</param>
     /// <param name="pages">The page to read</param>
-    public async ValueTask ProcessSequentialSegmentsAsync(Stream stream, uint pages)
+    public async ValueTask ProcessSequentialSegmentsAsync(IAsyncReader reader, uint pages)
     {
-        using var buffer = new ParsingBuffer(stream.AsStreamReader());
+        using var buffer = new ParsingBuffer(reader);
         await ReadSegmentsAsync(new SequentialSegmentHeaderReader(
                     buffer, pages, storedSegments));
     }
