@@ -17,12 +17,14 @@ internal class AesEncryptor : ICipherOperations
 
     public Span<byte> CryptSpan(Span<byte> input)
     {
-        using var ms = new MemoryStream();
-        ms.Write(encryptor.IV);
-        using var cryptStream = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
-        cryptStream.Write(input);
-        cryptStream.FlushFinalBlock();
-        return ms.ToArray();
+        var blockLength = encryptor.BlockSize / 8;
+
+        var final = new byte[input.Length + (2 * blockLength)]; // IV plus a possible termination block.
+        Span<byte> iv = final.AsSpan(0, blockLength);
+        RandomNumberGenerator.Fill(iv);
+
+        var length = encryptor.EncryptCbc(input, iv, final.AsSpan(blockLength));
+        return final.AsSpan(0, blockLength + length);
     }
 
     public Stream CryptStream(Stream input)

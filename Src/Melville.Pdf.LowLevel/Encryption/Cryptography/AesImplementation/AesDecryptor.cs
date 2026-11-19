@@ -18,12 +18,10 @@ internal class AesDecryptor: ICipherOperations
     public Span<byte> CryptSpan(Span<byte> input)
     {
         var blockSizeInBytes = encryptor.BlockSize / 8;
-        encryptor.IV = input[..blockSizeInBytes].ToArray();
-        using var ms = new MemoryStream();
-        using var cryptStream = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write);
-        cryptStream.Write(input[blockSizeInBytes..]);
-        cryptStream.FlushFinalBlock();
-        return ms.ToArray();
+        var ret = new byte[input.Length - blockSizeInBytes];
+        var len =encryptor.DecryptCbc(input[blockSizeInBytes..], input[..blockSizeInBytes],
+            ret);
+        return ret.AsSpan(0, len);
     }
 
     public Stream CryptStream(Stream input) => new AesDecodeReader(

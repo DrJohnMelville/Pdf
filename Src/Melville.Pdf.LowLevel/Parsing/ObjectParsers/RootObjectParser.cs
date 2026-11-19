@@ -55,6 +55,8 @@ internal readonly struct RootObjectParser
         var input = token.Get<StringSpanSource>().GetSpan();
         if (input.Length == 0) return token;
 
+#warning refactor this call so we do not need to allocate for the decrypted string
+        //it may be only AESEncryptor check if the other encryptors use the same buffer -- they might.
         var decryptedSpan = stack.CryptoContext().StringCipher().Decrypt().CryptSpan(
             input);
         return PdfDirectObject.CreateString(decryptedSpan);
