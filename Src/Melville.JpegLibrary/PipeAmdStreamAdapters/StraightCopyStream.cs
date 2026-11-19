@@ -2,6 +2,7 @@
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
+[Obsolete("Can get rid of this, too.")]
 internal class StraightCopyStream : RentedArrayReadingStream
 {
     public StraightCopyStream(byte[] data, int length) : base(data, length)

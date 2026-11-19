@@ -30,20 +30,20 @@ public readonly partial struct JpegStreamFactory
     /// </summary>
     /// <param name="s">A readable stream containing a JPEG image file</param>
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
-    public async ValueTask<Stream> FromStreamAsync(Stream s)
+    public async ValueTask<(byte[], int)> FromStreamAsync(IAsyncReader s)
     {
         using var buffer = new MultiMemoryBuffer();
         using(var writer = buffer.CreateWriter())
         {
-            await s.AsStreamReader().CopyToAsync(writer).CA();
+            await s.CopyToAsync(writer).CA();
         }
-        s.Dispose();
+        (s as IDisposable)?.Dispose();
         // Melville.Jpeg is really designed around ReadOnlySequence so there is no
         // need for a unitary buffer
         return FromReadOnlySequence(buffer.AsSequence());
     }
 
-    private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
+    private (byte[], int) FromReadOnlySequence(ReadOnlySequence<byte> input)
     {
         var decoder = new JpegDecoder();
         decoder.SetInput(input);
@@ -57,7 +57,7 @@ public readonly partial struct JpegStreamFactory
         decoder.Decode();
 
         DoDecode(decoder, output, bufferLength);
-        return new StraightCopyStream(output, bufferLength);
+        return (output, bufferLength);
 
     }
     private void DoDecode(JpegDecoder decoder, byte[] output, int bufferLength)
