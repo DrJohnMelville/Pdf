@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
@@ -19,7 +20,8 @@ internal class Rc4Cipher: ICipherOperations, ICipher
         return input;
     }
 
-    public Stream CryptStream(Stream input) => new Rc4Stream(input, cryptoImplementation);
+    public Stream CryptStream(Stream input) => 
+        new Rc4Reader(input.AsReaderInefficient(), cryptoImplementation).AsStreamInefficient();
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;
 }
