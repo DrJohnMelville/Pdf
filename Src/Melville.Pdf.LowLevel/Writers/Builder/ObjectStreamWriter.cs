@@ -71,5 +71,6 @@ internal readonly struct ObjectStreamWriter
             objects.Dispose();
         }
     }
-    private ConcatStream FinalStreamContent() => new(refs.ReadFrom(0), objects.ReadFrom(0));
+    private Stream[] FinalStreamContent() => [refs.ReadFrom(0), objects.ReadFrom(0)];
 }
+

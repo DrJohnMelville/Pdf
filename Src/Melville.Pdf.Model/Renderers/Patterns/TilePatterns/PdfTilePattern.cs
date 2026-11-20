@@ -19,7 +19,7 @@ namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 public partial class PdfTilePattern: HasRenderableContentStream
 {
     /// <inheritdoc />
-    public override ValueTask<Stream> GetContentBytesAsync() => ((PdfStream)LowLevel).StreamContentAsync();
+    public override ValueTask<IPdfStreamReader> GetContentBytesAsync() => ((PdfStream)LowLevel).ReaderForContentAsync();
 
     /// <summary>
     /// The horizontal size of the pattern cell

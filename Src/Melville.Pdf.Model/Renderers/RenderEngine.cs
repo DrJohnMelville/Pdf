@@ -159,8 +159,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask RunContentStreamAsync(Func<IContentStreamOperations, IContentStreamOperations> wrapOutput)
     {
-        using var stream = (await page.GetContentBytesAsync().CA());
-        var reader = stream.AsStreamReader();
+        using var reader = (await page.GetContentBytesAsync().CA());
         await new ContentStreamParser(wrapOutput(this)).ParseAsync(
             reader).CA();
         await TryRenderAnnotationsAsync().CA();

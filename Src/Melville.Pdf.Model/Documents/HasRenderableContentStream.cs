@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Memory;
 
 namespace Melville.Pdf.Model.Documents;
 
@@ -34,7 +36,8 @@ public class HasRenderableContentStream : IHasPageAttributes
     /// <summary>
     /// Get a stream representing the content stream for this item.
     /// </summary>
-    public virtual ValueTask<Stream> GetContentBytesAsync() => new(new MemoryStream());
+    public virtual ValueTask<IPdfStreamReader> GetContentBytesAsync() => 
+        new(new PdfMemoryReader(Memory<byte>.Empty));
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
         await LowLevel.GetOrDefaultAsync(

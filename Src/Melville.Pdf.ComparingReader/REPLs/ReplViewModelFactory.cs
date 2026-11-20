@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Wpf.Controls;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.ComparingReader.REPLs;
 
@@ -44,11 +45,11 @@ public readonly struct ReplViewModelFactory
 
     private static async Task<string> ReadContentStringAsync(PdfStream stream)
     {
-        using var source = await stream.StreamContentAsync();
+        using var source = await stream.ReaderForContentAsync();
         return await ReadContentStringAsync(source);
     }
 
-    private static async Task<string> ReadContentStringAsync(Stream source)
+    private static async Task<string> ReadContentStringAsync(IAsyncReader source)
     {
         var sb = new StringBuilder();
         using var strBuffer = new PooledBuffer<byte>(4096);

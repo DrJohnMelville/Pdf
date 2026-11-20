@@ -14,7 +14,7 @@ namespace Melville.Pdf.Model.Documents;
 internal interface IHasPageAttributes
 {
     PdfDictionary LowLevel { get; }
-    ValueTask<Stream> GetContentBytesAsync();
+    ValueTask<IPdfStreamReader> GetContentBytesAsync();
     ValueTask<IHasPageAttributes?> GetParentAsync();
 
 }

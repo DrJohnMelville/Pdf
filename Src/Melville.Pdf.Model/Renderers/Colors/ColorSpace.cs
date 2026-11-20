@@ -8,6 +8,7 @@ using Melville.INPC;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
@@ -19,7 +20,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 internal partial class NoPageContext : IHasPageAttributes
 {
     public PdfDictionary LowLevel => PdfDictionary.Empty;
-    public ValueTask<Stream> GetContentBytesAsync() => new(new MemoryStream(Array.Empty<byte>()));
+    public ValueTask<IPdfStreamReader> GetContentBytesAsync() => new(new PdfMemoryReader(Array.Empty<byte>()));
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new((IHasPageAttributes?)null);
 }

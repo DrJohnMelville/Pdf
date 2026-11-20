@@ -19,7 +19,7 @@ internal partial class PdfFormXObject: IHasPageAttributes
 
     public PdfDictionary LowLevel => lowLevel;
 
-    public ValueTask<Stream> GetContentBytesAsync() => lowLevel.StreamContentAsync();
+    public ValueTask<IPdfStreamReader> GetContentBytesAsync() => lowLevel.ReaderForContentAsync();
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
 

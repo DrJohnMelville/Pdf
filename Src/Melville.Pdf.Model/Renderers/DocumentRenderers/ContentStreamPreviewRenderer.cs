@@ -40,6 +40,7 @@ public partial class ContentStreamPreviewRenderer : DocumentRenderer
         }
 
         public Stream Content { get; }
-        public override ValueTask<Stream> GetContentBytesAsync() => ValueTask.FromResult(Content);
+        public override ValueTask<IPdfStreamReader> GetContentBytesAsync() => 
+            ValueTask.FromResult(Content.AsReaderInefficient());
     }
 }

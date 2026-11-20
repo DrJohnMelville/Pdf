@@ -49,6 +49,17 @@ public readonly struct MultiBufferStreamSource(byte[] source)
         return new(str.ToArray());
     }
 
+    public static implicit operator MultiBufferStreamSource(Stream[] streams)
+    {
+        using var str = new MemoryStream();
+        foreach(var mbs in streams)
+        {
+            mbs.CopyTo(str);
+            mbs.Dispose();
+        }
+        return new(str.ToArray());
+    }
+
     /// <summary>
     /// Implicitly convert a byte array to a MultiBufferStreamSource
     /// </summary>
