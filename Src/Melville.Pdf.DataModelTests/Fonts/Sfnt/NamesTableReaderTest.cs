@@ -4,17 +4,16 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Names;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class NamesTableReaderTest
 {
-    [Theory]
-    [InlineData(SfntNameKey.FullFontName, 0xFFFF, "Myanmar Text Bold")]
-    [InlineData(SfntNameKey.FullFontName, 1, "Myanmar Text Bold")]
-    [InlineData(SfntNameKey.FullFontName, 3, "Myanmar Text Negreta")]
-    [InlineData(SfntNameKey.FontFamilyName, 0xFFFF, "Myanmar Text")]
+    [Test]
+    [Arguments(SfntNameKey.FullFontName, 0xFFFF, "Myanmar Text Bold")]
+    [Arguments(SfntNameKey.FullFontName, 1, "Myanmar Text Bold")]
+    [Arguments(SfntNameKey.FullFontName, 3, "Myanmar Text Negreta")]
+    [Arguments(SfntNameKey.FontFamilyName, 0xFFFF, "Myanmar Text")]
     public async Task ReadStringTableAsync(
         SfntNameKey item, ushort platform, string result)
     {

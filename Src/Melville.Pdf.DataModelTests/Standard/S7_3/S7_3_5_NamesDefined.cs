@@ -6,15 +6,14 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_5_NamesDefined
 {
-    [Theory]
-    [InlineData("Foo")]
-    [InlineData("Fo\u1234o")]
+    [Test]
+    [Arguments("Foo")]
+    [Arguments("Fo\u1234o")]
     public void NameCanRenderInUtf8(string name)
     {
         Assert.Equal(name, PdfDirectObject.CreateName(name).ToString());
@@ -24,19 +23,19 @@ public class S7_3_5_NamesDefined
         await (await Encoding.UTF8.GetBytes(source).ParseValueObjectAsync())
             .LoadValueAsync();
 
-    [Theory]
-    [InlineData("/","")]
-    [InlineData("/Name1","Name1")]
-    [InlineData("/ASomewhatLongerName","ASomewhatLongerName")]
-    [InlineData("/A;NameWith-Various***Characters?","A;NameWith-Various***Characters?")]
-    [InlineData("/1.2","1.2")]
-    [InlineData("/$$","$$")]
-    [InlineData("/@pattern","@pattern")]
-    [InlineData("/.notdef",".notdef")]
-    [InlineData("/Lime#20Green","Lime Green")]
-    [InlineData("/Paired#28#29parentheses","Paired()parentheses")]
-    [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
-    [InlineData("/A#42","AB")]
+    [Test]
+    [Arguments("/","")]
+    [Arguments("/Name1","Name1")]
+    [Arguments("/ASomewhatLongerName","ASomewhatLongerName")]
+    [Arguments("/A;NameWith-Various***Characters?","A;NameWith-Various***Characters?")]
+    [Arguments("/1.2","1.2")]
+    [Arguments("/$$","$$")]
+    [Arguments("/@pattern","@pattern")]
+    [Arguments("/.notdef",".notdef")]
+    [Arguments("/Lime#20Green","Lime Green")]
+    [Arguments("/Paired#28#29parentheses","Paired()parentheses")]
+    [Arguments("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
+    [Arguments("/A#42","AB")]
     
     public async Task ParseNameSucceedAsync(string source, string result)
     {
@@ -46,7 +45,7 @@ public class S7_3_5_NamesDefined
 
     }
 
-    [Fact]
+    [Test]
     public async Task KnowNamesParseToConstantsAsync()
     {
         var n1 = await TryParseStringToNameAsync("/Width");
@@ -54,7 +53,7 @@ public class S7_3_5_NamesDefined
         Assert.True(n1.Equals(n2));
     }
 
-    [Fact]
+    [Test]
     public void KnownameIsCorrect()
     {
         Assert.Equal("Page", KnownNames.Page);

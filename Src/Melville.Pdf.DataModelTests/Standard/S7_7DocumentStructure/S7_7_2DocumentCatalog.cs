@@ -2,16 +2,15 @@
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 
 public class S7_7_2DocumentCatalog
 {
-    [Theory]
-    [InlineData(1,2,"1.2")]
-    [InlineData(1,9,"1.9")]
-    [InlineData(2,0,"2.0")]
+    [Test]
+    [Arguments(1,2,"1.2")]
+    [Arguments(1,9,"1.9")]
+    [Arguments(2,0,"2.0")]
     public async Task DefaultVersionsAsync(byte major, byte minor, string result)
     {
         var creator = new PdfDocumentCreator();
@@ -19,7 +18,7 @@ public class S7_7_2DocumentCatalog
         Assert.Equal(result, (await doc.VersionAsync()).ToString());
     }
 
-    [Fact]
+    [Test]
     public async Task ExplicitVersionAsync()
     {
         var creator = new PdfDocumentCreator();

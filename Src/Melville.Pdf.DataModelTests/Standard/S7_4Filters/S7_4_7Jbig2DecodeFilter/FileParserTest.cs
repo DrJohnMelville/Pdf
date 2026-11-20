@@ -8,7 +8,6 @@ using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -23,9 +22,9 @@ public class FileParserTest
     private ParsingBuffer BufferFor(params ReadOnlySpan<string> data) =>
         new(new MemoryReader(BitStreamCreator.BitsFromHex(data)));
 
-    [Theory]
-    [InlineData("01 00000003", 3u)]
-    [InlineData("03", 0u)]
+    [Test]
+    [Arguments("01 00000003", 3u)]
+    [Arguments("03", 0u)]
     public async Task ParseSequentialFileHeaderAsync(string typeAndPages, uint pages)
     {
         using var buffer = BufferFor(magicNumber, typeAndPages,
@@ -33,9 +32,9 @@ public class FileParserTest
         var reader = await FileHeaderParser.ReadFileHeaderAsync(buffer, new Dictionary<uint,Segment>());
         await VerifySimpleFileAsync<SequentialSegmentHeaderReader>(pages, reader);
     }
-    [Theory]
-    [InlineData("00 00000003", 3u)]
-    [InlineData("02", 0u)]
+    [Test]
+    [Arguments("00 00000003", 3u)]
+    [Arguments("02", 0u)]
     public async Task ParseRandomAccessFileHeaderAsync(string typeAndPages, uint pages)
     {
         using var buffer = BufferFor(magicNumber, typeAndPages,

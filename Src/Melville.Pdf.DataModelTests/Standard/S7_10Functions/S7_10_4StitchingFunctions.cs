@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
@@ -18,7 +17,7 @@ public class S7_10_4StitchingFunctions
         return builder.Create();
     }
 
-    [Fact]
+    [Test]
     public async Task SimpleStitchAsync()
     {
         var builder = new StitchingFunctionBuilder(0);
@@ -32,13 +31,13 @@ public class S7_10_4StitchingFunctions
         await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 0, 0.5, 2, 3);
     }
 
-    [Fact]
+    [Test]
     public void CannotAddBelowMinimum()
     {
         var builder = new StitchingFunctionBuilder(0);
         Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), -1));
     }
-    [Fact]
+    [Test]
     public void CannotAddBelowLast()
     {
         var builder = new StitchingFunctionBuilder(0);
@@ -46,13 +45,13 @@ public class S7_10_4StitchingFunctions
         Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.25));
     }
 
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(0.1, 0.2)]
-    [InlineData(0.25, 0.5)]
-    [InlineData(0.75, 0.5)]
-    [InlineData(0.9, 0.2)]
-    [InlineData(1, 0)]
+    [Test]
+    [Arguments(0, 0)]
+    [Arguments(0.1, 0.2)]
+    [Arguments(0.25, 0.5)]
+    [Arguments(0.75, 0.5)]
+    [Arguments(0.9, 0.2)]
+    [Arguments(1, 0)]
     public async Task TriangleFunctionAsync(double input, double output)
     {
         var innerFunc = LinearMapping(0, 1);

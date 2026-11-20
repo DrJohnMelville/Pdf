@@ -1,20 +1,19 @@
 ﻿using System.Numerics;
 using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_7Patterns;
 
 public class AxialShadingTest
 {
-    [Theory]
-    [InlineData(0.0, 1, 0, 0)]
-    [InlineData(0.0, -1, 0, 0)]
-    [InlineData(-1, 0, -2, 0)]
-    [InlineData(1, 0, 0, 2)]
-    [InlineData(1, 1, 1, 1)]
-    [InlineData(1, -1, 1, 1)]
-    [InlineData(2, 0, 1, 3)]
-    [InlineData(0.35, 1, 0.35, 0.35)]
+    [Test]
+    [Arguments(0.0, 1, 0, 0)]
+    [Arguments(0.0, -1, 0, 0)]
+    [Arguments(-1, 0, -2, 0)]
+    [Arguments(1, 0, 0, 2)]
+    [Arguments(1, 1, 1, 1)]
+    [Arguments(1, -1, 1, 1)]
+    [Arguments(2, 0, 1, 3)]
+    [Arguments(0.35, 1, 0.35, 0.35)]
     public void HorizontalRowTest(double x, double y, double low, double high)
     {
         var comp = new RadialShadingComputer(new double[]{0, 0, 1, 1, 0, 1});
@@ -23,15 +22,15 @@ public class AxialShadingTest
         Assert.Equal(high, highVal, 4);
     }
 
-    [Theory]
-    [InlineData(0.0, 1, -1.3333, 0)]
-    [InlineData(0.0, -1, -1.3333, 0)]
-    [InlineData(-1, 0, -4, 0)]
-    [InlineData(1, 0, 0, 1.3333)]
-    [InlineData(1, 0.5, 0.3333, 1)]
-    [InlineData(1, -0.5, 0.3333, 1)]
-    [InlineData(1.5, 0, 1, 1.6667)]
-    [InlineData(0.5, 0.75, -0.5 , 0.5)]
+    [Test]
+    [Arguments(0.0, 1, -1.3333, 0)]
+    [Arguments(0.0, -1, -1.3333, 0)]
+    [Arguments(-1, 0, -4, 0)]
+    [Arguments(1, 0, 0, 1.3333)]
+    [Arguments(1, 0.5, 0.3333, 1)]
+    [Arguments(1, -0.5, 0.3333, 1)]
+    [Arguments(1.5, 0, 1, 1.6667)]
+    [Arguments(0.5, 0.75, -0.5 , 0.5)]
     public void SlopingLine(double x, double y, double low, double high)
     {
         var comp = new RadialShadingComputer(new[]{0, 0, 1, 1, 0, 0.5});
@@ -40,15 +39,15 @@ public class AxialShadingTest
         Assert.Equal(high, highVal, 4);
     }
 
-    [Theory]
-    [InlineData(0.0, 1, 1, 2.3333)]
-    [InlineData(0.0, -1, 1, 2.3333)]
-    [InlineData(-1, 0, 1, 5)]
-    [InlineData(1, 0, -.3333, 1)]
-    [InlineData(1, 0.5, 0, 0.6667)]
-    [InlineData(1, -0.5, 0, 0.6667)]
-    [InlineData(1.5, 0, -0.6667, 0)]
-    [InlineData(0.5, 0.75, 0.5 , 1.5)]
+    [Test]
+    [Arguments(0.0, 1, 1, 2.3333)]
+    [Arguments(0.0, -1, 1, 2.3333)]
+    [Arguments(-1, 0, 1, 5)]
+    [Arguments(1, 0, -.3333, 1)]
+    [Arguments(1, 0.5, 0, 0.6667)]
+    [Arguments(1, -0.5, 0, 0.6667)]
+    [Arguments(1.5, 0, -0.6667, 0)]
+    [Arguments(0.5, 0.75, 0.5 , 1.5)]
     public void SlopingLineInverse(double x, double y, double low, double high)
     {
         var comp = new RadialShadingComputer(new[]{1, 0, 0.5, 0, 0, 1});

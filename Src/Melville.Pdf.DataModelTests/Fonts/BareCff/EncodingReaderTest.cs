@@ -5,7 +5,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
@@ -23,7 +22,7 @@ public class EncodingReaderTest
             .ParseAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task ReadType0EncodingAsync()
     {
         var ret = new byte[256];
@@ -33,7 +32,7 @@ public class EncodingReaderTest
         (await ParseAsync("00 03 0A FF 20"))
             .Should().BeEquivalentTo(ret);
     }
-    [Fact]
+    [Test]
     public async Task ReadType0EncodingWithExtraAsync()
     {
         var ret = new byte[256];
@@ -45,7 +44,7 @@ public class EncodingReaderTest
                           "01 04 0100"))
             .Should().BeEquivalentTo(ret);
     }
-    [Fact]
+    [Test]
     public async Task ReadType0ExtendedZeroLengthArrayAsync()
     {
         var ret = new byte[256];
@@ -55,7 +54,7 @@ public class EncodingReaderTest
         (await ParseAsync("80 03 0A FF 20 00"))
             .Should().BeEquivalentTo(ret);
     }
-    [Fact]
+    [Test]
     public async Task ReadType1EncodingAsync()
     {
         var ret = new byte[256];
@@ -66,7 +65,7 @@ public class EncodingReaderTest
             .Should().BeEquivalentTo(ret);
     }
 
-    [Fact] public async Task ReadType1EncodingWithSupplementalAsync()
+    [Test] public async Task ReadType1EncodingWithSupplementalAsync()
     {
         var ret = new byte[256];
         ret[10] = 1;

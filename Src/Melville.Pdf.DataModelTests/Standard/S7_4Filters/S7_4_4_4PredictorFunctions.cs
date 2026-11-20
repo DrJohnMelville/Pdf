@@ -2,8 +2,8 @@
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using System.Collections.Generic;
 //Rider reports that the usings are unneeded, it does not know the Macro expander uses it.
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
@@ -18,58 +18,58 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
     "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new DictionaryBuilder().WithItem(KnownNames.Predictor, ~3~).WithItem( KnownNames.Colors, 2).WithItem(KnownNames.BitsPerComponent, 4).WithItem(KnownNames.Columns,5).AsDictionary()){}}")]
 public partial class S7_4_4_4PredictorFunctions
 {
-    [Theory]
-    [InlineData(0, 1, 2)]
-    [InlineData(120, 21, 233)]
+    [Test]
+    [Arguments(0, 1, 2)]
+    [Arguments(120, 21, 233)]
     public void NonePredictorTest(byte upperLeft, byte up, byte left)
     {
         Assert.Equal(0, new NonePngPredictor().Predict(upperLeft, up, left));
     }
 
-    [Theory]
-    [InlineData(0, 1, 2, 2)]
-    [InlineData(10, 134, 52, 52)]
+    [Test]
+    [Arguments(0, 1, 2, 2)]
+    [Arguments(10, 134, 52, 52)]
     public void SubPredictorTest(byte upperLeft, byte up, byte left, byte result)
     {
         Assert.Equal(result, new SubPngPredictor().Predict(upperLeft, up, left));
     }
 
-    [Theory]
-    [InlineData(0, 1, 2, 1)]
-    [InlineData(10, 134, 52, 134)]
+    [Test]
+    [Arguments(0, 1, 2, 1)]
+    [Arguments(10, 134, 52, 134)]
     public void UpPredictorTest(byte upperLeft, byte up, byte left, byte result)
     {
         Assert.Equal(result, new UpPngPredictor().Predict(upperLeft, up, left));
     }
 
-    [Theory]
-    [InlineData(0, 1, 2, 1)]
-    [InlineData(10, 134, 52, 93)]
+    [Test]
+    [Arguments(0, 1, 2, 1)]
+    [Arguments(10, 134, 52, 93)]
     public void AveragePredictorTest(byte upperLeft, byte up, byte left, byte result)
     {
         Assert.Equal(result, new AveragePngPredictor().Predict(upperLeft, up, left));
     }
 
-    [Theory]
-    [InlineData(1, 84, 37, 84)]
-    [InlineData(125, 128, 118, 118)]
-    [InlineData(61, 84, 37, 61)]
+    [Test]
+    [Arguments(1, 84, 37, 84)]
+    [Arguments(125, 128, 118, 118)]
+    [Arguments(61, 84, 37, 61)]
     public void PaethPredictorTest(byte upperLeft, byte up, byte left, byte result)
     {
         Assert.Equal(result, new PaethPngPredictor().Predict(upperLeft, up, left));
     }
 
-    public static TheoryData<object> Predictors => new()
-    {
+    public static IEnumerable<object> Predictors =>
+        [
         new NonePngPredictor(),
         new SubPngPredictor(),
         new UpPngPredictor(),
         new AveragePngPredictor(),
         new PaethPngPredictor()
-    };
+    ];
 
-    [Theory]
-    [MemberData(nameof(Predictors))]
+    [Test]
+    [MethodDataSource(nameof(Predictors))]
     public void AllPossibleRoundTripTests(object pred2)
     {
         var pred = (IPngPredictor)pred2;

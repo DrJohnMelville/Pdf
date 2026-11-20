@@ -1,14 +1,13 @@
 ﻿using System;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;
 
 public class CmapMapperTests
 {
-    [Theory]
-    [InlineData(0x120, 1)]
-    [InlineData(0x1201245, 1)]
+    [Test]
+    [Arguments(0x120, 1)]
+    [Arguments(0x1201245, 1)]
     public void ConstantMapping(uint input, uint character)
     {
         var sut = new ConstantCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF), 
@@ -18,17 +17,17 @@ public class CmapMapperTests
         Assert.Equal(character, output[0]);
     }
 
-    [Fact]
+    [Test]
     public void ConstantMappingFail()
     {
         var sut = new ConstantCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF),1);
         Assert.Equal(-1, sut.WriteMapping(SingleByteChar(12), Array.Empty<uint>()));
     }
 
-    [Theory]
-    [InlineData(0, 1)]
-    [InlineData(1,2)]
-    [InlineData(11,12)]
+    [Test]
+    [Arguments(0, 1)]
+    [Arguments(1,2)]
+    [Arguments(11,12)]
     public void LinearMapping(byte input, uint character)
     {
         var sut = new LinearCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF),
@@ -38,18 +37,18 @@ public class CmapMapperTests
         Assert.Equal(character+input, output[0]);
     }
 
-    [Theory]
-    [InlineData(0, false)]
-    [InlineData(5, false)]
-    [InlineData(9, false)]
-    [InlineData(10, true)]
-    [InlineData(11, true)]
-    [InlineData(15, true)]
-    [InlineData(19, true)]
-    [InlineData(20, true)]
-    [InlineData(21, false)]
-    [InlineData(22, false)]
-    [InlineData(220, false)]
+    [Test]
+    [Arguments(0, false)]
+    [Arguments(5, false)]
+    [Arguments(9, false)]
+    [Arguments(10, true)]
+    [Arguments(11, true)]
+    [Arguments(15, true)]
+    [Arguments(19, true)]
+    [Arguments(20, true)]
+    [Arguments(21, false)]
+    [Arguments(22, false)]
+    [Arguments(220, false)]
     public void RangeTest(byte character, bool result)
     {
         Assert.Equal(result, new LinearCMapper(new VariableBitChar("\x0A"u8), 

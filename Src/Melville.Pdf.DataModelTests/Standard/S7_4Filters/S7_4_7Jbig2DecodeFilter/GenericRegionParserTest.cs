@@ -4,7 +4,6 @@ using Melville.JBig2.SegmentParsers.GenericRegionParsers;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -16,10 +15,10 @@ public class GenericRegionParserTest
         return GenericRegionSegmentParser.Parse(reader);
     }
 
-    [Theory]
-    [InlineData("00000036 0000002C 00000004 0000000B 00 " + // region header
+    [Test]
+    [Arguments("00000036 0000002C 00000004 0000000B 00 " + // region header
                 "01 26 A0 71 CE A7 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF F8 F0")]
-    [InlineData("00000036 0000002C 00000004 0000000B 00 " + // region headder
+    [Arguments("00000036 0000002C 00000004 0000000B 00 " + // region headder
                 "08 03 FF FD FF 02 FE FE FE 04 EE ED 87 FB CB 2B FF AC")]
     public void ParseGenericSegment(string data)
     {

@@ -8,13 +8,12 @@ using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class LocationTableReaderTest
 {
-    [Fact]
+    [Test]
     public async Task ReadType0LocationsAsync()
     {
         // 3 hMetrics and 2 left side bearings
@@ -35,7 +34,7 @@ public class LocationTableReaderTest
             data.GetLocation(i).Should().Be(new GlyphLocation((i + 1) * 2, 2));
         }
     }
-    [Fact]
+    [Test]
     public async Task ReadType1LocationsAsync()
     {
         // 3 hMetrics and 2 left side bearings

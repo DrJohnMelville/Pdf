@@ -2,7 +2,6 @@
 using Melville.JBig2.SegmentParsers.TextRegions;
 using Melville.JBig2.Segments;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -19,16 +18,16 @@ public class BinaryBitmapWriterTest
         source.SetupGet(i => i.Height).Returns(7);
     }
 
-    [Theory]
-    [InlineData(ReferenceCorner.TopLeft, false, 13,10, 14)]
-    [InlineData(ReferenceCorner.TopRight, false, 13,10, 14)]
-    [InlineData(ReferenceCorner.BottomLeft, false, 7, 10, 14)]
-    [InlineData(ReferenceCorner.BottomRight, false, 7, 10, 14)]
+    [Test]
+    [Arguments(ReferenceCorner.TopLeft, false, 13,10, 14)]
+    [Arguments(ReferenceCorner.TopRight, false, 13,10, 14)]
+    [Arguments(ReferenceCorner.BottomLeft, false, 7, 10, 14)]
+    [Arguments(ReferenceCorner.BottomRight, false, 7, 10, 14)]
 
-    [InlineData(ReferenceCorner.TopLeft, true, 10, 13, 16)]
-    [InlineData(ReferenceCorner.BottomLeft, true, 10, 13, 16)]
-    [InlineData(ReferenceCorner.TopRight, true, 10, 9, 16)]
-    [InlineData(ReferenceCorner.BottomRight, true, 10, 9, 16)]
+    [Arguments(ReferenceCorner.TopLeft, true, 10, 13, 16)]
+    [Arguments(ReferenceCorner.BottomLeft, true, 10, 13, 16)]
+    [Arguments(ReferenceCorner.TopRight, true, 10, 9, 16)]
+    [Arguments(ReferenceCorner.BottomRight, true, 10, 9, 16)]
     public void DisplayCornerTest(object corner, bool transposed, int row, int column, int finalS)
     {
         var sut = new BinaryBitmapWriter(target.Object, transposed, (ReferenceCorner)corner, CombinationOperator.Or);
@@ -38,9 +37,9 @@ public class BinaryBitmapWriterTest
         Assert.Equal(finalS, s);
         
     }
-    [Theory]
-    [InlineData(CombinationOperator.Replace)]
-    [InlineData(CombinationOperator.And)]
+    [Test]
+    [Arguments(CombinationOperator.Replace)]
+    [Arguments(CombinationOperator.And)]
     public void BitOperationTest(object op)
     {
         var sut = new BinaryBitmapWriter(target.Object, false, ReferenceCorner.TopLeft, (CombinationOperator)op);

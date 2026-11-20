@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_8ContentStreams;
 
 public class CompatibilitySectionWriterTest:WriterTest
 {
-    [Fact]
+    [Test]
     public async Task CompatibilitySectionAsync()
     {
         using (sut.BeginCompatibilitySection())

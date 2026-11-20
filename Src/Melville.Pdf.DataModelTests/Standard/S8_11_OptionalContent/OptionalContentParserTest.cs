@@ -1,9 +1,9 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.OptionalContent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
@@ -18,7 +18,7 @@ public class OptionalContentParserTest
             .WithItem(KnownNames.Name, name)
             .AsDictionary();
     
-    [Fact]
+    [Test]
     public async Task AllVisibleIsCorrectBeforeAnyChangesAsync()
     {
         var ocg = new DictionaryBuilder()
@@ -36,7 +36,7 @@ public class OptionalContentParserTest
         Assert.False(await sut.IsGroupVisibleAsync(ocg));
         Assert.False(sut.AllVisible());
     }
-    [Fact]
+    [Test]
     public async Task DefaultVisibilityAsync()
     {
 
@@ -50,7 +50,7 @@ public class OptionalContentParserTest
         Assert.True(await sut.IsGroupVisibleAsync(ocg2));
         Assert.True(sut.AllVisible());
     }
-    [Fact]
+    [Test]
     public async Task AllOffVisibilityAsync()
     {
         
@@ -66,7 +66,7 @@ public class OptionalContentParserTest
         Assert.False(await sut.IsGroupVisibleAsync(ocg1));
         Assert.False(await sut.IsGroupVisibleAsync(ocg2));
     }
-    [Fact]
+    [Test]
     public async Task TurnOneOnAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
@@ -83,7 +83,7 @@ public class OptionalContentParserTest
         Assert.False(await sut.IsGroupVisibleAsync(ocg2));
     }
 
-    [Fact]
+    [Test]
     public async Task ParseSimpleOrderAsync()
     {
         var source = new DictionaryBuilder()
@@ -99,7 +99,7 @@ public class OptionalContentParserTest
         Assert.Equal("O1", display[1].Name);
         
     }
-    [Fact]
+    [Test]
     public async Task RadioButtonsAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
@@ -124,7 +124,7 @@ public class OptionalContentParserTest
         Assert.True(disp[1].Visible);
 
     }
-    [Fact]
+    [Test]
     public async Task ParseOrderWithTitleAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
@@ -145,7 +145,7 @@ public class OptionalContentParserTest
         Assert.Equal("O1", display[0].Children[1].Name);
         
     }
-    [Fact]
+    [Test]
     public async Task ParseOrderWithSuperGroupAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
@@ -167,32 +167,31 @@ public class OptionalContentParserTest
         
     }
 
-    public static object[][] PTestItems() =>
-        new[]
-        {
-            new object[]{false, false, false, KnownNames.AllOn, false},
-            new object[]{ true, false, false, KnownNames.AllOn, false},
-            new object[]{ true,  true, false, KnownNames.AllOn, false},
-            new object[]{ true,  true,  true, KnownNames.AllOn,  true},
-
-            new object[]{false, false, false, KnownNames.AnyOn, false},
-            new object[]{ true, false, false, KnownNames.AnyOn,  true},
-            new object[]{ true,  true, false, KnownNames.AnyOn,  true},
-            new object[]{ true,  true,  true, KnownNames.AnyOn,  true},
-
-            new object[]{false, false, false, KnownNames.AllOff, true},
-            new object[]{ true, false, false, KnownNames.AllOff, false},
-            new object[]{ true,  true, false, KnownNames.AllOff, false},
-            new object[]{ true,  true,  true, KnownNames.AllOff, false},
-
-            new object[]{false, false, false, KnownNames.AnyOff, true},
-            new object[]{ true, false, false, KnownNames.AnyOff, true},
-            new object[]{ true,  true, false, KnownNames.AnyOff, true},
-            new object[]{ true,  true,  true, KnownNames.AnyOff, false},
-        }; 
+    public static IEnumerable<(bool, bool, bool, PdfDirectObject, bool result)> PTestItems() =>
+        [
+            (false, false, false, KnownNames.AllOn, false),
+            ( true, false, false, KnownNames.AllOn, false),
+            ( true,  true, false, KnownNames.AllOn, false),
+            ( true,  true,  true, KnownNames.AllOn,  true),
+            
+            (false, false, false, KnownNames.AnyOn, false),
+            ( true, false, false, KnownNames.AnyOn,  true),
+            ( true,  true, false, KnownNames.AnyOn,  true),
+            ( true,  true,  true, KnownNames.AnyOn,  true),
+            
+            (false, false, false, KnownNames.AllOff, true),
+            ( true, false, false, KnownNames.AllOff, false),
+            ( true,  true, false, KnownNames.AllOff, false),
+            ( true,  true,  true, KnownNames.AllOff, false),
+            
+            (false, false, false, KnownNames.AnyOff, true),
+            ( true, false, false, KnownNames.AnyOff, true),
+            ( true,  true, false, KnownNames.AnyOff, true),
+            ( true,  true,  true, KnownNames.AnyOff, false)
+        ]; 
     
-    [Theory]
-    [MemberData(nameof(PTestItems))]
+    [Test]
+    [MethodDataSource(nameof(PTestItems))]
     public async Task MemerContentPTestAsync(bool v1, bool v2, bool v3, PdfDirectObject pOp, bool result)
     {
         var sut = await CreateVisContextAsync(v1, v2, v3);
@@ -219,11 +218,11 @@ public class OptionalContentParserTest
         return sut;
     }
 
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(false,  true)]
-    [InlineData( true, false)]
-    [InlineData( true,  true)]
+    [Test]
+    [Arguments(false, false)]
+    [Arguments(false,  true)]
+    [Arguments( true, false)]
+    [Arguments( true,  true)]
     public async Task AndVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
@@ -234,11 +233,11 @@ public class OptionalContentParserTest
         
     }
 
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(false,  true)]
-    [InlineData( true, false)]
-    [InlineData( true,  true)]
+    [Test]
+    [Arguments(false, false)]
+    [Arguments(false,  true)]
+    [Arguments( true, false)]
+    [Arguments( true,  true)]
     public async Task OrVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
@@ -248,11 +247,11 @@ public class OptionalContentParserTest
             .AsDictionary()));
         
     }
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(false,  true)]
-    [InlineData( true, false)]
-    [InlineData( true,  true)]
+    [Test]
+    [Arguments(false, false)]
+    [Arguments(false,  true)]
+    [Arguments( true, false)]
+    [Arguments( true,  true)]
     public async Task NotVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
@@ -262,11 +261,11 @@ public class OptionalContentParserTest
             .AsDictionary()));
         
     }
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(false,  true)]
-    [InlineData( true, false)]
-    [InlineData( true,  true)]
+    [Test]
+    [Arguments(false, false)]
+    [Arguments(false,  true)]
+    [Arguments( true, false)]
+    [Arguments( true,  true)]
     public async Task ImplicationVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);

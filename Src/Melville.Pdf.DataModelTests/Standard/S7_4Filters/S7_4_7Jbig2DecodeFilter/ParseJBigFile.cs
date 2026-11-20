@@ -4,16 +4,15 @@ using System.Threading.Tasks;
 using Melville.JBig2;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
 public class ParseJBigFile
 {
-    [Theory]
-    [InlineData(1, Page1And2)]
-    [InlineData(2, Page1And2)]
-    [InlineData(3, Page3)]
+    [Test]
+    [Arguments(1, Page1And2)]
+    [Arguments(2, Page1And2)]
+    [Arguments(3, Page3)]
     public async Task ReadOnePageAsync(uint page, string result)
     {
         var fact = new JbigExplicitPageReader();
@@ -22,7 +21,7 @@ public class ParseJBigFile
         Assert.Equal(result.Trim(), fact.GetPage(page).BitmapString());
     }
 
-    [Fact]
+    [Test]
     public async Task ReadAllPagesAsync()
     {
         var fact = new JbigAllPageReader();

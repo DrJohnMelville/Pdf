@@ -6,7 +6,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 
@@ -22,7 +21,7 @@ public class S7_7_3_3PageAttributes
         var doc = new PdfDocument(docCreator.CreateDocument());
         return (PdfPage) await (await doc.PagesAsync()).GetPageAsync(0);
     }
-    [Fact]
+    [Test]
     public async Task LastModifiedTimeAsync()
     {
         var dateAndTime = new DateTime(1975,07,28,1,2,3);
@@ -31,7 +30,7 @@ public class S7_7_3_3PageAttributes
         
     }
 
-    [Fact]
+    [Test]
     public async Task LoadProcSetsAsync()
     {
         var doc = await RoundTripPageWithAsync(i => { });
@@ -45,7 +44,7 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(KnownNames.ImageI, await procSets[4]);
     }
 
-    [Fact]
+    [Test]
     public async Task WithXObjectDictionaryAsync()
     {
         var name = PdfDirectObject.CreateName("N1");
@@ -56,7 +55,7 @@ public class S7_7_3_3PageAttributes
         });
         Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
     }
-    [Fact]
+    [Test]
     public async Task WithInheritedXObjectDictionaryAsync()
     {
         var name = PdfDirectObject.CreateName("N1");
@@ -69,7 +68,7 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
     }
 
-    [Fact]
+    [Test]
     public async Task DirectBoxesAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
@@ -91,7 +90,7 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(trim, await doc.GetBoxAsync(BoxName.TrimBox));
         Assert.Equal(art, await doc.GetBoxAsync(BoxName.ArtBox));
     }
-    [Fact]
+    [Test]
     public async Task IndirectBoxesAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
@@ -113,7 +112,7 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(trim, await doc.GetBoxAsync(BoxName.TrimBox));
         Assert.Equal(art, await doc.GetBoxAsync(BoxName.ArtBox));
     }
-    [Fact]
+    [Test]
     public async Task BoxDefaultsAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
@@ -129,7 +128,7 @@ public class S7_7_3_3PageAttributes
         Assert.False(doc.LowLevel.ContainsKey(KnownNames.Contents));
     }
 
-    [Fact]
+    [Test]
     public async Task AddBuiltinFontAsync()
     {
         PdfDirectObject fontName = KnownNames.Type;
@@ -144,15 +143,15 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(await font[KnownNames.Encoding], FontEncodingName.WinAnsiEncoding);  
     }
 
-    [Fact] 
+    [Test] 
     public async Task LiteratContentStreamAsync()
     {
         var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
         var stream = await doc.GetContentBytesAsync();
-        var dat = await new StreamReader(stream).ReadToEndAsync(TestContext.Current.CancellationToken);
+        var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
     }
-    [Fact] 
+    [Test] 
     public async Task TwoContentStreamsAsync()
     {
         var doc = await RoundTripPageWithAsync(i =>
@@ -161,7 +160,7 @@ public class S7_7_3_3PageAttributes
             i.AddToContentStream(new DictionaryBuilder(), "yyy");
         });
         var stream = await doc.GetContentBytesAsync();
-        var dat = await new StreamReader(stream).ReadToEndAsync(TestContext.Current.CancellationToken);
+        var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xx\nyyy", dat);
     }
 }

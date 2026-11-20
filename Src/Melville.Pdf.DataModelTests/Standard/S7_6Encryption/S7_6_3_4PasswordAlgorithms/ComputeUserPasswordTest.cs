@@ -8,15 +8,14 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms;
 
 public class ComputeUserPasswordTest
 {
-    [Theory]
-    [InlineData(2, 128)]
-    [InlineData(2, 40)]
+    [Test]
+    [Arguments(2, 128)]
+    [Arguments(2, 40)]
     public async Task R3Rc4CiphersAsync(int V, int keyLengthInBits)
     {
         var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
@@ -33,16 +32,16 @@ public class ComputeUserPasswordTest
         Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
             
     }
-    [Theory]
-    [InlineData(true,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "", PasswordType.User)] 
-    [InlineData(false,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile,
+    [Test]
+    [Arguments(true,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "", PasswordType.User)] 
+    [Arguments(false,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile,
         "WrongPassword1|WrongPassword2", PasswordType.User)]
-    [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"", PasswordType.User)]
-    [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"WrongPassword", PasswordType.User)]
-    [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.User)]
-    [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.Owner)]
-    [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.Owner)]
-    [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.User)]
+    [Arguments(false, V4RC4128CiperWithUserAndOwnerPasswords,"", PasswordType.User)]
+    [Arguments(false, V4RC4128CiperWithUserAndOwnerPasswords,"WrongPassword", PasswordType.User)]
+    [Arguments(true, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.User)]
+    [Arguments(false, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.Owner)]
+    [Arguments(true, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.Owner)]
+    [Arguments(false, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.User)]
     public async Task VerifyUserPasswordStreamAsync(
         bool succeed,string trailer, string passwords, PasswordType passwordType)
     {

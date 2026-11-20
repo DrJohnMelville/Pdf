@@ -3,7 +3,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Postscript.Interpreter.Values;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
@@ -22,13 +21,13 @@ public class AddEncryptionItemsToTrailerTest
         trailer = docBuilder.CreateDocument().TrailerDictionary;
     }
         
-    [Fact]
+    [Test]
     public void EcryptionRequiresAnID()
     {
         Assert.True(trailer.ContainsKey(KnownNames.ID));
     }
 
-    [Fact]
+    [Test]
     public async Task EcryptionWithV3DictionaryAsync()
     {
         Assert.True(trailer.ContainsKey(KnownNames.Encrypt));

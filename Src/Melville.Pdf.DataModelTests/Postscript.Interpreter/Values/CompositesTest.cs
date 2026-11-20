@@ -1,6 +1,5 @@
 ﻿using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
 
@@ -12,7 +11,7 @@ public abstract class CompositesTest
 
     protected abstract IPostscriptComposite CreateEmpty();
 
-    [Fact]
+    [Test]
     public void AddAndRemove1()
     {
         var sut = CreateEmpty();
@@ -21,7 +20,7 @@ public abstract class CompositesTest
         Assert.Equal("(Hello)", result.ToString());
     }
 
-    [Fact]
+    [Test]
     public void AddAndRemove2()
     {
         var sut = CreateEmpty();

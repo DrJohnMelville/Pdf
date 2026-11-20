@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Melville.Linq;
 using Melville.Parsing.ObjectRentals;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Primatives;
 
@@ -9,7 +8,7 @@ public class ObjectRentalManager
 {
     private readonly ObjectPool<object> sut = new();
 
-    [Fact]
+    [Test]
     public void RentalCreatesObject()
     {
         var rented = sut.Rent();
@@ -17,7 +16,7 @@ public class ObjectRentalManager
         sut.Return(rented);
     }
 
-    [Fact]
+    [Test]
     public void ReuseReturnedObject()
     {
         var obj = sut.Rent();
@@ -25,7 +24,7 @@ public class ObjectRentalManager
         Assert.Same(obj, sut.Rent());
         sut.Return(obj);
     }
-    [Fact]
+    [Test]
     public void ReturnUniqueObjects()
     {
         var obj1 = sut.Rent();
@@ -38,7 +37,7 @@ public class ObjectRentalManager
         sut.Return(obj2);
     }
 
-    [Fact]
+    [Test]
     public void DoNotStoreMoreThanTwentyItems()
     {
         var objs = Enumerable.Range(0, 20).Select(i => sut.Rent()).ToArray();

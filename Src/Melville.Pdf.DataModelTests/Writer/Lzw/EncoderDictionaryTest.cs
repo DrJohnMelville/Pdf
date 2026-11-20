@@ -1,19 +1,18 @@
 ﻿using Melville.Pdf.LowLevel.Filters.LzwFilter;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.Lzw;
 
 public class EncoderDictionaryTest
 {
     private EncoderDictionary dict = new EncoderDictionary();
-    [Fact]
+    [Test]
     public void GetInitialByteIsTheByte()
     {
         QueryDictionary(false, 12, 15, 258);
         QueryDictionary(true, 12, 15, 258);
     }
 
-    [Fact]
+    [Test]
     public void GetGetDifferentStrings()
     {
         QueryDictionary(false, 12,15,258);

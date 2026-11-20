@@ -4,13 +4,12 @@ using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class SfntTest
 {
-    [Fact]
+    [Test]
     public async Task LoadTableBytesTestAsync()
     {
         using var source = MultiplexSourceFactory.Create("01234567890"u8.ToArray());

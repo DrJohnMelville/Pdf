@@ -5,7 +5,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
@@ -29,13 +28,13 @@ public class CffStringIndexTest: IDisposable
         return ret;
     }
 
-    [Theory]
-    [InlineData(0, ".notdef")]
-    [InlineData(1, "space")]
-    [InlineData(390, "Semibold")]
-    [InlineData(391, "a")]
-    [InlineData(392, "b")]
-    [InlineData(393, "cde")]
+    [Test]
+    [Arguments(0, ".notdef")]
+    [Arguments(1, "space")]
+    [Arguments(390, "Semibold")]
+    [Arguments(391, "a")]
+    [Arguments(392, "b")]
+    [Arguments(393, "cde")]
     public async Task ReadNameAsync(int index, string expected)
     {
         var indexSource = await NamesIndexAsync();

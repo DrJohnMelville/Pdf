@@ -3,13 +3,12 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer;
 
 public class SimpleTypeWriterTest
 {
-    [Fact]
+    [Test]
     public async Task WriteTokensAsync()
     {
         Assert.Equal("true",await ((PdfIndirectObject)true).WriteToStringAsync());
@@ -17,58 +16,58 @@ public class SimpleTypeWriterTest
         Assert.Equal("null",await ((PdfIndirectObject)default).WriteToStringAsync());
     }
         
-    [Theory]
-    [InlineData("Hello", "(Hello)")]
-    [InlineData("", "()")]
-    [InlineData("\n", "(\\n)")]
-    [InlineData("\r", "(\\r)")]
-    [InlineData("\t", "(\\t)")]
-    [InlineData("\b", "(\\b)")]
-    [InlineData("\f", "(\\f)")]
-    [InlineData("\u0000", "(\u0000)")]
-    [InlineData(@"this is a \Test", @"(this is a \\Test)")]
-    [InlineData(@"this is a (Test", @"(this is a \(Test)")]
-    [InlineData(@"this is a )Test", @"(this is a \)Test)")]
+    [Test]
+    [Arguments("Hello", "(Hello)")]
+    [Arguments("", "()")]
+    [Arguments("\n", "(\\n)")]
+    [Arguments("\r", "(\\r)")]
+    [Arguments("\t", "(\\t)")]
+    [Arguments("\b", "(\\b)")]
+    [Arguments("\f", "(\\f)")]
+    [Arguments("\u0000", "(\u0000)")]
+    [Arguments(@"this is a \Test", @"(this is a \\Test)")]
+    [Arguments(@"this is a (Test", @"(this is a \(Test)")]
+    [Arguments(@"this is a )Test", @"(this is a \)Test)")]
     public async Task WriteStringsAsync(string source, string dest)
     {
         Assert.Equal(dest, await PdfDirectObject.CreateString(source.AsExtendedAsciiBytes()).WriteToStringAsync());
         Assert.Equal(source, (await dest.ParseValueObjectAsync()).ToString());
             
     }
-    [Theory]
-    [InlineData("Hello", "/Hello")]
-    [InlineData("Hel#lo", "/Hel#23lo")]
-    [InlineData("Hel lo", "/Hel#20lo")]
+    [Test]
+    [Arguments("Hello", "/Hello")]
+    [Arguments("Hel#lo", "/Hel#23lo")]
+    [Arguments("Hel lo", "/Hel#20lo")]
     public async Task WriteNameAsync(string source, string dest)
     {
         Assert.Equal(dest, await PdfDirectObject.CreateName(source).WriteToStringAsync());
     }
-    [Theory]
-    [InlineData(0, "0")]
-    [InlineData(1234, "1234")]
-    [InlineData(-1234, "-1234")]
+    [Test]
+    [Arguments(0, "0")]
+    [Arguments(1234, "1234")]
+    [Arguments(-1234, "-1234")]
     public async Task WriteIntegersAsync(int source, string dest)
     {
         Assert.Equal(dest, await ((PdfDirectObject)source).WriteToStringAsync());
     }
-    [Theory]
-    [InlineData(0, "0")]
-    [InlineData(1234, "1234")]
-    [InlineData(-1234, "-1234")]
-    [InlineData(-1234.54, "-1234.54")]
+    [Test]
+    [Arguments(0, "0")]
+    [Arguments(1234, "1234")]
+    [Arguments(-1234, "-1234")]
+    [Arguments(-1234.54, "-1234.54")]
     public async Task WriteDoublesAsync(double source, string dest)
     {
         Assert.Equal(dest, await ((PdfDirectObject)source).WriteToStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task WriteIndirectObjectReferenceAsync()
     {
         var reference = new PdfIndirectObject(Mock.Of<IIndirectObjectSource>(), 34,555);
         Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
     }
-    [Fact]
+    [Test]
     public async Task WriteArrayAsync()
     {
         var array = new PdfArray(new PdfIndirectObject[]
@@ -77,7 +76,7 @@ public class SimpleTypeWriterTest
         });
         Assert.Equal("[true false null]", await ((PdfDirectObject)array).WriteToStringAsync());
     }
-    [Fact]
+    [Test]
     public async Task WriteDictionaryAsync()
     {
         var array =
@@ -88,7 +87,7 @@ public class SimpleTypeWriterTest
         Assert.Equal("<</Width 20/Height 40>>", await ((PdfDirectObject)array).WriteToStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task WriteStreamAsync()
     {
         var array = new DictionaryBuilder()

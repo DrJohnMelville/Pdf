@@ -13,7 +13,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.FormReadersTest;
 
@@ -36,7 +35,7 @@ public class AcroFormReaderTest
         return await FormReaderFacade.ReadFormAsync(lld);
     }
 
-    [Fact]
+    [Test]
     public async Task ReadSingleTextFieldAsync()
     {
         var reader = await SingleTextBoxFormAsync();
@@ -48,8 +47,8 @@ public class AcroFormReaderTest
         reader.Fields[0].Value.Should().Be("Text Value");
     }
 
-    [Fact]
-    public static async Task ModifyTextFormAsync()
+    [Test]
+    public async Task ModifyTextFormAsync()
     {
         var frm = await SingleTextBoxFormAsync();
         ((IPdfTextBox)frm.Fields[0]).StringValue = "FooBar";
@@ -62,8 +61,8 @@ public class AcroFormReaderTest
         var f2 = await FormReaderFacade.ReadFormAsync(source);
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
-    [Fact]
-    public static async Task ModifyTextFormAsyncWithProblemCharacterAsync()
+    [Test]
+    public async Task ModifyTextFormAsyncWithProblemCharacterAsync()
     {
         var frm = await SingleTextBoxFormAsync();
         ((IPdfTextBox)frm.Fields[0]).StringValue = "Foo\x2013Bar";
@@ -92,7 +91,7 @@ public class AcroFormReaderTest
         return reader;
     }
 
-    [Fact]
+    [Test]
     public async Task ReadSingleCheckBoxAsync()
     {
         var formField = new DictionaryBuilder()
@@ -115,7 +114,7 @@ public class AcroFormReaderTest
 
     }
 
-    [Fact]
+    [Test]
     public async Task SubFormNameAsync()
     {
         var reader = await CreateSubfomDocumentAsync();
@@ -149,24 +148,24 @@ public class AcroFormReaderTest
         return reader;
     }
 
-    [Theory]
-    [InlineData("FormName.CheckBox Field")]
-    [InlineData("FormName.CheckBox Field[0]")]
-    [InlineData("FormName[0].CheckBox Field[0]")]
-    [InlineData("FormName[0].CheckBox Field")]
+    [Test]
+    [Arguments("FormName.CheckBox Field")]
+    [Arguments("FormName.CheckBox Field[0]")]
+    [Arguments("FormName[0].CheckBox Field[0]")]
+    [Arguments("FormName[0].CheckBox Field")]
     public async Task GetFieldByNameSucceedAsync(string name)
     {
         (await CreateSubfomDocumentAsync()).NameToField(name).Should().BeOfType<AcroCheckBox>();
     }
     
-    [Fact]
+    [Test]
     public async Task GetFieldByNameFailAsync()
     {
         (await CreateSubfomDocumentAsync()).Invoking(i=>i.NameToField("ddd"))
             .Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    [Fact]
+    [Test]
     public async Task ReadPushButtonAsync()
     {
         var formField = new DictionaryBuilder()
@@ -186,7 +185,7 @@ public class AcroFormReaderTest
 
     }
 
-    [Fact]
+    [Test]
     public void CheckBoxBool()
     {
         var sut = new AcroCheckBox("xx", KnownNames.OFF, PdfDirectObject.CreateNull(), PdfDictionary.Empty);
@@ -200,7 +199,7 @@ public class AcroFormReaderTest
         sut.Value.Should().Be(KnownNames.OFF);
     }
 
-    [Fact]
+    [Test]
     public async Task ReadRadioButtonsAsync()
     {
         var rb1 = new DictionaryBuilder()
@@ -233,7 +232,7 @@ public class AcroFormReaderTest
         rb.Selected.Should().Be(rb.Options[0]);
     }
 
-    [Fact]
+    [Test]
     public async Task ReadSingleChoiceAsync()
     {
 
@@ -265,7 +264,7 @@ public class AcroFormReaderTest
         rb.Options[2].Title.Should().Be("MDJ");
         rb.Selected.Should().Be(rb.Options[1]);
     }
-    [Fact]
+    [Test]
     public async Task ReadMultiChoiceAsync()
     {
 

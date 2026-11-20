@@ -5,7 +5,6 @@ using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors;
 
@@ -19,7 +18,7 @@ public class ImageExtractionTest
         return images;
     }
 
-    [Fact]
+    [Test]
     public async Task ReadImageFromFileAsync()
     {
         var images = await ImagesFromAsync(new ExplicitColorMask());
@@ -33,7 +32,7 @@ public class ImageExtractionTest
         Assert.Equal(new Vector2(20, 26), image.PositionTopLeft);
         Assert.Equal(new Vector2(270, 26), image.PositionTopRight);
     }
-    [Fact]
+    [Test]
     public async Task ReadImageFromFile2Async()
     {
         var images = await ImagesFromAsync(new JBigSampleBitStream1());

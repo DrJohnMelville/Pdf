@@ -4,28 +4,27 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S14_6MarkedContent;
 
 public partial class MarkedContentParser : ParserTest
 {
-    [Fact]
+    [Test]
     public Task MarkedContentPointAsync() =>
         TestInputAsync("/M1 MP", i => i.MarkedContentPoint(PdfDirectObject.CreateName("M1")));
-    [Fact]
+    [Test]
     public Task MarkedContentPointWithNamedParamAsync() =>
         TestInputAsync("/M1 /M2 DP", i => i.MarkedContentPointAsync("/M1", "/M2"));
-    [Fact]
+    [Test]
     public Task BeginMarkedRangeWithTagAsync() =>
         TestInputAsync("/M1 BMC", i => i.BeginMarkedRange("/M1"));
-    [Fact]
+    [Test]
     public Task BeginMarkedRangeWithTagAndDictNameAsync() =>
         TestInputAsync("/M1 /M2 BDC", i => i.BeginMarkedRangeAsync("/M1", "/M2"));
-    [Fact]
+    [Test]
     public Task EndMarkedRangeAsync() =>
         TestInputAsync("EMC", i => i.EndMarkedRange());
-    [Fact]
+    [Test]
     public Task ArrayInDictionaryTestAsync() =>
         TestInputAsync("/Artifact <</Attached [/Bottom ]/BBox [31.4126 35.5546 95.7888 47.7571 ]/Subtype /Footer /Type /Pagination >>BDC", 
             i => i.BeginMarkedRangeAsync(
@@ -58,14 +57,14 @@ public partial class MarkedContentParser : ParserTest
         }
     }
     
-    [Theory]
-    [InlineData("<</Type/Catalog>>")]
-    [InlineData("<</Type<</Type/Catalog>>>>")]
+    [Test]
+    [Arguments("<</Type/Catalog>>")]
+    [Arguments("<</Type<</Type/Catalog>>>>")]
     public Task MarkedContentPointWithInlineDictAsync(string dictStr) => 
         TestInputAsync($"/M1{dictStr}DP", new MarkedContentPointMock(dictStr));
-    [Theory]
-    [InlineData("<</Type/Catalog>>")]
-    [InlineData("<</Type<</Type/Catalog>>>>")]
+    [Test]
+    [Arguments("<</Type/Catalog>>")]
+    [Arguments("<</Type<</Type/Catalog>>>>")]
     public Task MarkedContentRangeWithInlineDictAsync(string dictStr) => 
         TestInputAsync($"/M1{dictStr}BDC", new MarkedContentPointMock(dictStr));
 

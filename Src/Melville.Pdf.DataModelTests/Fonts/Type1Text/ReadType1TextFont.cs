@@ -13,7 +13,6 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
@@ -37,7 +36,7 @@ public class ReadType1TextFont
         return font;
     }
 
-    [Fact]
+    [Test]
     public async Task DecodeEExecAsync() 
     {
         var data = File.ReadAllBytes(ConstructFileName("Type1Text.fon"));
@@ -46,8 +45,8 @@ public class ReadType1TextFont
         var decryptor = new DecodingReader(reader, 55665);
 
         var buf = new byte[30];
-        await decryptor.ReadExactAsync(buf.AsMemory(0,4), TestContext.Current.CancellationToken);
-        await decryptor.ReadExactAsync(buf, TestContext.Current.CancellationToken);
+        await decryptor.ReadExactAsync(buf.AsMemory(0,4));
+        await decryptor.ReadExactAsync(buf);
 
 
 
@@ -55,7 +54,7 @@ public class ReadType1TextFont
         
     }
 
-    [Fact]
+    [Test]
     public async Task ReadTrimmedAsync()
     {
         var font = await ReadFontAsync("Type1Text.fon");
@@ -66,7 +65,7 @@ public class ReadType1TextFont
         (await font.GetCmapSourceAsync()).Count.Should().Be(0);
         (await font.FontFamilyNameAsync()).Should().Be("GODCEN+Dingbats");
     }
-    [Fact]
+    [Test]
     public async Task REadFullType1Async()
     {
         var font = await ReadFontAsync("putr.pfa");

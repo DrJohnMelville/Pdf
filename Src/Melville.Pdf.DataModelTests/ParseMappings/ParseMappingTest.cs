@@ -4,7 +4,6 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Pdf.ReferenceDocumentGenerator.Targets;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParseMappings;
 
@@ -12,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.ParseMappings;
 #if DEBUG
 public class ParseMappingTest
 {
-    [Fact]
+    [Test]
     public void ParseSingle()
     {
         var stream = new MemoryStream();
@@ -24,7 +23,7 @@ public class ParseMappingTest
             new ParseMapEntry("Label 0", 0, 0),
             ]);
     }
-    [Fact]
+    [Test]
     public void UnRegister()
     {
         var stream = new MemoryStream();
@@ -36,7 +35,7 @@ public class ParseMappingTest
             new ParseMapEntry("This is a Label", 0, 0),
             ]);
     }
-    [Fact]
+    [Test]
     public void ExplicitOffset()
     {
         var stream = new MemoryStream();
@@ -48,7 +47,7 @@ public class ParseMappingTest
             new ParseMapEntry("Label 0", 5, 10),
             ]);
     }
-    [Fact]
+    [Test]
     public void UseStreamPosition()
     {
         var stream = new MemoryStream();

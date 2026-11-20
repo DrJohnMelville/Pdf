@@ -5,13 +5,12 @@ using Melville.Pdf.FontLibrary;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.ReferenceDocuments.Text.TrueType;
 using Melville.Pdf.TextExtractor;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_10_TextExtraction;
 
 public class TextExtractionIntegrationTest
 {
-    [Fact]
+    [Test]
     public async Task SimpleRenderingAsync()
     {
         using var ren = await new EmbeddedTrueType().AsDocumentRendererAsync(SelfContainedDefaultFonts.Instance);

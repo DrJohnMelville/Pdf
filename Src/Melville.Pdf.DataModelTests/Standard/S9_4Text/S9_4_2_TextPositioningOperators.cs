@@ -14,7 +14,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
@@ -75,7 +74,7 @@ public class S9_4_2_TextPositioningOperators
         state.StronglyTypedCurrentState().SetTypeface(rf);
     }
 
-    [Fact]
+    [Test]
     public void TranslateTextPosition()
     {
         VerifyBothTextMatrices(Matrix3x2.Identity);
@@ -85,14 +84,14 @@ public class S9_4_2_TextPositioningOperators
         VerifyBothTextMatrices(new Matrix3x2(1, 0, 0, 1, 17, 29));
     }
 
-    [Fact]
+    [Test]
     public void SetTextMatrixTest()
     {
         sut.SetTextMatrix(1, 2, 3, 4, 5, 6);
         VerifyBothTextMatrices(new Matrix3x2(1, 2, 3, 4, 5, 6));
     }
 
-    [Fact]
+    [Test]
     public void BeginTextObjectResetsTextMatrices()
     {
         sut.MovePositionBy(10, 20);
@@ -107,7 +106,7 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(expected, state.StronglyTypedCurrentState().TextLineMatrix);
     }
 
-    [Fact]
+    [Test]
     public void TranslateTextPositionWithLeading()
     {
         sut.MovePositionByWithLeading(10, -20);
@@ -115,7 +114,7 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(20, sut.CurrentState().TextLeading);
     }
 
-    [Fact]
+    [Test]
     public void MoveToNextTextLine()
     {
         sut.SetTextLeading(20);
@@ -123,9 +122,9 @@ public class S9_4_2_TextPositioningOperators
         VerifyBothTextMatrices(new Matrix3x2(1, 0, 0, 1, 0, -20));
     }
 
-    [Theory]
-    [InlineData("e", 10)]
-    [InlineData("ee", 20)]
+    [Test]
+    [Arguments("e", 10)]
+    [Arguments("ee", 20)]
     public async Task DrawStringAsync(string input, float xPos)
     {
         await sut.ShowStringAsync(input.AsExtendedAsciiBytes());
@@ -133,7 +132,7 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPos, 0), sut.CurrentState().TextMatrix);
     }
 
-    [Fact]
+    [Test]
     public async Task DrawHorizontalCompressedStreamAsync()
     {
         sut.SetCharSpace(20);
@@ -144,7 +143,7 @@ public class S9_4_2_TextPositioningOperators
         
     }
 
-    [Fact]
+    [Test]
     public void MoveToNextTextLineAndShowString()
     {
         sut.SetTextLeading(20);
@@ -152,7 +151,7 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
     }
     
-    [Fact]
+    [Test]
     public void MoveToNextTextLineAndShowStringWithSpacing()
     {
         sut.SetTextLeading(20);
@@ -163,11 +162,11 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 15, -20), sut.CurrentState().TextMatrix);
     }
 
-    [Theory]
-    [InlineData(100,9, 1)]
-    [InlineData(100,18, 2)]
-    [InlineData(50,4.5, 1)]
-    [InlineData(1000,90, 1)]
+    [Test]
+    [Arguments(100,9, 1)]
+    [Arguments(100,18, 2)]
+    [Arguments(50,4.5, 1)]
+    [Arguments(1000,90, 1)]
     public async Task ShowSpacedStreamAsync(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);

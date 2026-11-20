@@ -1,12 +1,11 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.Lzw;
 
 public class AddlerTests
 {
-    [Fact]
+    [Test]
     public void AddlerTest()
     {
         var sut = new Adler32Computer(1);
@@ -15,7 +14,7 @@ public class AddlerTests
                     
     }
         
-    [Fact]
+    [Test]
     public void AdlerHandlesMultipleOuterLoops()
     {
         var data = new byte[20000];

@@ -9,7 +9,6 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
@@ -23,7 +22,7 @@ public class MaximumProfileReaderTest
         return await new MaxpParser(pipe).ParseAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task ReadVersion0_5Async()
     {
         var maxp = await ReadMaximumTableAsync("""
@@ -34,7 +33,7 @@ public class MaximumProfileReaderTest
         maxp.NumGlyphs.Should().Be(0x33);
     }
 
-    [Fact]
+    [Test]
     public async Task ReadVersion1_0Async()
     {
         var maxp = await ReadMaximumTableAsync("""

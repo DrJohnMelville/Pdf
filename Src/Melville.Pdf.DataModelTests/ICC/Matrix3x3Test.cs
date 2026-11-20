@@ -1,11 +1,10 @@
 ﻿using Melville.Icc.Model.Tags;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class Matrix3x3Test
 {
-    [Fact]
+    [Test]
     public void Add()
     {
         var ret = new Matrix3x3(1, 5, 6, 7, 9, 1, 4, 2, 3) +
@@ -14,7 +13,7 @@ public class Matrix3x3Test
             ret);
 
     }
-    [Fact]
+    [Test]
     public void Times()
     {
         var ret = new Matrix3x3(
@@ -30,7 +29,7 @@ public class Matrix3x3Test
 
     }
 
-    [Fact]
+    [Test]
     public void Determinant()
     {
         var mat = new Matrix3x3(-2, -1, 2, 2, 1, 4, -3, 3, -1);
@@ -38,13 +37,13 @@ public class Matrix3x3Test
         Assert.True(mat.HasInverse());
     }
 
-    [Fact]
+    [Test]
     public void CannotInvertZeroMatrix()
     {
         Assert.False(new Matrix3x3(new double[9]).HasInverse());
     }
 
-    [Fact]
+    [Test]
     public void MatrixInverse()
     {
         var mat = new Matrix3x3(-2, -1, 2, 2, 1, 4, -3, 3, -1);

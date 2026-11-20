@@ -17,7 +17,6 @@ using Melville.StreamInterfaces.Adapters;
 using Melville.StreamInterfaces.Files;
 using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CmapsTest;
 
@@ -27,7 +26,7 @@ public class CmapGlobalParserTest: IDisposable
 
     private IMultiplexSource? source;
 
-    [Fact]
+    [Test]
     public async Task ParseRootCmapAsync()
     {
         var cmap = await ParseCmapAsync("""
@@ -52,7 +51,7 @@ public class CmapGlobalParserTest: IDisposable
             (await FieldParser.ReadFromAsync<CmapTable>(source).CA()).Tables);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseType1CmapAsync()
     {
         var select = "0000 0001" +
@@ -82,7 +81,7 @@ public class CmapGlobalParserTest: IDisposable
         });
     }
 
-    [Fact]
+    [Test]
     public async Task ParstType10CmapAsync()
     {
         var select = "0000 0001" +
@@ -101,7 +100,7 @@ public class CmapGlobalParserTest: IDisposable
         ]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParstType12CmapAsync()
     {
         var select = "0000 0001" +
@@ -160,7 +159,7 @@ public class CmapGlobalParserTest: IDisposable
         ]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParstType13CmapAsync()
     {
         var select = "0000 0001" +
@@ -219,7 +218,7 @@ public class CmapGlobalParserTest: IDisposable
         ]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseType14CmapAsync()
     {
         using var select = GetPeerFile("CmapFromCambriaFont.dat");

@@ -3,13 +3,12 @@ using FluentAssertions;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Annotations;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S12_5Annotations;
 
 public class AnnotationTest
 {
-    [Fact]
+    [Test]
     public async Task GetSimpleFormAsync()
     {
         var frm = new DictionaryBuilder().AsStream(" dSWa");
@@ -23,7 +22,7 @@ public class AnnotationTest
 
         (await annot.GetVisibleFormAsync() as object).Should().Be(frm);
     }
-    [Fact]
+    [Test]
     public async Task GetFormWithAppearanceStateAsync()
     {
         var frm = new DictionaryBuilder().AsStream(" dSWa");
@@ -39,7 +38,7 @@ public class AnnotationTest
 
         (await annot.GetVisibleFormAsync() as object).Should().Be(frm);
     }
-    [Fact]
+    [Test]
     public async Task SkipIfNoAppearanceAsync()
     {
         var annot = new Annotation(new DictionaryBuilder()

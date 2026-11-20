@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
@@ -34,7 +33,7 @@ public class S7_5_6IncrementalUpdates
         return await pdfLowLevelReader.ReadFromAsync(source);
     }
         
-    [Fact]
+    [Test]
     public async Task ParseModificationAsync()
     {
         using var ld2 = await CompositeDocumentAsync(creator =>

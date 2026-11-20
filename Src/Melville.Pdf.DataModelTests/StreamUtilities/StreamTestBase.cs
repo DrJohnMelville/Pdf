@@ -14,7 +14,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
@@ -50,15 +49,15 @@ public abstract partial class StreamTestBase
             .AsStream(dest.AsExtendedAsciiBytes(),
                 StreamFormat.DiskRepresentation);
 
-    [Fact]
+    [Test]
     public Task EncodingTestAsync() => VerifyEncodingAsync(StreamWithPlainTextBacking());
 
-    [Fact]
+    [Test]
     public async Task DecodeTestAsync()
     {
         await VerifyDecodedStreamAsync(await StreamWithEncodedBacking().StreamContentAsync());
     }
-    [Fact]
+    [Test]
     public async Task DecodeWhenGettingOneCharAtATimeAsync()
     {
         var src = new OneCharAtATimeStream(dest.AsExtendedAsciiBytes());
@@ -94,7 +93,7 @@ public abstract partial class StreamTestBase
             ? "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"/{i.Key} {i.Value}")) + ">>"
             : "";
 
-    [Fact]
+    [Test]
     public async Task VerifyDisposal1Async()
     { 
         var (streamMock, innerStream) = await DisposeStreamRigAsync();
@@ -129,7 +128,7 @@ public abstract partial class StreamTestBase
         return strSourceMock;
     }
 
-    [Fact]
+    [Test]
     public async Task VerifyDisposalAsync()
     {
         var (streamMock, innerStream) = await DisposeStreamRigAsync();
@@ -150,7 +149,7 @@ public abstract partial class StreamTestBase
             StreamFormat.DiskRepresentation);
 
 
-    [Fact]
+    [Test]
     public async Task RoundTripStreamAsync()
     {
         PdfStream pdfStream = await StreamWithEncodedBackEndAsync();

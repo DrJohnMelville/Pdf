@@ -2,13 +2,12 @@
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S14_6MarkedContent;
 
 public class MarkedContentWriterTest: WriterTest
 {
-    [Fact]
+    [Test]
     public async Task MarkedContentPointTestAsync()
     {
         sut.MarkedContentPoint("M1");
@@ -16,7 +15,7 @@ public class MarkedContentWriterTest: WriterTest
         
     }
 
-    [Fact]
+    [Test]
     public async Task MarkedPointWithPropertyNameAsync()
     {
         await sut.MarkedContentPointAsync("M1", "M2");
@@ -24,7 +23,7 @@ public class MarkedContentWriterTest: WriterTest
         
     }
 
-    [Fact]
+    [Test]
     public async Task MarkedPointWithInlineDictionaryAsync()
     {
         await sut.MarkedContentPointAsync("M1", new DictionaryBuilder()
@@ -34,7 +33,7 @@ public class MarkedContentWriterTest: WriterTest
         
     }
 
-    [Fact]
+    [Test]
     public async Task NamedMarkRangeAsync()
     {
         using (sut.BeginMarkedRange("M2"))
@@ -44,7 +43,7 @@ public class MarkedContentWriterTest: WriterTest
         Assert.Equal("/M2 BMC\n/M1 MP\nEMC\n", await WrittenTextAsync());
     }
  
-    [Fact]
+    [Test]
     public async Task NamedMarkRangeWithDictNameAsync()
     {
         using (await sut.BeginMarkedRangeAsync("M2", KnownNames.All))
@@ -54,7 +53,7 @@ public class MarkedContentWriterTest: WriterTest
         Assert.Equal("/M2 /All BDC\n/M1 MP\nEMC\n", await WrittenTextAsync());
     }
     
-    [Fact]
+    [Test]
     public async Task NamedMarkRangeWithInlineDictAsync()
     {
         using (await sut.BeginMarkedRangeAsync("M2", new DictionaryBuilder()

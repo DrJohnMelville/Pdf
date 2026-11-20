@@ -1,6 +1,5 @@
 ﻿using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.InterpreterState;
 
@@ -8,7 +7,7 @@ public class DictionaryStackTest
 {
     private readonly DictionaryStack item = new();
 
-    [Fact]
+    [Test]
     public void OneLevelLookup()
     {
         item.Push(PostscriptValueFactory.CreateLongDictionary(
@@ -19,7 +18,7 @@ public class DictionaryStackTest
         Assert.Equal(2, result.Get<int>());
         item.TryGet("/Key3", out var _);
     }
-    [Fact]
+    [Test]
     public void TwoLevelLookup()
     {
         item.Push(PostscriptValueFactory.CreateLongDictionary(

@@ -9,7 +9,6 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
@@ -23,10 +22,10 @@ public class S7_10_2SampledFunctions
         return await builder.CreateSampledFunctionAsync(new DictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
     }
 
-    [Theory]
-    [InlineData(1, 3)]
-    [InlineData(0, 10)]
-    [InlineData(0.5, 6.5)]
+    [Test]
+    [Arguments(1, 3)]
+    [Arguments(0, 10)]
+    [Arguments(0.5, 6.5)]
     public async Task SampledFunctionDecodeAsync(double input, double output)
     {
         var funcDict = new DictionaryBuilder()
@@ -42,7 +41,7 @@ public class S7_10_2SampledFunctions
 
     }
 
-    [Fact]
+    [Test]
     public async Task CreateFullySpecifiedFunctionAsync()
     {
         var str = await ComplexSampledFunctionAsync();
@@ -59,15 +58,15 @@ public class S7_10_2SampledFunctions
             streamToRead.AsReaderInefficient());
     }
 
-    [Theory]
-    [InlineData(-200, 5)]
-    [InlineData(0.9, 5)]
-    [InlineData(1, 5)]
-    [InlineData(3, 15)]
-    [InlineData(10, 50)]
-    [InlineData(2.5, 12.5)]
-    [InlineData(10.1, 50)]
-    [InlineData(10000, 50)]
+    [Test]
+    [Arguments(-200, 5)]
+    [Arguments(0.9, 5)]
+    [Arguments(1, 5)]
+    [Arguments(3, 15)]
+    [Arguments(10, 50)]
+    [Arguments(2.5, 12.5)]
+    [Arguments(10.1, 50)]
+    [Arguments(10000, 50)]
     public async Task EvaluateFullySpecifiedFunctionAsync(double input, double output)
     {
         var str = await ComplexSampledFunctionAsync();
@@ -75,10 +74,10 @@ public class S7_10_2SampledFunctions
         Assert.Equal(output, func.ComputeSingleResult(input));
     }
 
-    [Theory]
-    [InlineData(1,2)]
-    [InlineData(1.24,3.14)]
-    [InlineData(9,9)]
+    [Test]
+    [Arguments(1,2)]
+    [Arguments(1.24,3.14)]
+    [Arguments(9,9)]
     public async Task TwoDimensionalTwoOutputFunctionAsync(double inputA, double inputB)
     {
         var builder = new SampledFunctionBuilder(8);
@@ -93,10 +92,10 @@ public class S7_10_2SampledFunctions
         Assert.Equal(3*inputA + 4 * inputB, result[1]);
     }        
 
-    [Theory]
-    [InlineData(1,2)]
-    [InlineData(1.24,3.14)]
-    [InlineData(9,9)]
+    [Test]
+    [Arguments(1,2)]
+    [Arguments(1.24,3.14)]
+    [Arguments(9,9)]
     public async Task TwoDimensionalTwoOutputFunctionWithMultiByteSamplesAsync(double inputA, double inputB)
     {
         var builder = new SampledFunctionBuilder(24);
@@ -111,11 +110,11 @@ public class S7_10_2SampledFunctions
         Assert.Equal(3*inputA + 4 * inputB, result[1]);
     }        
         
-    [Theory]
-    [InlineData(1, 1)]
-    [InlineData(2, 4)]
-    [InlineData(5.25, 27.75)]
-    [InlineData(9, 81)]
+    [Test]
+    [Arguments(1, 1)]
+    [Arguments(2, 4)]
+    [Arguments(5.25, 27.75)]
+    [Arguments(9, 81)]
     public async Task CubicInterpolationAsync(double inputA, double output)
     {
         var builder = new SampledFunctionBuilder(8);
@@ -129,7 +128,7 @@ public class S7_10_2SampledFunctions
         
 
 
-    [Fact]
+    [Test]
     public async Task DoNotStateUnneededOptionalArgumentsAsync()
     {
         var builder = new SampledFunctionBuilder(8);

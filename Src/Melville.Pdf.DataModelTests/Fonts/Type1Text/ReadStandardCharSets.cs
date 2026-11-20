@@ -8,13 +8,12 @@ using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
 public class ReadStandardCharSets
 {
-    [Fact]
+    [Test]
     public async Task IsoAdobeCharsetIncompleteAsync()
     {
         var sut = FontWithCharsetOffset(0, 5);
@@ -28,7 +27,7 @@ public class ReadStandardCharSets
             numbersign
             """));
     }
-    [Fact]
+    [Test]
     public async Task IsoAdobeCharsetAsync()
     {
         var sut = FontWithCharsetOffset(0, 229);
@@ -277,7 +276,7 @@ public class ReadStandardCharSets
             new TopDictData(multiplexSource, 0,0,0,offset, 0,0), CidToGlyphMappingStyle.Cff);
     }
 
-    [Fact]
+    [Test]
     public async Task ExpertCharsetAsync()
     {
 
@@ -452,7 +451,7 @@ public class ReadStandardCharSets
             Ydieresissmall
             """));
     }
-    [Fact]
+    [Test]
     public async Task ExpertSubsetCharsetAsync()
     {
         var sut = FontWithCharsetOffset(2, 87);

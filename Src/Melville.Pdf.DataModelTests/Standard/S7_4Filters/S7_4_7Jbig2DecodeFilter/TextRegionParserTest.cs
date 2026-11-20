@@ -8,7 +8,6 @@ using Melville.JBig2.Segments;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -49,10 +48,10 @@ B....BB....B
         };
     }
 
-    [Theory]
-    [InlineData("00000025 00000008 00000004 00000001 00 0C09 0010 00000005 01100000000000000000000000000000000C" +
+    [Test]
+    [Arguments("00000025 00000008 00000004 00000001 00 0C09 0010 00000005 01100000000000000000000000000000000C" +
                 "4007087041D0")] // huffman coded
-    [InlineData("00000025 00000008 00000004 00000001 00 0C08 0000 00 05 8D 6E 5A 12 40 85 FF AC")]
+    [Arguments("00000025 00000008 00000004 00000001 00 0C08 0000 00 05 8D 6E 5A 12 40 85 FF AC")]
     public void ParseTextSegment(string data)
     {
         var sut = Parse(data.BitsFromHex());
@@ -73,7 +72,7 @@ B....B..B....B..BBBB...B....B..B....B
 ................B....................", "\r\n"+sut.Bitmap.BitmapString());
     }
 
-    [Fact]
+    [Test]
     public void ParseRefinedTextRegion()
     {
         var data = "00 00 00 25 00 00 00 08 00 00 00 00 00 00 00 00 00 8C 12 00 00 00 04 A9 5C 8B F4 C3 7D 96 " +
@@ -104,7 +103,7 @@ B....B..B....B..BBBB...B....B..B....B
 ................B....................", "\r\n"+tr.Bitmap.BitmapString());
     }
 
-    [Fact]
+    [Test]
     public void ParseRegionHeader()
     {
         var data = "00000025 00000008 00000004 00000001 01";
@@ -123,7 +122,7 @@ B....B..B....B..BBBB...B....B..B....B
     private static SpanParsingBuffer ReaderFromBinaryString(string data) =>
         new(data.BitsFromBinary());
 
-    [Fact]
+    [Test]
     public unsafe void ParseSymbolDictionaryTest()
     {
         var data = "50033532530000000000000000000000350F8B309EB85F1DD28300";

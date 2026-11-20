@@ -5,7 +5,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.Metrics;
 using Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.TrueTypeOutlines;
 
@@ -30,8 +29,8 @@ public class TrueTypeGlyphParserTest
         new(glyphSource.Object, hex.BitsFromHex(),
             target.Object, matrix, new HorizontalMetric(514, 17));
 
-    [Theory]
-    [InlineData("0001" + // 1 contour
+    [Test]
+    [Arguments("0001" + // 1 contour
                 "0000 0000 0000 0000" +  // bounding box
                 "0001" + // Second point is the end of a contour
                 "0005 0000000000" + // 5 instructions
@@ -48,7 +47,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(10, 21), true, false, true));
     }
 
-    [Fact]
+    [Test]
     public Task HasInstructionsToSkipOverAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" + 
@@ -59,7 +58,7 @@ public class TrueTypeGlyphParserTest
                        "0014 0001"
     );
 
-    [Fact]
+    [Test]
     public Task UseZeroChangeBitAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" + 
@@ -70,7 +69,7 @@ public class TrueTypeGlyphParserTest
                        "0014 0001" // 2 yvalues
     );
 
-    [Fact]
+    [Test]
     public Task UseShortPositiveVectorsAsync() =>
         DrawGlyphAsync("0001" + 
                        "0000 0000 0000 0000" +  
@@ -81,7 +80,7 @@ public class TrueTypeGlyphParserTest
                        "14 01" // 2 y values
     );
 
-    [Fact]
+    [Test]
     public async Task UseTheMatrixAsync()
     {
         var parser = this.CreateParser("0001" + 
@@ -96,7 +95,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(30, 40), true, true, false));
         target.Verify(i=>i.AddPoint(new Vector2(30, 42), true, false, true));
     }
-    [Fact]
+    [Test]
     public async Task NegativeShortVectorsAsync()
     {
         var parser = this.CreateParser("0001" + 
@@ -113,7 +112,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(8, 19), true, false, true));
     }
 
-    [Fact]
+    [Test]
     public async Task PhantomPointsAsync()
     {
         var parser = this.CreateParser("0001" + 
@@ -135,7 +134,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0x0A)));
     }
 
-    [Fact]
+    [Test]
     public async Task RepeatAFlagAsync()
     {
         var parser = this.CreateParser("0001" +
@@ -154,7 +153,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
     
-    [Fact]
+    [Test]
     public async Task TwoContoursAsync()
     {
         var parser = this.CreateParser("0002" + // 2 contour
@@ -173,7 +172,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
 
-    [Fact]
+    [Test]
     public async Task FirstPointNotOnCurveAsync()
     {
         var parser = this.CreateParser("0002" + // 2 contour
@@ -192,7 +191,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(10, 29), true, false, true));
     }
 
-    [Fact]
+    [Test]
     public async Task SimpleCompositeParseAsync()
     {
         var parser = this.CreateParser("FFFF" + // -1 countours = compositeGlyph
@@ -212,7 +211,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0)), Times.Exactly(2));
     }
 
-    [Fact]
+    [Test]
     public async Task CompositeWithWordOffsetsAsync()
     {
         var parser = this.CreateParser("FFFF" + 
@@ -231,7 +230,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPhantomPoint(new Vector2(497,0)));
         target.Verify(i=>i.AddPhantomPoint(new Vector2(0,0)), Times.Exactly(2));
     }
-    [Fact]
+    [Test]
     public async Task InnerGlyphGetsDrawnAsync()
     {
         var parser = CreateParser("FFFF" + 
@@ -243,10 +242,10 @@ public class TrueTypeGlyphParserTest
 
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false));
     }
-    [Theory]
-    [InlineData("10")]
-    [InlineData("00")]
-    [InlineData("18")]
+    [Test]
+    [Arguments("10")]
+    [Arguments("00")]
+    [Arguments("18")]
     public async Task SimpleScaleWithParentOffdetAsync(string scaleOffsetBytes)
     {
         var parser = this.CreateParser("FFFF" + 
@@ -261,7 +260,7 @@ public class TrueTypeGlyphParserTest
             Matrix3x2.CreateScale(-2)*Matrix3x2.CreateTranslation(5,-1)));
 
     }
-    [Fact]
+    [Test]
     public async Task SimpleScaleWithGlyphOffdetAsync()
     {
         var parser = this.CreateParser("FFFF" + 
@@ -276,7 +275,7 @@ public class TrueTypeGlyphParserTest
             Matrix3x2.CreateTranslation(5,-1)*Matrix3x2.CreateScale(-2)));
 
     }
-    [Fact]
+    [Test]
     public async Task XYScaleAsync()
     {
         var parser = this.CreateParser("FFFF" + 
@@ -292,7 +291,7 @@ public class TrueTypeGlyphParserTest
             Matrix3x2.CreateScale(-2, 1.75f)));
 
     }
-    [Fact]
+    [Test]
     public async Task TwoByTwoScaleAsync()
     {
         var parser = this.CreateParser("FFFF" + 
@@ -308,7 +307,7 @@ public class TrueTypeGlyphParserTest
             new Matrix3x2(-2, 1.75f, 0, -2, 0, 0)));
 
     }
-    [Fact]
+    [Test]
     public async Task Render2GlyphsAsync()
     {
         var parser = CreateParser("FFFF" + 
@@ -322,7 +321,7 @@ public class TrueTypeGlyphParserTest
 
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
     }
-    [Fact]
+    [Test]
     public async Task SkipSomeInstructionsAsync()
     {
         var parser = CreateParser("FFFF" + 
@@ -338,7 +337,7 @@ public class TrueTypeGlyphParserTest
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
     }
 
-    [Fact]
+    [Test]
     public async Task Render2PointAlignedGlyphsAsync()
     {
         var parser = CreateParser("FFFF" + 
@@ -352,7 +351,7 @@ public class TrueTypeGlyphParserTest
 
         target.Verify(i=>i.AddPoint(new Vector2(4,4), true, true, false), Times.Exactly(2));
     }
-    [Fact]
+    [Test]
     public async Task Render2PointAlignedGlyphsLongFormAsync()
     {
         var parser = CreateParser("FFFF" + 

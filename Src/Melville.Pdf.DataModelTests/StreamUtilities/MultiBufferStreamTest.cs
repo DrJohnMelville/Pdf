@@ -5,7 +5,6 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
@@ -22,7 +21,7 @@ public class MultiBufferStreamTest
         return ret;
     }
 
-    [Fact]
+    [Test]
     public void AllowedOperations()
     {
         using var source = CreateEmptyStream(1);
@@ -40,7 +39,7 @@ public class MultiBufferStreamTest
         Assert.Throws<NotSupportedException>(() => reader.Write(new byte[1], 0, 1));
     }
 
-    [Fact]
+    [Test]
     public void ReadSingleBuffer()
     {
         using var sut = CreateStream("ABCDE");
@@ -51,11 +50,11 @@ public class MultiBufferStreamTest
     }
 
 
-    [Theory]
-    [InlineData((int)'A', 0)]
-    [InlineData((int)'C', 2)]
-    [InlineData((int)'E', 4)]
-    [InlineData(-1, 5)]
+    [Test]
+    [Arguments((int)'A', 0)]
+    [Arguments((int)'C', 2)]
+    [Arguments((int)'E', 4)]
+    [Arguments(-1, 5)]
     public void ReadByte(int value, long position)
     {
         using var sut = CreateStream("ABCDE");
@@ -63,11 +62,11 @@ public class MultiBufferStreamTest
         reader.Seek(position, SeekOrigin.Begin);
         Assert.Equal(value, reader.ReadByte());
     }
-    [Theory]
-    [InlineData(0)]
-    [InlineData(2)]
-    [InlineData(4)]
-    [InlineData(5)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(2)]
+    [Arguments(4)]
+    [Arguments(5)]
     public void WriteByte(long position)
     {
         using var sut = CreateEmptyStream(10);
@@ -77,13 +76,13 @@ public class MultiBufferStreamTest
         using var reader = sut.ReadFrom(position);
         Assert.Equal('Z', reader.ReadByte());
     }
-    [Fact]
+    [Test]
     public void SimpleStreamLength()
     {
         using var sut = CreateStream("ABCDE");
         Assert.Equal(5, sut.Length);
     }
-    [Fact]
+    [Test]
     public void ReadInTwoParts()
     {
         using var sut = CreateStream("ABCDE");
@@ -95,10 +94,10 @@ public class MultiBufferStreamTest
         Assert.Equal(2, reader.Read(ret2));
         Assert.Equal("DE", ExtendedAsciiEncoding.ExtendedAsciiString(ret2));
     }
-    [Theory]
-    [InlineData(3, SeekOrigin.Begin)]
-    [InlineData(1, SeekOrigin.Current)]
-    [InlineData(-2, SeekOrigin.End)]
+    [Test]
+    [Arguments(3, SeekOrigin.Begin)]
+    [Arguments(1, SeekOrigin.Current)]
+    [Arguments(-2, SeekOrigin.End)]
     public void SeekTest(int location, SeekOrigin seekOrigin)
     {
         using var sut = CreateStream("ABCDE");
@@ -110,16 +109,16 @@ public class MultiBufferStreamTest
         Assert.Equal("DE", ExtendedAsciiEncoding.ExtendedAsciiString(ret2));
     }
 
-    [Theory]
-    [InlineData(-5, false)]
-    [InlineData(-1, false)]
-    [InlineData(0, true)]
-    [InlineData(1, true)]
-    [InlineData(3, true)]
-    [InlineData(5, true)]
-    [InlineData(6, false)]
-    [InlineData(7, false)]
-    [InlineData(17, false)]
+    [Test]
+    [Arguments(-5, false)]
+    [Arguments(-1, false)]
+    [Arguments(0, true)]
+    [Arguments(1, true)]
+    [Arguments(3, true)]
+    [Arguments(5, true)]
+    [Arguments(6, false)]
+    [Arguments(7, false)]
+    [Arguments(17, false)]
     public void ValidAndInvalidSeekTest(int location, bool valid)
     {
         using var sut = MultiplexSourceFactory.Create("ABCDE");
@@ -136,26 +135,26 @@ public class MultiBufferStreamTest
 
         
 
-    [Fact]
+    [Test]
     public async Task ReadAsyncFromByteArrayAsync()
     {
         using var sut = CreateStream("ABCDE");
         var ret = new byte[5];
         using var reader = sut.ReadFrom(0);
-        Assert.Equal(5, await reader.ReadAsync(ret, 0, 5, TestContext.Current.CancellationToken));
+        Assert.Equal(5, await reader.ReadAsync(ret, 0, 5));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
     }
-    [Fact]
+    [Test]
     public async Task ReadAsyncFromMemoryAsync()
     {
         using var sut = CreateStream("ABCDE");
         using var reader = sut.ReadFrom(0);
 
         var ret = new byte[5];
-        Assert.Equal(5, await reader.ReadAsync(ret.AsMemory(), TestContext.Current.CancellationToken));
+        Assert.Equal(5, await reader.ReadAsync(ret.AsMemory()));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
     }
-    [Fact]
+    [Test]
     public void ReadUpdatesPosition()
     {
         using var sut = CreateStream("ABCDE");
@@ -165,7 +164,7 @@ public class MultiBufferStreamTest
         Assert.Equal(5, reader.Read(ret, 0, 5));
         Assert.Equal(5, reader.Position);
     }
-    [Fact]
+    [Test]
     public void WriteAndReadSingleBuffer()
     {
         using var sut = CreateEmptyStream(10);
@@ -178,21 +177,21 @@ public class MultiBufferStreamTest
         Assert.Equal(5, readFrom.Read(ret, 0, 10));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
     }
-    [Fact]
+    [Test]
     public async Task WriteAndReadSingleBufferAsync()
     {
         using var sut = CreateEmptyStream(10);
         using var writer = sut.WritingStream();
         Assert.Equal(0, sut.Length);
-        await writer.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5, TestContext.Current.CancellationToken);
+        await writer.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5);
         Assert.Equal(5, sut.Length);
         var ret = new byte[10];
         using var readFrom = sut.ReadFrom(0);
-        Assert.Equal(5, await readFrom.ReadAsync(ret, 0, 10, TestContext.Current.CancellationToken));
+        Assert.Equal(5, await readFrom.ReadAsync(ret, 0, 10));
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
     }
         
-    [Fact]
+    [Test]
     public void WriteIntoMultipleBuffers()
     {
         using var sut = CreateEmptyStream(3);

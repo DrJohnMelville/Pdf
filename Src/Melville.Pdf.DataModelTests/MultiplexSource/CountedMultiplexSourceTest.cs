@@ -8,7 +8,6 @@ using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.MultiplexSource;
 
@@ -67,7 +66,7 @@ public class CountedMultiplexSourceTest
 {
     private readonly ConcreteCountedMultiplexSource sut = new();
     
-    [Fact]
+    [Test]
     public void CleanupOnDisposeWhenUnused()
     {
         sut.CleanUps.Should().Be(0);
@@ -75,7 +74,7 @@ public class CountedMultiplexSourceTest
         sut.CleanUps.Should().Be(1);
     }
 
-    [Fact]
+    [Test]
     public void DisposeIsIdempotend()
     {
         sut.CleanUps.Should().Be(0);
@@ -84,7 +83,7 @@ public class CountedMultiplexSourceTest
         sut.CleanUps.Should().Be(1);
     }
 
-    [Fact]
+    [Test]
     public void ReadingStreamKeepsSourceOpen()
     {
         var stream = sut.ReadFrom(0);

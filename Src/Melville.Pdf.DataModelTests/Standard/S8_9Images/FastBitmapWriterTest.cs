@@ -7,13 +7,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
 public class FastBitmapWriterTest
 {
-    [Fact]
+    [Test]
     public void SingleKernelTransform()
     {
         var source = new byte[] {
@@ -37,7 +36,7 @@ public class FastBitmapWriterTest
         ]);
     }
 
-    [Fact]
+    [Test]
     public void TwoKernelTransform()
     {
         var source = new byte[] {

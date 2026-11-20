@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using Melville.Pdf.TextExtractor;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.TextExtractor;
 
@@ -8,13 +7,13 @@ public class TextTargetTest
 {
     private readonly ConcatenatingTextTarget sut = new();
 
-    [Fact]
+    [Test]
     public void WriteSingleCharacter()
     {
         sut.WriteCharacter('Z', default);
         Assert.Equal("Z", sut.AllText());
     }
-    [Fact]
+    [Test]
     public void WriteTwoCharacters()
     {
         sut.WriteCharacter('Z', default);
@@ -22,7 +21,7 @@ public class TextTargetTest
         Assert.Equal("ZX", sut.AllText());
     }
 
-    [Fact]
+    [Test]
     public void WriteTwoDifferentLocations()
     {
         sut.WriteCharacter('Z', default);
@@ -30,7 +29,7 @@ public class TextTargetTest
         sut.WriteCharacter('X', Matrix3x2.CreateTranslation(0, 15));
         Assert.Equal("Z\r\nX", sut.AllText());
     }
-    [Fact]
+    [Test]
     public void WriteTwoContiguiousLocations()
     {
         sut.WriteCharacter('Z', default);

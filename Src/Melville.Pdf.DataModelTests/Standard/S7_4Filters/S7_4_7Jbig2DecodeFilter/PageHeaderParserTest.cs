@@ -4,7 +4,6 @@ using Melville.JBig2.SegmentParsers;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -18,7 +17,7 @@ public class PageHeaderParserTest
         return PageInformationSegmentParser.Parse(ref reader);
     }
 
-    [Fact]
+    [Test]
     public void FirstPageSegmentFromSample()
     {
         var sut = Parse("00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 01 00 00");
@@ -38,11 +37,11 @@ public class PageHeaderParserTest
     }
 
 
-    [Theory]
-    [InlineData(CombinationOperator.Or)]
-    [InlineData(CombinationOperator.And)]
-    [InlineData(CombinationOperator.Xor)]
-    [InlineData(CombinationOperator.Xnor)]
+    [Test]
+    [Arguments(CombinationOperator.Or)]
+    [Arguments(CombinationOperator.And)]
+    [Arguments(CombinationOperator.Xor)]
+    [Arguments(CombinationOperator.Xnor)]
     public void CombOperator(object op)
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
@@ -53,11 +52,11 @@ public class PageHeaderParserTest
         sut = Parse(data);
         Assert.Equal((CombinationOperator)op, sut.Flags.DefaultOperator);
     }
-/*    [Theory]
-    [InlineData(PageInformationFlags.Lossless)]
-    [InlineData(PageInformationFlags.HasRefinements)]
-    [InlineData(PageInformationFlags.AuxiliaryBuffers)]
-    [InlineData(PageInformationFlags.OverrideCombinator)]
+/*    [Test]
+    [Arguments(PageInformationFlags.Lossless)]
+    [Arguments(PageInformationFlags.HasRefinements)]
+    [Arguments(PageInformationFlags.AuxiliaryBuffers)]
+    [Arguments(PageInformationFlags.OverrideCombinator)]
     public void PageInformationFlagsTest(PageInformationFlags item)
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
@@ -78,14 +77,14 @@ public class PageHeaderParserTest
         Assert.True(selector(sut.Flags));
     }
 
-    [Fact] public void LosslessBit() => RunFlagTest(0x1, i => i.Lossless);
-    [Fact] public void RefinementBit() => RunFlagTest(0x2, i => i.HasRefinements);
-    [Fact] public void DefaultValueBit() => RunFlagTest(0x4, i => i.DefaultValue);
-    [Fact] public void AuxBufferBit() => RunFlagTest(0x20, i => i.AuxiliaryBuffers);
-    [Fact] public void OverrideCombinatorBit() => RunFlagTest(0x40, i => i.OverrideCombinator);
+    [Test] public void LosslessBit() => RunFlagTest(0x1, i => i.Lossless);
+    [Test] public void RefinementBit() => RunFlagTest(0x2, i => i.HasRefinements);
+    [Test] public void DefaultValueBit() => RunFlagTest(0x4, i => i.DefaultValue);
+    [Test] public void AuxBufferBit() => RunFlagTest(0x20, i => i.AuxiliaryBuffers);
+    [Test] public void OverrideCombinatorBit() => RunFlagTest(0x40, i => i.OverrideCombinator);
 
 
-    [Fact]
+    [Test]
     public void StripingOp()
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 81 23".BitsFromHex();
@@ -94,7 +93,7 @@ public class PageHeaderParserTest
         Assert.Equal(0x123, sut.Striping.StripeSize);
         
     }
-    [Fact]
+    [Test]
     public void Resolution()
     {
         var data = "00000040 00000038 01234567 07654321 00 8123".BitsFromHex();

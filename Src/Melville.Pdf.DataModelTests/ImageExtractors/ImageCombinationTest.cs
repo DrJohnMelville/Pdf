@@ -4,13 +4,12 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.ImageExtractor.ImageCollapsing;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors;
 
 public class ImageCombinationTest
 {
-    [Fact]
+    [Test]
     public Task TestBitmapFunctionAsync()
     {
         var bitmap = new TestBitmap(2, 3, 7, 8, 9, 10, 20);
@@ -25,7 +24,7 @@ public class ImageCombinationTest
         return bitmap.VerifyUniformAsync(2, 3, 20, 21, 22, 23, 24, 25).AsTask();
     }
 
-    [Fact]
+    [Test]
     public Task StitchVerticalAsync()
     {
         var source = new List<IExtractedBitmap>()
@@ -45,7 +44,7 @@ public class ImageCombinationTest
             ).AsTask();
 
     }
-    [Fact]
+    [Test]
     public Task StitchVertical3Async()
     {
         var source = new List<IExtractedBitmap>()
@@ -67,7 +66,7 @@ public class ImageCombinationTest
             70, 71
             ).AsTask();
     }
-    [Fact]
+    [Test]
     public Task StitchVerticalInvertedOrderAsync()
     {
         var source = new List<IExtractedBitmap>()
@@ -89,7 +88,7 @@ public class ImageCombinationTest
             70, 71
         ).AsTask();
     }
-    [Fact]
+    [Test]
     public void DoNotStitchDifferentPixelWidth()
     {
         var source = new List<IExtractedBitmap>()
@@ -100,7 +99,7 @@ public class ImageCombinationTest
         source.CollapseAdjacentImages();
         Assert.Equal(2, source.Count);
     }
-    [Fact]
+    [Test]
     public void DoNotStitchGreaterThan1Apart()
     {
         var source = new List<IExtractedBitmap>()
@@ -112,7 +111,7 @@ public class ImageCombinationTest
         Assert.Equal(2, source.Count);
     }
 
-    [Fact]
+    [Test]
     public Task StitchHorizontalAsync()
     {
         var source = new List<IExtractedBitmap>()

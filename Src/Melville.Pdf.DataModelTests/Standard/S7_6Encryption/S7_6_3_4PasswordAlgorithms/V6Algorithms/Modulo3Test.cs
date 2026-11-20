@@ -1,21 +1,20 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;
 
 public class Modulo3Test
 {
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(int.MaxValue)]
-    [InlineData(int.MaxValue-1)]
-    [InlineData(int.MaxValue-2)]
-    [InlineData(int.MaxValue-3)]
-    [InlineData(int.MaxValue/2)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(1)]
+    [Arguments(2)]
+    [Arguments(3)]
+    [Arguments(int.MaxValue)]
+    [Arguments(int.MaxValue-1)]
+    [Arguments(int.MaxValue-2)]
+    [Arguments(int.MaxValue-3)]
+    [Arguments(int.MaxValue/2)]
     public void Modulo3(int value)
     {
         var answer = value % 3;

@@ -16,21 +16,20 @@ using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
 public class HexDecodeStreamTests
 {
-    [Theory]
-    [InlineData("1234567890ABCDEF")]
-    [InlineData("1234567890\r\nABCDEF")]
-    [InlineData("1gk234567890\r\nABCDEF")]
+    [Test]
+    [Arguments("1234567890ABCDEF")]
+    [Arguments("1234567890\r\nABCDEF")]
+    [Arguments("1gk234567890\r\nABCDEF")]
     public async Task DecodeHexReaderAsync(string input)
     {
         using var source = new FilteredReader(new MemoryReader(Encoding.ASCII.GetBytes(input)), AsciiHexDecoder.Instance);
         var target = new MemoryStream();
-        await ((IAsyncReader)source).CopyToAsync(target.AsStreamWriter(), TestContext.Current.CancellationToken);
+        await ((IAsyncReader)source).CopyToAsync(target.AsStreamWriter());
         target.ToArray().Should().BeEquivalentTo("1234567890ABCDEF".BitsFromHex());
     }
 }
@@ -38,7 +37,7 @@ public class HexDecodeStreamTests
 public class DecryptText
 {
 
-    [Fact]
+    [Test]
     public async Task DecryptEexecAsync()
     {
         var reader = new DecodingReader(new MemoryReader("""
@@ -46,8 +45,8 @@ public class DecryptText
             81697F8E12B7F7DDD6E3D7248D965B1CD45E2114
             """.BitsFromHex()), 4330);
         var result = new byte[37];
-        await reader.ReadExactAsync(result.AsMemory(0, 4), TestContext.Current.CancellationToken);
-        await reader.ReadExactAsync(result, TestContext.Current.CancellationToken);
+        await reader.ReadExactAsync(result.AsMemory(0, 4));
+        await reader.ReadExactAsync(result);
         result.Should().BeEquivalentTo("""
             BDF9B40D8BEF038BEF01F8ECEF018B16F9
             5006EF07FCEC06F88807F8EC06EF07FD5006090E 

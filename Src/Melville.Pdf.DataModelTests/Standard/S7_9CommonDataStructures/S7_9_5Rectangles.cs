@@ -4,13 +4,12 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures;
 
 public class S7_9_5Rectangles
 {
-    [Fact]
+    [Test]
     public async Task SimpleRectangleAsync()
     {
         var rect = await PdfRect.CreateAsync(new PdfArray(
@@ -21,7 +20,7 @@ public class S7_9_5Rectangles
         Assert.Equal(4, rect.Top);
     }
 
-    [Fact]
+    [Test]
     public void BoundedTransformTest()
     {
         var rect = new PdfRect(0, 0, 3, 4);
@@ -35,8 +34,8 @@ public class S7_9_5Rectangles
         final.Top.Should().BeApproximately(5, 0.1);
     }
 
-    [Theory]
-    [InlineData(0,0,1,1, 10,20,30,40)]
+    [Test]
+    [Arguments(0,0,1,1, 10,20,30,40)]
     public void TransformToTest(
         double x1, double y1, double x2, double y2,
         double x3, double y3, double x4, double y4)

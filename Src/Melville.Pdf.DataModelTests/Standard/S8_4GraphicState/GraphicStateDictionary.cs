@@ -10,7 +10,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
@@ -20,35 +19,35 @@ public class TestGraphicsState() :UncoloredGraphicsState
 public class GraphicStateDictionary
 {
 
-    [Fact]
+    [Test]
     public async Task SetLineWidthWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LW, 10);
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(10.0, gs.StronglyTypedCurrentState().LineWidth);
     }
-    [Fact]
+    [Test]
     public async Task SetMiterLimitWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.ML, 20);
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(20.0, gs.StronglyTypedCurrentState().MiterLimit);
     }
-    [Fact]
+    [Test]
     public async Task SetFlatnessWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.FL, 20);
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(20.0, gs.StronglyTypedCurrentState().FlatnessTolerance);
     }
-    [Fact]
+    [Test]
     public async Task SetLineCapsWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LC, (int)LineCap.Round);
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(LineCap.Round, gs.StronglyTypedCurrentState().LineCap);
     }
-    [Fact]
+    [Test]
     public async Task SetLineJoinWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LJ, 
@@ -56,7 +55,7 @@ public class GraphicStateDictionary
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(LineJoinStyle.Round, gs.StronglyTypedCurrentState().LineJoinStyle);
     }
-    [Fact]
+    [Test]
     public async Task SetRenderIntentWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.RI, 
@@ -64,7 +63,7 @@ public class GraphicStateDictionary
         var gs = await ComputeFinalGraphicsStackAsync(page);
         Assert.Equal(RenderIntentName.Perceptual, gs.StronglyTypedCurrentState().RenderIntent);
     }
-    [Fact]
+    [Test]
     public async Task SetDashStyleWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.D, 

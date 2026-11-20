@@ -1,21 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_2FileHeader
 {
-    [Theory]
-    [InlineData( 1, 0)]
-    [InlineData( 1, 1)]
-    [InlineData( 1, 2)]
-    [InlineData( 1, 3)]
-    [InlineData( 1, 4)]
-    [InlineData( 1, 5)]
-    [InlineData( 1, 6)]
-    [InlineData( 1, 7)]
+    [Test]
+    [Arguments( 1, 0)]
+    [Arguments( 1, 1)]
+    [Arguments( 1, 2)]
+    [Arguments( 1, 3)]
+    [Arguments( 1, 4)]
+    [Arguments( 1, 5)]
+    [Arguments( 1, 6)]
+    [Arguments( 1, 7)]
     public async Task RecognizeFileVersionAsync(int major, int minor)
     {
         using var doc = await (await MinimalPdfParser.MinimalPdf((byte)major, (byte)minor)
@@ -25,7 +24,7 @@ public class S7_5_2FileHeader
             
     }
 
-    [Fact]
+    [Test]
     public async Task ParseWithLeadingWhiteSpaceAsync()
     {
         var docString = "   \r\n" + (await MinimalPdfParser.MinimalPdf()

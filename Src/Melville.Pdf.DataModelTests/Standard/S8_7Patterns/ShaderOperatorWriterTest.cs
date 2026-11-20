@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_7Patterns;
 
 public class ShaderOperatorWriterTest : WriterTest
 {
-    [Fact]
+    [Test]
     public async Task SetColorSpaceAsync()
     {
         await sut.PaintShaderAsync("JdmColor");

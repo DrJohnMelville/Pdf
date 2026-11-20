@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer;
 
@@ -52,10 +51,10 @@ public class FileWriterTest
         return target.Result();
     }
 
-    [Theory]
-    [InlineData(1,7)]
-    [InlineData(2,7)]
-    [InlineData(1,6)]
+    [Test]
+    [Arguments(1,7)]
+    [Arguments(2,7)]
+    [Arguments(1,6)]
     public async Task WriteFileHeaderTestAsync(byte majorVersion, byte minorVersion)
     {
         string output = await OutputSimpleDocumentAsync(majorVersion, minorVersion);
@@ -63,9 +62,9 @@ public class FileWriterTest
             $"%PDF-{majorVersion}.{minorVersion}\r\n%ÿÿÿÿ Created with Melville.Pdf", output);
     }
 
-    [Theory]
-    [InlineData(10,7)]
-    [InlineData(1,60)]
+    [Test]
+    [Arguments(10,7)]
+    [Arguments(1,60)]
     public Task ThrowWhenWritingInvalidVersionNumberAsync(byte majorVersion, byte minorVersion)
     {
         var builder = new LowLevelDocumentBuilder();
@@ -76,38 +75,38 @@ public class FileWriterTest
             
     }
 
-    [Theory]
-    [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj")]
-    [InlineData("endobj\nxref\n0 2\n0000000000 00000 f\r\n0000000042 00000 n\r\n")]
-    [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 2>>\nstartxref\n75\n%%EOF")]
+    [Test]
+    [Arguments("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj")]
+    [Arguments("endobj\nxref\n0 2\n0000000000 00000 f\r\n0000000042 00000 n\r\n")]
+    [Arguments("n\r\ntrailer\n<</Root 1 0 R/Size 2>>\nstartxref\n75\n%%EOF")]
     public async Task SimpleDocumentContentsAsync(string expected)
     {
         Assert.Contains(expected, await OutputSimpleDocumentAsync());
     }
 
-    [Theory]
-    [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
-    [InlineData("endobj\nxref\n0 4\n0000000002 00000 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000075 00000 n\r\n")]
-    [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 4>>\nstartxref\n105\n%%EOF")]
+    [Test]
+    [Arguments("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
+    [Arguments("endobj\nxref\n0 4\n0000000002 00000 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000075 00000 n\r\n")]
+    [Arguments("n\r\ntrailer\n<</Root 1 0 R/Size 4>>\nstartxref\n105\n%%EOF")]
     public async Task TwoItemDocumentContentsAsync(string expected) => 
         Assert.Contains(expected, await OutputTwoItemDocumentAsync());
 
-    [Theory]
-    [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
-    [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 27>> stream\r\n")]
-    [InlineData("stream\r\nxÚ")]
+    [Test]
+    [Arguments("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
+    [Arguments("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 27>> stream\r\n")]
+    [Arguments("stream\r\nxÚ")]
     public async Task RefStreamContentsAsync(string expected)
     {
         string actualString = await OutputTwoItemRefStreamAsync();
         Assert.Contains(expected, actualString);
     }
 
-    [Theory]
-    [InlineData(1, 1, false)]
-    [InlineData(1, 4, false)]
-    [InlineData(1, 5, true)]
-    [InlineData(1, 6, true)]
-    [InlineData(2, 0, true)]
+    [Test]
+    [Arguments(1, 1, false)]
+    [Arguments(1, 4, false)]
+    [Arguments(1, 5, true)]
+    [Arguments(1, 6, true)]
+    [Arguments(2, 0, true)]
     public async Task OnlyWriteRefStreamIfVersionAllowsAsync(byte major, byte minor, bool succeed)
     {
         try

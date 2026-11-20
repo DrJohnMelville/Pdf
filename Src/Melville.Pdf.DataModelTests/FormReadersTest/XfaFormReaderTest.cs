@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.Model.Creators;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.FormReadersTest;
 
@@ -43,7 +42,7 @@ public class XfaFormReaderTest
             .WithItem(KnownNames.Type, KnownNames.EmbeddedFile)
             .AsStream($"{prefix}\n{body}\n{suffix}"));
 
-    [Fact]
+    [Test]
     public async Task TextBlockAsync()
     {
         var doc = await XfaFormAsync("""
@@ -59,7 +58,7 @@ public class XfaFormReaderTest
         doc.Fields.First().Should().BeOfType<XfaTextBox>()
             .Subject.StringValue.Should().Be("FirstField Value");
     }
-    [Fact]
+    [Test]
     public async Task RadioButtonAsync()
     {
         var doc = await XfaFormAsync("""
@@ -131,7 +130,7 @@ public class XfaFormReaderTest
         pick.Options[1].Value.Should().Be("2");
     }
 
-    [Fact]
+    [Test]
     public async Task ComoBoxAsync()
     {
         var doc = await XfaFormAsync("""
@@ -161,7 +160,7 @@ public class XfaFormReaderTest
 
     }
 
-    [Fact]
+    [Test]
     public async Task ComoBox2Async()
     {
         var doc = await XfaFormAsync("""
@@ -196,7 +195,7 @@ public class XfaFormReaderTest
 
     }
 
-    [Fact]
+    [Test]
     public async Task CheckButtonAsync()
     {
         var doc = await XfaFormAsync("""
@@ -230,7 +229,7 @@ public class XfaFormReaderTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task TextBlockInSubFormAsync()
     {
         var doc = await XfaFormAsync("""

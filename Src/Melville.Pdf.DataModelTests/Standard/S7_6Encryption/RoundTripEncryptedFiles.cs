@@ -14,13 +14,12 @@ using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
 public class RoundTripEncryptedFiles
 {
-    [Fact]
+    [Test]
     public void VerifyThatDefaultPasswordBytesRoundTripInPdfDocEncoding()
     {
         // this is an important property because it means that ComputeOwnerPasswordv2.UserKeyFromOwnerKey does not need
@@ -76,20 +75,20 @@ public class RoundTripEncryptedFiles
             
     }
 
-    [Fact]
+    [Test]
     public Task V1R3Rc4Async() => TestEncryptedFileAsync(new EncryptedV1Rc4(), 1,3, 40);
-    [Fact]
+    [Test]
     public Task V2R3Rc4Key128Async() => TestEncryptedFileAsync(new EncryptedR3Rc4(), 2,3,128);
-    [Fact]
+    [Test]
     public Task v1R2Rc440Async() => TestEncryptedFileAsync(new EncryptedR2Rc4(), 1,2,40);
-    [Fact]
+    [Test]
     public Task V2R3Rc4Key128Kb40Async() => TestEncryptedFileAsync(new EncryptedV3Rc4KeyBits40(), 2,3,40);
-    [Fact]
+    [Test]
     public Task EncRefStrAsync() => TestEncryptedFileAsync(new EncryptedRefStm(), 2, 3, 128);
-    [Fact]
+    [Test]
     public Task SimpleV4Rc4128Async() => TestEncryptedFileAsync(new Encryptedv4Rc4128(), 4, 4, 128);
-    [Fact]
+    [Test]
     public Task SimpleV4Aes128Async() => TestEncryptedFileAsync(new Encryptedv4Aes128(), 4, 4, 128);
 
-    [Fact] public Task V4StreamsPlainAsync() => TestEncryptedFileAsync(new EncryptedV4StreamsPlain(), 4, 4, 128);
+    [Test] public Task V4StreamsPlainAsync() => TestEncryptedFileAsync(new EncryptedV4StreamsPlain(), 4, 4, 128);
 }

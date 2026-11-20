@@ -10,7 +10,6 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
@@ -23,7 +22,7 @@ public class PostTableReaderTest
         return await new PostscriptTableParser(pipe).ParseAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task Type1TableAsync()
     {
         var table = await ReadPostscriptTableAsync("""
@@ -40,7 +39,7 @@ public class PostTableReaderTest
         VerifyHeader(table, 0x00010000);
         table.GlyphNames.Should().BeEquivalentTo(PostscriptTableParser.DefaultNames);
     }
-    [Fact]
+    [Test]
     public async Task Type20TableDefaultNamesAsync()
     {
         var table = await ReadPostscriptTableAsync("""
@@ -58,7 +57,7 @@ public class PostTableReaderTest
         VerifyHeader(table, 0x00020000);
         table.GlyphNames.Should().BeEquivalentTo([".null","space","exclam"]);
     }
-    [Fact]
+    [Test]
     public async Task Type20CustomNameDefaultNamesAsync()
     {
         var table = await ReadPostscriptTableAsync("""
@@ -78,7 +77,7 @@ public class PostTableReaderTest
         VerifyHeader(table, 0x00020000);
         table.GlyphNames.Should().BeEquivalentTo(["John","space","Melville"]);
     }
-    [Fact]
+    [Test]
     public async Task Type25TableAsync()
     {
         var table = await ReadPostscriptTableAsync("""
@@ -96,7 +95,7 @@ public class PostTableReaderTest
         VerifyHeader(table, 0x00025000);
         table.GlyphNames.Should().BeEquivalentTo([".null","space","exclam"]);
     }
-    [Fact]
+    [Test]
     public async Task Type3TableAsync()
     {
         var table = await ReadPostscriptTableAsync("""

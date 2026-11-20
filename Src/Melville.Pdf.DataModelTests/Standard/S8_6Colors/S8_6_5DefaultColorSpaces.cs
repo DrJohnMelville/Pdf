@@ -4,7 +4,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
@@ -29,7 +28,7 @@ public class S8_6_5DefaultColorSpaces
         page.SetupGet(i => i.LowLevel).Returns(dict);
     }
 
-    [Fact]
+    [Test]
     public async Task MapRgbToDeviceGrayAsync()
     {
         SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.DeviceGray));
@@ -37,7 +36,7 @@ public class S8_6_5DefaultColorSpaces
         Assert.IsType<DeviceGray>(ret);
 
     }
-    [Fact]
+    [Test]
     public async Task MapGrayToRgbAsync()
     {
         SetDefault(KnownNames.DefaultGray, new PdfArray(KnownNames.DeviceRGB));
@@ -46,7 +45,7 @@ public class S8_6_5DefaultColorSpaces
 
     }
 
-    [Fact]
+    [Test]
     public async Task IndexedMapsToBaseColorSpaceAsync()
     {
         SetDefault(KnownNames.DefaultRGB, 
@@ -55,7 +54,7 @@ public class S8_6_5DefaultColorSpaces
         Assert.IsType<DeviceGray>(ret);
 
     }
-    [Fact]
+    [Test]
     public async Task PatternMapsToBaseColorSpaceAsync()
     {
         SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.Pattern, KnownNames.DeviceGray));

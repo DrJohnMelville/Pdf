@@ -10,13 +10,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class ICCParserTest
 {
-    [Fact]
+    [Test]
     public async Task SizeFieldAsync()
     {
         var source = LoadSampleData();
@@ -74,7 +73,7 @@ public class ICCParserTest
         return (T)TagParser.Parse(ref reader);
     }
 
-    [Fact]
+    [Test]
     public async Task ChromacityParserAsync()
     {
         var tag = await ParseTagAsync<ChromacityTag>("<6368726d0000000000030002" +
@@ -88,7 +87,7 @@ public class ICCParserTest
         Assert.Equal((176.00005f, 0.18750286f), tag.Coordinates[2]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseColorOrderAsync()
     {
         var tag = await ParseTagAsync<ColorantOrderTag>("<636c726f00000000 00000003 030201>");
@@ -98,7 +97,7 @@ public class ICCParserTest
         Assert.Equal(1, tag.Colors[2]);
     }
 
-    [Fact]
+    [Test]
     public async Task ColorantTableTypeAsync()
     {
         var tag = await ParseTagAsync<ColorantTableTag>("<636c727400000000 00000002" +
@@ -118,12 +117,12 @@ public class ICCParserTest
         Assert.Equal(7, tag.Colorants[1].Z);
     }
 
-    [Fact]
+    [Test]
     public async Task CurveTag0TestAsync()
     {
         var tag = await ParseTagAsync<NullCurve>("<6375727600000000 00000000>");
     }
-    [Fact]
+    [Test]
     public async Task CurveTag1TestAsync()
     {
         var tag = await ParseTagAsync<ParametricCurveTag>("<6375727600000000 00000001 0280>");
@@ -136,7 +135,7 @@ public class ICCParserTest
         Assert.Equal(0, tag.F);
         
     }
-    [Fact]
+    [Test]
     public async Task CurveTagTestAsync()
     {
         var tag = await ParseTagAsync<SampledCurveSegment>("<6375727600000000 00000005 0005 0004 0003 0002 0001>");
@@ -148,23 +147,23 @@ public class ICCParserTest
         Assert.Equal(1.5259022E-05f, tag.Samples[4]);
     }
 
-    [Fact]
+    [Test]
     public async Task DataTagTestAsync()
     {
         var tag = await ParseTagAsync<DataTag>("<6461746100000000 00000000 616263646500>");
         Assert.Equal(DataType.String, tag.Type);
-        Assert.Equal(new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0 }, tag.Data);
+        Assert.SeqEqual(new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0 }, tag.Data);
         Assert.Equal("abcde", tag.AsString());
     }
 
-    [Fact]
+    [Test]
     public async Task DateTimeTagTestAsync()
     {
         var tag = await ParseTagAsync<DateTimeTag>("<6474696d 00000000 000A00010002 000300040005>");
         Assert.Equal(new DateTime(10, 1, 2, 3, 4, 5, 0, DateTimeKind.Utc), tag.DateTime);
     }
 
-    [Fact]
+    [Test]
     public async Task Lut16TagTestAsync()
     {
         var tag = await ParseTagAsync<LutXTag>("<6d66743200000000 02010300 " +
@@ -198,9 +197,9 @@ public class ICCParserTest
         Assert.Equal(3, tag.InputTableEntries);
         Assert.Equal(4, tag.OutputTableEntries);
 
-        Assert.Equal(IncrementingFloatArray(6, 16), tag.InputTables);
-        Assert.Equal(IncrementingFloatArray(9, 16), tag.Clut);
-        Assert.Equal(IncrementingFloatArray(4, 16), tag.OutputTables);
+        Assert.SeqEqual(IncrementingFloatArray(6, 16), tag.InputTables);
+        Assert.SeqEqual(IncrementingFloatArray(9, 16), tag.Clut);
+        Assert.SeqEqual(IncrementingFloatArray(4, 16), tag.OutputTables);
     }
 
     private float[] IncrementingFloatArray(int len, int bits)
@@ -209,7 +208,7 @@ public class ICCParserTest
         return Enumerable.Range(1, len).Select(i => i * epsilon).ToArray();
     }
 
-    [Fact]
+    [Test]
     public async Task Lut8TagTestAsync()
     {
         var tag = await ParseTagAsync<LutXTag>("<6d66743100000000 02010300 " +
@@ -281,7 +280,7 @@ public class ICCParserTest
         Assert.True(f1.Zip(f2, (i, j) => Math.Abs(i - j) < tolerence).All(i => i));
     }
 
-    [Fact]
+    [Test]
     public async Task MeasurementTypeTestAsync()
     {
         var tag = await ParseTagAsync<MeasurementTypeTag>("<6d65617300000000 00000001 " +
@@ -297,7 +296,7 @@ public class ICCParserTest
         Assert.Equal(StandardIllumination.D55, tag.Illumination);
     }
 
-    [Fact]
+    [Test]
     public async Task MultiLocalizedStringAsync()
     {
         var tag = await ParseTagAsync<MultiLocalizedUnicodeTag>($"<{MultiLocalizedName}>");
@@ -325,7 +324,7 @@ public class ICCParserTest
         Assert.Equal("abcde", tag.Encodings[2].Value);
     }
 
-    [Fact]
+    [Test]
     public async Task NamedColorTagAsync()
     {
         var tag = await ParseTagAsync<NamedColorTag>(
@@ -355,12 +354,12 @@ public class ICCParserTest
         Assert.Equal(0x1234, tag.Colors[1].DeviceValue[2]);
     }
 
-    [Theory]
-    [InlineData("<70617261 00000000 00000000 000F0000>", 15, 1, 0, 0, float.MinValue, 0, 0)]
-    [InlineData("<70617261 00000000 00010000 000F0000 000E0000 000D0000>", 15, 14, 13, 0, -13f / 14, 0, 0)]
-    [InlineData("<70617261 00000000 00020000 000F0000 000E0000 000D0000 000C0000>", 15, 14, 13, 12, -13f / 14, 0, 0)]
-    [InlineData("<70617261 00000000 00030000 000F0000 000E0000 000D0000 000C0000 000B0000>", 15, 14, 13, 0, 11, 12, 0)]
-    [InlineData("<70617261 00000000 00040000 000F0000 000E0000 000D0000 000C0000 000B0000 000A0000 00090000>",
+    [Test]
+    [Arguments("<70617261 00000000 00000000 000F0000>", 15, 1, 0, 0, float.MinValue, 0, 0)]
+    [Arguments("<70617261 00000000 00010000 000F0000 000E0000 000D0000>", 15, 14, 13, 0, -13f / 14, 0, 0)]
+    [Arguments("<70617261 00000000 00020000 000F0000 000E0000 000D0000 000C0000>", 15, 14, 13, 12, -13f / 14, 0, 0)]
+    [Arguments("<70617261 00000000 00030000 000F0000 000E0000 000D0000 000C0000 000B0000>", 15, 14, 13, 0, 11, 12, 0)]
+    [Arguments("<70617261 00000000 00040000 000F0000 000E0000 000D0000 000C0000 000B0000 000A0000 00090000>",
         15, 14, 13, 12, 11, 10, 9)]
     public async Task ParametricCurveTagAsync(string text,
         float g, float a, float b, float c, float d, float e, float f)
@@ -375,7 +374,7 @@ public class ICCParserTest
         Assert.Equal(f, tag.F);
     }
 
-    [Fact]
+    [Test]
     public async Task ProfileSequenceDescTagAsync()
     {
         var pds = $"00000001 00000002 00000000 00000004 7669646d {MultiLocalizedName} {MultiLocalizedName}";
@@ -388,7 +387,7 @@ public class ICCParserTest
         VerifyMultiLocalizedStream(tag.Profiles[1].DeviceName);
     }
 
-    [Fact]
+    [Test]
     public async Task ProfileSequenceIdentifierTagAsync()
     {
         var tag = await ParseTagAsync<ProfileSequenceIdentifierTag>("<70736964 00000000 00000002" +
@@ -403,7 +402,7 @@ public class ICCParserTest
         VerifyMultiLocalizedStream(tag.Profiles[1].Description);
     }
 
-    [Fact]
+    [Test]
     public async Task ResponseCurve16Set16TagTestAsync()
     {
         var tag = await ParseTagAsync<ResponseCurveSet16Tag>(
@@ -455,7 +454,7 @@ public class ICCParserTest
         Assert.Equal(6, curve.Channels[2].Response[2].MeasurementValue);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseS15Fixed16ArrayTagAsync()
     {
         var tag = await ParseTagAsync<S15Fixed16Array>("<73663332 00000000" +
@@ -467,21 +466,21 @@ public class ICCParserTest
         Assert.Equal(4f, tag.Values[3]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseSignatureTagAsync()
     {
         var tag = await ParseTagAsync<SignatureTag>("<73696720 00000000 12345678>");
         Assert.Equal(0x12345678u, tag.Signature);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseTextTypeAsync()
     {
         var tag = await ParseTagAsync<TextTag>("<74657874 00000000 61626364 6566>");
         Assert.Equal("abcdef", tag.Text);
     }
 
-    [Fact]
+    [Test]
     public async Task Parseu16Fixed16ArrayAsync()
     {
         var tag = await ParseTagAsync<U16Fixed16Array>("<75663332 00000000 00010000 00020000>");
@@ -490,7 +489,7 @@ public class ICCParserTest
         Assert.Equal(2, tag.Values[1]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseUint16ArrayAsync()
     {
         var tag = await ParseTagAsync<UInt16Array>("<75693136 00000000 00010002>");
@@ -499,7 +498,7 @@ public class ICCParserTest
         Assert.Equal(2, tag.Values[1]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseUint32ArrayAsync()
     {
         var tag = await ParseTagAsync<UInt32Array>("<75693332 00000000 00000001 00000002>");
@@ -508,7 +507,7 @@ public class ICCParserTest
         Assert.Equal(2u, tag.Values[1]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseUint64ArrayAsync()
     {
         var tag = await ParseTagAsync<UInt64Array>("<75693634 00000000 00000000 00000001 00000000 00000002>");
@@ -517,7 +516,7 @@ public class ICCParserTest
         Assert.Equal(2ul, tag.Values[1]);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseXyzArrayAsync()
     {
         var tag = await ParseTagAsync<XyzArray>("<58595a20 00000000 00010000 00020000 00030000 00040000 00050000 00060000>");
@@ -530,7 +529,7 @@ public class ICCParserTest
         Assert.Equal(6, tag.Values[1].Z);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseViewindConditionsTabAsync()
     {
         var tag = await ParseTagAsync<ViewingConditionsTag>(
@@ -545,7 +544,7 @@ public class ICCParserTest
     }
 
 
-    [Fact]
+    [Test]
     public async Task ParseLutBAIdentityAsync()
     {
         var tag = await ParseTagAsync<LutAToBTag>("<6D414220 00000000 03020000 " +
@@ -580,7 +579,7 @@ public class ICCParserTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutABWithMatrixAsync()
     {
         var tag = await ParseTagAsync<LutAToBTag>("<6D414220 00000000 03020000 " +
@@ -603,7 +602,7 @@ public class ICCParserTest
 
     private const string SimpleParametricCurve = "70617261 00000000 00000000 000F0000";
 
-    [Fact]
+    [Test]
     public async Task ParseLutABWithACurvesAsync()
     {
         var tag = await ParseTagAsync<LutAToBTag>("<6D414220 00000000 03020000 " +
@@ -615,7 +614,7 @@ public class ICCParserTest
         VerifyCurveType<NullCurve>(2, tag.OutputCurves);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutABWithBCurvesAsync()
     {
         var tag = await ParseTagAsync<LutAToBTag>("<6D414220 00000000 03020000 " +
@@ -627,7 +626,7 @@ public class ICCParserTest
         VerifyCurveType<ParametricCurveTag>(2, tag.OutputCurves);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutABWithMatrixCurvesAsync()
     {
         var tag = await ParseTagAsync<LutAToBTag>("<6D414220 00000000 03020000 " +
@@ -639,7 +638,7 @@ public class ICCParserTest
         VerifyCurveType<NullCurve>(2, tag.OutputCurves);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutBAWithACurvesAsync()
     {
         var tag = await ParseTagAsync<LutBToATag>("<6D424120 00000000 03020000 " +
@@ -651,7 +650,7 @@ public class ICCParserTest
         VerifyCurveType<ParametricCurveTag>(2, tag.OutputCurves);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutBAWithBCurvesAsync()
     {
         var tag = await ParseTagAsync<LutBToATag>("<6D424120 00000000 03020000 " +
@@ -668,7 +667,7 @@ public class ICCParserTest
         "01000000" + // use byte size data
         "01020304 05060708 090a0b0c 0d0e0f10 11121314 15161718";
     
-    [Fact]
+    [Test]
     public async Task ParseLutBAWithClut8Async()
     {
         var tag = await ParseTagAsync<LutBToATag>("<6D424120 00000000 03020000 " +
@@ -696,7 +695,7 @@ public class ICCParserTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task ParseLutBAWithClut16Async()
     {
         var tag = await ParseTagAsync<LutBToATag>("<6D424120 00000000 03020000 " +
@@ -722,7 +721,7 @@ public class ICCParserTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task MpeWithCLutAsync()
     {
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00030002 00000001 00000018 00000024" +
@@ -735,7 +734,7 @@ public class ICCParserTest
         Assert.Equal(5.1, clut.Points[1],2);
     }
 
-    [Fact]
+    [Test]
     public async Task MpeWithMatrixAsync()
     {
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000024" +
@@ -751,9 +750,9 @@ public class ICCParserTest
         }
     }
 
-    [Theory]
-    [InlineData("62414353")]
-    [InlineData("65414353")]
+    [Test]
+    [Arguments("62414353")]
+    [Arguments("65414353")]
     public async Task MpeWithNullItemAsync(string name)
     {
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000010" +
@@ -765,7 +764,7 @@ public class ICCParserTest
         
     }
 
-    [Fact]
+    [Test]
     public async Task MpeCurveSetAsync()
     {
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000064" + // mp TAG
@@ -802,7 +801,7 @@ public class ICCParserTest
         Assert.Equal(5.1, fs.C, 3); 
     }
 
-    [Fact]
+    [Test]
     public async Task ParseType1FormulaCurveSegmentAsync()
     {
         var tag = await ParseTagAsync<FormulaSegmentType1>(
@@ -813,7 +812,7 @@ public class ICCParserTest
         Assert.Equal(5.1, tag.C, 3); 
         Assert.Equal(5.1, tag.D, 3); 
     }
-    [Fact]
+    [Test]
     public async Task ParseType2FormulaCurveSegmentAsync()
     {
         var tag = await ParseTagAsync<FormulaSegmentType2>(
@@ -824,7 +823,7 @@ public class ICCParserTest
         Assert.Equal(5.1, tag.D, 3);
         Assert.Equal(5.1, tag.E, 3);
     }
-    [Fact]
+    [Test]
     public async Task ParseSampledCurveSegmentAsync()
     {
         var tag = await ParseTagAsync<SampledCurveSegment>(

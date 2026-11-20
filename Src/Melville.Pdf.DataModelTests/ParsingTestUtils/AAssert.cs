@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
@@ -25,24 +24,13 @@ public static class AAssert
 
   public static void False([DoesNotReturnIf(true)]bool condition) => Assert.False(condition);
 
-  public static void False([DoesNotReturnIf(true)]bool? condition) => Assert.False(condition);
-
-  public static void False([DoesNotReturnIf(true)]bool condition, string userMessage) => 
-    Assert.False(condition, userMessage);
-
-  public static void False([DoesNotReturnIf(true)] bool? condition, string userMessage) =>
-    Assert.False(condition, userMessage);
+  public static void False([DoesNotReturnIf(true)]bool? condition) => Assert.False(condition ?? true);
 
   public static void True([DoesNotReturnIf(false)]bool condition) => Assert.True(new bool?(condition));
 
   public static void True([DoesNotReturnIf(false)]bool? condition) => Assert.True(condition);
 
-  public static void True([DoesNotReturnIf(false)]bool condition, string userMessage) => 
-    Assert.True(condition, userMessage);
-
-  public static void True([DoesNotReturnIf(false)] bool? condition, string userMessage) =>
-    Assert.True(condition, userMessage);
 
   [DoesNotReturn]
-  public static void Fail(string message) => AAssert.True(false, message);
+  public static void Fail(string message) => AAssert.True(false);
 }

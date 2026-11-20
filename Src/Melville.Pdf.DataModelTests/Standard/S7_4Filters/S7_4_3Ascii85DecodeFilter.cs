@@ -2,7 +2,6 @@
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
@@ -26,39 +25,39 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\"+\"~>\", KnownNames.ASCII85Decode){}}")]
 public partial class S7_4_3Ascii85DecodeFilter
 {
-    [Theory]
-    [InlineData("\0\0\0\0", "z")]
-    [InlineData("\0", "!!")]
-    [InlineData("\x1", "!<")]
-    [InlineData("\x1\x1", "!<E")]
-    [InlineData("\x1\x1\x1", "!<E3")]
-    [InlineData("\x1\x1\x1\x1", "!<E3%")]
-    [InlineData("\xA", "$3")]
-    [InlineData("\xA\xA", "$46")]
-    [InlineData("\xA\xA\xA", "$47+")]
-    [InlineData("\xA\xA\xA\xA", "$47+I")]
-    [InlineData("d", "A,")]
-    [InlineData("dd", "A7P")]
-    [InlineData("ddd", "A7T3")]
-    [InlineData("dddd", "A7T4]")]
-    [InlineData("\xFF\xFF\xFF\xFF", "s8W-!")]
-    [InlineData("dddd\0\0\0\0dddd", "A7T4]zA7T4]")]
-    [InlineData("", "")]
+    [Test]
+    [Arguments("\0\0\0\0", "z")]
+    [Arguments("\0", "!!")]
+    [Arguments("\x1", "!<")]
+    [Arguments("\x1\x1", "!<E")]
+    [Arguments("\x1\x1\x1", "!<E3")]
+    [Arguments("\x1\x1\x1\x1", "!<E3%")]
+    [Arguments("\xA", "$3")]
+    [Arguments("\xA\xA", "$46")]
+    [Arguments("\xA\xA\xA", "$47+")]
+    [Arguments("\xA\xA\xA\xA", "$47+I")]
+    [Arguments("d", "A,")]
+    [Arguments("dd", "A7P")]
+    [Arguments("ddd", "A7T3")]
+    [Arguments("dddd", "A7T4]")]
+    [Arguments("\xFF\xFF\xFF\xFF", "s8W-!")]
+    [Arguments("dddd\0\0\0\0dddd", "A7T4]zA7T4]")]
+    [Arguments("", "")]
     public async Task EncodeStringAsync(string plain, string encoded)
     {
        // await SpecialCasesAsync(plain, encoded);
         await SpecialCasesAsync(plain, encoded+"~>this garbage does not matter");
     }
         
-    [Theory]
-    [InlineData("dddd", "A7T4]")]
-    [InlineData("dddd", "A7T 4]")]
-    [InlineData("dddd", " A 7 T 4 ]")]
-    [InlineData("dddd", " A 7 \t\r\n T 4 ]")]
-    [InlineData("dddd", " A 7 \t\r\n T 4 ]    ")]
-    [InlineData("dddd", " A 7 \t\r\n T 4 ]    ~>")]
-    [InlineData("ddd", "A7T3  ~>")]
-    [InlineData("ddd", "A7T3~> jsdhlk oky wqo' gdwqj 'ggb3eg2kph rgkj ohe3fgho' ihk tb3")]
+    [Test]
+    [Arguments("dddd", "A7T4]")]
+    [Arguments("dddd", "A7T 4]")]
+    [Arguments("dddd", " A 7 T 4 ]")]
+    [Arguments("dddd", " A 7 \t\r\n T 4 ]")]
+    [Arguments("dddd", " A 7 \t\r\n T 4 ]    ")]
+    [Arguments("dddd", " A 7 \t\r\n T 4 ]    ~>")]
+    [Arguments("ddd", "A7T3  ~>")]
+    [Arguments("ddd", "A7T3~> jsdhlk oky wqo' gdwqj 'ggb3eg2kph rgkj ohe3fgho' ihk tb3")]
     public Task SpecialCasesAsync(string decoded, string encoded) =>
         StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCII85Decode, default);
 }

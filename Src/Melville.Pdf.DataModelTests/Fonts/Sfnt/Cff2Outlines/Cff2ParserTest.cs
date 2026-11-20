@@ -3,7 +3,6 @@ using FluentAssertions;
 using Melville.Fonts.SfntParsers.TableDeclarations.CFF2Glyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Cff2Outlines;
 
@@ -27,7 +26,7 @@ public class Cff2ParserTest
         10 06
         """;
 
-    [Fact]
+    [Test]
     public async Task ParseCff2StreamAsync()
     {
         using var multiplexSource = MultiplexSourceFactory.Create(Cff2Data.BitsFromHex());

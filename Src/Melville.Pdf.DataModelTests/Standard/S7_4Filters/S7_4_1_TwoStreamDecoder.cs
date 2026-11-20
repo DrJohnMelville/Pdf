@@ -4,13 +4,12 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 public class S7_4_1_TwoStreamDecoder
 {
-    [Fact]
+    [Test]
     public async Task Example3FromStandardAsync()
     {
         var stream = new DictionaryBuilder()
@@ -19,7 +18,7 @@ public class S7_4_1_TwoStreamDecoder
             .AsStream(compressedData, StreamFormat.DiskRepresentation);
 
         using var str = await stream.StreamContentAsync();
-        var output = await new StreamReader(str).ReadToEndAsync(TestContext.Current.CancellationToken);
+        var output = await new StreamReader(str).ReadToEndAsync();
         Assert.Equal(expandedData.Replace("\r\n","\r"), output);
     }
 

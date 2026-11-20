@@ -5,7 +5,6 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 using System.Globalization;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -31,7 +30,7 @@ public readonly struct FileBuilder
 
 public class S_7_3_10_IndirectObjectsDefined
 {
-    [Fact]
+    [Test]
     public async Task ParseMinimalLowLevelFileAsync()
     {
         var builder = new FileBuilder();
@@ -55,7 +54,7 @@ public class S_7_3_10_IndirectObjectsDefined
        Assert.Equal(10, await lld.TrailerDictionary.GetAsync<int>(KnownNames.Root));
     }
 
-    [Fact]
+    [Test]
     public async Task ParseDoubleDereferenceAsync()
     {
        // Pdf 2.0 spec section 7.3.10 adds that an unenclosed top level object can be just an object reference.

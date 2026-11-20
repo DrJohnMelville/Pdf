@@ -2,13 +2,12 @@
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
 public class WriteInllineImage:WriterTest
 {
-    [Fact]
+    [Test]
     public async Task WriteSimpleImageAsync()
     {
          await sut.DoAsync(new DictionaryBuilder()

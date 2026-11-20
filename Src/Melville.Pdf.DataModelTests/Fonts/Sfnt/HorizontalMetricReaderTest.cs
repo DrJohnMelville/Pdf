@@ -5,13 +5,12 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt;
 
 public class HorizontalMetricReaderTest
 {
-    [Fact]
+    [Test]
     public async Task ReadHMetricsAsync()
     {
         // 3 hMetrics and 2 left side bearings

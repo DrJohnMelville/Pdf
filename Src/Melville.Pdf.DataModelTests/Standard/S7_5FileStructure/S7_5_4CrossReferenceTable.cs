@@ -8,7 +8,6 @@ using Melville.StreamInterfaces.Memory;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Microsoft.VisualBasic;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
@@ -28,7 +27,7 @@ public class S7_5_4CrossReferenceTable
         return reader.Position;
     }
 
-    [Fact]
+    [Test]
     public async Task ParseSimpleTableAsync()
     {
         await ReadTableAsync("""
@@ -50,7 +49,7 @@ public class S7_5_4CrossReferenceTable
         resolver.VerifyNoOtherCalls();
     }
 
-    [Fact]
+    [Test]
     public async Task ParseCompoundTableAsync()
     {
         await ReadTableAsync("""
@@ -73,7 +72,7 @@ public class S7_5_4CrossReferenceTable
         resolver.VerifyNoOtherCalls();
     }
 
-    [Fact]
+    [Test]
     public async Task ParseZeroTableAsync()
     {
         await ReadTableAsync("""

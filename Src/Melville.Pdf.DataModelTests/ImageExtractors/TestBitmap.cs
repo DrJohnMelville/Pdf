@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors
 {

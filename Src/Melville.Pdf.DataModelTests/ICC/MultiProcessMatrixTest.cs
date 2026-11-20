@@ -1,12 +1,11 @@
 ﻿using System;
 using Melville.Icc.Model.Tags;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class MultiProcessMatrixTest
 {
-    [Fact]
+    [Test]
     public void MultiProcessIdentityMatrix()
     {
         var matrix = new MultiProcessMatrix(2, 2, 1, 0, 0, 1, 0, 0);
@@ -15,7 +14,7 @@ public class MultiProcessMatrixTest
         Assert.Equal(5, input[0]);
         Assert.Equal(6, input[1]);
     }
-    [Fact]
+    [Test]
     public void NonSquareMatrix()
     {
         var matrix = new MultiProcessMatrix(2, 1, 1, 1, 7);
@@ -24,7 +23,7 @@ public class MultiProcessMatrixTest
         matrix.Transform(input, output);
         Assert.Equal(18, output[0]);
     }
-    [Fact]
+    [Test]
     public void MultiProcessSwapMatrix()
     {
         var matrix = new MultiProcessMatrix(2, 2, 0, 1, 1, 0, 0, 0);
@@ -33,7 +32,7 @@ public class MultiProcessMatrixTest
         Assert.Equal(6, input[0]);
         Assert.Equal(5, input[1]);
     }
-    [Fact]
+    [Test]
     public void MultiProcesssScaleMatrix()
     {
         var matrix = new MultiProcessMatrix(2, 2, 2, 0, 0, 3, 0, 0);
@@ -42,7 +41,7 @@ public class MultiProcessMatrixTest
         Assert.Equal(10, input[0]);
         Assert.Equal(18, input[1]);
     }
-    [Fact]
+    [Test]
     public void MultiProcessTranslateMatrix()
     {
         var matrix = new MultiProcessMatrix(2, 2, 1, 0, 0, 1, 10, 20);

@@ -4,7 +4,6 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 
@@ -21,7 +20,7 @@ public class TrivialPathDetectorTest
         sut = new PathDrawingAdapter(gs.Object, target.Object);
     }
 
-    [Fact]
+    [Test]
     public void NoMoveToIsTrivial()
     {
         sut.StrokePath();
@@ -29,7 +28,7 @@ public class TrivialPathDetectorTest
             Times.Never);
     }
 
-    [Fact]
+    [Test]
     public void JustMoveToIsTrivial()
     {
         sut.MoveTo(10, 23);
@@ -38,7 +37,7 @@ public class TrivialPathDetectorTest
             Times.Never);
     }
 
-    [Fact]
+    [Test]
     public void MoveToWithIdenticalLineToIsTrivial()
     {
         sut.MoveTo(10, 23);
@@ -48,7 +47,7 @@ public class TrivialPathDetectorTest
             Times.Never);
     }
 
-    [Fact]
+    [Test]
     public void IdenticalLineWithRoundCapsToIsNotTrivial()
     {
         gState.SetLineCap(LineCap.Round);
@@ -59,7 +58,7 @@ public class TrivialPathDetectorTest
             Times.Once);
     }
 
-    [Fact]
+    [Test]
     public void LineWithLengthIsNotTrivial()
     {
         sut.MoveTo(10, 23);
@@ -69,7 +68,7 @@ public class TrivialPathDetectorTest
             Times.Once);
     }
 
-    [Fact]
+    [Test]
     public void SpecificPaintingBug()
     {
         sut.MoveTo(0,0);

@@ -9,7 +9,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
@@ -37,17 +36,17 @@ public class BlockColorOperatorsTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Fact] public void BlockCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
-    [Fact] public void BlockSC() => sut.SetStrokeColor(1, 2, 3);
-    [Fact] public void BlockSCN() => sut.SetStrokeColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
-    [Fact] public void BlockG() => sut.SetStrokeGrayAsync(1);
-    [Fact] public void BlockRG() => sut.SetStrokeRGBAsync(1,2,3);
-    [Fact] public void BlockK() => sut.SetStrokeCMYKAsync(1,2,3, 4);
-    [Fact] public void BlockNonstrokinhCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
-    [Fact] public void BlockNonstrokinhSC() => sut.SetNonstrokingColor(1, 2, 3);
-    [Fact] public void BlockNonstrokinhSCN() => sut.SetNonstrokingColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
-    [Fact] public void BlockNonstrokinhG() => sut.SetNonstrokingGrayAsync(1);
-    [Fact] public void BlockNonstrokinhRG() => sut.SetNonstrokingRgbAsync(1,2,3);
-    [Fact] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYKAsync(1,2,3, 4);
-    [Fact] public void BlockRenderIntent() => sut.SetRenderIntent(RenderIntentName.Perceptual);
+    [Test] public void BlockCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
+    [Test] public void BlockSC() => sut.SetStrokeColor(1, 2, 3);
+    [Test] public void BlockSCN() => sut.SetStrokeColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
+    [Test] public void BlockG() => sut.SetStrokeGrayAsync(1);
+    [Test] public void BlockRG() => sut.SetStrokeRGBAsync(1,2,3);
+    [Test] public void BlockK() => sut.SetStrokeCMYKAsync(1,2,3, 4);
+    [Test] public void BlockNonstrokinhCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
+    [Test] public void BlockNonstrokinhSC() => sut.SetNonstrokingColor(1, 2, 3);
+    [Test] public void BlockNonstrokinhSCN() => sut.SetNonstrokingColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
+    [Test] public void BlockNonstrokinhG() => sut.SetNonstrokingGrayAsync(1);
+    [Test] public void BlockNonstrokinhRG() => sut.SetNonstrokingRgbAsync(1,2,3);
+    [Test] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYKAsync(1,2,3, 4);
+    [Test] public void BlockRenderIntent() => sut.SetRenderIntent(RenderIntentName.Perceptual);
 }

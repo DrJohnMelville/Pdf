@@ -4,7 +4,6 @@ using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Linq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Integration;
 
@@ -15,7 +14,7 @@ public class TTCmap0406
     private async Task<ICmapImplementation> LoadCmapByIndexAsync(int index) =>
         (await (await loadedFont).CmapByIndexAsync(index))!;
 
-    [Fact]
+    [Test]
     public async Task Type4CmapAsync()
     {
         var map = await LoadCmapByIndexAsync(0);
@@ -25,14 +24,14 @@ public class TTCmap0406
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Type4CmapEnumerateAsync()
     {
         var map = await LoadCmapByIndexAsync(0);
         map.AllMappings().Where(i => i.Glyph > 0).Should()
             .BeEquivalentTo(testCases.Select(i => (2, i.Character, i.Glyph)));
     }
-    [Fact]
+    [Test]
     public async Task Type6CmapAsync()
     {
         var map = await LoadCmapByIndexAsync(1);
@@ -41,7 +40,7 @@ public class TTCmap0406
             map.Map(character).Should().Be(glyph);
         }
     }
-    [Fact]
+    [Test]
     public async Task Type6CmapEnumerateAsync()
     {
         var map = await LoadCmapByIndexAsync(1);

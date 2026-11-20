@@ -5,7 +5,6 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
@@ -32,37 +31,37 @@ public class OptionalContentCounterTest
         sut = new OptionalContentCounter(state.Object);
     }
 
-    [Fact]
+    [Test]
     public void DefaultCounterIsVisible()
     {
         Assert.False(sut.IsHidden);
     }
 
-    [Fact]
+    [Test]
     public async Task EncounterInvisibleGroupMakesInvisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
     }
-    [Fact]
+    [Test]
     public async Task OCPrefixRequiredAsync()
     {
         await sut.EnterGroupAsync(KnownNames.AC, Off);
         Assert.False(sut.IsHidden);
     }
-    [Fact]
+    [Test]
     public async Task EncounterInvisibleGroupNameMakesInvisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
-    [Fact]
+    [Test]
     public async Task EncounterVisibleGroupNameLeavesVisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
-    [Fact]
+    [Test]
     public async Task PopOutOfInvisibleGroupAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, Off);
@@ -75,7 +74,7 @@ public class OptionalContentCounterTest
         Assert.False(sut.IsHidden);
     }
 
-    [Fact]
+    [Test]
     public async Task EncounterVisibleGroupStaysVisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, On);

@@ -6,7 +6,6 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 
@@ -25,7 +24,7 @@ public class DrawingMacroOperations
             NullOptionalContentCounter.Instance));
     }
 
-    [Fact]
+    [Test]
     public void Rectangle()
     {
         sut.Rectangle(7,13,17, 19);
@@ -37,7 +36,7 @@ public class DrawingMacroOperations
         drawTarget.VerifyNoOtherCalls();
     }
 
-    [Fact]
+    [Test]
     public void StrokePath()
     {
         DrawNontrivialLine();
@@ -51,49 +50,49 @@ public class DrawingMacroOperations
         sut.LineTo(10, 12);
     }
 
-    [Fact]
+    [Test]
     public void CloseAndStrokePath()
     {
         DrawNontrivialLine();
         sut.CloseAndStrokePath();
         VerifyPathOperation(true, false, false, true);
     }
-    [Fact]
+    [Test]
     public void FillPath()
     {
         DrawNontrivialLine();
         sut.FillPath();
         VerifyPathOperation(false, true, false, false);
     }
-    [Fact]
+    [Test]
     public void FillEvenOdd()
     {
         DrawNontrivialLine();
         sut.FillPathEvenOdd();
         VerifyPathOperation(false, true, true, false);
     }
-    [Fact]
+    [Test]
     public void FillAndStrokePath()
     {
         DrawNontrivialLine();
         sut.FillAndStrokePath();
         VerifyPathOperation(true, true, false, false);
     }
-    [Fact]
+    [Test]
     public void FillAndStrokePathEvenOdd()
     {
         DrawNontrivialLine();
         sut.FillAndStrokePathEvenOdd();
         VerifyPathOperation(true, true, true, false);
     }
-    [Fact]
+    [Test]
     public void CloseFillAndStrokePath()
     {
         DrawNontrivialLine();
         sut.CloseFillAndStrokePath();
         VerifyPathOperation(true, true, false, true);
     }
-    [Fact]
+    [Test]
     public void CloseFillAndStrokePathEvenOdd()
     {
         DrawNontrivialLine();

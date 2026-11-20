@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_8ContentStreams;
 
@@ -19,13 +18,13 @@ public class ContentStreamArrayOperations
         csStream.Should().Be(result);
     }
 
-    [Fact]
+    [Test]
     public Task EmptyAsync() => DoTestAsync("");
-    [Fact]
+    [Test]
     public Task SingleAsync() => DoTestAsync("Hello", "Hello");
-    [Fact]
+    [Test]
     public Task DoubleAsync() => DoTestAsync("Hello\nWorld", "Hello","World");
-    [Fact]
+    [Test]
     public Task ManyAsync() => DoTestAsync("Hello\nWorld\nFoo\nBar\nBaz", "Hello","World",
         "Foo", "Bar", "Baz");
 }

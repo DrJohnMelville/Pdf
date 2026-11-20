@@ -6,7 +6,6 @@ using Melville.Fonts;
 using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Fonts.SfntParsers.TableDeclarations.Heads;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Integration;
 
@@ -17,7 +16,7 @@ public class TTCmap02
     private async Task<ICmapImplementation> LoadCmapByIndexAsync(int index) =>
         (await (await loadedFont).CmapByIndexAsync(index))!;
 
-    [Fact]
+    [Test]
     public async Task Type0CmapAsync()
     {
         var map = await LoadCmapByIndexAsync(1);
@@ -32,7 +31,7 @@ public class TTCmap02
         map.Map(0xCA).Should().Be(3);
     }
 
-    [Fact]
+    [Test]
     public async Task Type2CmapAsync()
     {
         var map = await LoadCmapByIndexAsync(0);
@@ -51,7 +50,7 @@ public class TTCmap02
         map.Map(0x37E).Should().Be(30);
     }
 
-    [Fact]
+    [Test]
     public async Task EnumerateType2CmapAsync()
     {
         var map = await LoadCmapByIndexAsync(0);
@@ -69,7 +68,7 @@ public class TTCmap02
         mappings.Should().Contain((2, 0x37E, 30));
     }
 
-    [Fact]
+    [Test]
     public async Task LoadHeadTableAsync()
     {
         var head = await ((SFnt)(await loadedFont)).HeadTableAsync();
@@ -94,7 +93,7 @@ public class TTCmap02
         head.GlyphDataFormat.Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public async Task LoadHorizontaHeaderTableAsync()
     {
         var hhea = await ((SFnt)(await loadedFont)).HorizontalHeaderTableAsync();

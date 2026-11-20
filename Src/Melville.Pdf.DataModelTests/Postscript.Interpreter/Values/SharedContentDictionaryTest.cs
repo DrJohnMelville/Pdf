@@ -1,7 +1,6 @@
 ﻿using System;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
 
@@ -19,20 +18,20 @@ public class SharedContentDictionaryTest
         sut = new SharedContentDictionary(dict);
     }
 
-    [Fact]
+    [Test]
     public void AccessDefault()
     {
         Assert.Equal(3, sut.Length);
         Assert.Equal(2, sut.GetAs<int>("B"u8));
     }
-    [Fact]
+    [Test]
     public void AccessOverridden()
     {
         sut.Put("B"u8, 4);
         Assert.Equal(4, sut.Length);
         Assert.Equal(4, sut.GetAs<int>("B"u8));
     }
-    [Fact]
+    [Test]
     public void CopyOverrides()
     {
         sut.CopyFrom(PostscriptValueFactory.CreateDictionary("B"u8, 4),
@@ -40,7 +39,7 @@ public class SharedContentDictionaryTest
         Assert.Equal(4, sut.GetAs<int>("B"u8));
     }
 
-    [Fact]
+    [Test]
     public void SimpleEmnumeration()
     {
         var cursor = sut.CreateForAllCursor();
@@ -57,7 +56,7 @@ public class SharedContentDictionaryTest
         Assert.Equal("3", data[1].ToString());
         Assert.False(cursor.TryGetItr(data.AsSpan(), ref pos));
     }
-    [Fact]
+    [Test]
     public void OverriddenEmnumeration()
     {
         sut.Put("B"u8, 4);

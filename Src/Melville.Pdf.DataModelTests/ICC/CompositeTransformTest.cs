@@ -1,12 +1,11 @@
 ﻿using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class CompositeTransformTest
 {
-    [Fact]
+    [Test]
     public void NullCompositeTransform()
     {
         var comp = NullColorTransform.Instance(3).Concat(NullColorTransform.Instance(3));
@@ -14,16 +13,16 @@ public class CompositeTransformTest
         Assert.Equal(3, comp.Outputs);
         ColorTransformTestHelpers.VerifyMatrixTripple(comp, 1, 2, 3);
     }
-    [Fact]
+    [Test]
     public void CompositeTransform() =>
         ColorTransformTestHelpers.VerifyMatrixTripple(
             new StubColorTransformation().Concat(NullColorTransform.Instance(3)), 6, 16,42);
 
-    [Fact]
+    [Test]
     public void CompositeTransformReversed() => ColorTransformTestHelpers.VerifyMatrixTripple(
         NullColorTransform.Instance(3).Concat(new StubColorTransformation()), 6, 16,42);
 
-    [Fact]
+    [Test]
     public void DoubleCompositeTransform() => ColorTransformTestHelpers.VerifyMatrixTripple(
         new StubColorTransformation().Concat( new StubColorTransformation()),64, 4042,42);
 }

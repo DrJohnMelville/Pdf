@@ -10,7 +10,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.StreamInterfaces;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
@@ -53,11 +52,11 @@ public class S7_6_5CryptFilters
                 .WithItem(KnownNames.Name, cryptFilterTypeForStream).AsDictionary());
     }
 
-    [Theory]
-    [InlineData(true, true)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    [InlineData(false, false)]
+    [Test]
+    [Arguments(true, true)]
+    [Arguments(true, false)]
+    [Arguments(false, true)]
+    [Arguments(false, false)]
     public async Task CanUseDefaultStringsInAsync(bool hideStream, bool hideString)
     {
         var creator = LowLevelDocumentBuilderFactory.New();
@@ -66,7 +65,7 @@ public class S7_6_5CryptFilters
         await VerifyStringAndStreamEncodingAsync(hideStream, hideString, creator);
     }
 
-    [Fact]
+    [Test]
     public Task UseIdentityCryptFilterToGEtOutOfStreamEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();
@@ -75,7 +74,7 @@ public class S7_6_5CryptFilters
         return VerifyStringAndStreamEncodingAsync(false, true, creator, KnownNames.Identity);
     }
 
-    [Fact]
+    [Test]
     public Task UseCryptFilterToOptIntoEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();
@@ -84,7 +83,7 @@ public class S7_6_5CryptFilters
         return VerifyStringAndStreamEncodingAsync(true, true, creator, KnownNames.StdCF);
     }
 
-    [Fact]
+    [Test]
     public  Task StreamsWithoutCryptFilterGetDefaultEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();

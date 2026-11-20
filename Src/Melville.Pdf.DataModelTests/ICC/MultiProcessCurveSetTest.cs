@@ -2,7 +2,6 @@
 using System.Buffers;
 using Melville.Icc.Model.Tags;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
@@ -23,7 +22,7 @@ public class MultiProcessCurveSetTest
         return new(ret);
     }
 
-    [Fact]
+    [Test]
     public void IdentityCurve0()
     {
         var reader = FloatToBytes(1, 1, 0, 0);
@@ -31,7 +30,7 @@ public class MultiProcessCurveSetTest
         Assert.Equal(12, func.Evaluate(12));
         Assert.Equal(120, func.Evaluate(120));
     }
-    [Fact]
+    [Test]
     public void FullCurve0()
     {
         var reader = FloatToBytes(2,2,2,2);
@@ -39,7 +38,7 @@ public class MultiProcessCurveSetTest
         Assert.Equal(18, func.Evaluate(1));
     }
     
-    [Fact]
+    [Test]
     public void FullCurve1()
     {
         var reader = FloatToBytes(2,2,2,2, 2);
@@ -47,7 +46,7 @@ public class MultiProcessCurveSetTest
         Assert.Equal(5.432007, func.Evaluate(5), 4);
     }
 
-    [Fact]
+    [Test]
     public void FullCurve2()
     {
         var reader = FloatToBytes(2,3,4,5,6);
@@ -55,7 +54,7 @@ public class MultiProcessCurveSetTest
         Assert.Equal(1694577197056, func.Evaluate(5), 4, MidpointRounding.AwayFromZero);
     }
 
-    [Fact]
+    [Test]
     public void LinearInterpolation()
     {
         var segment = new SampledCurveSegment(0, 100);
@@ -65,7 +64,7 @@ public class MultiProcessCurveSetTest
         Assert.Equal(70, segment.Evaluate(8f));
         
     }
-    [Fact]
+    [Test]
     public void Triangle()
     {
         var segment = new SampledCurveSegment(0, 20, 10);
@@ -77,16 +76,16 @@ public class MultiProcessCurveSetTest
         Assert.Equal(12.5, segment.Evaluate(1.75f));
     }
 
-    [Theory]
-    [InlineData(-5,0)]
-    [InlineData(-.01,0)]
-    [InlineData(0,0)]
-    [InlineData(.1,.1)]
-    [InlineData(5.6, 5.6)]
-    [InlineData(9.9, 9.9)]
-    [InlineData(10,10)]
-    [InlineData(10.1,10)]
-    [InlineData(23,10)]
+    [Test]
+    [Arguments(-5,0)]
+    [Arguments(-.01,0)]
+    [Arguments(0,0)]
+    [Arguments(.1,.1)]
+    [Arguments(5.6, 5.6)]
+    [Arguments(9.9, 9.9)]
+    [Arguments(10,10)]
+    [Arguments(10.1,10)]
+    [Arguments(23,10)]
     public void MultiProcessTest(float input, float output)
     {
         var curve = TripartiteCurve();
@@ -108,7 +107,7 @@ public class MultiProcessCurveSetTest
         return curve;
     }
 
-    [Fact]
+    [Test]
     public void MultiCurveSet()
     {
         var singleCurve = TripartiteCurve();
@@ -116,7 +115,7 @@ public class MultiProcessCurveSetTest
         Span<float> output = stackalloc float[3];
         Span<float> input = stackalloc float[] { -5, 5, 15 };
         sut.Transform(input, output);
-        Assert.Equal(new float[]{0, 5,10}, output.ToArray());
+        Assert.SeqEqual(new float[]{0, 5,10}, output.ToArray());
         
     }
 }

@@ -1,13 +1,12 @@
 ﻿using Melville.Postscript.Interpreter.Values.Numbers;
 using NetArchTest.Rules;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Architecture;
 
 public class PostscriptInterpreterArchitecture
 {
     private static Types AllTypes => Types.InAssembly(typeof(PostscriptInteger).Assembly);
-    [Fact]
+    [Test]
     public void CabinExternalDependencies() =>
         AllTypes
             .That()

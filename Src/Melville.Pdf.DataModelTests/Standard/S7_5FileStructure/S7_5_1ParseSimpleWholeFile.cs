@@ -11,7 +11,6 @@ using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
@@ -43,7 +42,7 @@ public class S7_5_1ParseSimpleWholeFile
             
     }
 
-    [Fact]
+    [Test]
     public async Task GenerateDocumentWithDelayedIndirectAsync()
     {
         var builder = new LowLevelDocumentBuilder();
@@ -56,7 +55,7 @@ public class S7_5_1ParseSimpleWholeFile
         Assert.Equal(10, (await rootDic[KnownNames.Width]).Get<int>());
     }
 
-    [Fact]
+    [Test]
     public async Task DocumentWithStreamAsync()
     {
         var builder = new LowLevelDocumentBuilder();
@@ -69,18 +68,18 @@ public class S7_5_1ParseSimpleWholeFile
         var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.Root);
         using var contentStream = await stream.StreamContentAsync(StreamFormat.DiskRepresentation);
         var value = await new StreamReader(
-            contentStream).ReadToEndAsync(TestContext.Current.CancellationToken);
+            contentStream).ReadToEndAsync();
         Assert.Equal("Stream data", value);
             
     }
 
-    [Fact]
+    [Test]
     public async Task RoundTripSimpleDocumentAsync()
     {
         await RoundTripPdfAsync(await OutputTwoItemDocumentAsync(1, 3));
     }
 
-    [Fact]
+    [Test]
     public async Task ParseSimpleDocumentAsync()
     {
         using var doc = await (await OutputTwoItemDocumentAsync()).ParseDocumentAsync();

@@ -3,13 +3,12 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public class S7_10_3ExponentialInterpolationFunctions
 {
-    [Fact]
+    [Test]
     public async Task DeclareExponentialFunctionAsync()
     {
         var builder = new ExponentialFunctionBuilder(10);
@@ -24,7 +23,7 @@ public class S7_10_3ExponentialInterpolationFunctions
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.C1, 10, 20);
     }
 
-    [Fact]
+    [Test]
     public async Task DeclareWithExplicitRangeAsync()
     {
         var builder = new ExponentialFunctionBuilder(2, (2, 3));
@@ -34,7 +33,7 @@ public class S7_10_3ExponentialInterpolationFunctions
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 2, 3);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, double.MinValue, double.MaxValue, 4, 9);
     }
-    [Fact]
+    [Test]
     public async Task DeclareWithDefaultsAsync()
     {
         var builder = new ExponentialFunctionBuilder(20);
@@ -47,10 +46,10 @@ public class S7_10_3ExponentialInterpolationFunctions
         Assert.False(dict.ContainsKey(KnownNames.C1));
     }
 
-    [Theory]
-    [InlineData(0.0)]
-    [InlineData(1.0)]
-    [InlineData(0.432)]
+    [Test]
+    [Arguments(0.0)]
+    [Arguments(1.0)]
+    [Arguments(0.432)]
     public async Task DefaultFunctionIsLinearInterpolationAsync(double value)
     {
         var builder = new ExponentialFunctionBuilder(1);
@@ -59,10 +58,10 @@ public class S7_10_3ExponentialInterpolationFunctions
         Assert.Equal(value, func.ComputeSingleResult(value));
             
     }
-    [Theory]
-    [InlineData(0.0)]
-    [InlineData(1.0)]
-    [InlineData(0.432)]
+    [Test]
+    [Arguments(0.0)]
+    [Arguments(1.0)]
+    [Arguments(0.432)]
     public async Task OffsetInterpolationAsync(double value)
     {
         var builder = new ExponentialFunctionBuilder(1);
@@ -71,10 +70,10 @@ public class S7_10_3ExponentialInterpolationFunctions
         Assert.Equal(5+value, func.ComputeSingleResult(value));
             
     }
-    [Theory]
-    [InlineData(0.0)]
-    [InlineData(1.0)]
-    [InlineData(0.432)]
+    [Test]
+    [Arguments(0.0)]
+    [Arguments(1.0)]
+    [Arguments(0.432)]
     public async Task OffsetRangeInterpolationAsync(double value)
     {
         var builder = new ExponentialFunctionBuilder(1);
@@ -83,10 +82,10 @@ public class S7_10_3ExponentialInterpolationFunctions
         Assert.Equal(5+(50*value), func.ComputeSingleResult(value));
             
     }
-    [Theory]
-    [InlineData(0.0)]
-    [InlineData(1.0)]
-    [InlineData(0.432)]
+    [Test]
+    [Arguments(0.0)]
+    [Arguments(1.0)]
+    [Arguments(0.432)]
     public async Task ExponentiationAsync(double value)
     {
         var builder = new ExponentialFunctionBuilder(3);

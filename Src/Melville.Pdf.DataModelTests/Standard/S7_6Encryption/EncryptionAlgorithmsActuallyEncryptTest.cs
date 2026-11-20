@@ -10,7 +10,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
@@ -24,13 +23,13 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         return target.GetBuffer().AsSpan(0,(int)target.Length).ExtendedAsciiString();
     }
 
-    [Fact]
+    [Test]
     public Task AesLength128Async() => 
         CreateAndTestDocumentAsync(DocumentEncryptorFactory.V4("User", "Owner", PdfPermission.None, EncryptorName.AESV2, 8));
-    [Fact]
+    [Test]
     public Task Rc4Length128Async() => 
         CreateAndTestDocumentAsync(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
-    [Fact]
+    [Test]
     public Task Rc4Length40Async() => 
         CreateAndTestDocumentAsync(DocumentEncryptorFactory.V1R2Rc440("User", "Owner", PdfPermission.None));
 

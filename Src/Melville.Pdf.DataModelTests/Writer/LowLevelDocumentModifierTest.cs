@@ -11,8 +11,6 @@ using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Xunit;
-using Xunit.Sdk;
 
 namespace Melville.Pdf.DataModelTests.Writer;
 
@@ -50,9 +48,9 @@ public class LowLevelDocumentModifierTest
         Assert.Equal(expected, target.Result());
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1234)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(1234)]
     public async Task NullModificationAsync(long offset)
     {
         // this test causes a disposal error because the writable stream is creates one more reader than it disposes.
@@ -61,7 +59,7 @@ public class LowLevelDocumentModifierTest
             offset);
     }
 
-    [Fact]
+    [Test]
     public Task AddOneObjectAsync()
     {
         return DoDocumentModificationTestsAsync($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
@@ -69,7 +67,7 @@ public class LowLevelDocumentModifierTest
             1234);
     }
 
-    [Fact]
+    [Test]
     public Task ReplaceOneObjectAsync() =>
         DoDocumentModificationTestsAsync($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1255\n%%EOF",
             (doc, mod) => mod.ReplaceReferenceObject(doc.Objects[(1,0)],false), baseDoc,
@@ -89,7 +87,7 @@ public class LowLevelDocumentModifierTest
         return loaded;
     }
 
-    [Fact]
+    [Test]
     public Task ReplaceThreeInTwoRunsAsync()
     {
         return DoDocumentModificationTestsAsync(

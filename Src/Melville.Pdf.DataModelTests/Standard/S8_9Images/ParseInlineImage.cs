@@ -7,7 +7,6 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
@@ -40,7 +39,7 @@ public partial class ParseInlineImage : ParserTest
         }
     }
 
-    [Fact]
+    [Test]
     public Task ParseInlineImageDictionaryAsync()=>
         TestInputAsync($"BI/Width 12/Height 24\nID\nxxEI",
             new DoImpl(async i =>
@@ -53,31 +52,31 @@ public partial class ParseInlineImage : ParserTest
                 );
             }));
 
-    [Theory]
-    [InlineData("StreamData", "StreamData")]
-    [InlineData("StreamEI!Data", "StreamEI!Data")]
-    [InlineData("StreamEIData!", "StreamEIData!")]
-    [InlineData("StreamEI Data!", "StreamEI Data!")]
-    [InlineData("StreamEI\rData!", "StreamEI\rData!")]
-    [InlineData("StreamEI\nData!", "StreamEI\nData!")]
-    [InlineData("StreamEI\tData!", "StreamEI\tData!")]
+    [Test]
+    [Arguments("StreamData", "StreamData")]
+    [Arguments("StreamEI!Data", "StreamEI!Data")]
+    [Arguments("StreamEIData!", "StreamEIData!")]
+    [Arguments("StreamEI Data!", "StreamEI Data!")]
+    [Arguments("StreamEI\rData!", "StreamEI\rData!")]
+    [Arguments("StreamEI\nData!", "StreamEI\nData!")]
+    [Arguments("StreamEI\tData!", "StreamEI\tData!")]
     public Task ParseSimpleInlineImageAsync(string onDisk, string parsed) =>
         TestInputAsync($"BI/Width 12/Height 24\nID\n{onDisk}EI",
             new DoImpl(async i => Assert.Equal(parsed,
                 await (await i.ReaderForContentAsync()).ReadAsStringAsync())));
 
-    [Theory]
-    [InlineData("ASCIIHexDecode", "/AHx")]
-    [InlineData("ASCII85Decode", "/A85")]
-    [InlineData("LZWDecode", "/LZW")]
-    [InlineData("FlateDecode", "/Fl")]
-    [InlineData("RunLengthDecode", "/RL")]
-    [InlineData("CCITTFaxDecode", "/CCF")]
-    [InlineData("DCTDecode", "/DCT")]
-    [InlineData("DeviceGray", "/G")]
-    [InlineData("DeviceRGB", "/RGB")]
-    [InlineData("DeviceCMYK", "/CMYK")]
-    [InlineData("Indexed", "/I")]
+    [Test]
+    [Arguments("ASCIIHexDecode", "/AHx")]
+    [Arguments("ASCII85Decode", "/A85")]
+    [Arguments("LZWDecode", "/LZW")]
+    [Arguments("FlateDecode", "/Fl")]
+    [Arguments("RunLengthDecode", "/RL")]
+    [Arguments("CCITTFaxDecode", "/CCF")]
+    [Arguments("DCTDecode", "/DCT")]
+    [Arguments("DeviceGray", "/G")]
+    [Arguments("DeviceRGB", "/RGB")]
+    [Arguments("DeviceCMYK", "/CMYK")]
+    [Arguments("Indexed", "/I")]
     public Task ParseImageSynonymsAsync(string preferredTerm, string synonym) =>
         TestInputAsync($"BI/Filter {synonym}\nID\nStreamDataEI",
             new DoImpl(async i =>
@@ -87,16 +86,16 @@ public partial class ParseInlineImage : ParserTest
 
             }));
 
-    [Theory]
-    [InlineData("BitsPerComponent", "BPC")]
-    [InlineData("ColorSpace", "CS")]
-    [InlineData("Decode", "D")]
-    [InlineData("DecodeParms", "DP")]
-    [InlineData("Filter", "F")]
-    [InlineData("Height", "H")]
-    [InlineData("ImageMask", "IM")]
-    [InlineData("Interpolate", "I")]
-    [InlineData("Width", "W")]
+    [Test]
+    [Arguments("BitsPerComponent", "BPC")]
+    [Arguments("ColorSpace", "CS")]
+    [Arguments("Decode", "D")]
+    [Arguments("DecodeParms", "DP")]
+    [Arguments("Filter", "F")]
+    [Arguments("Height", "H")]
+    [Arguments("ImageMask", "IM")]
+    [Arguments("Interpolate", "I")]
+    [Arguments("Width", "W")]
     public Task ParseImageEntrySynonymsAsync(string preferredTerm, string synonym) =>
         TestInputAsync($"BI/{synonym} 1234\nID\nStreamDataEI",
             new DoImpl(async i =>
@@ -106,7 +105,7 @@ public partial class ParseInlineImage : ParserTest
 
             }));
 
-    [Fact]
+    [Test]
     public Task WithArrayArgumentAsync() =>
                   TestInputAsync(
             "BI/D[/AHx/DCT]ID\nHelloEI",

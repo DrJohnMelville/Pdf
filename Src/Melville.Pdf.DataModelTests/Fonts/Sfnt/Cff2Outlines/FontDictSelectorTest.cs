@@ -8,7 +8,6 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.Cff2Outlines;
 
@@ -26,12 +25,12 @@ public class FontDictSelectorTest
         selectors = sel.Select(i => i.Object).ToArray();
     }
 
-    [Theory]
-    [InlineData(0, 4)]
-    [InlineData(1, 3)]
-    [InlineData(2, 2)]
-    [InlineData(3, 1)]
-    [InlineData(4, 0)]
+    [Test]
+    [Arguments(0, 4)]
+    [Arguments(1, 3)]
+    [Arguments(2, 2)]
+    [Arguments(3, 1)]
+    [Arguments(4, 0)]
     public Task Type1FontSelectorTestAsync(uint glyph, int index) =>
         TestSelectorAsync(glyph, index, """
         FF 00 04 03 02 01 00
@@ -51,12 +50,12 @@ public class FontDictSelectorTest
             It.IsAny<ICffInstructionExecutor>()), Times.Once);
     }
 
-    [Theory]
-    [InlineData(0, 2)]
-    [InlineData(1, 2)]
-    [InlineData(2, 1)]
-    [InlineData(3, 4)]
-    [InlineData(4, 4)]
+    [Test]
+    [Arguments(0, 2)]
+    [Arguments(1, 2)]
+    [Arguments(2, 1)]
+    [Arguments(3, 4)]
+    [Arguments(4, 4)]
     public Task Type3FontSelectorTestAsync(uint glyph, int index) =>
         TestSelectorAsync(glyph, index, """
         FF 03 0003
@@ -66,12 +65,12 @@ public class FontDictSelectorTest
         0005
         """);
 
-    [Theory]
-    [InlineData(0, 2)]
-    [InlineData(1, 2)]
-    [InlineData(2, 1)]
-    [InlineData(3, 4)]
-    [InlineData(4, 4)]
+    [Test]
+    [Arguments(0, 2)]
+    [Arguments(1, 2)]
+    [Arguments(2, 1)]
+    [Arguments(3, 4)]
+    [Arguments(4, 4)]
     public Task Type4FontSelectorTestAsync(uint glyph, int index) =>
         TestSelectorAsync(glyph, index, """
         FF 04 00000003

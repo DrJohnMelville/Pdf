@@ -1,5 +1,4 @@
 ﻿using Melville.Pdf.Model.Renderers.GraphicsStates;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
@@ -7,7 +6,7 @@ public class GraphicStateStackTest
 {
     private readonly GraphicsStateStack<TestGraphicsState> stack = new();
     
-    [Fact]
+    [Test]
     public void PushAndPop()
     {
         Assert.Equal(1.0, stack.StronglyTypedCurrentState().LineWidth);

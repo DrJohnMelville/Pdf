@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using FluentAssertions;
 using Melville.Parsing.LinkedLists;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
@@ -14,7 +13,7 @@ public class LinkedListTest: IDisposable
         sut.Dispose();
     }
 
-    [Fact]
+    [Test]
     public void InitialPosition()
     {
         sut.StartPosition.GlobalPosition.Should().Be(0);
@@ -23,7 +22,7 @@ public class LinkedListTest: IDisposable
         sut.StartPosition.Node.Should().BeSameAs(sut.EndPosition.Node);
     }
 
-    [Fact]
+    [Test]
     public void Write16Bytes()
     {
         WriteNBytes(16);
@@ -35,7 +34,7 @@ public class LinkedListTest: IDisposable
 
     private void WriteNBytes(int n) => sut.Write(sut.StartPosition, new byte[n]);
 
-    [Fact]
+    [Test]
     public void Write17Bytes()
     {
         WriteNBytes(17);
@@ -45,16 +44,16 @@ public class LinkedListTest: IDisposable
         sut.StartPosition.Node.Next.Should().BeSameAs(sut.EndPosition.Node);
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(9)]
-    [InlineData(14)]
-    [InlineData(15)]
-    [InlineData(16)]
-    [InlineData(17)]
-    [InlineData(25)]
-    [InlineData(2500)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(1)]
+    [Arguments(9)]
+    [Arguments(14)]
+    [Arguments(15)]
+    [Arguments(16)]
+    [Arguments(17)]
+    [Arguments(25)]
+    [Arguments(2500)]
     public void PositionAt(int pos)
     {
         WriteNBytes(pos);

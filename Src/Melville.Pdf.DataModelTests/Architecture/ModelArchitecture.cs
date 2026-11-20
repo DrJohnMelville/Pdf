@@ -4,7 +4,6 @@ using Melville.Fonts;
 using Melville.Linq;
 using Melville.Pdf.Model;
 using NetArchTest.Rules;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Architecture;
 
@@ -12,9 +11,9 @@ public class ModelArchitecture
 {
     private static Types AllTypes => Types.InAssembly(typeof(PdfReader).Assembly);
 
-    [Theory]
-    [InlineData("Melville.Pdf.Model.Renderers.Colors", "Melville.Icc")]
-    [InlineData("Melville.Pdf.Model.Renderers", "Melville.Pdf.Model.DocumentRenderers")]
+    [Test]
+    [Arguments("Melville.Pdf.Model.Renderers.Colors", "Melville.Icc")]
+    [Arguments("Melville.Pdf.Model.Renderers", "Melville.Pdf.Model.DocumentRenderers")]
     public void CabinExternalDependencies(string localNamespace, string foreignNamespace) =>
         AllTypes
             .That()
@@ -23,7 +22,7 @@ public class ModelArchitecture
             .NotHaveDependencyOn(foreignNamespace)
             .ShouldSucceed();
 
-    [Fact]
+    [Test]
     public void CabinFontsUsage() =>
         AllTypes
             .That()
@@ -34,7 +33,7 @@ public class ModelArchitecture
             .NotHaveDependencyOn("Melville.Fonts")
             .ShouldSucceed();
 
-    public static TheoryData<string, string> Exclusion()
+    public static IEnumerable<(string, string)> Exclusion()
     {
         var names = new[]
         {
@@ -43,15 +42,15 @@ public class ModelArchitecture
             "Melville.Pdf.Model.Creators",
             "Melville.Pdf.Model.OptionalContent",
         };
-        var td = new TheoryData<string, string>();
+        var td = new List<(string, string)>();
 
         (from i in names from j in names where i != j select (i,j))
-            .ForEach(i => td.Add(i.i, i.j));
+            .ForEach(i => td.Add((i.i, i.j)));
         return td;
     }
 
-    [Theory]
-    [MemberData(nameof(Exclusion))]
+    [Test]
+    [MethodDataSource(nameof(Exclusion))]
     public void Exclusives(string reference, string definition)
     {
         AllTypes.That()

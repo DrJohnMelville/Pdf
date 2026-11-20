@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 
 public class S7_7_3PageTree
 {
-    [Fact]
+    [Test]
     public async Task CreateThreePagesAsync()
     {
         var doc = CreateThreePageSimpleDocument();
 
         var pagesAsync = await doc.PagesAsync();
         Assert.Equal(3, await pagesAsync.CountAsync());
-        Assert.Equal(3, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync(TestContext.Current.CancellationToken));
+        Assert.Equal(3, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync());
     }
 
     private static PdfDocument CreateThreePageSimpleDocument()
@@ -31,15 +30,15 @@ public class S7_7_3PageTree
         return doc;
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(1)]
+    [Arguments(2)]
     public async Task GetSimplePageFromIndexAsync(int position)
     {
         var doc = CreateThreePageSimpleDocument();
         var pagesTree = await doc.PagesAsync();
-        Assert.Equal((await pagesTree.ElementAtAsync(position, TestContext.Current.CancellationToken)).LowLevel,
+        Assert.Equal((await pagesTree.ElementAtAsync(position)).LowLevel,
             (await pagesTree.GetPageAsync(position+1)).LowLevel);
         
     }
@@ -55,19 +54,19 @@ public class S7_7_3PageTree
         var doc = new PdfDocument(creator.CreateDocument());
         return doc;
     }
-    [Fact]
+    [Test]
     public async Task CreateComplexThreePagesAsync()
     {
         var doc = CreateFourPageComplexDocument();
 
         Assert.Equal(4, await (await doc.PagesAsync()).CountAsync());
-        Assert.Equal(4, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync(TestContext.Current.CancellationToken));
+        Assert.Equal(4, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync());
     }
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
+    [Test]
+    [Arguments(0)]
+    [Arguments(1)]
+    [Arguments(2)]
+    [Arguments(3)]
     public async Task GetComplexPageFromIndexAsync(int position)
     {
         var doc = CreateFourPageComplexDocument();
@@ -83,7 +82,7 @@ public class S7_7_3PageTree
         Assert.Equal(btIndex.LowLevel, byPageNumber.LowLevel);
     }
 
-    [Fact]
+    [Test]
     public async Task DefaultTreeSizeTestAsync()
     {
         var doc = FifteenPageDocumentTree();
@@ -117,7 +116,7 @@ public class S7_7_3PageTree
         return doc;
     }
 
-    [Fact]
+    [Test]
     public async Task TestMultiLevelTreeaccessAsync()
     {
         var doc = FifteenPageDocumentTree();

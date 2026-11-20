@@ -6,7 +6,6 @@ using System;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 

@@ -3,13 +3,12 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Postscript.Interpreter.Values;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
 public class AddIdentifiertests
 {
-    [Fact]
+    [Test]
     public void EnsureBuilderHasIdentifierTest()
     {
         var builder = new LowLevelDocumentBuilder();
@@ -17,7 +16,7 @@ public class AddIdentifiertests
         builder.EnsureDocumentHasId();
         Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out var idObj));
     }
-    [Fact]
+    [Test]
     public async Task DoNotAddIfAlreadyIdentifiedAsync()
     {
         var builder = new LowLevelDocumentBuilder();
@@ -27,7 +26,7 @@ public class AddIdentifiertests
         Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out var idObj2));
         Assert.Equal(await idObj, await idObj2);
     }
-    [Fact]
+    [Test]
     public async Task IDHas2ProperStringElementsAsync()
     {
         var builder = new LowLevelDocumentBuilder();

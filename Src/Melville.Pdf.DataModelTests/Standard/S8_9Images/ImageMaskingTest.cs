@@ -4,7 +4,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
@@ -39,7 +38,7 @@ public class ImageMaskingTest
     }
 
 
-    [Fact]
+    [Test]
     public async Task SoftMaskEqualDimensionsAsync()
     {
         var result = await MaskedBitmapAsync(3, 3, new byte[]
@@ -54,14 +53,14 @@ public class ImageMaskingTest
             70, 80, 90
         });
 
-        Assert.Equal(new byte[]
+        Assert.SeqEqual(new byte[]
         {
             0, 0, 0, 0, 20, 20, 20, 255, 0, 0, 0, 0,
             40, 40, 40, 255, 0, 0, 0, 0, 60, 60, 60, 255,
             0, 0, 0, 0, 80, 80, 80, 255, 44, 44, 44, 128,
         }, result);
     }
-    [Fact]
+    [Test]
     public async Task SoftMaskBigImageAsync()
     {
         var result = await MaskedBitmapAsync(3, 3, new byte[]
@@ -79,7 +78,7 @@ public class ImageMaskingTest
             70,70, 80,80, 90,90,
         });
 
-        Assert.Equal(new byte[]
+        Assert.SeqEqual(new byte[]
         {
             0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 255,20, 20, 20, 255, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 255,20, 20, 20, 255, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -89,7 +88,7 @@ public class ImageMaskingTest
             0, 0, 0, 0,0, 0, 0, 0, 80, 80, 80, 255, 80, 80, 80, 255, 44, 44, 44, 128,44, 44, 44, 128,
         }, result);
     }
-    [Fact]
+    [Test]
     public async Task SoftMaskBigMaskAsync()
     {
         var result = await MaskedBitmapAsync(6,6, new byte[]
@@ -107,7 +106,7 @@ public class ImageMaskingTest
             70, 80, 90
         });
 
-        Assert.Equal(new byte[]
+        Assert.SeqEqual(new byte[]
         {
             0, 0, 0, 0, 20, 20, 20, 255, 0, 0, 0, 0,
             40, 40, 40, 255, 0, 0, 0, 0, 60, 60, 60, 255,

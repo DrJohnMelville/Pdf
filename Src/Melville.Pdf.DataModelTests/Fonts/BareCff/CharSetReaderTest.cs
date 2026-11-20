@@ -7,7 +7,6 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.BareCff;
 
@@ -37,13 +36,13 @@ public class CharSetReaderTest
 
     }
 
-    [Fact]
+    [Test]
     public async Task ReadType0Async()
     {
         (await ReadTableAsync("00 0001 0002 0100", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
-    [Fact]
+    [Test]
     public async Task ReadType0toIntsAsync()
     {
         using var source = MultiplexSourceFactory.Create("00 0001 0002 0100".BitsFromHex());
@@ -54,13 +53,13 @@ public class CharSetReaderTest
             .ReadCharSetAsync().CA()).Target.ToArray().Should().BeEquivalentTo(
             [0, 01, 02, 256]);
     }
-    [Fact]
+    [Test]
     public async Task ReadType1Async()
     {
         (await ReadTableAsync("01 0001 01 0100 00", 4))
             .Should().BeEquivalentTo([".notdef", "space","exclam", "dsuperior"]);
     }
-    [Fact]
+    [Test]
     public async Task ReadType2Async()
     {
         (await ReadTableAsync("02 0001 0001 0100 0000", 4))

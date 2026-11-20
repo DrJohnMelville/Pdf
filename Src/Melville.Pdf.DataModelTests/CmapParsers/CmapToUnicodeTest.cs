@@ -3,34 +3,37 @@ using Melville.Pdf.ReferenceDocuments.Utility;
 using System;
 using System.Globalization;
 using System.Linq;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;
 
-public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
+public partial class CmapToCodeTest
 {
-    [FromConstructor] private readonly ParsedCMaps maps;
+    private static readonly ParsedCMaps maps = new ParsedCMaps();
 
-    [Theory]
-    [InlineData(0, "10", "0000" , 1)]
-    [InlineData(0, "19", "0000" , 1)]
-    [InlineData(0, "20", "0001" , 1)]
-    [InlineData(0, "21", "0002" , 1)]
-    [InlineData(0, "30", "0011" , 1)]
-    [InlineData(0, "7D", "005E" , 1)]
-    [InlineData(0, "7E", "005F" , 1)]
-    [InlineData(0, "7F", "000F" , 1)]
-    [InlineData(0, "8147", "0000" , 2)]
-    [InlineData(0, "8148", "8149" , 2)]
-    [InlineData(1, "3A51", "D840DC3E" , 2)]
-    [InlineData(1, "0000", "12340020" , 2)]
-    [InlineData(1, "0001", "12340021" , 2)]
-    [InlineData(1, "0010", "12340030" , 2)]
-    [InlineData(1, "005F", "00660066" , 2)]
-    [InlineData(1, "0060", "00660069" , 2)]
-    [InlineData(1, "0061", "00660066006C" , 2)]
-    [InlineData(1, "3A52", "0397" , 2)]
-    [InlineData(2, "01", "0020" , 1)]
+    [Before(HookType.Class)]
+    public static ValueTask InitializeMaps() => maps.InitializeAsync();
+
+    [Test]
+    [Arguments(0, "10", "0000" , 1)]
+    [Arguments(0, "19", "0000" , 1)]
+    [Arguments(0, "20", "0001" , 1)]
+    [Arguments(0, "21", "0002" , 1)]
+    [Arguments(0, "30", "0011" , 1)]
+    [Arguments(0, "7D", "005E" , 1)]
+    [Arguments(0, "7E", "005F" , 1)]
+    [Arguments(0, "7F", "000F" , 1)]
+    [Arguments(0, "8147", "0000" , 2)]
+    [Arguments(0, "8148", "8149" , 2)]
+    [Arguments(1, "3A51", "D840DC3E" , 2)]
+    [Arguments(1, "0000", "12340020" , 2)]
+    [Arguments(1, "0001", "12340021" , 2)]
+    [Arguments(1, "0010", "12340030" , 2)]
+    [Arguments(1, "005F", "00660066" , 2)]
+    [Arguments(1, "0060", "00660069" , 2)]
+    [Arguments(1, "0061", "00660066006C" , 2)]
+    [Arguments(1, "3A52", "0397" , 2)]
+    [Arguments(2, "01", "0020" , 1)]
     public void CMapTest(int map, string hexSource, string hexDest, int expecteDConsumed)
     {
         var soura = hexSource.BitsFromHex();
@@ -41,7 +44,7 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
             result.ToArray().Select(i=> i.ToString("X4", CultureInfo.InvariantCulture))));
     }
 
-    [Fact]
+    [Test]
     public void CMapWithInsufficientBufferText()
     {
         var soura = "0061".BitsFromHex();

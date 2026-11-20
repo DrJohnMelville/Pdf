@@ -1,12 +1,11 @@
 ﻿using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Execution;
 
 public class ExecutionTest
 {
-    [Fact]
+    [Test]
     public void PushThreeInts()
     {
         var engine = ExcutedEngine("5 10 15");
@@ -24,7 +23,7 @@ public class ExecutionTest
         return engine;
     }
 
-    [Fact]
+    [Test]
     public void PushThreeDoubles()
     {
         var engine = ExcutedEngine("15.1 10.2 15.");
@@ -33,7 +32,7 @@ public class ExecutionTest
         Assert.Equal(10.2, engine.OperandStack.Pop().Get<double>(), 1);
         Assert.Equal(15.1, engine.OperandStack.Pop().Get<double>(), 1);
     }
-    [Fact]
+    [Test]
     public void PushOneString()
     {
         var engine = ExcutedEngine("(Hello)");
@@ -41,7 +40,7 @@ public class ExecutionTest
         Assert.Equal("(Hello)", engine.OperandStack.Pop().ToString());
     }
 
-    [Fact]
+    [Test]
     public void PushTwoLiteralNames()
     {
         var engine = ExcutedEngine("/Hello/World");
@@ -49,7 +48,7 @@ public class ExecutionTest
         Assert.Equal("/World", engine.OperandStack.Pop().ToString());
         Assert.Equal("/Hello", engine.OperandStack.Pop().ToString());
     }
-    [Fact]
+    [Test]
     public void ExecuteName()
     {
         var engine = ExcutedEngine("true");

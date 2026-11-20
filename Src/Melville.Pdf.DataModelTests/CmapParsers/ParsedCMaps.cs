@@ -6,11 +6,10 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;
 
-public class ParsedCMaps: IAsyncLifetime
+public class ParsedCMaps
 {
     public IReadCharacter[] Maps { get; } = new IReadCharacter[3];
 
@@ -20,8 +19,6 @@ public class ParsedCMaps: IAsyncLifetime
         Maps[1] = await ParseMapAsync(UnicodeCMapFromSpec);
         Maps[2] = await ParseMapAsync(BrokenFromPdfFile);
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     private async ValueTask<IReadCharacter> ParseMapAsync(string text)
     {

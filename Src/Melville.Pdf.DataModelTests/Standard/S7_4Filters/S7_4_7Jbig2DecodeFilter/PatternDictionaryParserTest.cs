@@ -4,7 +4,6 @@ using Melville.JBig2.SegmentParsers;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.StreamInterfaces.ParsingBuffers;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -21,9 +20,9 @@ public class PatternDictionaryParserTest
         return Parse(data.BitsFromHex());
     }
 
-    [Theory]
-    [InlineData("01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80")]
-    [InlineData("06 04 04 0000000F 90 71 6B 6D 99 A7 AA 49 7D F2 E5 48 1F DC 68 BC 6E 40 BB FF AC")]
+    [Test]
+    [Arguments("01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80")]
+    [Arguments("06 04 04 0000000F 90 71 6B 6D 99 A7 AA 49 7D F2 E5 48 1F DC 68 BC 6E 40 BB FF AC")]
     public void ParseExamplePatternDictionary(string data)
     {
         var sut = SampleSegment(data);

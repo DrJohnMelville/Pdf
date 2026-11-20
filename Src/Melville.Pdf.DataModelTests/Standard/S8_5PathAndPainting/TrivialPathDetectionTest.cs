@@ -4,7 +4,6 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 
@@ -25,7 +24,7 @@ public class TrivialPathDetectionTest
         graphicsState.Setup(i => i.CurrentState()).Returns(graphicStatMock);
     }
 
-    [Fact]
+    [Test]
     public void BlockTrivialPathFills()
     {
         sut.MoveTo(10, 10);
@@ -39,7 +38,7 @@ public class TrivialPathDetectionTest
         drawTarget.Verify(i => i.PaintPath(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()), times);
     }
 
-    [Fact]
+    [Test]
     public void DrawNonTrivialLine()
     {
         sut.MoveTo(10, 10);
@@ -47,7 +46,7 @@ public class TrivialPathDetectionTest
         sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Once);
     }
-    [Fact]
+    [Test]
     public void DrawQuadraticCurve()
     {
         sut.MoveTo(10, 10);
@@ -56,10 +55,10 @@ public class TrivialPathDetectionTest
         VerifyTotalDraw(Times.Once);
     }
 
-    [Theory]
-    [InlineData(LineCap.Round, 1)]
-    [InlineData(LineCap.Butt, 0)]
-    [InlineData(LineCap.Square, 0)]
+    [Test]
+    [Arguments(LineCap.Round, 1)]
+    [Arguments(LineCap.Butt, 0)]
+    [Arguments(LineCap.Square, 0)]
     public void TrivialLineDraw(LineCap cap, int numberOfDraws)
     {
         SetLineCapMode(cap);
@@ -68,10 +67,10 @@ public class TrivialPathDetectionTest
         sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Exactly(numberOfDraws));
     }
-    [Theory]
-    [InlineData(LineCap.Round, 1)]
-    [InlineData(LineCap.Butt, 0)]
-    [InlineData(LineCap.Square, 0)]
+    [Test]
+    [Arguments(LineCap.Round, 1)]
+    [Arguments(LineCap.Butt, 0)]
+    [Arguments(LineCap.Square, 0)]
     public void TrivialClosedPathDraw(LineCap cap, int numberOfDraws)
     {
         SetLineCapMode(cap);
@@ -80,10 +79,10 @@ public class TrivialPathDetectionTest
         sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Exactly(numberOfDraws));
     }
-    [Theory]
-    [InlineData(LineCap.Round)]
-    [InlineData(LineCap.Butt)]
-    [InlineData(LineCap.Square)]
+    [Test]
+    [Arguments(LineCap.Round)]
+    [Arguments(LineCap.Butt)]
+    [Arguments(LineCap.Square)]
     public void TrivialDrawAtEndDoesNotCancelPainting(LineCap cap)
     {
         SetLineCapMode(cap);

@@ -1,12 +1,11 @@
 ﻿using System;
 using Melville.Icc.Model.Tags;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class MultiProcessTagTest
 {
-    [Fact]
+    [Test]
     public void SingleTransformTest()
     {
         var tag = new MultiProcessTag(new MultiProcessMatrix(1, 2, 2, 3, 0, 0));
@@ -18,7 +17,7 @@ public class MultiProcessTagTest
         Assert.Equal(2, output[0]);
         Assert.Equal(3, output[1]);
     }
-    [Fact]
+    [Test]
     public void DoubleTransformTest()
     {
         var tag = new MultiProcessTag(
@@ -29,7 +28,7 @@ public class MultiProcessTagTest
         tag.Transform(input, output);
         Assert.Equal(7, output[0]);
     }
-    [Fact]
+    [Test]
     public void TrippleTransformTest()
     {
         var tag = new MultiProcessTag(

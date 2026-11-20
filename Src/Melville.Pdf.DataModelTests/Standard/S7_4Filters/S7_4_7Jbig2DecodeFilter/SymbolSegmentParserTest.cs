@@ -4,7 +4,6 @@ using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.SegmentParsers.SymbolDictonaries;
 using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
 
@@ -16,7 +15,7 @@ public class SymbolSegmentParserTest
             referredTo.AsSpan()).Parse();
     }
 
-    [Fact]
+    [Test]
     public void Example1FromStandard()
     {
         var data = "00 01 00 00 00 01 00 00 00 01 E9 CB F4 00 26 AF 04 BF F0 78 2F E0 00 40";
@@ -30,9 +29,9 @@ public class SymbolSegmentParserTest
         
     }
 
-    [Theory]
-    [InlineData("0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80")]
-    [InlineData("08 00 02 FF 00 00 00 02 00 00 00 02 4F E7 8C 20 0E 1D C7 CF 01 11 C4 B2 6F FF AC")]
+    [Test]
+    [Arguments("0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80")]
+    [Arguments("08 00 02 FF 00 00 00 02 00 00 00 02 4F E7 8C 20 0E 1D C7 CF 01 11 C4 B2 6F FF AC")]
     public void Example2FromStandard(string data)
     {
         var sut = ParseSymbolDictionary(data);
@@ -51,7 +50,7 @@ public class SymbolSegmentParserTest
     private static void VerifyCharacterA(IBinaryBitmap symbol) => 
         Assert.Equal(".BBBB.\r\n.....B\r\n.BBBBB\r\nB....B\r\nB....B\r\n.BBBBB", symbol.BitmapString());
 
-    [Fact]
+    [Test]
     public void RefinementDictionaryTest()
     {
         // segment number 0x16

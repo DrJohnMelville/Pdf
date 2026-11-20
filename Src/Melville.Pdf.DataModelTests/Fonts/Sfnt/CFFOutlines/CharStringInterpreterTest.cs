@@ -11,7 +11,6 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
 
@@ -67,46 +66,46 @@ public class CharStringInterpreterTest: IDisposable
         await sut.RenderCffGlyphAsync(0, new MockSpanFilter(target.Object), mat);
     }
 
-    [Fact]
+    [Test]
     public async Task RMoveToAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 15");
         target.Verify(i=>i.MoveTo(new Vector2(1, 2)));
     }
     
-    [Fact]
+    [Test]
     public async Task WithMatrixAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 15", Matrix3x2.CreateScale(5,10));
         target.Verify(i=>i.MoveTo(new Vector2(5, 20)));
     }
-    [Fact]
+    [Test]
     public async Task RMoveToWithWidthAsync()
     {
         await ExecuteInstructionAsync("1C00FF 1C0001 1C0002 15");
         target.Verify(i=> i.RelativeCharWidth(255));
         target.Verify(i=>i.MoveTo(new Vector2(1, 2)));
     }
-    [Fact]
+    [Test]
     public async Task HMoveToAsync()
     {
         await ExecuteInstructionAsync("1C0002 16");
         target.Verify(i=>i.MoveTo(new Vector2(2, 0)));
     }
-    [Fact]
+    [Test]
     public async Task HMoveToWithWidthAsync()
     {
         await ExecuteInstructionAsync("1C00ff 1C0002 16");
         target.Verify(i=>i.RelativeCharWidth(255));
         target.Verify(i=>i.MoveTo(new Vector2(2, 0)));
     }
-    [Fact]
+    [Test]
     public async Task VMoveToAsync()
     {
         await ExecuteInstructionAsync("1C0002 04");
         target.Verify(i=>i.MoveTo(new Vector2(0, 2)));
     }
-    [Fact]
+    [Test]
     public async Task VMoveToWithWidthAsync()
     {
         await ExecuteInstructionAsync("1C00ff 1C0002 04");
@@ -114,13 +113,13 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.MoveTo(new Vector2(0, 2)));
     }
 
-    [Fact]
+    [Test]
     public async Task SingleRLineToAsync()
     {
         await ExecuteInstructionAsync("1c0001 1c0002 05");
         target.Verify(i=>i.LineTo(new Vector2(1, 2)));
     }
-    [Fact]
+    [Test]
     public async Task MultiRLineToAsync()
     {
         await ExecuteInstructionAsync("1c0001 1c0002 1c0003 1c0004 05");
@@ -128,14 +127,14 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(4, 6)));
     }
 
-    [Fact]
+    [Test]
     public async Task SingleHLineToAsync()
     {
         await ExecuteInstructionAsync("1c0005 06");
         target.Verify(i=>i.LineTo(new Vector2(5,0)));
     }
 
-    [Fact]
+    [Test]
     public async Task MultiHLineToOddAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 1c0005 06");
@@ -145,7 +144,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(4,6)));
         target.Verify(i=>i.LineTo(new Vector2(9,6)));
     }
-    [Fact]
+    [Test]
     public async Task MultiHLineToEvenAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 06");
@@ -154,7 +153,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(4,2)));
         target.Verify(i=>i.LineTo(new Vector2(4,6)));
     }
-    [Fact]
+    [Test]
     public async Task MultiVLineToOddAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 1c0005 07");
@@ -164,7 +163,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(6, 4)));
         target.Verify(i=>i.LineTo(new Vector2(6, 9)));
     }
-    [Fact]
+    [Test]
     public async Task MultiVLineToEvenAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 07");
@@ -173,7 +172,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(2, 4)));
         target.Verify(i=>i.LineTo(new Vector2(6, 4)));
     }
-    [Fact]
+    [Test]
     public async Task MultiRRCurveToAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 1c0005 1c0006" +
@@ -183,7 +182,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(16,20), new Vector2(25,30), new Vector2(36,42)));
     }
-    [Fact]
+    [Test]
     public async Task MultiHHCurveToEvenAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
@@ -193,7 +192,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(14,3), new Vector2(22,12), new Vector2(32,12)));
     }
-    [Fact]
+    [Test]
     public async Task MultiHHCurveToOddAsync()
     {
         await ExecuteInstructionAsync("1C000B 1C0001 1C0002 1c0003 1c0004" +
@@ -203,7 +202,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(14,14), new Vector2(22,23), new Vector2(32,23)));
     }
-    [Fact]
+    [Test]
     public async Task MultiHVCurveToMod4Async()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
@@ -213,7 +212,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(3,14), new Vector2(11, 23), new Vector2(21,23)));
     }
-    [Fact]
+    [Test]
     public async Task MultiHVCurveToWithTrailerAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
@@ -223,7 +222,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(3,14), new Vector2(11, 23), new Vector2(21,34)));
     }
-    [Fact]
+    [Test]
     public async Task MultiRRCurveLineAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004 1c0005 1c0006" +
@@ -236,7 +235,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(49, 56)));
     }
 
-    [Fact]
+    [Test]
     public async Task RLineCurveTestAsync()
     {
         await ExecuteInstructionAsync("1c0001 1c0002 1c0003 1c0004 " +
@@ -246,7 +245,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(9,12), new Vector2(16,20), new Vector2(25,30)));
     }
-    [Fact]
+    [Test]
     public async Task MultiVHCurveToMod4Async()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
@@ -257,7 +256,7 @@ public class CharStringInterpreterTest: IDisposable
             new Vector2(13,4), new Vector2(21,13), new Vector2(21,23)));
     }
 
-    [Fact]
+    [Test]
     public async Task MultiVVCurveToEvenAsync()
     {
         await ExecuteInstructionAsync("1C0001 1C0002 1c0003 1c0004" +
@@ -267,7 +266,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(
             new Vector2(2,15), new Vector2(10,24), new Vector2(10,34)));
     }
-    [Fact]
+    [Test]
     public async Task MultiVVCurveToOddAsync()
     {   
         await ExecuteInstructionAsync("1C000B 1C0001 1C0002 1c0003 1c0004" +
@@ -278,7 +277,7 @@ public class CharStringInterpreterTest: IDisposable
             new Vector2(13,15), new Vector2(21,24), new Vector2(21,34)));
     }
 
-    [Fact]
+    [Test]
     public async Task TestSimpleFlexToCurvesAsync()
     {
         await ExecuteInstructionAsync("1C0001 1c0000    1c0000 1c0002    1c0002 1c0000" +
@@ -289,7 +288,7 @@ public class CharStringInterpreterTest: IDisposable
     }
     /*
      for right now we have disabled flex shortcuts
-    [Fact]
+    [Test]
     public async Task TestSimpleFlexToLineAsync()
     {
         await ExecuteInstructionAsync("1C0001 1c0000    1c0000 1c0002    1c0002 1c0000" +
@@ -298,7 +297,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.LineTo(new Vector2(0.5f, 0)));
     }
     */
-    [Fact]
+    [Test]
     public async Task TestHFlexToCurvesAsync()
     {
         await ExecuteInstructionAsync("1C0001  1c0000 1c0002    1c0002 " +
@@ -307,7 +306,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(new Vector2(1,0), new Vector2(1,2), new Vector2(3,2)));
         target.Verify(i=>i.CurveTo(new Vector2(4,2), new Vector2(4,0),new Vector2(5,0)));
     }
-    [Fact]
+    [Test]
     public async Task TestHFlex1ToCurvesAsync()
     {
         await ExecuteInstructionAsync("1C0001 1c0000  1c0000 1c0002    1c0002 " +
@@ -316,7 +315,7 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(new Vector2(1,0), new Vector2(1,2), new Vector2(3,2)));
         target.Verify(i=>i.CurveTo(new Vector2(4,2), new Vector2(4,0),new Vector2(5,0)));
     }
-    [Fact]
+    [Test]
     public async Task TestFlex1ToCurvesAsync()
     {
         await ExecuteInstructionAsync("1C0001 1c0000  1c0000 1c0002    1c0002  1c0000" +
@@ -326,28 +325,28 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.CurveTo(new Vector2(4,2), new Vector2(4,0),new Vector2(5,0)));
     }
 
-    [Fact]
+    [Test]
     public async Task TestHstem3Async()
     {
         await ExecuteInstructionAsync("09");
         target.VerifyNoOtherCalls();
     }
 
-    [Fact]
+    [Test]
     public async Task TestEndCharOperatorAsync()
     {
         await ExecuteInstructionAsync("0E");
         target.Verify(i=>i.EndGlyph());
         target.VerifyNoOtherCalls();
     }
-    [Fact]
+    [Test]
     public async Task TestMultipleEndCharOperatorAsync()
     {
         await ExecuteInstructionAsync("0E0E");
         target.Verify(i=>i.EndGlyph(),Times.Once);
         target.VerifyNoOtherCalls();
     }
-    [Fact]
+    [Test]
     public async Task TestEndCharOperatorWithWidthAsync()
     {
         await ExecuteInstructionAsync("1c0005 0E");
@@ -356,17 +355,17 @@ public class CharStringInterpreterTest: IDisposable
         target.VerifyNoOtherCalls();
     }
     
-    [Theory]
-    [InlineData("09 0E")] // ClosePath
-    [InlineData("1c0001 1c0002 1c0003 1c0004 1c0005 1c0006 0C02 0E")] // hstem3
-    [InlineData("1c0001 1c0002 01 0E")]
-    [InlineData("1c0001 1c0002 03 0E")]
-    [InlineData("1c0001 1c0002 12 0E")]
-    [InlineData("1c0001 1c0002 17 0E")]
-    [InlineData("1c0001 1c0002 17 13FF 0E")]
-    [InlineData("1c0001 1c0002 17 1c0003 1c0004 1c0005 1c0006 1c0007 1c0008 1c0009 1c000A 1c000B 1c000C 1c000D 1c000E 1c000F 1c0010 1c0011 1c0012 13FFFE 0E")]
-    [InlineData("1c0001 1c0002 17 14FF 0E")]
-    [InlineData("1c0001 1c0002 17 1c0003 1c0004 1c0005 1c0006 1c0007 1c0008 1c0009 1c000A 1c000B 1c000C 1c000D 1c000E 1c000F 1c0010 1c0011 1c0012 14FFFE 0E")]
+    [Test]
+    [Arguments("09 0E")] // ClosePath
+    [Arguments("1c0001 1c0002 1c0003 1c0004 1c0005 1c0006 0C02 0E")] // hstem3
+    [Arguments("1c0001 1c0002 01 0E")]
+    [Arguments("1c0001 1c0002 03 0E")]
+    [Arguments("1c0001 1c0002 12 0E")]
+    [Arguments("1c0001 1c0002 17 0E")]
+    [Arguments("1c0001 1c0002 17 13FF 0E")]
+    [Arguments("1c0001 1c0002 17 1c0003 1c0004 1c0005 1c0006 1c0007 1c0008 1c0009 1c000A 1c000B 1c000C 1c000D 1c000E 1c000F 1c0010 1c0011 1c0012 13FFFE 0E")]
+    [Arguments("1c0001 1c0002 17 14FF 0E")]
+    [Arguments("1c0001 1c0002 17 1c0003 1c0004 1c0005 1c0006 1c0007 1c0008 1c0009 1c000A 1c000B 1c000C 1c000D 1c000E 1c000F 1c0010 1c0011 1c0012 14FFFE 0E")]
     public async Task IgnoreHintTestAsync(string code)
     {
         await ExecuteInstructionAsync(code);
@@ -374,12 +373,12 @@ public class CharStringInterpreterTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData("1c0005 1c0001 1c0002 01 0e")]
-    [InlineData("1c0005 1c0001 1c0002 03 0e")]
-    [InlineData("1c0005 1c0001 1c0002 12 0e")]
-    [InlineData("1c0005 1c0001 1c0002 17 0e")]
-    [InlineData("1c0005 13 0E")]
+    [Test]
+    [Arguments("1c0005 1c0001 1c0002 01 0e")]
+    [Arguments("1c0005 1c0001 1c0002 03 0e")]
+    [Arguments("1c0005 1c0001 1c0002 12 0e")]
+    [Arguments("1c0005 1c0001 1c0002 17 0e")]
+    [Arguments("1c0005 13 0E")]
     public async Task HintWithWidthTestAsync(string code)
     {
         await ExecuteInstructionAsync(code);
@@ -388,36 +387,36 @@ public class CharStringInterpreterTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData("1c0004 0c09 0E", 4f)]
-    [InlineData("1cFFFE 0c09 0E", 2f)]
-    [InlineData("1c0001 1c0002 0c0A 0E", 3f)]
-    [InlineData("1c0009 1c0006 0c0B 0E", 3f)]
-    [InlineData("1c0008 1c0004 0c0C 0E", 2f)]
-    [InlineData("1c0008 1c0004 0c18 0E", 32f)]
-    [InlineData("1c0008 0c0E 0E", -8f)]
-    [InlineData("1c0009 0c1A 0E", 3f)]
-    [InlineData("1c0001 1c0002 0c12 0E", 1f)]
+    [Test]
+    [Arguments("1c0004 0c09 0E", 4f)]
+    [Arguments("1cFFFE 0c09 0E", 2f)]
+    [Arguments("1c0001 1c0002 0c0A 0E", 3f)]
+    [Arguments("1c0009 1c0006 0c0B 0E", 3f)]
+    [Arguments("1c0008 1c0004 0c0C 0E", 2f)]
+    [Arguments("1c0008 1c0004 0c18 0E", 32f)]
+    [Arguments("1c0008 0c0E 0E", -8f)]
+    [Arguments("1c0009 0c1A 0E", 3f)]
+    [Arguments("1c0001 1c0002 0c12 0E", 1f)]
     //and
-    [InlineData("1c0000 1c0000 0c03 0E", 0f)]
-    [InlineData("1c0005 1c0000 0c03 0E", 0f)]
-    [InlineData("1c0000 1c0006 0c03 0E", 0f)]
-    [InlineData("1c0004 1c0006 0c03 0E", 1f)]
+    [Arguments("1c0000 1c0000 0c03 0E", 0f)]
+    [Arguments("1c0005 1c0000 0c03 0E", 0f)]
+    [Arguments("1c0000 1c0006 0c03 0E", 0f)]
+    [Arguments("1c0004 1c0006 0c03 0E", 1f)]
     //or
-    [InlineData("1c0000 1c0000 0c04 0E", 0f)]
-    [InlineData("1c0005 1c0000 0c04 0E", 1f)]
-    [InlineData("1c0000 1c0006 0c04 0E", 1f)]
-    [InlineData("1c0004 1c0006 0c04 0E", 1f)]
+    [Arguments("1c0000 1c0000 0c04 0E", 0f)]
+    [Arguments("1c0005 1c0000 0c04 0E", 1f)]
+    [Arguments("1c0000 1c0006 0c04 0E", 1f)]
+    [Arguments("1c0004 1c0006 0c04 0E", 1f)]
     //not
-    [InlineData("1c0000 0c05 0E", 1f)]
-    [InlineData("1c000A 0c05 0E", 0f)]
+    [Arguments("1c0000 0c05 0E", 1f)]
+    [Arguments("1c000A 0c05 0E", 0f)]
     //Equal
-    [InlineData("1c0000 1c0000 0c0F 0E", 1f)]
-    [InlineData("1c000A 1c0000 0c0F 0E", 0f)]
+    [Arguments("1c0000 1c0000 0c0F 0E", 1f)]
+    [Arguments("1c000A 1c0000 0c0F 0E", 0f)]
     //If
-    [InlineData("1c0001 1c0002 1c0003 1c0004 0c16 0E", 1f)]
-    [InlineData("1c0001 1c0002 1c0004 1c0004 0c16 0E", 1f)]
-    [InlineData("1c0001 1c0002 1c0005 1c0004 0c16 0E", 2f)]
+    [Arguments("1c0001 1c0002 1c0003 1c0004 0c16 0E", 1f)]
+    [Arguments("1c0001 1c0002 1c0004 1c0004 0c16 0E", 1f)]
+    [Arguments("1c0001 1c0002 1c0005 1c0004 0c16 0E", 2f)]
     public async Task MathOperationsAsync(string code, float topValue)
     {
         await ExecuteInstructionAsync(code);
@@ -426,13 +425,13 @@ public class CharStringInterpreterTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData("1c0001 1c0002 0c21 1c0000 1c0000 15", 0f, 0f)]
-    [InlineData("1c0001 1c0002 0c1c 15", 2f, 1f)]
-    [InlineData("1c0001 1c0002 1c0002 1c0003 0c1E 15", 2f, 1f)]
-    [InlineData("1c0001 1c0002 1c0002 1cFFFF 0c1E 15", 2f, 1f)]
-    [InlineData("1c0001 0c1B 15", 1f, 1f)]
-    [InlineData("1c0007 1c0005 0C14 1C0006 1C0005 0C15 15", 6f, 7f)]
+    [Test]
+    [Arguments("1c0001 1c0002 0c21 1c0000 1c0000 15", 0f, 0f)]
+    [Arguments("1c0001 1c0002 0c1c 15", 2f, 1f)]
+    [Arguments("1c0001 1c0002 1c0002 1c0003 0c1E 15", 2f, 1f)]
+    [Arguments("1c0001 1c0002 1c0002 1cFFFF 0c1E 15", 2f, 1f)]
+    [Arguments("1c0001 0c1B 15", 1f, 1f)]
+    [Arguments("1c0007 1c0005 0C14 1C0006 1C0005 0C15 15", 6f, 7f)]
     public async Task MathOperationsDoubleRetAsync(string code, float bottom, float topValue)
     {
         await ExecuteInstructionAsync(code);
@@ -440,20 +439,20 @@ public class CharStringInterpreterTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Fact]
+    [Test]
     public async Task TestRandomAsync()
     {
         await ExecuteInstructionAsync("0c17 0e");
         target.Verify(i=>i.RelativeCharWidth(It.IsAny<float>()));
         target.Verify(i=>i.EndGlyph());
     }
-    [Theory()]
-    [InlineData("""
+    [Test()]
+    [Arguments("""
         1c0001 1c0002 1c0003 1c0004 0c07
         1c0000 04
         0E
         """)]
-    [InlineData("""
+    [Arguments("""
         1c0001 1c0003 0D
         1c0000 04
         0E
@@ -464,14 +463,14 @@ public class CharStringInterpreterTest: IDisposable
         target.Verify(i=>i.RelativeCharWidth(3));
         target.Verify(i=>i.EndGlyph());
     }
-    [Fact]
+    [Test]
     public async Task CallSubroutineTestAsync()
     {
         await ExecuteInstructionAsync("1c0002 0A");
         localSubrs.Verify(i=>i.CallAsync(2,
             It.IsAny<ICffInstructionExecutor>()));
     }
-    [Fact]
+    [Test]
     public async Task CallGlobalSubroutineTestAsync()
     {
         await ExecuteInstructionAsync("1c0002 1D");
@@ -479,7 +478,7 @@ public class CharStringInterpreterTest: IDisposable
             It.IsAny<ICffInstructionExecutor>()));
     }
 
-    [Fact]
+    [Test]
     public async Task Type1FlexAsync()
     {
         await ExecuteInstructionAsync("""

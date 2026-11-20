@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.Postscript.Interpreter.Values;
-using Xunit;
 using V6Encryptor = Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6.V6Encryptor;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;
@@ -28,7 +27,7 @@ public class RngStub : IRandomNumberSource
 
 public class V6Creator
 {
-    [Fact]
+    [Test]
     public async Task ComputeV6EncryptDictionaryAsync()
     {
         var rng = new RngStub(

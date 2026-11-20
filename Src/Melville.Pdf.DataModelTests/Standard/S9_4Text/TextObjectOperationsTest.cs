@@ -2,13 +2,12 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
 public class TextObjectOperationsTest : WriterTest
 {
-    [Fact]
+    [Test]
     public async Task EmptyBlockAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -18,7 +17,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task MovePositionByAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -29,7 +28,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n3 4 Td\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task MovePositionByWithLeadingAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -40,7 +39,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n3 4 TD\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task SetTextMatrixAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -51,7 +50,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n1 2 3 4 5 6 Tm\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task ToNextLineAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -62,7 +61,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\nT*\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task ShowStringAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -73,7 +72,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n(ABC)Tj\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task NextLineAndShowStringAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -84,7 +83,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n(ABC)'\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task NextLineAndShowString2Async()
     {
         using (var block = sut.StartTextBlock())
@@ -95,7 +94,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task ShowSpacedStringAsync()
     {
         using (var block = sut.StartTextBlock())
@@ -106,7 +105,7 @@ public class TextObjectOperationsTest : WriterTest
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task ShowSpacedString2Async()
     {
         using (var block = sut.StartTextBlock())

@@ -5,7 +5,6 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_7CompositeFonts;
 
@@ -13,7 +12,7 @@ public class CompositeFontWidthParserTest
 {
     private readonly Mock<IRealizedFont> rf = new(MockBehavior.Strict);
 
-    [Fact]
+    [Test]
     public async Task ParseType1ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
@@ -30,7 +29,7 @@ public class CompositeFontWidthParserTest
         Assert.Equal(1f, sut.TryGetWidth(0x07) ?? 0);
         
     }
-    [Fact]
+    [Test]
     public async Task CanFollowType1DeclAsync()
     {
         var font = new PdfFont(new DictionaryBuilder()
@@ -48,7 +47,7 @@ public class CompositeFontWidthParserTest
         Assert.Equal(1233*1f/1000, sut.TryGetWidth(0x07) ?? 0,3);
         
     }
-    [Fact]
+    [Test]
     public async Task CanFollowType2DeclAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
@@ -66,7 +65,7 @@ public class CompositeFontWidthParserTest
         Assert.Equal(1233*1f/1000, sut.TryGetWidth(0x07) ?? 0,3);
         
     }
-    [Fact]
+    [Test]
     public async Task ParseType2ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()

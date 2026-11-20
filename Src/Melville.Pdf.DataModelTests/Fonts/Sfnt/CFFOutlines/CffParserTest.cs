@@ -5,7 +5,6 @@ using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Sfnt.CFFOutlines;
 
@@ -29,7 +28,7 @@ public class CffParserTest:IDisposable
 
     public void Dispose() => source.Dispose();
 
-    [Fact]
+    [Test]
     public async Task ParseCFFStreamAsync()
     {
         var table = await 
@@ -38,7 +37,7 @@ public class CffParserTest:IDisposable
         table.GlyphCount.Should().Be(2);
     }
 
-    [Fact]
+    [Test]
     public async Task ParseBareCffFormatAsync()
     {
         var gf = await RootFontParser.ParseAsync(source);

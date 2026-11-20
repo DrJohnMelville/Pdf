@@ -2,7 +2,6 @@
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
@@ -11,14 +10,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode){}}")]
 public partial class S7_4_2AsciiHexDecodeFilter
 {
-    [Theory]
-    [InlineData("2020", "  ")]
-    [InlineData("7>70", "p")]
-    [InlineData("2020>", "  ")]
-    [InlineData("6464>", "dd")]
-    [InlineData("202>", "  ")]
-    [InlineData("707", "pp")]
-    [InlineData("20 \r\n\t 20", "  ")]
+    [Test]
+    [Arguments("2020", "  ")]
+    [Arguments("7>70", "p")]
+    [Arguments("2020>", "  ")]
+    [Arguments("6464>", "dd")]
+    [Arguments("202>", "  ")]
+    [Arguments("707", "pp")]
+    [Arguments("20 \r\n\t 20", "  ")]
     public Task SpecialCasesAsync(string encoded, string decoded) =>
         StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCIIHexDecode, default);
 

@@ -6,7 +6,6 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
@@ -32,7 +31,7 @@ public readonly struct MultiBufferWriter: IDisposable
 
 public class S7_5_7ObjectStreamExtends
 {
-    [Fact]
+    [Test]
     public async Task NonextndedStreamTestAsync()
     {
         using var mbs = CreateFile("""
@@ -54,7 +53,7 @@ public class S7_5_7ObjectStreamExtends
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
-    [Fact]
+    [Test]
     public async Task ExtendedStreamTestAsync()
     {
         using var mbs = CreateFile("""
@@ -85,7 +84,7 @@ public class S7_5_7ObjectStreamExtends
 
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
-    [Fact]
+    [Test]
     public async Task OverridePriorTestAsync()
     {
         {

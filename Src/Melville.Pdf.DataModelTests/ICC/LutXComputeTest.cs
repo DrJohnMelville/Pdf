@@ -1,15 +1,14 @@
 ﻿using System;
 using Melville.Icc.Model.Tags;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;
 
 public class LutXComputeTest
 {
-    [Theory]
-    [InlineData(0,0,1)]
-    [InlineData(.25,.25,.75)]
-    [InlineData(.75,.75,.25)]
+    [Test]
+    [Arguments(0,0,1)]
+    [Arguments(.25,.25,.75)]
+    [Arguments(.75,.75,.25)]
     public void InputCurveTest(float in0, float out0, float out1)
     {
         var tag = new LutXTag(2, 2, new float[] { 0, 1, 1, 0 },
@@ -21,10 +20,10 @@ public class LutXComputeTest
         
     }    
     
-    [Theory]
-    [InlineData(0,0,1)]
-    [InlineData(.25,.25,.75)]
-    [InlineData(.75,.75,.25)]
+    [Test]
+    [Arguments(0,0,1)]
+    [Arguments(.25,.25,.75)]
+    [Arguments(.75,.75,.25)]
     public void OutputCurveTest(float in0, float out0, float out1)
     {
         var tag = new LutXTag(2, 2, Array.Empty<float>(),
@@ -36,11 +35,11 @@ public class LutXComputeTest
         
     }
     
-    [Theory]
-    [InlineData(0,0,  0,0)]
-    [InlineData(1,1,  5,6)]
-    [InlineData(0.5, 0.5,   2.5, 3)]
-    [InlineData(0.5, 0,   1, 2.5)]
+    [Test]
+    [Arguments(0,0,  0,0)]
+    [Arguments(1,1,  5,6)]
+    [Arguments(0.5, 0.5,   2.5, 3)]
+    [Arguments(0.5, 0,   1, 2.5)]
     public void SimpleClut(float in0, float in1, float out0, float out1)
     {
         var sut = new LutXTag(2,2, Array.Empty<float>(), Matrix3x3.Identity, 
@@ -53,7 +52,7 @@ public class LutXComputeTest
         Assert.Equal(out1, output[1]);
     }
 
-    [Fact]
+    [Test]
     public void MatrixRotation()
     {
         var sut = new LutXTag(3, 3, Array.Empty<float>(),

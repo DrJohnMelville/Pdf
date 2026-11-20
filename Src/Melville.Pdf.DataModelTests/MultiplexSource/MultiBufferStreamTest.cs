@@ -11,13 +11,12 @@ using Melville.Parsing.ObjectRentals;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.SpanShould;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.MultiplexSource;
 
 public class MultiBufferStreamTest
 {
-    [Fact]
+    [Test]
     public void RoundTripStream()
     {
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
@@ -30,7 +29,7 @@ public class MultiBufferStreamTest
         buf2.Should().Be(numberedBuffer.AsSpan());
     }
 
-    [Fact]
+    [Test]
     public void SeekOfEndExtendsStream()
     {
         using var sut = WritableBuffer.Create(16);
@@ -46,7 +45,7 @@ public class MultiBufferStreamTest
         // the contents of jumped over sections are undefined.
     }
 
-    [Fact]
+    [Test]
     public void SerialRead()
     {
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
@@ -60,25 +59,25 @@ public class MultiBufferStreamTest
         buf2.FillBuffer(0, 16, reader.Read);
         buf2.AsSpan().Should().Be(numberedBuffer.AsSpan()[16..32]);
     }
-    [Fact]
+    [Test]
     public async Task RoundTripStreamAsync()
     {
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
         using var sut = WritableBuffer.Create(16);
         using var writer = sut.WritingStream();
-        await writer.WriteAsync(numberedBuffer, 0, 256, TestContext.Current.CancellationToken);
+        await writer.WriteAsync(numberedBuffer, 0, 256);
         var buf2 = new byte[256];
         using var reader = sut.ReadFrom(0);
         await buf2.FillBufferAsync(0, 256, reader);
         buf2.Should().Be(numberedBuffer);
     }
-    [Fact]
+    [Test]
     public async Task RoundTripStreamWithSeekAsync()
     {
         var numberedBuffer = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
         using var sut = WritableBuffer.Create(16);
         using var writer = sut.WritingStream();
-        await writer.WriteAsync(numberedBuffer, 0, 256, TestContext.Current.CancellationToken);
+        await writer.WriteAsync(numberedBuffer, 0, 256);
         var buf2 = new byte[240];
         using var reader = ((IMultiplexSource)sut).ReadFrom(16);
         await buf2.FillBufferAsync(0, 240, reader);

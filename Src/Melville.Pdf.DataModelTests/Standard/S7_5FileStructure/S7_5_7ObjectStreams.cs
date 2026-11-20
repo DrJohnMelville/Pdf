@@ -16,16 +16,15 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_7ObjectStreams
 {
-    [Theory]
-    [InlineData("1 0 2 6 11111\n22222")]
-    [InlineData("1 0 2 5 1111122222")]
-    [InlineData("1 0 2 7 11111\n922222")]
+    [Test]
+    [Arguments("1 0 2 6 11111\n22222")]
+    [Arguments("1 0 2 5 1111122222")]
+    [Arguments("1 0 2 7 11111\n922222")]
     public async Task RawLoadObjectStreamAsync(string streamText)
     {
         var os = new DictionaryBuilder()
@@ -50,7 +49,7 @@ public class S7_5_7ObjectStreams
         Assert.Equal(expected, o1.ToString());
     }
 
-    [Fact]
+    [Test]
     public async Task EmptyObjectStreamAsync()
     {
         //this tests that empty object streams can exist.
@@ -70,23 +69,23 @@ public class S7_5_7ObjectStreams
         await AssertIndirectAsync(res, 1, "null");
 
     }
-    [Theory]
-    [InlineData("/Type/ObjStm")]
-    [InlineData("/N 2")]
-    [InlineData("/First 8")]
-    [InlineData("1 0 2 6 (One)\n(Two)")]
+    [Test]
+    [Arguments("/Type/ObjStm")]
+    [Arguments("/N 2")]
+    [Arguments("/First 8")]
+    [Arguments("1 0 2 6 (One)\n(Two)")]
     public async Task RenderObjectStreamAsync(string expected)
     {
         Assert.Contains(expected, await DocWithObjectStreamAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task MaxObjectInObjStreamAsync()
     {
         Assert.Contains("/Size 22", await DocWithObjectStreamWithHighObjectNumberAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task RoundTripAsync()
     {
         using var doc = await (await DocWithObjectStreamAsync()).ParseDocumentAsync();
@@ -94,7 +93,7 @@ public class S7_5_7ObjectStreams
             
     }
 
-    [Fact]
+    [Test]
     public void CannotPutStreamInObjectStream()
     {
         Assert.False(new ObjectStreamBuilder().TryAddRef(2,new DictionaryBuilder().AsStream("Hello")));
@@ -132,7 +131,7 @@ public class S7_5_7ObjectStreams
         return fileAsString;
     }
 
-    [Fact]
+    [Test]
     public async Task DoNotEncryptStringsInContentStreamsAsync()
     {
         var ms = new MemoryStream();
@@ -151,7 +150,7 @@ public class S7_5_7ObjectStreams
         // string is not encoded inside stream
         var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfStream>();
         using var streamContentAsync = await objSter.StreamContentAsync();
-        var strText = await new StreamReader(streamContentAsync).ReadToEndAsync(TestContext.Current.CancellationToken);
+        var strText = await new StreamReader(streamContentAsync).ReadToEndAsync();
         Assert.Contains(strText, strText);
     }
 }

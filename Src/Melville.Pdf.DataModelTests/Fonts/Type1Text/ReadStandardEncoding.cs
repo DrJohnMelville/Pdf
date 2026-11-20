@@ -9,7 +9,6 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
@@ -27,7 +26,7 @@ public class ReadStandardEncoding
             new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0), CidToGlyphMappingStyle.Cff);
     }
 
-    [Fact]
+    [Test]
     public async Task StandardEncodingAsync()
     {
         var map = await LoadCmapAsync(0);
@@ -291,7 +290,7 @@ public class ReadStandardEncoding
         ]);
     }
 
-    [Fact]
+    [Test]
     public async Task ExpertEncodingAsync()
     {
         var sut = FontWithEncodingOffset(1, 256, 1);

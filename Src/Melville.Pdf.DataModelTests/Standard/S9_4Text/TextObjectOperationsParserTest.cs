@@ -5,25 +5,24 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
 public partial class TextObjectOperationsParserTest : ParserTest
 {
-    [Fact]
+    [Test]
     public Task BeginTextObjectAsync() => TestInputAsync("BT", i => i.BeginTextObject());
-    [Fact]
+    [Test]
     public Task EndTextObjectAsync() => TestInputAsync("ET", i => i.EndTextObject());
-    [Fact]
+    [Test]
     public Task MovePositionByAsync() => TestInputAsync("5 6 Td", i => i.MovePositionBy(5,6));
-    [Fact]
+    [Test]
     public Task MovePositionByWithLeadingAsync() => 
         TestInputAsync("5 6 TD", i => i.MovePositionByWithLeading(5,6));
-    [Fact]
+    [Test]
     public Task SetMatrixAsync() => 
         TestInputAsync("6 5 4 3 2 1 Tm", i => i.SetTextMatrix(6,5,4,3,2,1));
-    [Fact]
+    [Test]
     public Task MoveToNextLineAsync() => 
         TestInputAsync("T*", i => i.MoveToNextTextLine());
 
@@ -94,17 +93,17 @@ public partial class TextObjectOperationsParserTest : ParserTest
 
 
     }
-    [Fact]
+    [Test]
     public Task ParseShowSyntaxStringAsync() => TestInputAsync("(ABC) Tj", new TjMock("ABC"));
-    [Fact]
+    [Test]
     public Task ParseOpenCurlyBugAsync() => TestInputAsync("({) Tj", new TjMock("{"));
-    [Fact]
+    [Test]
     public Task ParseShowHexStringAsync() => TestInputAsync("<4142 43> Tj", new TjMock("ABC"));
-    [Fact]
+    [Test]
     public Task MoveToNextLineAndShowAsync() => TestInputAsync("(def)'", new TjMock("def"));
-    [Fact]
+    [Test]
     public Task MoveToNextLineAndShow2Async() => TestInputAsync("7 8(IJK)\"", new TjMock("IJK"));
-    [Fact]
+    [Test]
     public Task ShowSpacedStringAsync() => TestInputAsync("[(a)2(b)3(c)(s)4 5]TJ", new TjMock("nothing"));
     
 }

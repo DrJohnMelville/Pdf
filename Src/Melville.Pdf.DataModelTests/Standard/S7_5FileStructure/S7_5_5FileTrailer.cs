@@ -5,13 +5,12 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_5FileTrailer
 {
-    [Fact]
+    [Test]
     public async Task ReadSingleTrailerAsync()
     {
         using var doc = await (await MinimalPdfParser.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
@@ -20,15 +19,15 @@ public class S7_5_5FileTrailer
             
     }
    
-    [Theory]
-    [InlineData("%PDF1.5\r\nHeader tag is wrong.")]
-    [InlineData("%PdF-1.5\r\nHeader tag is wrong.")]
-    [InlineData("%PDF-1/5\r\nHeader tag is wrong.")]
-    [InlineData("%PDF-X.5\r\nHeader tag is wrong.")]
-    [InlineData("%PDF-1.X\r\nHeader tag is wrong.")]
-    [InlineData("%PDF-1.5\r\nHas no t%railer")]
-    [InlineData("%PDF-1.5\r\nHas the word trailer but not a valid dictonary")]
-    [InlineData("%PDF-1.5\r\nHas the word trailer")]
+    [Test]
+    [Arguments("%PDF1.5\r\nHeader tag is wrong.")]
+    [Arguments("%PdF-1.5\r\nHeader tag is wrong.")]
+    [Arguments("%PDF-1/5\r\nHeader tag is wrong.")]
+    [Arguments("%PDF-X.5\r\nHeader tag is wrong.")]
+    [Arguments("%PDF-1.X\r\nHeader tag is wrong.")]
+    [Arguments("%PDF-1.5\r\nHas no t%railer")]
+    [Arguments("%PDF-1.5\r\nHas the word trailer but not a valid dictonary")]
+    [Arguments("%PDF-1.5\r\nHas the word trailer")]
     public Task MalformedPDFFilesAsync(string text)
     {
         return Assert.ThrowsAsync<PdfParseException>(() => text.ParseDocumentAsync().AsTask());

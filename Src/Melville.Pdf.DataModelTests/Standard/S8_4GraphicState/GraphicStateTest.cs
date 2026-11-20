@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Numerics;
 using Melville.Hacks.Reflection;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
@@ -23,21 +24,33 @@ public class GraphicStateTest
         sut2.CopyFrom(sut);
         Assert.Equal(newValue, (T)sut2.GetProperty(name)!);
     }
+    private void SeqPropTest(string name, IEnumerable<double> defaultValue, IEnumerable<double> newValue, Action<IStateChangingOperations> act)
+    {
+        // set value
+        Assert.SeqEqual(defaultValue, (IEnumerable<double>)sut.GetProperty(name)!);
+        act(sut);
+        Assert.SeqEqual(newValue, (IEnumerable<double>)sut.GetProperty(name)!);
 
-    [Fact] public void LineWidthTest() => PropTest(nameof(sut.LineWidth), 1.0, 5.0, i => i.SetLineWidth(5));
-    [Fact] public void MiterLimitTest() => PropTest(nameof(sut.MiterLimit), 10.0, 5.0, i => i.SetMiterLimit(5));
-    [Fact] public void LineJoinTest() => PropTest(nameof(sut.LineJoinStyle), 
+        // copy Value
+        Assert.SeqEqual(defaultValue, (IEnumerable<double>)sut2.GetProperty(name)!);
+        sut2.CopyFrom(sut);
+        Assert.SeqEqual(newValue, (IEnumerable<double>)sut2.GetProperty(name)!);
+    }
+
+    [Test] public void LineWidthTest() => PropTest(nameof(sut.LineWidth), 1.0, 5.0, i => i.SetLineWidth(5));
+    [Test] public void MiterLimitTest() => PropTest(nameof(sut.MiterLimit), 10.0, 5.0, i => i.SetMiterLimit(5));
+    [Test] public void LineJoinTest() => PropTest(nameof(sut.LineJoinStyle), 
         LineJoinStyle.Miter, LineJoinStyle.Bevel, i=>i.SetLineJoinStyle(LineJoinStyle.Bevel));
-    [Fact] public void LineCapTest() => PropTest(nameof(sut.LineCap), LineCap.Butt, LineCap.Round,
+    [Test] public void LineCapTest() => PropTest(nameof(sut.LineCap), LineCap.Butt, LineCap.Round,
         i=>i.SetLineCap(LineCap.Round));
 
-    [Fact]
+    [Test]
     public void DashPhase() => PropTest(nameof(sut.DashPhase), 0.0, 20, i => i.SetLineDashPattern(20, 1, 2, 3, 4));
-    [Fact]
-    public void DashArray() => PropTest(nameof(sut.DashArray), Array.Empty<double>(), new double[]{1,2,3,4},
+    [Test]
+    public void DashArray() => SeqPropTest(nameof(sut.DashArray), Array.Empty<double>(), new double[]{1,2,3,4},
         i => i.SetLineDashPattern(20, 1, 2, 3, 4));
 
-    [Fact]
+    [Test]
     public void ModifyTransformMatrix()
     {
         Assert.Equal(new Vector2(0,0), sut.ApplyCurrentTransform(new Vector2(0,0)));
@@ -46,13 +59,13 @@ public class GraphicStateTest
         sut.ModifyTransformMatrix(Matrix3x2.CreateScale(0.1f, 0.01f));
         Assert.Equal(new Vector2(0,0), sut.ApplyCurrentTransform(new Vector2(10, 200)));
     }
-    [Fact] public void Flatness() => PropTest(nameof(sut.FlatnessTolerance), 1, 5.0, i => i.SetFlatnessTolerance(5));
+    [Test] public void Flatness() => PropTest(nameof(sut.FlatnessTolerance), 1, 5.0, i => i.SetFlatnessTolerance(5));
     
     //Text parameters
-    [Fact] public void CharSpacingTest() => PropTest(nameof(sut.CharacterSpacing), 0.0, 5.0, i => i.SetCharSpace(5));
-    [Fact] public void WordSpacingTest() => PropTest(nameof(sut.WordSpacing), 0.0, 5.0, i => i.SetWordSpace(5));
-    [Fact] public void TextLeadingTest() => PropTest(nameof(sut.TextLeading), 0.0, 5.0, i => i.SetTextLeading(5));
-    [Fact] public void TextRiseTest() => PropTest(nameof(sut.TextRise), 0.0, 5.0, i => i.SetTextRise(5));
-    [Fact] public void HorizTextScaleTest() => PropTest(nameof(sut.HorizontalTextScale), 1.0, 0.05, i => i.SetHorizontalTextScaling(5));
-    [Fact] public void SetTextRenderTest() => PropTest(nameof(sut.TextRender), TextRendering.Fill, TextRendering.Stroke, i => i.SetTextRender(TextRendering.Stroke));
+    [Test] public void CharSpacingTest() => PropTest(nameof(sut.CharacterSpacing), 0.0, 5.0, i => i.SetCharSpace(5));
+    [Test] public void WordSpacingTest() => PropTest(nameof(sut.WordSpacing), 0.0, 5.0, i => i.SetWordSpace(5));
+    [Test] public void TextLeadingTest() => PropTest(nameof(sut.TextLeading), 0.0, 5.0, i => i.SetTextLeading(5));
+    [Test] public void TextRiseTest() => PropTest(nameof(sut.TextRise), 0.0, 5.0, i => i.SetTextRise(5));
+    [Test] public void HorizTextScaleTest() => PropTest(nameof(sut.HorizontalTextScale), 1.0, 0.05, i => i.SetHorizontalTextScaling(5));
+    [Test] public void SetTextRenderTest() => PropTest(nameof(sut.TextRender), TextRendering.Fill, TextRendering.Stroke, i => i.SetTextRender(TextRendering.Stroke));
 } 

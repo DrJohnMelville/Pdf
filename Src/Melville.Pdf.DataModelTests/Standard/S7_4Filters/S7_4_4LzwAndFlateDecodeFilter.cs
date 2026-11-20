@@ -9,7 +9,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
@@ -19,13 +18,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 public partial class S7_4_4LzwAndFlateDecodeFilter
 {
 
-    [Theory]
-    [InlineData(10, 1)]
-    [InlineData(100, 1)]
-    [InlineData(499, 1)]
-    [InlineData(10000, 1)]
-    [InlineData(10000, 0)]
-    [InlineData(10000, 2)]
+    [Test]
+    [Arguments(10, 1)]
+    [Arguments(100, 1)]
+    [Arguments(499, 1)]
+    [Arguments(10000, 1)]
+    [Arguments(10000, 0)]
+    [Arguments(10000, 2)]
     public async Task EncodeRandomStreamAsync(int length, int EarlySwitch)
     {
         var buffer = new byte[length];
@@ -50,13 +49,10 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
         await decoded.FillBufferAsync(destination, 0, length);
         Assert.Equal(buffer.Length, destination.Length);
 
-        for (int i = 0; i < buffer.Length; i++)
-        {
-            Assert.True(buffer[i] == destination[i], $"Position: {i} Expected: {buffer[i]} got {destination[i]}");
-        }
+        buffer.Should().BeEquivalentTo(destination);
     }
 
-    [Fact]
+    [Test]
     public async Task LzwDecodeBugAsync()
     {
         {
@@ -65,7 +61,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
                 .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
             using var stream = await str.StreamContentAsync();
             StreamReader streamReader = new StreamReader(stream);
-            var result = await streamReader.ReadToEndAsync(TestContext.Current.CancellationToken);
+            var result = await streamReader.ReadToEndAsync();
             Assert.Equal(LwzDecodeBugResult.Replace("\r\n", "\r"), result);
         }
         // assertion is the lack of an exception
