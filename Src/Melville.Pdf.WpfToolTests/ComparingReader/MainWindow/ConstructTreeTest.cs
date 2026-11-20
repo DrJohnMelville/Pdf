@@ -1,8 +1,8 @@
 ﻿using System;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
+using Melville.Pdf.DataModelTests.Asserts;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.MainWindow;
 
@@ -11,14 +11,14 @@ public class ConstructTreeTest
     public ReferenceDocumentFolder sut = new ReferenceDocumentFolder("Root");
 
     private static ReferenceDocumentLeaf NewLeaf() => new(Mock.Of<IPdfGenerator>());
-    [Fact]
+    [Test]
     public void AddItem()
     {
         sut.AddItem(NewLeaf(), Array.Empty<string>());
         Assert.Single(sut.Children);
     }
 
-    [Fact]
+    [Test]
     public void PutInSubFolder()
     {
         sut.AddItem(NewLeaf(), new []{"Hello", "World"});
@@ -30,7 +30,7 @@ public class ConstructTreeTest
         Assert.True(p2.Children[0] is ReferenceDocumentLeaf);
     }
     
-    [Fact]
+    [Test]
     public void PutTwoItemsInSubFolder()
     {
         sut.AddItem(NewLeaf(), new []{"Hello", "World"});
@@ -44,7 +44,7 @@ public class ConstructTreeTest
         Assert.True(p2.Children[1] is ReferenceDocumentLeaf);
     }
 
-    [Fact]
+    [Test]
     public void CollapseNames()
     {
         sut.AddItem(NewLeaf(), new []{"Hello", "World"});

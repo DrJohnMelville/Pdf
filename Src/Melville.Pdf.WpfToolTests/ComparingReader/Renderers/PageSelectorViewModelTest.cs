@@ -1,5 +1,5 @@
-﻿using Melville.Pdf.Wpf.Controls;
-using Xunit;
+﻿using Melville.Pdf.DataModelTests.Asserts;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.Renderers;
 
@@ -7,28 +7,28 @@ public class PageSelectorViewModelTest
 {
     private readonly PageSelectorViewModel sut = new(){};
 
-    [Fact]
+    [Test]
     public void InitialValues()
     {
         Assert.Equal(1, sut.Page);
         Assert.Equal(1, sut.MaxPage);
     }
 
-    [Fact]
+    [Test]
     public void SetMaxPage()
     {
         sut.MaxPage = 10;
         Assert.Equal(10, sut.MaxPage);
     }
 
-    [Theory]
-    [InlineData(5,5)]
-    [InlineData(-1,1)]
-    [InlineData(0,1)]
-    [InlineData(1,1)]
-    [InlineData(9,9)]
-    [InlineData(10,10)]
-    [InlineData(11,10)]
+    [Test]
+    [Arguments(5,5)]
+    [Arguments(-1,1)]
+    [Arguments(0,1)]
+    [Arguments(1,1)]
+    [Arguments(9,9)]
+    [Arguments(10,10)]
+    [Arguments(11,10)]
     public void TrySetValue(int attempt, int result)
     {
         sut.MaxPage = 10;
@@ -37,7 +37,7 @@ public class PageSelectorViewModelTest
         
     }
 
-    [Fact]
+    [Test]
     public void ResettingSizeResetsPage()
     {
         sut.MaxPage = 10;
@@ -46,7 +46,7 @@ public class PageSelectorViewModelTest
         Assert.Equal(1, sut.Page);
     }
 
-    [Fact]
+    [Test]
     public void IncrementPage()
     {
         sut.MaxPage = 10;
@@ -55,7 +55,7 @@ public class PageSelectorViewModelTest
         sut.Increment();
         Assert.Equal(3, sut.Page);
     }
-    [Fact]
+    [Test]
     public void GoToEnd()
     {
         sut.MaxPage = 10;
@@ -65,7 +65,7 @@ public class PageSelectorViewModelTest
         Assert.Equal(10, sut.Page);
     }
 
-    [Fact]
+    [Test]
     public void Decrement()
     {
         sut.MaxPage = 10;
@@ -76,7 +76,7 @@ public class PageSelectorViewModelTest
         Assert.Equal(9, sut.Page);
         
     }    
-    [Fact]
+    [Test]
     public void ToStart()
     {
         sut.MaxPage = 10;

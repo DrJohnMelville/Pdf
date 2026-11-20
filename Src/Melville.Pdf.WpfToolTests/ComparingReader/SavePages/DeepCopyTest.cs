@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.Asserts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Moq;
-using Xunit;
+
 using DeepCopy = Melville.Pdf.LowLevel.Writers.PageExtraction.DeepCopy;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.SavePages;
@@ -26,12 +27,12 @@ public class DeepCopyTest
         sut = new DeepCopy(creator.Object);
     }
 
-    [Fact] public Task CopyIntAsync() => PassthroughCopyAsync(1);
-    [Fact] public Task CopyRealAsync() => PassthroughCopyAsync(1.5);
-    [Fact] public Task CopyStringAsync() => PassthroughCopyAsync("Hello World");
-    [Fact] public Task CopyNameAsync() => PassthroughCopyAsync(KnownNames.Length);
-    [Fact] public Task CopyBoolAsync() => PassthroughCopyAsync(true);
-    [Fact] public Task CopyNullAsync() => PassthroughCopyAsync(PdfDirectObject.CreateNull());
+    [Test] public Task CopyIntAsync() => PassthroughCopyAsync(1);
+    [Test] public Task CopyRealAsync() => PassthroughCopyAsync(1.5);
+    [Test] public Task CopyStringAsync() => PassthroughCopyAsync("Hello World");
+    [Test] public Task CopyNameAsync() => PassthroughCopyAsync(KnownNames.Length);
+    [Test] public Task CopyBoolAsync() => PassthroughCopyAsync(true);
+    [Test] public Task CopyNullAsync() => PassthroughCopyAsync(PdfDirectObject.CreateNull());
 
     private async Task PassthroughCopyAsync(PdfDirectObject item)
     {
@@ -39,7 +40,7 @@ public class DeepCopyTest
         Assert.Equal(item, copy);
     }
 
-    [Fact]
+    [Test]
     public async Task CopyArrayAsync()
     {
         var datum = new PdfArray(1, 
@@ -48,7 +49,7 @@ public class DeepCopyTest
         var clone = await sut.CloneAsync(datum);
         await DeepAssertSameAsync(datum, clone);
     }
-    [Fact]
+    [Test]
     public async Task CopyDictionaryAsync()
     {
         var datum = new DictionaryBuilder()
@@ -60,7 +61,7 @@ public class DeepCopyTest
         var clone = await sut.CloneAsync(datum);
         await DeepAssertSameAsync(datum, clone);
     }
-    [Fact]
+    [Test]
     public async Task StreamAsync()
     {
         var datum = new DictionaryBuilder()
@@ -98,7 +99,7 @@ public class DeepCopyTest
         await AssertSameDictionaryAsync(a, b);
         var aVal = await AsArrayAsync(await a.StreamContentAsync());
         var bVal = await AsArrayAsync(await b.StreamContentAsync());
-        Assert.Equal(aVal, bVal);
+        Assert.SeqEqual(aVal, bVal);
     }
 
     private async ValueTask<byte[]> AsArrayAsync(Stream str)

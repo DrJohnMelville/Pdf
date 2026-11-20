@@ -1,12 +1,12 @@
-﻿using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
-using Xunit;
+﻿using Melville.Pdf.DataModelTests.Asserts;
+using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader.PasswordDialog;
 
 public class PasswordDialogViewModelTest
 {
     private readonly PasswordDialogViewModel sut = new();
-    [Fact]
+    [Test]
     public void InitiallyBothEmptyAndBothVisible()
     {
         Assert.Equal("", sut.UserPassword);
@@ -16,7 +16,7 @@ public class PasswordDialogViewModelTest
         Assert.False(sut.CanOk);
     }
 
-    [Fact]
+    [Test]
     public void UserInvalidatesOwner()
     {
         sut.UserPassword = "d";
@@ -26,7 +26,7 @@ public class PasswordDialogViewModelTest
         Assert.True(sut.CanOk);
             
     }
-    [Fact]
+    [Test]
     public void OwnerInvalidatesUser()
     {
         sut.OwnerPassword = "d";

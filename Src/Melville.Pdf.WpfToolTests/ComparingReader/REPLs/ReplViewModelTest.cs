@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
+using Melville.Pdf.DataModelTests.Asserts;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Wpf.Controls;
 using Moq;
-using Xunit;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.REPLs;
 
 public class ReplViewModelTest
 {
-    [Fact]
+    [Test]
     public async Task ReplViewModelCanPrettyPrintAsync()
     {
         var sut = new ReplViewModel("q Q",
@@ -24,10 +24,10 @@ public class ReplViewModelTest
         Assert.Equal("q\nQ\n", sut.ContentStreamText);
     }
 
-    [Theory]
-    [InlineData("q 10 Ts Q", "q\n    10 Ts\nQ\n")]
-    [InlineData("q q 10 Ts Q Q", "q\n    q\n        10 Ts\n    Q\nQ\n")]
-    [InlineData("BT 10 Ts ET", "BT\n    10 Ts\nET\n")]
+    [Test]
+    [Arguments("q 10 Ts Q", "q\n    10 Ts\nQ\n")]
+    [Arguments("q q 10 Ts Q Q", "q\n    q\n        10 Ts\n    Q\nQ\n")]
+    [Arguments("BT 10 Ts ET", "BT\n    10 Ts\nET\n")]
     public async Task PrintIndentedContentStreamAsync(string source, string dest)
     {
         Assert.Equal(dest, await ContentStreamPrettyPrinter.PrettyPrintAsync(source));

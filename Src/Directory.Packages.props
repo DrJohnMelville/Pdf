@@ -41,7 +41,5 @@
     <PackageVersion Include="TUnit.Engine" Version="1.83.8" />
     <PackageVersion Include="Xunit.StaFact" Version="2.1.7" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
-    <PackageVersion Include="xunit.V3" Version="4.0.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
   </ItemGroup>
 </Project>
