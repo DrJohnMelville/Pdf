@@ -261,7 +261,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteBytes(InlineImageTerminator);
     }
 
-    private static ValueTask<Stream> DiskRepresentationAsync(PdfStream inlineImage) => 
+    private static ValueTask<IPdfStreamReader> DiskRepresentationAsync(PdfStream inlineImage) => 
         inlineImage.StreamEncryptedContentAsync(
             StreamFormat.DiskRepresentation, NullSecurityHandler.Instance, null);
 

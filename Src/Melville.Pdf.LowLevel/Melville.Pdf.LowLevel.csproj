@@ -13,6 +13,7 @@
     <ItemGroup>
       <PackageReference Include="CoreJ2K" />
       <PackageReference Include="Melville.Hacks" />
+      <PackageReference Include="Melville.IntersectionTypes" />
       <PackageReference Include="Melville.Linq" />
     </ItemGroup>
 

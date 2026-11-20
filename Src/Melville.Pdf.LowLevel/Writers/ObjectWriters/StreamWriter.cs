@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Melville.IntersectionTypes;
+using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
+using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
+using Melville.StreamInterfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Melville.Parsing.MultiplexSources;
-using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -28,7 +30,7 @@ internal static class StreamWriter
         DictionaryWriter.Write(innerWriter, 
             MergeDictionaryItems(item.RawItems, (KnownNames.Length, diskrep.Length)));
         innerWriter.Write(StreamToken);
-        await innerWriter.CopyFromStreamAsync(diskrep).CA();
+        await innerWriter.CopyFromStreamAsync(diskrep.AsStreamInefficient()).CA();
         innerWriter.Write(EndStreamToken);
     }
 
@@ -46,21 +48,16 @@ internal static class StreamWriter
         }
     }
 
-    private static async Task<Stream> EnsureStreamHasKnownLengthAsync(Stream rawStream)
+    private static async Task<ReaderWithLength> EnsureStreamHasKnownLengthAsync(
+        IPdfStreamReader rawStream)
     {
-        try
-        {
-            if (rawStream.Length > 0) return rawStream;
-        }
-        catch (NotSupportedException)
-        {
-            
-        }
+        if (ReaderWithLength.TryCreateFrom(rawStream, out var ret)) return ret;
 
-        using var mbs = WritableBuffer.Create();
-        using var writer = mbs.WritingStream();
-        await rawStream.CopyToAsync(writer).CA();
+        var (bytes, _) = await new AsyncReaderToByteArray(rawStream, false).ReadAsync().CA();
         rawStream.Dispose();
-        return (mbs).ReadFrom(0);
+        return new PdfMemoryReader(bytes);
     }
 }
+
+[IntersectionType]
+internal readonly partial struct ReaderWithLength: IAsyncReader, IStreamLength, IDisposable { }

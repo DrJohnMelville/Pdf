@@ -2,9 +2,11 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using Melville.StreamInterfaces;
 using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -122,7 +124,16 @@ internal readonly struct ContentStreamPipeWriter
     public void WriteInlineImageDict(PdfDictionary dict) =>
         DictionaryWriter.WriteInlineImageDict(new PdfObjectWriter(destPipe), dict.RawItems);
 
-    public Task WriteStreamContentAsync(Stream str) => str.CopyToAsync(destPipe);
+    public async ValueTask WriteStreamContentAsync(IAsyncReader str)
+    {
+        using var buffer = new PooledBuffer<byte>(8000);
+        while (true)
+        {
+            int read = await (str.ReadAsync(buffer.AsMemory()));
+            if (read == 0) return;
+            await destPipe.WriteAsync(buffer.AsMemory(0, read)).CA();
+        }
+    }
 
     public void WriteLiteral(string contentStream)
     {

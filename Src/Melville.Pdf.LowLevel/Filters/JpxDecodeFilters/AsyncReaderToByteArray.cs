@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-internal readonly struct AsyncReaderToByteArray(IAsyncReader reader)
+internal readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFinalBuffer = true)
 {
     private readonly List<byte[]> Buffers = new();
 
@@ -24,7 +24,9 @@ internal readonly struct AsyncReaderToByteArray(IAsyncReader reader)
     (byte[], int) MakeFinalBuffer(byte[] buffer, int length)
     {
         var totalLen = length + Buffers.Sum(i => i.Length);
-        var finalBuffer = ArrayPool<byte>.Shared.Rent(totalLen);
+        var finalBuffer = rentFinalBuffer ?  
+            ArrayPool<byte>.Shared.Rent(totalLen):
+                                new byte[totalLen];
         var nextByte = finalBuffer.AsSpan();
         foreach(var buf in Buffers)
         {

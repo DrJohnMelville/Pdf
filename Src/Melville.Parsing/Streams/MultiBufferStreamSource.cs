@@ -1,5 +1,7 @@
-﻿using Melville.INPC;
+﻿using Melville.Hacks;
+using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Memory;
 
 namespace Melville.Parsing.Streams;

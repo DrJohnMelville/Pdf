@@ -47,9 +47,9 @@ public class PdfStream : PdfDictionary
     /// <param name="desiredFormat">The filters that should be applied to the read stream.</param>
     /// <param name="context">This is an optional context object that is provided to the filters.</param>
     /// <returns></returns>
-    public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
+    public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
         object? context = null) =>
-        StreamEncryptedContentAsync(desiredFormat, null, context);
+        (await StreamEncryptedContentAsync(desiredFormat, null, context)).AsStreamInefficient();
 
     /// <summary>
     /// Retrieve an IAsyncReader that reads the value od the sream decoded to the desired format.
@@ -57,11 +57,11 @@ public class PdfStream : PdfDictionary
     /// <param name="desiredFormat">The decoding level that is requested.</param>
     /// <param name="context">An optional context objext for the filters.</param>
     /// <returns></returns>
-    public async ValueTask<IPdfStreamReader> ReaderForContentAsync(
+    public ValueTask<IPdfStreamReader> ReaderForContentAsync(
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
-           new WrapPdfStream(await StreamEncryptedContentAsync(desiredFormat, null, context));
+           StreamEncryptedContentAsync(desiredFormat, null, context);
 
-    internal async ValueTask<Stream> StreamEncryptedContentAsync(
+    internal async ValueTask<IPdfStreamReader> StreamEncryptedContentAsync(
         StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
     {
         Debug.Assert(context is not IObjectCryptContext);
@@ -69,7 +69,7 @@ public class PdfStream : PdfDictionary
             await CreateFilterProcessorAsync(encryptor ?? ErrorObjectEncryptor.Instance, context).CA();
         
         return (await processor.StreamInDesiredEncodingAsync((await SourceStreamAsync().CA()),
-            source.SourceFormat, desiredFormat).CA()).AsStreamInefficient();
+            source.SourceFormat, desiredFormat).CA());
     }
 
     private async Task<FilterProcessorBase> CreateFilterProcessorAsync(
