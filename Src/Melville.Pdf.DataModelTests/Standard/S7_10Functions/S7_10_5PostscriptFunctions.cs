@@ -27,7 +27,7 @@ public class S7_10_5PostscriptFunctions
         await dict.VerifyNumberAsync(KnownNames.FunctionType, 4);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 10);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, 0, 20);
-        Assert.Equal("2 mul", await (await dict.StreamContentAsync()).ReadAsStringAsync());
+        Assert.Equal("2 mul", await (await dict.ReaderForContentAsync()).ReadAsStringAsync());
             
     }
 

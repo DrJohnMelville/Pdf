@@ -64,7 +64,7 @@ public partial class ParseInlineImage : ParserTest
     public Task ParseSimpleInlineImageAsync(string onDisk, string parsed) =>
         TestInputAsync($"BI/Width 12/Height 24\nID\n{onDisk}EI",
             new DoImpl(async i => Assert.Equal(parsed,
-                await (await i.StreamContentAsync()).ReadAsStringAsync())));
+                await (await i.ReaderForContentAsync()).ReadAsStringAsync())));
 
     [Theory]
     [InlineData("ASCIIHexDecode", "/AHx")]

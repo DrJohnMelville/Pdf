@@ -11,16 +11,6 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 internal abstract class FilterProcessorBase
 {
-    public async ValueTask<Stream> StreamInDesiredEncodingAsync(Stream src, StreamFormat sourceFormat,
-        StreamFormat desiredEncoding)
-    {
-        return sourceFormat.CompareTo(desiredEncoding) switch
-        {
-            < 0 => (await DecodeAsync(src.AsReaderInefficient(), sourceFormat, desiredEncoding).CA()).AsStreamInefficient(),
-            0 => src,
-            _ => (await EncodeAsync(src.AsReaderInefficient(), sourceFormat, desiredEncoding).CA()).AsStreamInefficient()
-        };
-    }
     public async ValueTask<IPdfStreamReader> StreamInDesiredEncodingAsync(IPdfStreamReader src, StreamFormat sourceFormat,
         StreamFormat desiredEncoding)
     {

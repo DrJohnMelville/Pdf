@@ -29,14 +29,11 @@ public class PdfStream : PdfDictionary
     }
 
 
-    private async ValueTask<Stream> SourceStreamAsync()
+    private async ValueTask<IPdfStreamReader> SourceStreamAsync()
     {
         var streamLength = await DeclaredLengthAsync().CA();
-        IPdfStreamReader reader = source.OpenRawReader(streamLength);
-        Stream ret = reader.AsStream();
-        return ret;
+        return source.OpenRawReader(streamLength);
     }
-    // 2. Swapping to ORR messes up font parsing.
 
     /// <summary>
     /// The on disk length of the stream as declared in the stream dictionary.
@@ -62,7 +59,7 @@ public class PdfStream : PdfDictionary
     /// <returns></returns>
     public async ValueTask<IPdfStreamReader> ReaderForContentAsync(
         StreamFormat desiredFormat = StreamFormat.PlainText, object? context = null) =>
-           new WrapPdfStream(await StreamContentAsync(desiredFormat, context));
+           new WrapPdfStream(await StreamEncryptedContentAsync(desiredFormat, null, context));
 
     internal async ValueTask<Stream> StreamEncryptedContentAsync(
         StreamFormat desiredFormat, IObjectCryptContext? encryptor, object? context)
@@ -71,8 +68,8 @@ public class PdfStream : PdfDictionary
         var processor =
             await CreateFilterProcessorAsync(encryptor ?? ErrorObjectEncryptor.Instance, context).CA();
         
-        return await processor.StreamInDesiredEncodingAsync(await SourceStreamAsync().CA(),
-            source.SourceFormat, desiredFormat).CA();
+        return (await processor.StreamInDesiredEncodingAsync((await SourceStreamAsync().CA()),
+            source.SourceFormat, desiredFormat).CA()).AsStreamInefficient();
     }
 
     private async Task<FilterProcessorBase> CreateFilterProcessorAsync(

@@ -19,6 +19,7 @@ public interface IPdfStreamReader : IAsyncReader, ISyncReader, IDisposable
 #warning right now must implement ISyncReader, decide if this is a good idea long term.
 }
 
+[Obsolete("See if I can get rid of this")]
 internal class WrapPdfStream(Stream inner) : IPdfStreamReader {
    
     public void Dispose() => inner.Dispose();
