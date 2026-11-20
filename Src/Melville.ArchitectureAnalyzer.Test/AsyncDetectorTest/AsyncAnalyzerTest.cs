@@ -2,7 +2,6 @@
 using Melville.AsyncAnalyzer;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.AsyncDetectorTest;
 
@@ -23,12 +22,12 @@ public class AsyncAnalyzerTest
     }
 
 
-    [Theory]
-    [InlineData("public int X() => 1;")]
-    [InlineData("public static Task Main() => null;")]
-    [InlineData("public async void X() {}")]
-    [InlineData("public Task<int> this[int index] => Task.FromResult(index);")]
-    [InlineData("""
+    [Test]
+    [Arguments("public int X() => 1;")]
+    [Arguments("public static Task Main() => null;")]
+    [Arguments("public async void X() {}")]
+    [Arguments("public Task<int> this[int index] => Task.FromResult(index);")]
+    [Arguments("""
         public interface Int
         {
         #pragma warning disable Arch004
@@ -41,7 +40,7 @@ public class AsyncAnalyzerTest
             public Task Method() => null;
         }
         """)]
-    [InlineData("""
+    [Arguments("""
         public class Int
         {
         #pragma warning disable Arch004
@@ -56,34 +55,34 @@ public class AsyncAnalyzerTest
         """)]
     public Task ProperlyLacksAsyncSuffix(string code) => RunTest(code);
 
-    [Theory]
-    [InlineData("public async Task MethodAsync(){}")]
-    [InlineData("public async Task<int> MethodAsync() => 1;")]
-    [InlineData("public async ValueTask MethodAsync(){}")]
-    [InlineData("public async ValueTask<int> MethodAsync() => 1;")]
-    [InlineData("public Task MethodAsync() => Task.CompletedTask;")]
-    [InlineData("public Task<int> MethodAsync() => Task.FromResult(1);")]
-    [InlineData("public ValueTask MethodAsync() => ValueTask.CompletedTask;")]
-    [InlineData("public ValueTask<int> MethodAsync() => new(1);")]
+    [Test]
+    [Arguments("public async Task MethodAsync(){}")]
+    [Arguments("public async Task<int> MethodAsync() => 1;")]
+    [Arguments("public async ValueTask MethodAsync(){}")]
+    [Arguments("public async ValueTask<int> MethodAsync() => 1;")]
+    [Arguments("public Task MethodAsync() => Task.CompletedTask;")]
+    [Arguments("public Task<int> MethodAsync() => Task.FromResult(1);")]
+    [Arguments("public ValueTask MethodAsync() => ValueTask.CompletedTask;")]
+    [Arguments("public ValueTask<int> MethodAsync() => new(1);")]
     public Task ProperlyHasAsyncSuffix(string code) => RunTest(code);
 
-    [Theory]
-    [InlineData("public int {|#0:XAsync|}() => 1;")]
-    [InlineData("public int {|#0:XAsync|} => 1;")]
+    [Test]
+    [Arguments("public int {|#0:XAsync|}() => 1;")]
+    [Arguments("public int {|#0:XAsync|} => 1;")]
     public Task ImproperlyHasAsyncSuffix(string code) =>
         RunTest(code, new DiagnosticResult(AsyncDiagnostics.UnneededAsync)
                 .WithLocation(0)
                 .WithArguments("XAsync"));
 
-    [Theory]
-    [InlineData("public async Task {|#0:Method|}(){}")]
-    [InlineData("public async Task<int> {|#0:Method|}() => 1;")]
-    [InlineData("public async ValueTask {|#0:Method|}(){}")]
-    [InlineData("public async ValueTask<int> {|#0:Method|}() => 1;")]
-    [InlineData("public Task {|#0:Method|}() => Task.CompletedTask;")]
-    [InlineData("public Task<int> {|#0:Method|}() => Task.FromResult(1);")]
-    [InlineData("public ValueTask {|#0:Method|}() => ValueTask.CompletedTask;")]
-    [InlineData("public ValueTask<int> {|#0:Method|}() => new(1);")]
+    [Test]
+    [Arguments("public async Task {|#0:Method|}(){}")]
+    [Arguments("public async Task<int> {|#0:Method|}() => 1;")]
+    [Arguments("public async ValueTask {|#0:Method|}(){}")]
+    [Arguments("public async ValueTask<int> {|#0:Method|}() => 1;")]
+    [Arguments("public Task {|#0:Method|}() => Task.CompletedTask;")]
+    [Arguments("public Task<int> {|#0:Method|}() => Task.FromResult(1);")]
+    [Arguments("public ValueTask {|#0:Method|}() => ValueTask.CompletedTask;")]
+    [Arguments("public ValueTask<int> {|#0:Method|}() => new(1);")]
     public Task ImproperlyLacksAsyncSuffix(string code) => RunTest(code,
         new DiagnosticResult(AsyncDiagnostics.AsyncNeeded)
             .WithLocation(0)

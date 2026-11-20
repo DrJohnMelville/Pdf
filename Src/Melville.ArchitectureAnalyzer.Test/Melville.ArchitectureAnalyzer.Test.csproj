@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>net11.0</TargetFramework>
-        
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,7 +10,7 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" />
       <PackageReference Include="System.Security.Cryptography.Pkcs" />
-      <PackageReference Include="xunit.V3" />
+      <PackageReference Include="TUnit.Engine" />
     </ItemGroup>
 
     <ItemGroup>
