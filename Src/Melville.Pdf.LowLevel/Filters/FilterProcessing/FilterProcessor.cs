@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.INPC;
-
+﻿using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.StreamInterfaces;
+using System;
+using System.Collections.Generic;
+
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
@@ -16,20 +16,30 @@ internal abstract class FilterProcessorBase
     {
         return sourceFormat.CompareTo(desiredEncoding) switch
         {
+            < 0 => (await DecodeAsync(src.AsReaderInefficient(), sourceFormat, desiredEncoding).CA()).AsStreamInefficient(),
+            0 => src,
+            _ => (await EncodeAsync(src.AsReaderInefficient(), sourceFormat, desiredEncoding).CA()).AsStreamInefficient()
+        };
+    }
+    public async ValueTask<IPdfStreamReader> StreamInDesiredEncodingAsync(IPdfStreamReader src, StreamFormat sourceFormat,
+        StreamFormat desiredEncoding)
+    {
+        return sourceFormat.CompareTo(desiredEncoding) switch
+        {
             < 0 => await DecodeAsync(src, sourceFormat, desiredEncoding).CA(),
             0 => src,
             _ => await EncodeAsync(src, sourceFormat, desiredEncoding).CA()
         };
     }
 
-    protected abstract ValueTask<Stream> EncodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
-    protected abstract ValueTask<Stream> DecodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
+    protected abstract ValueTask<IPdfStreamReader> EncodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat);
+    protected abstract ValueTask<IPdfStreamReader> DecodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat);
 
 }
 
-internal partial class FilterProcessor: FilterProcessorBase
+internal partial class FilterProcessor : FilterProcessorBase
 {
 
     [FromConstructor] private readonly IReadOnlyList<PdfIndirectObject> filters;
@@ -37,36 +47,36 @@ internal partial class FilterProcessor: FilterProcessorBase
     [FromConstructor] private readonly IApplySingleFilter singleFilter;
     [FromConstructor] private readonly object? context;
 
-    protected override async ValueTask<Stream> EncodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
+    protected override async ValueTask<IPdfStreamReader> EncodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat)
     {
-        var inclusiveUpperBound = Math.Min(filters.Count-1, (int)sourceFormat);
+        var inclusiveUpperBound = Math.Min(filters.Count - 1, (int)sourceFormat);
         var exclusiveLowerBound = Math.Max((int)targetFormat, -1);
-        var ret = source.AsReaderInefficient();
+        var ret = source;
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
-            ret = await singleFilter.EncodeAsync(ret, 
-                await filters[i].LoadValueAsync().CA(), 
+            ret = await singleFilter.EncodeAsync(ret,
+                await filters[i].LoadValueAsync().CA(),
                 await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
         }
 
-        return ret.AsStreamInefficient();
+        return ret;
     }
-    protected override async ValueTask<Stream> DecodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
+    protected override async ValueTask<IPdfStreamReader> DecodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat)
     {
-        var firstFilter = Math.Max(0, (int)sourceFormat+1);
+        var firstFilter = Math.Max(0, (int)sourceFormat + 1);
         var oneMoreThanLastFilter = Math.Min((int)targetFormat, filters.Count);
         if (firstFilter >= oneMoreThanLastFilter) return source;
-        var ret = source.AsReaderInefficient();
+        var ret = source;
         for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
         {
-            ret = await singleFilter.DecodeAsync(ret, 
-                await filters[i].LoadValueAsync().CA(), 
+            ret = await singleFilter.DecodeAsync(ret,
+                await filters[i].LoadValueAsync().CA(),
                 await TryGetParameter(i).LoadValueAsync().CA(), context).CA();
         }
 
-        return ret.AsStreamInefficient();
+        return ret;
     }
-    private PdfIndirectObject TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfDirectObject.CreateNull();
+    private PdfIndirectObject TryGetParameter(int i) => i < parameters.Count ? parameters[i] : PdfDirectObject.CreateNull();
 }

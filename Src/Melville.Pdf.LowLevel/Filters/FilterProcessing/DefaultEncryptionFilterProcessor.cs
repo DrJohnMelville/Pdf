@@ -37,12 +37,11 @@ internal class DefaultEncryptionFilterProcessor : FilterProcessorBase
         this.encryptor = encryptor;
     }
 
-    protected override async ValueTask<Stream> EncodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
+    protected override async ValueTask<IPdfStreamReader> EncodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
         TryEncrypt(
-            (await innerProcessor.StreamInDesiredEncodingAsync(source, sourceFormat, targetFormat).CA())
-            .AsReaderInefficient(),
-            sourceFormat, targetFormat).AsStreamInefficient();
+            await innerProcessor.StreamInDesiredEncodingAsync(source, sourceFormat, targetFormat).CA(),
+            sourceFormat, targetFormat);
 
     private IPdfStreamReader TryEncrypt(
         IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
@@ -55,14 +54,14 @@ internal class DefaultEncryptionFilterProcessor : FilterProcessorBase
         sourceFormat >= StreamFormat.ImplicitEncryption &&
         targetFormat < StreamFormat.ImplicitEncryption;
 
-    protected override ValueTask<Stream> DecodeAsync(
-        Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
+    protected override ValueTask<IPdfStreamReader> DecodeAsync(
+        IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
         innerProcessor.StreamInDesiredEncodingAsync(
             TryDecrypt(source, sourceFormat, targetFormat), sourceFormat, targetFormat);
 
-    private Stream TryDecrypt(Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
+    private IPdfStreamReader TryDecrypt(IPdfStreamReader source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
         ShouldDecrypt(sourceFormat, targetFormat)
-            ? streamSource.WrapStreamWithDecryptor(source.AsReaderInefficient()).AsStreamInefficient()
+            ? streamSource.WrapStreamWithDecryptor(source)
             : source;
 
     private static bool ShouldDecrypt(StreamFormat sourceFormat, StreamFormat targetFormat) =>
