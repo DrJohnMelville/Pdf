@@ -9,6 +9,7 @@ using Melville.MVVM.Wpf.RootWindows;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevelViewerParts.FontViewers;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.FontViewer.Home;
 
@@ -34,7 +35,7 @@ public class HomeViewModel
         var map = ParseMap.CreateNew();
         using (var src = await file.OpenRead())
         {
-            await map.SetDataAsync(src);
+            await map.SetDataAsync(src.AsStreamReader());
         }
 
         var multiplexSource = MultiplexSourceFactory.Create(await file.OpenRead());

@@ -26,7 +26,7 @@ internal class PdfBitmapWrapper(
 
     public async ValueTask RenderPbgraAsync(Memory<DeviceColor> target)
     {
-        using var source = await attr.Stream.StreamContentAsync(context: this).CA();
+        using var source = await attr.Stream.ReaderForContentAsync(context: this).CA();
         
         switch (source)
         {
@@ -50,10 +50,10 @@ internal class PdfBitmapWrapper(
         writer.WriteBytes(ref src, ref dest, true);
 
     }
-    async ValueTask StreamBitmapBitsAsync(Stream source, Memory<DeviceColor> target)
+    async ValueTask StreamBitmapBitsAsync(IAsyncReader source, Memory<DeviceColor> target)
     {
         var writer = byteWriter(finalColorSpace);
-        using var sourceBuffer = new ParsingBuffer(source.AsStreamReader());
+        using var sourceBuffer = new ParsingBuffer(source);
         while (target.Length > 0 && (sourceBuffer.CurrentLength > 0 || !sourceBuffer.DoneReadingSource))
         {
             await sourceBuffer.ReadBytesAsync().CA();

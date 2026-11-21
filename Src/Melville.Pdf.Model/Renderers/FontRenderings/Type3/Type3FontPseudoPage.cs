@@ -10,10 +10,10 @@ internal partial class Type3FontPseudoPage : IHasPageAttributes
 {
     [FromConstructor] private readonly IHasPageAttributes parent;
     [FromConstructor] private readonly PdfDictionary fontDecl;
-    [FromConstructor] private readonly Stream characterDecl;
+    [FromConstructor] private readonly IPdfStreamReader characterDecl;
 
     public PdfDictionary LowLevel => fontDecl;
-    public ValueTask<IPdfStreamReader> GetContentBytesAsync() => new(characterDecl.AsReaderInefficient());
+    public ValueTask<IPdfStreamReader> GetContentBytesAsync() => new(characterDecl);
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
 }

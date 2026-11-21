@@ -20,7 +20,7 @@ public static class StreamToParseMapImpl
     public static async ValueTask SetDataAsync(this ParseMap? map, PdfStream s)
     {
         if (map == null) return;
-        await map.SetDataAsync(await s.StreamContentAsync().CA()).CA();
+        await map.SetDataAsync(await s.ReaderForContentAsync().CA()).CA();
     }
 #else
     public static ValueTask SetDataAsync(this ParseMap? map, PdfStream s) =>

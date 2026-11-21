@@ -1,4 +1,5 @@
-﻿using Melville.StreamInterfaces;
+﻿using Melville.Parsing.ReaderExtensions;
+using Melville.StreamInterfaces;
 using System.Diagnostics;
 
 namespace Melville.Parsing.ParserMapping;
@@ -155,14 +156,12 @@ public static class ParseMapSetDataOperations
     /// <param name="map">The map to set</param>
     /// <param name="s">the stream to use as the parsemap source</param>
 #if DEBUG
-    public static async ValueTask SetDataAsync(this ParseMap? map, Stream s)
+    public static async ValueTask SetDataAsync(this ParseMap? map, IAsyncReader s)
     {
         if (map == null) return;
-        var memory = new MemoryStream();
-        await s.CopyToAsync(memory).CA();
-        map.SetDataInternal(memory.ToArray());
-        memory.Dispose();
-        s.Dispose();
+        var (data, _) = await new AsyncReaderToByteArray(s, false).ReadAsync().CA();
+        map.SetDataInternal(data);
+        (s as IDisposable)?.Dispose();
     }
 #else
     public static ValueTask SetDataAsync(this ParseMap? map, Stream s)

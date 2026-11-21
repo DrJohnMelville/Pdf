@@ -2,12 +2,10 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
+namespace Melville.Parsing.ReaderExtensions;
 
-#warning move the case where the length is known into this class
 /// <summary>
 /// Read an IAsyncReader into an array of bytes, as efficiently as possible.
 /// </summary>
@@ -35,11 +33,11 @@ public readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFina
     (byte[], int) MakeFinalBuffer(byte[] buffer, int length)
     {
         var totalLen = length + Buffers.Sum(i => i.Length);
-        var finalBuffer = rentFinalBuffer ?  
-            ArrayPool<byte>.Shared.Rent(totalLen):
+        var finalBuffer = rentFinalBuffer ?
+            ArrayPool<byte>.Shared.Rent(totalLen) :
                                 new byte[totalLen];
         var nextByte = finalBuffer.AsSpan();
-        foreach(var buf in Buffers)
+        foreach (var buf in Buffers)
         {
             AddBytes(ref nextByte, buf, buf.Length);
         }

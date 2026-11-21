@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
-
+using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 using Melville.Postscript.Interpreter.Values;
 using Melville.StreamInterfaces;
 
@@ -56,10 +58,11 @@ internal partial class IndexedColorSpace: IColorSpace
     private static async ValueTask<DeviceColor[]> GetValuesFromStreamAsync(
         PdfStream pdfStream, IColorSpace baseColorSpace, int length)
     {
-        using var stream = await pdfStream.StreamContentAsync().CA();
-        var ms = new MemoryStream();
-        await stream.CopyToAsync(ms).CA();
-        return GetValues(ms.GetBuffer().AsSpan(0, (int)ms.Length), baseColorSpace, length);
+        using var stream = await pdfStream.ReaderForContentAsync().CA();
+        var (bytes, len) = await new AsyncReaderToByteArray(stream).ReadAsync().CA();
+        var ret = GetValues(bytes.AsSpan(0,len), baseColorSpace, length);
+        ArrayPool<byte>.Shared.Return(bytes);
+        return ret;
     }
     public int ExpectedComponents => 1;
 

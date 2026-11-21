@@ -1,5 +1,6 @@
 ﻿using Melville.IntersectionTypes;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ReaderExtensions;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;

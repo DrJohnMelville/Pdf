@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.IO;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
 
@@ -9,12 +11,12 @@ public static class ColorSpaceViewModelFactory
     public static async ValueTask<MultiColorSpaceViewModel> CreateAsync(Stream iccData)
     {
         var models = new List<ColorSpaceViewModel>(2);
-        await TryAddIccProfileAsync(iccData, models);
+        await TryAddIccProfileAsync(iccData.AsStreamReader(), models);
         AddColorSpace(models, StaticColorSpaces.DeviceRgb(), "Device RGB");
         return new MultiColorSpaceViewModel(models);
     }
 
-    private static async Task TryAddIccProfileAsync(Stream iccData, List<ColorSpaceViewModel> models)
+    private static async Task TryAddIccProfileAsync(IAsyncReader iccData, List<ColorSpaceViewModel> models)
     {
         if (await TryReadIccProfileAsync(iccData) is {} colorSpace)
             AddColorSpace(models, colorSpace, "ICC Profile");
@@ -27,7 +29,7 @@ public static class ColorSpaceViewModelFactory
     private static ImmutableList<ColorAxisViewModel> ParseInputAxes(IColorSpace colorSpace) => 
         colorSpace.ColorComponentRanges(8).Select(i=>new ColorAxisViewModel(i)).ToImmutableList();
 
-    private static async Task<IColorSpace?> TryReadIccProfileAsync(Stream iccData)
+    private static async Task<IColorSpace?> TryReadIccProfileAsync(IAsyncReader iccData)
     {
         try
         {

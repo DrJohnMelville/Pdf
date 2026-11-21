@@ -45,9 +45,8 @@ public static class CrossReferenceStreamParser
     public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).CreateAsync().CA();
-        using var stream = await crossRefPdfStream.StreamContentAsync().CA();
-        var reader = stream.AsStreamReader();
-        using var buffer = new ParsingBuffer(reader);
+        using var stream = await crossRefPdfStream.ReaderForContentAsync().CA();
+        using var buffer = new ParsingBuffer(stream);
         await parser.ParseAsync(buffer).CA();
 
     }

@@ -29,7 +29,7 @@ public static class IccProfileColorSpaceParser
         {
             if (!HasExplicitAlternateRgbColorSpace(stream, altName))
             {
-                using var content = await stream.StreamContentAsync().CA();
+                using var content = await stream.ReaderForContentAsync().CA();
                 return await ParseAsync(content).CA();
             }
         }
@@ -64,10 +64,16 @@ public static class IccProfileColorSpaceParser
     /// </summary>
     /// <param name="source">C# stream to read the profile from.</param>
     /// <returns>Colorspace using the ICC profile.</returns>
-    public static async ValueTask<IColorSpace> ParseAsync(Stream source)
+    public static async ValueTask<IColorSpace> ParseAsync(IAsyncReader source)
     {
-        using var reader = source;
-        var profile = await new IccParser(reader.AsStreamReader()).ParseAsync().CA();
-        return new IccColorSpace(profile.DeviceToSrgb());
+        try
+        {
+            var profile = await new IccParser(source).ParseAsync().CA();
+            return new IccColorSpace(profile.DeviceToSrgb());
+        }
+        finally
+        {
+            (source as IDisposable)?.Dispose();            
+        }
     }
 }

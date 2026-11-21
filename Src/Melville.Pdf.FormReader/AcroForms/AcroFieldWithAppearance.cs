@@ -1,5 +1,5 @@
 ﻿using Melville.INPC;
-
+using Melville.Parsing.ReaderExtensions;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;

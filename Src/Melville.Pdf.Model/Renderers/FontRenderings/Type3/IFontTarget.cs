@@ -17,7 +17,7 @@ public interface IFontTarget
     /// <param name="fontMatrix">The font matrix</param>
     /// <param name="fontDictionary">The dictionary defining the font -- which may contain resources.</param>
     /// <returns>A valuetask containing the width of the rendered character.</returns>
-    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
+    ValueTask<double> RenderType3CharacterAsync(IPdfStreamReader s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     /// <summary>
     /// Create a IDrawTarget that the stroked character can be drawn to.
     /// </summary>

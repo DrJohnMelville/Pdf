@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
@@ -13,5 +14,5 @@ public interface IRetrieveCmapStream
     /// </summary>
     /// <param name="name">The name of the desired CMap</param>
     /// <returns>A stream containing the code for the CMao</returns>
-    Stream? CMapStreamFor(PdfDirectObject name);
+    IAsyncReader? CMapStreamFor(PdfDirectObject name);
 }

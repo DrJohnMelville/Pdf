@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.DataModelTests.Asserts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.StreamInterfaces;
 using Moq;
 
 using DeepCopy = Melville.Pdf.LowLevel.Writers.PageExtraction.DeepCopy;
@@ -97,17 +99,15 @@ public class DeepCopyTest
     private async Task AssertSameStreamAsync(PdfStream a, PdfStream b)
     {
         await AssertSameDictionaryAsync(a, b);
-        var aVal = await AsArrayAsync(await a.StreamContentAsync());
-        var bVal = await AsArrayAsync(await b.StreamContentAsync());
+        var aVal = await AsArrayAsync(await a.ReaderForContentAsync());
+        var bVal = await AsArrayAsync(await b.ReaderForContentAsync());
         Assert.SeqEqual(aVal, bVal);
     }
 
-    private async ValueTask<byte[]> AsArrayAsync(Stream str)
+    private async ValueTask<byte[]> AsArrayAsync(IAsyncReader str)
     {
-        var ret = new MemoryStream();
-        await str.CopyToAsync(ret);
-        return ret.ToArray();
-
+        var (bytes, _) = await new AsyncReaderToByteArray(str, false).ReadAsync();
+        return bytes;
     }
 
     private  void AssertSameIndirectobject(PdfIndirectObject a, PdfIndirectObject b)

@@ -15,6 +15,7 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
@@ -82,23 +83,23 @@ public partial class CMapFactory
 
     internal async ValueTask<bool> ReadFromPdfValueAsync(PdfDirectObject encoding)
     {
-        using var cSharpStream = encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
-            await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA();
+        using var _ = Force.Using(encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
+            await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA(), out var cSharpStream);
         if (cSharpStream is null) return false;
 
         await ReadFromCSharpStreamAsync(cSharpStream).CA();
         return true;
     }
 
-    private async ValueTask<Stream> PdfToCSharpStreamAsync(PdfStream stream)
+    private async ValueTask<IAsyncReader> PdfToCSharpStreamAsync(PdfStream stream)
     {
         if (await stream.GetOrNullAsync(KnownNames.UseCMap).CA() is { IsNull: false } ancestor)
             await ReadFromPdfValueAsync(ancestor).CA();
 
-        return await stream.StreamContentAsync().CA();
+        return await stream.ReaderForContentAsync().CA();
     }
 
-    private async ValueTask ReadFromCSharpStreamAsync(Stream source)
+    private async ValueTask ReadFromCSharpStreamAsync(IAsyncReader source)
     {
         try
         {
@@ -106,7 +107,7 @@ public partial class CMapFactory
         }
         finally
         {
-            source.Dispose();
+            (source as IDisposable)?.Dispose();
         }
 
     }

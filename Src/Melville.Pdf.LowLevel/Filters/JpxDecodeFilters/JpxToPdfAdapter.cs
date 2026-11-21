@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CoreJ2K;
 using Melville.Hacks;
-
+using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.StreamInterfaces;

@@ -3,9 +3,11 @@ using System.Windows;
 using Melville.INPC;
 using Melville.Linq;
 using Melville.MVVM.Wpf.ViewFrames;
+using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.StreamInterfaces;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -64,15 +66,11 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
 
     public async ValueTask<object> LoadBytesAsync(PdfStream stream, StreamFormat fmt)
     {
-        using var streamData = await stream.StreamContentAsync(fmt);
-        var final = new MemoryStream();
-        await streamData.CopyToAsync(final);
-        return new ByteStringViewModel(final.ToArray());
+        using var streamData = await stream.ReaderForContentAsync(fmt);
+        var (bytes, _) = await new AsyncReaderToByteArray(streamData, false).ReadAsync().CA();
+        return new ByteStringViewModel(bytes);
     }
-    
-    private static IEnumerable<string> CreateHexDump(IEnumerable<byte> data) => 
-        data.BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}");
-    
+       
     public UIElement View() => new StreamPartView{ DataContext = this};
 
 }

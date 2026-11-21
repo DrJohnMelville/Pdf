@@ -261,7 +261,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     #endregion
 
     #region Type 3 font rendering
-    public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
+    public async ValueTask<double> RenderType3CharacterAsync(IPdfStreamReader s, Matrix3x2 fontMatrix,
         PdfDictionary fontDictionary)
     {
         if (!(GraphicsState.TextRender is TextRendering.Invisible or TextRendering.Clip))
@@ -273,7 +273,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         return ret.X;
     }
 
-    private async Task DrawType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
+    private async Task DrawType3CharacterAsync(IPdfStreamReader s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         SaveGraphicsState();
         var textMatrix = CharacterPositionMatrix();

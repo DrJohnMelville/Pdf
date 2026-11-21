@@ -1,4 +1,5 @@
 ﻿using Melville.FileSystem.BlockFile.ByteSinks;
+using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;

@@ -138,9 +138,9 @@ public class PostscriptEngine
     /// Execute a postscript program.
     /// </summary>
     /// <param name="code">The program to execute</param>
-    public async ValueTask ExecuteAsync(Stream code)
+    public async ValueTask ExecuteAsync(IAsyncReader code)
     {
-        using var tokenSource = new Tokenizer(code.AsStreamReader());
+        using var tokenSource = new Tokenizer(code);
         await ExecuteAsync(tokenSource);
     }
 

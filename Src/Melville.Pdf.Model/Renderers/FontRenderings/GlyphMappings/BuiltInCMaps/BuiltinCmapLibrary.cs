@@ -5,14 +5,16 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
 
 [StaticSingleton]
 internal partial class BuiltinCmapLibrary: IRetrieveCmapStream
 {
-    public Stream? CMapStreamFor(PdfDirectObject name) => 
-        ResourceForName(name) is { } s ? new BrotliStream(s, CompressionMode.Decompress) : null;
+    public IAsyncReader? CMapStreamFor(PdfDirectObject name) => 
+        ResourceForName(name) is { } s ? new BrotliStream(s, CompressionMode.Decompress).AsStreamReader() : null;
 
     private static Stream? ResourceForName(PdfDirectObject name)
     {
