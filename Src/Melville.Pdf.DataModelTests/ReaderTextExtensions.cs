@@ -1,4 +1,6 @@
-﻿using Melville.StreamInterfaces;
+﻿using Melville.FileSystem.BlockFile.ByteSinks;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System;
 using System.Collections.Generic;
@@ -17,5 +19,11 @@ public static class ReaderTextExtensions
             while (!buf.DoneReadingSource) await buf.ReadBytesAsync();
             return Encoding.UTF8.GetString(buf.Peek());
         }
+
+        public async ValueTask<byte[]> ReadAllBytesAsync()
+        {
+            var (ary, len) = await new AsyncReaderToByteArray(reader, false).ReadAsync();
+            return ary;
+        } 
     }
 }

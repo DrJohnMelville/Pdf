@@ -44,9 +44,8 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
             .WithFilter(FilterName.LZWDecode)
             .WithFilterParam(EarlySwitch < 2 ? param : PdfDirectObject.CreateNull())
             .AsStream(buffer);
-        var destination = new byte[length];
-        var decoded = await str.StreamContentAsync();
-        await decoded.FillBufferAsync(destination, 0, length);
+        var decoded = await str.ReaderForContentAsync();
+        var destination = await decoded.ReadAllBytesAsync();
         Assert.Equal(buffer.Length, destination.Length);
 
         buffer.Should().BeEquivalentTo(destination);

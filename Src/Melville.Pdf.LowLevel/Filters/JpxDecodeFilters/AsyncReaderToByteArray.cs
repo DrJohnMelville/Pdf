@@ -7,10 +7,21 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-internal readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFinalBuffer = true)
+#warning move the case where the length is known into this class
+/// <summary>
+/// Read an IAsyncReader into an array of bytes, as efficiently as possible.
+/// </summary>
+/// <param name="reader">Source of the bytes to read</param>
+/// <param name="rentFinalBuffer">If true return a buffer from the ArrayPool, otherwise allocate a new byte array</param>
+public readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFinalBuffer = true)
 {
     private readonly List<byte[]> Buffers = new();
 
+    /// <summary>
+    /// Get the bytes
+    /// </summary>
+    /// <returns>A pair containing the byte array and an int of the number of bytes used.  If the
+    /// buffer is not rented from the ArrayPool, it will be precisely the correct size.</returns>
     public async ValueTask<(byte[], int)> ReadAsync()
     {
         while (true)

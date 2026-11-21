@@ -17,8 +17,8 @@ public class S7_4_1_TwoStreamDecoder
             .WithFilter(FilterName.ASCII85Decode, FilterName.FlateDecode)
             .AsStream(compressedData, StreamFormat.DiskRepresentation);
 
-        using var str = await stream.StreamContentAsync();
-        var output = await new StreamReader(str).ReadToEndAsync();
+        using var str = await stream.ReaderForContentAsync();
+        var output = await str.ReadAsStringAsync();
         Assert.Equal(expandedData.Replace("\r\n","\r"), output);
     }
 
