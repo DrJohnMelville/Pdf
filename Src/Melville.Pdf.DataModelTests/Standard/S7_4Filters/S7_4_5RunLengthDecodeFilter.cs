@@ -14,14 +14,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroItem("xyAzzzzzzzzzz", "\x2xyA\xF7z", "ConcatLiteralToRepeat")]
 [MacroItem("xyzzzzzzzzzz", "\x1xy\xF7z", "ConcatT20Plus")]
 [MacroItem("xzzzzzzzzzz", "\x0x\xF7z", "ConcatTwoRepeats")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.RunLengthDecode){}}")]
+[MacroCode("[InheritsTests] public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.RunLengthDecode){}}")]
 public partial class S7_4_5RunLengthDecodeFilter
 {
+    [InheritsTests]
     public class LongRun : StreamTestBase
     {
         public LongRun(): base(string.Join("", Enumerable.Repeat('z', 138)), "\x81z\xf7z", 
             KnownNames.RunLengthDecode){}
     }
+
+    [InheritsTests]
     public class LongRunUnique : StreamTestBase
     {
         public LongRunUnique(): base(string.Join("", Enumerable.Repeat("xy", 67)), 

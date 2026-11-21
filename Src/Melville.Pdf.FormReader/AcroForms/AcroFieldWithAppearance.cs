@@ -1,6 +1,7 @@
 ﻿using Melville.INPC;
 
 using Melville.Parsing.Streams;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
@@ -8,6 +9,7 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Melville.Postscript.Interpreter.Values;
 using Melville.StreamInterfaces;
+using System.Buffers;
 
 namespace Melville.Pdf.FormReader.AcroForms;
 
@@ -33,14 +35,16 @@ internal partial class AcroFieldWithAppearance: AcroFormField
         var template = await apStreamRef.LoadValueAsync().CA();
         if (!template.TryGet(out PdfStream? templateStream)) return;
         var builder = new DictionaryBuilder(templateStream.RawItems);
-        var original = new MemoryStream(); 
-        await (await templateStream.StreamContentAsync().CA()).CopyToAsync(original).CA();
+
+        using var templateReader = await templateStream.ReaderForContentAsync().CA();
+        var (bytes, len) = await new AsyncReaderToByteArray(templateReader, true).ReadAsync().CA();
 
         using var stm = WritableBuffer.Create();
         using var writer = stm.WritingStream();
-        WriteNewAppearnce(appearanceString, writer, textValue.Span, AsSpan(original));
+        WriteNewAppearnce(appearanceString, writer, textValue.Span, bytes.AsSpan(0,len));
         using var reader = stm.ReadFrom(0);
         target.ReplaceReferenceObject(apStreamRef, builder.AsStream(reader));
+        ArrayPool<byte>.Shared.Return(bytes);
     }
 
     private static Span<byte> AsSpan(MemoryStream original) => 

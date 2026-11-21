@@ -1,8 +1,6 @@
 ﻿using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using Melville.StreamInterfaces.Streams;
-using System.Buffers;
-using System.IO.Pipelines;
 
 namespace Melville.Parsing.VariableBitEncoding;
 
@@ -23,9 +21,9 @@ public readonly struct BitStreamReader: IDisposable
     /// </summary>
     /// <param name="source">The data to be read.</param>
     /// <param name="bits">The number of bits to read in each number.</param>
-    public BitStreamReader(Stream source, int bits) : this()
+    public BitStreamReader(IAsyncReader source, int bits) : this()
     {
-        pipe = new ParsingBuffer(source.AsStreamReader());
+        pipe = new ParsingBuffer(source);
         reader = new BitReader();
         this.bits = bits;
     }

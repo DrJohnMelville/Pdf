@@ -51,7 +51,7 @@ public ref struct CCITEncodingTestBuilder
 [MacroItem("\xFF\xFF\xFF\xFE","VL(1).V(0)", "VerticalMinusOne", "JustData32v4")]
 [MacroItem("\x55\x55\x55\x55", "HW(0,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).VL(2).VL(1).V(0)", "Alternate1And0", "JustData32v4")]
 [MacroItem("\x0\x0\x0\x0\x0\x0\x0\x0","HW(0,32).V(0).V(0)", "TwoBlack", "JustData32v4")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecode, S7_4_6CCITFaxDecode.~3~){}}")]
+[MacroCode("[InheritsTests] public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecode, S7_4_6CCITFaxDecode.~3~){}}")]
 public partial class S7_4_6CCITFaxDecode
 {
     public static PdfDictionary JustData32v4 => new DictionaryBuilder()

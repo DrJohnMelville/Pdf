@@ -53,7 +53,7 @@ internal static class SampledFunctionParser
         var bitsPerSample = 
             await source.GetAsync<int>(KnownNames.BitsPerSample).CA();
         var encodedRange = new ClosedInterval(0, (1 << bitsPerSample) - 1);
-        using var samplesStream = await source.StreamContentAsync().CA();
+        using var samplesStream = await source.ReaderForContentAsync().CA();
         using var reader = new BitStreamReader(samplesStream, bitsPerSample);
         var ret = new double[inputPermutations * range.Length];
         var pos = 0;
