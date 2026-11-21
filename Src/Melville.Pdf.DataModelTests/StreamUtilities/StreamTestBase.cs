@@ -13,6 +13,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
+using Melville.StreamInterfaces;
 using Moq;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
@@ -55,7 +56,7 @@ public abstract partial class StreamTestBase
     [Test]
     public async Task DecodeTestAsync()
     {
-        await VerifyDecodedStreamAsync(await StreamWithEncodedBacking().StreamContentAsync());
+        await VerifyDecodedStreamAsync(await StreamWithEncodedBacking().ReaderForContentAsync());
     }
     [Test]
     public async Task DecodeWhenGettingOneCharAtATimeAsync()
@@ -65,7 +66,7 @@ public abstract partial class StreamTestBase
         var strSourceMock = MockStreamSource(src);
 
         var PdfValueStream = StreamBuilder().AsStream(strSourceMock.Object);
-        var innerStream = await PdfValueStream.StreamContentAsync();
+        var innerStream = await PdfValueStream.ReaderForContentAsync();
         await VerifyDecodedStreamAsync(innerStream);
     }
 
@@ -102,14 +103,14 @@ public abstract partial class StreamTestBase
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
-    private async Task<(Mock<Stream> streamMock, Stream innerStream)> DisposeStreamRigAsync()
+    private async Task<(Mock<Stream> streamMock, IPdfStreamReader innerStream)> DisposeStreamRigAsync()
     {
         var streamMock = new Mock<Stream>();
         streamMock.SetupGet(i => i.CanRead).Returns(true);
        var strSourceMock = MockStreamSource(streamMock.Object);
 
         var PdfValueStream = StreamBuilder().AsStream(strSourceMock.Object);
-        var innerStream = await PdfValueStream.StreamContentAsync();
+        var innerStream = await PdfValueStream.ReaderForContentAsync();
         return (streamMock, innerStream);
     }
 
@@ -153,14 +154,12 @@ public abstract partial class StreamTestBase
     public async Task RoundTripStreamAsync()
     {
         PdfStream pdfStream = await StreamWithEncodedBackEndAsync();
-        await VerifyDecodedStreamAsync(await pdfStream.StreamContentAsync());
+        await VerifyDecodedStreamAsync(await pdfStream.ReaderForContentAsync());
     }
 
-    private async Task VerifyDecodedStreamAsync(Stream streamToRead)
+    private async Task VerifyDecodedStreamAsync(IPdfStreamReader streamToRead)
     {
-        var buf = new byte[source.Length+200];
-        var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);
-        Assert.Equal(source, buf[..read].ExtendedAsciiString());
+        Assert.Equal(source, await streamToRead.ReadAsStringAsync());
         streamToRead.Dispose();
     }
 }

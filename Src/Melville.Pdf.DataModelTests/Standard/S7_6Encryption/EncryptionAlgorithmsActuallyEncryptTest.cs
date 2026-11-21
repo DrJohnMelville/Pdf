@@ -53,13 +53,11 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         var outstr = await doc2.Objects[(2, 0)].LoadValueAsync();
         Assert.Equal("Encrypted String", outstr.ToString());
         var stream = await doc2.Objects[(3, 0)].LoadValueAsync<PdfStream>();
-        using var streamContentAsync = await stream.StreamContentAsync();
-        Assert.Equal("This is an encrypted stream", await new StreamReader(
-            streamContentAsync).ReadToEndAsync());
+        using var streamContentAsync = await stream.ReaderForContentAsync();
+        Assert.Equal("This is an encrypted stream", await streamContentAsync.ReadAsStringAsync());
 
-        using var sc2 = await stream.StreamContentAsync();
-        Assert.Equal("This is an encrypted stream", await new StreamReader(
-            new OneCharAtATimeStream(sc2)).ReadToEndAsync());
+        using var sc2 = await stream.ReaderForContentAsync();
+        Assert.Equal("This is an encrypted stream", await sc2.ReadAsStringAsync());
 
     }
 }

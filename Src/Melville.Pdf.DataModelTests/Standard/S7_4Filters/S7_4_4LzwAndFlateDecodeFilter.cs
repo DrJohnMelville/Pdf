@@ -58,9 +58,8 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
             var str = new DictionaryBuilder()
                 .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)
                 .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
-            using var stream = await str.StreamContentAsync();
-            StreamReader streamReader = new StreamReader(stream);
-            var result = await streamReader.ReadToEndAsync();
+            using var stream = await str.ReaderForContentAsync();
+           var result = await stream.ReadAsStringAsync();
             Assert.Equal(LwzDecodeBugResult.Replace("\r\n", "\r"), result);
         }
         // assertion is the lack of an exception

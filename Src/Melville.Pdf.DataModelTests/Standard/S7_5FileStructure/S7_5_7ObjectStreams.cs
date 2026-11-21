@@ -137,7 +137,7 @@ public class S7_5_7ObjectStreams
         var ms = new MemoryStream();
         await new EncryptedRefStm().WritePdfAsync(ms);
         var extendedAsciiString = ms.ToArray().ExtendedAsciiString();
-        Assert.DoesNotContain("String In", extendedAsciiString);
+        Assert.DoesNotContain("String in", extendedAsciiString);
         ms.Seek(0, SeekOrigin.Begin);
         
         // string is inside an encrypted stream and so no plaintext
@@ -149,8 +149,8 @@ public class S7_5_7ObjectStreams
         
         // string is not encoded inside stream
         var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfStream>();
-        using var streamContentAsync = await objSter.StreamContentAsync();
-        var strText = await new StreamReader(streamContentAsync).ReadToEndAsync();
-        Assert.Contains(strText, strText);
+        using var streamContentAsync = await objSter.ReaderForContentAsync();
+        var strText = await streamContentAsync.ReadAsStringAsync();
+        Assert.Contains("String in", strText);
     }
 }

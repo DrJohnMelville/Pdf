@@ -26,9 +26,9 @@ public class S7_6_5CryptFilters
         using var doc = await str.ParseDocumentAsync();
         Assert.Equal(3, doc.Objects.Count);
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].LoadValueAsync()).ToString());
-        using var streamContentAsync = await (await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().StreamContentAsync();
+        using var streamContentAsync = await (await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().ReaderForContentAsync();
 
-        var result = await new StreamReader(streamContentAsync).ReadToEndAsync();
+        var result = await streamContentAsync.ReadAsStringAsync();
 
         Assert.Equal("plaintext stream", result);
         }

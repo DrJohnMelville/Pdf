@@ -58,8 +58,8 @@ public class RoundTripEncryptedFiles
 
     private async ValueTask VerifyStreamContainsAsync(PdfStream ps, string text)
     {
-        using var stream = await ps.StreamContentAsync(StreamFormat.PlainText);
-        var streamSource = await new StreamReader(stream).ReadToEndAsync();
+        using var stream = await ps.ReaderForContentAsync(StreamFormat.PlainText);
+        var streamSource = await stream.ReadAsStringAsync();
         Assert.Contains(text, streamSource);
     }
 
