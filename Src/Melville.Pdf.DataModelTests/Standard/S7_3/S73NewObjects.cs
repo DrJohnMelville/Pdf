@@ -143,7 +143,6 @@ public class S7_3NewObjects
         Assert.Equal(11, await str.DeclaredLengthAsync());
 
         Assert.Equal("Hello World",
-            
-            await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync());
+            await (await str.ReaderForContentAsync()).ReadAsStringAsync());
     }
 }

@@ -35,8 +35,8 @@ public class S7_3_8_StreamsDefined
     public async Task RunStreamTestAsync(string data, string expected)
     {
         var (obj, context) = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
-        using var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
-        Assert.Equal(expected, await new StreamReader(cSharpStream).ReadToEndAsync());
+        using var cSharpStream = await obj.Get<PdfStream>().ReaderForContentAsync();
+        Assert.Equal(expected, await cSharpStream.ReadAsStringAsync());
         context.Dispose();
     }
 }
