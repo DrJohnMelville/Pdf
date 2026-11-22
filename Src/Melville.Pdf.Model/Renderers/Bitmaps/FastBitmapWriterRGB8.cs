@@ -7,36 +7,6 @@ using System.Runtime.Intrinsics;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-[StaticSingleton]
-internal partial class FastBitmapWriterRGB82 : IByteWriter
-{
-    public void WriteBytes(
-        scoped ref SpanParsingBuffer input, ref Span<DeviceColor> output, bool isFinal)
-    {
-        var bytes = MemoryMarshal.AsBytes(output);
-        WriteBytes(ref input, ref bytes);
-        output = MemoryMarshal.Cast<byte, DeviceColor>(bytes);
-    }
-    public void WriteBytes(ref SpanParsingBuffer input, ref Span<byte> output)
-    {
-                
-        ParseSingleBytes(ref input, ref output);
-    }
-
-    private static void ParseSingleBytes(ref SpanParsingBuffer input, ref Span<byte> output)
-    {
-        while (input.CurrentLength >= 3 && output.Length >= 4)
-        {
-            var inputSpan = input.Peek();
-            output[2] = inputSpan[0];
-            output[1] = inputSpan[1];
-            output[0] = inputSpan[2];
-            output[3] = 0xFF;
-            input.Advance(3);
-            output = output[4..];
-        }
-    }
-}
 
 [StaticSingleton]
 internal partial class FastBitmapWriterRGB8 : IByteWriter

@@ -2,7 +2,7 @@
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
+internal sealed class MultiplexedStream : IndexedMultiplexSource
 {
     private Stream source;
 
@@ -28,7 +28,7 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
     }
     
     /// <inheritdoc />
-    int IIndexedReader.Read(long position, in Span<byte> buffer)
+    public override int Read(long position, in Span<byte> buffer)
     {
         mutex.Wait();
         try
@@ -43,7 +43,7 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
     }
 
     /// <inheritdoc />
-    async ValueTask<int> IIndexedReader.ReadAsync(
+    public override async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
         await mutex.WaitAsync().CA();
@@ -62,10 +62,4 @@ internal sealed class MultiplexedStream : CountedMultiplexSource, IIndexedReader
     {
         if (source.Position != position) source.Seek(position, SeekOrigin.Begin);
     }
-
-    protected override Stream ReadFromOverride(long position) =>
-        new IndexedReaderStream(this, position);
-    protected override IMultiplexReader ReaderFromOverride(long position) =>
-        new IndexedReader(this, position);
-
 }

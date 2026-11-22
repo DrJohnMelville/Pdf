@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal class FileMultiplexer : CountedMultiplexSource, IIndexedReader
+internal class FileMultiplexer : IndexedMultiplexSource
 {
     private SafeFileHandle handle;
    
@@ -20,20 +20,11 @@ internal class FileMultiplexer : CountedMultiplexSource, IIndexedReader
 
     protected override void CleanUp() => handle.DangerousRelease();
 
-    protected override Stream ReadFromOverride(long position) => 
-        new IndexedReaderStream(this, position);
-
-    protected override IMultiplexReader ReaderFromOverride(long position)
-    {
-        return new IndexedReader(this, position);
-    }
-
-
     public override long Length => RandomAccess.GetLength(handle);
 
-    int IIndexedReader.Read(long position, in Span<byte> buffer) =>
+    public override int Read(long position, in Span<byte> buffer) =>
         RandomAccess.Read(handle, buffer, position);
 
-    ValueTask<int> IIndexedReader.ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken) =>
+    public override ValueTask<int> ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken) =>
         RandomAccess.ReadAsync(handle, buffer, position, cancellationToken);
 }

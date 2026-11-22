@@ -5,15 +5,20 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal interface IIndexedReader
+internal abstract class IndexedMultiplexSource: CountedMultiplexSource
 {
+    protected override Stream ReadFromOverride(long position) =>
+    new IndexedReaderStream(this, position);
+    protected override IMultiplexReader ReaderFromOverride(long position) =>
+        new IndexedReader(this, position);
+
     /// <summary>
     /// Read bytes into a span.
     /// </summary>
     /// <param name="position">The position to read from</param>
     /// <param name="buffer">A span to hold the read data.</param>
     /// <returns>The number of bytes read</returns>
-    public int Read(long position, in Span<byte> buffer);
+    public abstract int Read(long position, in Span<byte> buffer);
 
     /// <summary>
     /// Asynchronously read from the stream to a memory
@@ -22,33 +27,29 @@ internal interface IIndexedReader
     /// <param name="buffer">A memory to hold the read data</param>
     /// <param name="cancellationToken">A cancellation token</param>
     /// <returns>The number of bytes read</returns>
-    public ValueTask<int> ReadAsync(
+    public abstract ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// The length of the represented data.
-    /// </summary>
-    long Length { get; }
 }
 
 
 internal class IndexedReaderStream : 
     DefaultBaseStream, IHasSourceTicket
 {
-    private IIndexedReader? source = null;
+    readonly long basePosition;
+    private IndexedMultiplexSource? source = null;
     CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
 
-    public IndexedReaderStream(IIndexedReader source, long position):
+    public IndexedReaderStream(IndexedMultiplexSource source, long position):
         base (true, false, true)
     {
         this.source = source;
-        Position = position;
+        basePosition = position;
     }
 
     public override int Read(Span<byte> buffer)
     {
         VerifyInitialized();
-        var ret = source.Read(Position, buffer);
+        var ret = source.Read(Position+basePosition, buffer);
         Position += ret;
         return ret;
     }
@@ -64,7 +65,7 @@ internal class IndexedReaderStream :
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
         VerifyInitialized();
-        var ret = await source.ReadAsync(Position, buffer, cancellationToken).CA();
+        var ret = await source.ReadAsync(Position+basePosition, buffer, cancellationToken).CA();
         Position += ret;
         return ret;
     }
@@ -81,8 +82,7 @@ internal class IndexedReaderStream :
             _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
         };
 
-    public override long Length => source?.Length ?? 0;
-
+    public override long Length => (source?.Length ?? 0) - basePosition;
 
     protected override void Dispose(bool disposing)
     {
@@ -93,10 +93,10 @@ internal class IndexedReaderStream :
     }
 }
 
-internal class IndexedReader(IIndexedReader inner, long basePosition): 
+internal class IndexedReader(IndexedMultiplexSource inner, long basePosition): 
     IMultiplexReader, ISyncReader, IHasSourceTicket, IDisposable
 {
-    IIndexedReader inner = inner;
+    IndexedMultiplexSource inner = inner;
     readonly long basePosition = basePosition;
     long absolutePosition = basePosition;
     CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }

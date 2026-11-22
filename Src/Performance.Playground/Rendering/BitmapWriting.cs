@@ -38,7 +38,7 @@ public class BitmapWriting
     private static DeviceColor[] dest2 = new DeviceColor[1000];
         
     [Benchmark(Baseline = true)]
-    public void Old() => TestWriter(FastBitmapWriterRGB82.Instance);
+    public void Old() => TestWriter(FastBitmapWriterRGB8.Instance);
     [Benchmark]
     public void New() => TestWriter(FastBitmapWriterRGB8.Instance);
 

@@ -30,14 +30,14 @@ internal class PdfBitmapWrapper(
         
         switch (source)
         {
-            case IInternalBufferBytes ibb:
-                WriteCompleteBuffer(ibb.AsMemory().Span, target);
+            case IHasDataAsReadOnlyMemory ibb:
+                WriteCompleteBuffer(ibb.AsReadOnlyMemory().Span, target);
                 break;
             case MemoryStream ms when ms.TryGetBuffer (out var buffSeg) :
                 WriteCompleteBuffer(buffSeg.AsMemory().Span, target);
                 break;
             default:
-                await StreamBitmapBitsAsync(source, target);
+                await StreamBitmapBitsAsync(source, target).CA();
                 break;
         }
     }
