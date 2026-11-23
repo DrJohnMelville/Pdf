@@ -125,11 +125,11 @@ public class MultiBufferStreamTest
         using var reader = sut.ReadFrom(0);
         if (valid)
         {
-            reader.Position = location;
+            reader.Seek(location, SeekOrigin.Begin);
         }
         else
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => reader.Position = location);
+            Assert.Throws<ArgumentOutOfRangeException>(() => reader.Seek(location, SeekOrigin.Begin));
         }
     }
 

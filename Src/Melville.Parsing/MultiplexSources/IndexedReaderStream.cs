@@ -1,41 +1,23 @@
-﻿using Melville.Parsing.Streams.Bases;
+﻿using Melville.IntersectionTypes;
+using Melville.Parsing.Streams.Bases;
 using Melville.StreamInterfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Melville.Parsing.MultiplexSources;
 
-internal abstract class IndexedMultiplexSource: CountedMultiplexSource
+
+internal class IndexedReaderStreamWithBuffer(IndexedMultiplexSourceWithData source, long position) :
+    IndexedReaderStream(source, position), IHasDataAsReadOnlyMemory, IMultiplexSource
 {
-    protected override Stream ReadFromOverride(long position) =>
-    new IndexedReaderStream(this, position);
-    protected override IMultiplexReader ReaderFromOverride(long position) =>
-        new IndexedReader(this, position);
-
-    /// <summary>
-    /// Read bytes into a span.
-    /// </summary>
-    /// <param name="position">The position to read from</param>
-    /// <param name="buffer">A span to hold the read data.</param>
-    /// <returns>The number of bytes read</returns>
-    public abstract int Read(long position, in Span<byte> buffer);
-
-    /// <summary>
-    /// Asynchronously read from the stream to a memory
-    /// </summary>
-    /// <param name="position">Position to start reading from.</param>
-    /// <param name="buffer">A memory to hold the read data</param>
-    /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns>The number of bytes read</returns>
-    public abstract ValueTask<int> ReadAsync(
-        long position, Memory<byte> buffer, CancellationToken cancellationToken);
+    public ReadOnlyMemory<byte> AsReadOnlyMemory() =>
+        source.AsReadOnlyMemory().Slice((int)basePosition);
 }
-
 
 internal class IndexedReaderStream : 
     DefaultBaseStream, IHasSourceTicket
 {
-    readonly long basePosition;
+    protected readonly long basePosition;
     private IndexedMultiplexSource? source = null;
     CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
 
@@ -70,8 +52,12 @@ internal class IndexedReaderStream :
         return ret;
     }
 
-    public override long Seek(long offset, SeekOrigin origin) =>
-        Position = SeekTargetFromStreamStart(offset, origin);
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        long newPosition = SeekTargetFromStreamStart(offset, origin);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)newPosition, (ulong)Length);
+        return Position = newPosition;
+    }
 
     private long SeekTargetFromStreamStart(long offset, SeekOrigin origin) =>
         origin switch
@@ -91,47 +77,11 @@ internal class IndexedReaderStream :
         ((IHasSourceTicket)this).SourceTicket.Release(this);
         base.Dispose(disposing);
     }
-}
 
-internal class IndexedReader(IndexedMultiplexSource inner, long basePosition): 
-    IMultiplexReader, ISyncReader, IHasSourceTicket, IDisposable
-{
-    IndexedMultiplexSource inner = inner;
-    readonly long basePosition = basePosition;
-    long absolutePosition = basePosition;
-    CountedSourceTicket IHasSourceTicket.SourceTicket { get; set; }
+    public Stream ReadFrom(long position) => source.ReadFrom(basePosition + position);
 
-    int BumpPosition (int delta)
-    {
-        absolutePosition += delta;
-        return delta;
-    }
+    public IMultiplexReader ReaderFrom(long position) => source.ReaderFrom(basePosition + position);
 
-    public async ValueTask<int> ReadAsync(
-        Memory<byte> buffer, CancellationToken cancellation = default) =>
-        BumpPosition(await inner.ReadAsync(absolutePosition, buffer, cancellation).CA());
+    public IMultiplexSource OffsetFrom(uint offset) => source.OffsetFrom((uint)(basePosition + Position));
 
-    public int Read(Span<byte> buffer) =>
-        BumpPosition(inner.Read(absolutePosition, buffer));
-
-    void ISeekableStream.Seek(long position) => Seek(position);
-
-    public long Seek(long position)
-    {
-        absolutePosition = basePosition + position;
-        if ((ulong)absolutePosition > (ulong)inner.Length)
-            throw new InvalidOperationException("Invalid Reader Position");
-        return Position;
-    }
-
-    public long Position => absolutePosition - basePosition;
-
-    public long Length => inner.Length - basePosition;
-
-    public void Dispose()
-    {
-        if (inner is null) return; 
-        inner = null!;
-        ((IHasSourceTicket)this).SourceTicket.Release(this);
-    }
 }

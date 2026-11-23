@@ -1,4 +1,6 @@
 ﻿using Melville.Parsing.LinkedLists;
+using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Files;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -15,11 +17,22 @@ public static class MultiplexSourceFactory
     public static IMultiplexSource Create(Stream source) =>
         source switch
         {
-            IMultiplexSource ims => ims, // MultiBufferStream implements IMultiplexSource
+            IMultiplexSource ims => ims, 
+            IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()), 
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
             {CanSeek: false} => MakeStreamSeekableSource.Create(source),
             _ => new MultiplexedStream(source)
+        };
+
+    public static IMultiplexSource Create(IAsyncReader source) =>
+        source switch
+        {
+            IMultiplexSource ims => ims,
+            IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()),
+            IHasFileHandle hfr => new FileMultiplexer(hfr.FileHandle),
+            ISeekableStream  => throw new NotImplementedException("Need a multiplexer"),
+            _ => throw new NotImplementedException("Need a buffering multiplexer.")
         };
 
     /// <summary>
@@ -42,7 +55,7 @@ public static class MultiplexSourceFactory
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(Memory<byte> source) => MultiBufferStreamList.SingleItemList(source);
+    public static IMultiplexSource Create(ReadOnlyMemory<byte> source) => new MemoryMultiplexer(source);
 
     private static Memory<byte> MemoryStreamToMemory(MemoryStream ms) =>
         ms.TryGetBuffer(out var buffer)

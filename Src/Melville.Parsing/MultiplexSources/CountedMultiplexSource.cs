@@ -60,7 +60,7 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
     public void TryRelease(IHasSourceTicket item) => counter.CancelTicket(this, item);
 
  
-    public IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
+    public virtual IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
 
     public abstract long Length { get; }
 

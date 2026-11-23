@@ -1,7 +1,9 @@
 ﻿using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Files;
 using Microsoft.Win32.SafeHandles;
+using System.Buffers;
 using System.Collections.Concurrent;
+using System.Reflection.Metadata;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -9,9 +11,10 @@ internal class FileMultiplexer : IndexedMultiplexSource
 {
     private SafeFileHandle handle;
    
-    public FileMultiplexer(FileStream stream)
+    public FileMultiplexer(FileStream stream): this(stream.SafeFileHandle) { }
+    public FileMultiplexer(SafeFileHandle streamHandle)
     {
-        handle = stream.SafeFileHandle;        
+        handle = streamHandle;        
         bool succeeded = false;
         handle.DangerousAddRef(ref succeeded);
         if (!succeeded)

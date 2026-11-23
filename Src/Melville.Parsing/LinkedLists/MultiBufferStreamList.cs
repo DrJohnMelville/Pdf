@@ -18,8 +18,6 @@ internal class MultiBufferStreamList : LinkedList<MultiBufferStreamList>, IWrita
         ret.With(blockSize);
         return ret;
     }
-    public static LinkedList SingleItemList(ReadOnlyMemory<byte> source) =>
-        new MultiBufferStreamList().With(source);
 
     public Stream WritingStream() => new MultiBufferStream(this, true);
     // we can use a default ticket here because it makes no sense for the writing stream to be the only
