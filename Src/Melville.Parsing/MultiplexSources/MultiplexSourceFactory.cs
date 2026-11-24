@@ -1,6 +1,9 @@
 ﻿using Melville.Parsing.LinkedLists;
+using Melville.Parsing.ReaderExtensions;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Files;
+using Melville.StreamInterfaces.Memory;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Parsing.MultiplexSources;
 
@@ -12,7 +15,7 @@ public static class MultiplexSourceFactory
     /// <summary>
     /// Create a multiplexed source from a stream, special casing if available.
     /// </summary>
-    /// <param name="source"></param>
+    /// <param name="source">A stream containing the source data.</param>
     /// <returns>An IMultiplexedSource that that represents the source data.</returns>
     public static IMultiplexSource Create(Stream source) =>
         source switch
@@ -22,7 +25,10 @@ public static class MultiplexSourceFactory
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
             {CanSeek: false} => MakeStreamSeekableSource.Create(source),
-            _ => new MultiplexedStream(source)
+            { Length: >0} => new SingleBufferSeekableMultiplexSource(source.AsStreamReader()),
+            //_ => new MultiplexedStream(source)
+            _ => new MultiBufferMultiplexSource(source.AsStreamReader())
+
         };
 
     public static IMultiplexSource Create(IAsyncReader source) =>
@@ -31,9 +37,11 @@ public static class MultiplexSourceFactory
             IMultiplexSource ims => ims,
             IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()),
             IHasFileHandle hfr => new FileMultiplexer(hfr.FileHandle),
-            ISeekableStream  => throw new NotImplementedException("Need a multiplexer"),
-            _ => throw new NotImplementedException("Need a buffering multiplexer.")
+            _ when MultiplexedReaderSource.TryCreateFrom(source, out var i)  => 
+                 new ReaderToMultiplexedSource(i),
+            _ => new MultiBufferMultiplexSource(source)
         };
+
 
     /// <summary>
     /// Create an IMultiplexedSource from a source as optimally as possible

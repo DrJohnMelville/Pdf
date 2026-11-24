@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Melville.Parsing.ReaderExtensions;
@@ -24,18 +25,32 @@ public readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFina
     {
         while (true)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(4096);
+            var buffer = AllocateInitialBuffer();
             var length = await reader.ReadAtLeastAsync(buffer, buffer.Length, default, false).CA();
             if (length < buffer.Length) return MakeFinalBuffer(buffer, length);
             Buffers.Add(buffer);
         }
     }
+
+    private byte[] AllocateInitialBuffer()
+    {
+        if (Buffers.Count is 0 && reader is IStreamLength { Length: > 0 and var length })
+            return AllocateFinalBuffer((int)length);
+        return ArrayPool<byte>.Shared.Rent(4096);
+
+    }
+
     (byte[], int) MakeFinalBuffer(byte[] buffer, int length)
     {
+        if (Buffers.Count is 0 && rentFinalBuffer)
+            return (buffer, length);
+        if (Buffers.Count is 1 && length is 0) // this happens a lot when we set the first buffer to the declared length.
+        {
+            TryReturnBuffer(buffer);
+            return (Buffers[0], Buffers[0].Length);
+        }
         var totalLen = length + Buffers.Sum(i => i.Length);
-        var finalBuffer = rentFinalBuffer ?
-            ArrayPool<byte>.Shared.Rent(totalLen) :
-                                new byte[totalLen];
+        byte[] finalBuffer = AllocateFinalBuffer(totalLen);
         var nextByte = finalBuffer.AsSpan();
         foreach (var buf in Buffers)
         {
@@ -45,10 +60,24 @@ public readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFina
         return (finalBuffer, totalLen);
     }
 
+
+
+    private byte[] AllocateFinalBuffer(int totalLen)
+    {
+        return rentFinalBuffer ?
+            ArrayPool<byte>.Shared.Rent(totalLen) :
+                                new byte[totalLen];
+    }
+
     private static void AddBytes(ref Span<byte> nextByte, byte[] buf, int length)
     {
         buf.AsSpan(0, length).CopyTo(nextByte);
         nextByte = nextByte[length..];
-        ArrayPool<byte>.Shared.Return(buf);
+        TryReturnBuffer(buf);
+    }
+
+    private static void TryReturnBuffer(byte[] buf)
+    {
+        if (BitOperations.IsPow2(buf.Length)) ArrayPool<byte>.Shared.Return(buf);
     }
 }

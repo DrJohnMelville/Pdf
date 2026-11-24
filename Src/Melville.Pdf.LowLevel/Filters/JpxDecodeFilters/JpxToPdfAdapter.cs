@@ -1,14 +1,15 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
-using System.Threading.Tasks;
-using CoreJ2K;
+﻿using CoreJ2K;
 using Melville.Hacks;
 using Melville.Parsing.ReaderExtensions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Streams;
+using System;
+using System.Buffers;
+using System.IO;
+using System.Reflection.PortableExecutable;
+using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
@@ -40,7 +41,7 @@ internal class JpxToPdfAdapter : ICodecDefinition
         {
             //J2KiMAGE.FromStream just reads the whole stream into a byte Array.  Since it has to be
             // done we can do it intelligently with rented arrays.
-            var (bytes, length) = await CopyToBufferAsync(input);
+            var (bytes, length) = await new AsyncReaderToByteArray(input).ReadAsync().CA();
 
             // J2kImage special cases FromStream to extract the buffer out of a MemoryStream
             var independentImage = J2kImage.FromStream(new MemoryStream(bytes, 0, length, false, true));
@@ -72,27 +73,4 @@ internal class JpxToPdfAdapter : ICodecDefinition
         }
     }
 
-    async ValueTask<(byte[], int)> CopyToBufferAsync(IAsyncReader reader)
-    {
-        try
-        {
-            if (reader is IStreamLength isl && ((int)isl.Length) is >0 and var length)
-            {
-                return await GetKnownBytes(reader, length);
-            }
-        }
-        catch (NotSupportedException ex)
-        {
-            
-        }
-
-        return await new AsyncReaderToByteArray(reader).ReadAsync().CA();
-    }
-
-    private static async Task<(byte[], int)> GetKnownBytes(IAsyncReader reader, int length)
-    {
-        var bytes = ArrayPool<byte>.Shared.Rent(length);
-        await reader.ReadAtLeastAsync(bytes, length);
-        return (bytes, length);
-    }
 }
