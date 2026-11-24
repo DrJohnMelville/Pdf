@@ -14,7 +14,7 @@ internal readonly struct Type34FontSelectorParser(
         return ParseTable(buffer.Span, count);
     }
 
-    private IFontDictSelector ParseTable(Span<byte> data, uint count)
+    private IFontDictSelector ParseTable(ReadOnlySpan<byte> data, uint count)
     {
         var entries = new Type3Entry[count];
         var SpanReader = new SpanParsingBuffer(data);

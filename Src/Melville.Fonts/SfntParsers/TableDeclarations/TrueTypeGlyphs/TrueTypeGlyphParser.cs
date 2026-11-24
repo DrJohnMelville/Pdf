@@ -7,7 +7,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs;
 
 internal readonly struct TrueTypeGlyphParser<T>(
     ISubGlyphRenderer innerRenderer,
-    Memory<byte> slice1,
+    ReadOnlyMemory<byte> slice1,
     T target,
     Matrix3x2 matrix,
     HorizontalMetric horizontalMetric) where T: ITrueTypePointTarget

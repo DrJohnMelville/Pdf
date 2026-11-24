@@ -19,14 +19,26 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
     private static ReadOnlySpan<byte> ArithEndSequence => [0xFF, 0xAC];
     private static ReadOnlySpan<byte> SelectEndSequence(bool isMMR) => isMMR ? MmrEndSequence : ArithEndSequence;
 
-    public async ValueTask<Memory<byte>> ReadSegmentAsync()
+    public async ValueTask<ReadOnlyMemory<byte>> ReadSegmentAsync()
     {
+#warning need to handle inconsistentSegmentLengths
         await reader.EnsureBytesAsync(regionHeaderLength);
         var endPoint = await FindEndPositionAsync(IsMMRSegment());
-        Memory<byte> memory = await reader.TakeBytesAsync(endPoint).CA();
-        EnsureRowsConsistent(memory.Span);
-        return memory;
+        var memory = await reader.TakeBytesAsync(endPoint).CA();
+        return VerifyConsistent(memory);
     }
+
+    private static ReadOnlyMemory<byte> VerifyConsistent(ReadOnlyMemory<byte> memory)
+    {
+        var span = memory.Span;
+        if (span[^4..].SequenceEqual(span[4..8])) return memory;
+        // this is an allocation but it is a rare corner case.
+        var buffer = new byte[span.Length];
+        span.CopyTo(buffer);
+        var targetSpan = buffer.AsSpan();
+        targetSpan[^4..].CopyTo(targetSpan[4..]);
+        return buffer;
+ }
 
     private bool IsMMRSegment() => (reader.Peek()[16] & 0x01) == 0x01;
 
@@ -42,6 +54,4 @@ internal readonly struct ReadUnknownSegmentLength(ParsingBuffer reader)
         }
         return endPos + 6; // 2 byte for end of the tag and 4 bytes for the length.
     }
-
-    private void EnsureRowsConsistent(Span<byte> ret) => ret[^4..].CopyTo(ret[4..]);
 }

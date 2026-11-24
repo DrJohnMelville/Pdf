@@ -78,7 +78,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         return ret;
     }
 
-    private int ReadPrivateDict(Memory<byte> trimmed)
+    private int ReadPrivateDict(ReadOnlyMemory<byte> trimmed)
     {
         Span<DictValue> operands = stackalloc DictValue[1];
         var dictReader = new DictParser<CffDictionaryDefinition>(
@@ -87,7 +87,7 @@ internal readonly struct PrivateCff2DictionaryParser(
         return operands[0].IntValue;
     }
 
-    private (int, int) ParseFontDict(Memory<byte> source)
+    private (int, int) ParseFontDict(ReadOnlyMemory<byte> source)
     {
         Span<DictValue> operands = stackalloc DictValue[2];
         var dictReader = new DictParser<CffDictionaryDefinition>(

@@ -114,7 +114,7 @@ internal class TopDictData: IDisposable
         return charStringsIndex;
     }
 
-    public async ValueTask<T> HandlePrivateDictBytesAsync<T>(Func<Memory<byte>,T> operation)
+    public async ValueTask<T> HandlePrivateDictBytesAsync<T>(Func<ReadOnlyMemory<byte>,T> operation)
     {
         using var pipe = source.ParsingBufferFrom(PrivateOffset);
         pipe.RelativePosition = PrivateOffset;
@@ -169,7 +169,7 @@ internal class TopDictData: IDisposable
     // Per Adobe Technical Note 5176 page 24
     private const int subrsInstruction = 19;
 
-    private long FindPrivateSubrsOffsetFromPrivateDictionary(Memory<byte> slice)
+    private long FindPrivateSubrsOffsetFromPrivateDictionary(ReadOnlyMemory<byte> slice)
     {
         Span<DictValue> result = stackalloc DictValue[1];
         return new DictParser<CffDictionaryDefinition>(slice.Span, null, result)

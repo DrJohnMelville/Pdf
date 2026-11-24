@@ -10,7 +10,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 internal readonly partial struct DisposableSequence : IDisposable
 {
     [FromConstructor] private readonly IDisposable holder;
-    [FromConstructor] public Memory<byte> SourceData { get; }
+    [FromConstructor] public ReadOnlyMemory<byte> SourceData { get; }
     [FromConstructor] public ParseMapBookmark? Bookmark { get; }
 
     public void Dispose() => holder.Dispose();

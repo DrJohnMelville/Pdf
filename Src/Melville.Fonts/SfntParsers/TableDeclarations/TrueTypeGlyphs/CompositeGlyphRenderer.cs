@@ -12,7 +12,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         Matrix3x2 transform)
     {
         private readonly GlyphRecorder scratchRecorder = GlyphRecorderFactory.Shared.Rent();
-        public ValueTask DrawAsync(Memory<byte> source)
+        public ValueTask DrawAsync(ReadOnlyMemory<byte> source)
         {
             var reader = new SpanParsingBuffer(source.Span);
             var flags = (CompositeGlyphFlags)reader.GetUInt16BigEndian();
@@ -86,8 +86,8 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
             };
 
 
-        private static Memory<byte> NextGlyphSequence(
-            CompositeGlyphFlags flags, SpanParsingBuffer reader, Memory<byte> source) => flags.HasMoreGlyphs() ? source[(int)reader.RelativePosition..] :Memory<byte>.Empty;
+        private static ReadOnlyMemory<byte> NextGlyphSequence(
+            CompositeGlyphFlags flags, SpanParsingBuffer reader, ReadOnlyMemory<byte> source) => flags.HasMoreGlyphs() ? source[(int)reader.RelativePosition..] :Memory<byte>.Empty;
 
         private void TrySkipInstructions(ref SpanParsingBuffer reader, CompositeGlyphFlags flags)
         {
@@ -97,14 +97,14 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
 
 
         private async ValueTask DrawUnalignedGlyphAsync(
-            ushort subGlyph, Matrix3x2 subGlyphTransform, Memory<byte> nextBytes)
+            ushort subGlyph, Matrix3x2 subGlyphTransform, ReadOnlyMemory<byte> nextBytes)
         {
             await subGlyphRenderer.RenderGlyphInFontUnitsAsync(
                 subGlyph, scratchRecorder, subGlyphTransform*transform).CA();
             await FinishSubglyphAsync(nextBytes).CA();
         }
 
-        private ValueTask FinishSubglyphAsync(Memory<byte> nextBytes)
+        private ValueTask FinishSubglyphAsync(ReadOnlyMemory<byte> nextBytes)
         {
             if (nextBytes.Length > 0)
                 return DrawAsync(nextBytes);
@@ -121,7 +121,7 @@ namespace Melville.Fonts.SfntParsers.TableDeclarations.TrueTypeGlyphs
         }
 
         private async ValueTask DrawAlignedGlyphAsync(
-            ushort subGlyph, Matrix3x2 transform, Memory<byte> next, 
+            ushort subGlyph, Matrix3x2 transform, ReadOnlyMemory<byte> next, 
             ushort parentIndex, ushort childIndex)
         {
             var childTarget = GlyphRecorderFactory.Shared.Rent();

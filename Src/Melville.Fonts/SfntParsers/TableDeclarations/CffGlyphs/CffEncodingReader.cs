@@ -40,7 +40,7 @@ internal readonly struct CffEncodingReader(ParsingBuffer source, GlyphFromSid si
         ParseType0(buffer.Span, count);
     }
 
-    private void ParseType0(Span<byte> bufferBuffer, byte count)
+    private void ParseType0(ReadOnlySpan<byte> bufferBuffer, byte count)
     {
         var reader = new SpanParsingBuffer(bufferBuffer);
         for (byte i = 1; i <= count; i++)
@@ -61,7 +61,7 @@ internal readonly struct CffEncodingReader(ParsingBuffer source, GlyphFromSid si
         ParseType1(buffer.Span, count);
     }
 
-    private void ParseType1(Span<byte> buffer, byte count)
+    private void ParseType1(ReadOnlySpan<byte> buffer, byte count)
     {
         var src = new SpanParsingBuffer(buffer);
         byte glyph = 1;
@@ -89,7 +89,7 @@ internal readonly struct CffEncodingReader(ParsingBuffer source, GlyphFromSid si
         ReadSupplementalMappings(result.Span);
     }
 
-    private void ReadSupplementalMappings(Span<byte> slice)
+    private void ReadSupplementalMappings(ReadOnlySpan<byte> slice)
     {
         var reader = new SpanParsingBuffer(slice);
         while (reader.TryGetUInt8(out var code) &&

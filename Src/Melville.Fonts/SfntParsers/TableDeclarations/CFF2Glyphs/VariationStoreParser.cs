@@ -14,7 +14,7 @@ internal readonly struct VariationStoreParser(ParsingBuffer buffer)
         return Parse((await buffer.TakeBytesAsync(size).CA()).Span);
     }
 
-    private  uint[] Parse(Span<byte> buffer)
+    private  uint[] Parse(ReadOnlySpan<byte> buffer)
     {
         var reader = new SpanParsingBuffer(buffer);
         var format = reader.GetUInt16BigEndian();

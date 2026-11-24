@@ -50,12 +50,12 @@ internal readonly struct SegmentReader
         return ret;
     }
 
-    private ValueTask<Memory<byte>> ReadSpanAsync() => 
+    private ValueTask<ReadOnlyMemory<byte>> ReadSpanAsync() => 
         Header.DataLength == 0xFFFFFFFF ?
             new ReadUnknownSegmentLength(source).ReadSegmentAsync() : 
             ReadKnownLengthSegmentAsync();
 
-    private async ValueTask<Memory<byte>> ReadKnownLengthSegmentAsync()
+    private async ValueTask<ReadOnlyMemory<byte>> ReadKnownLengthSegmentAsync()
     {
         var hlen = (int)Header.DataLength;
         return (await source.TakeBytesAsync(hlen));

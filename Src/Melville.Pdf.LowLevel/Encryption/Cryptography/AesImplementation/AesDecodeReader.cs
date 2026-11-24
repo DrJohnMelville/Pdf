@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -17,6 +18,7 @@ internal class AesDecodeReader : IPdfStreamReader
 {
     private readonly Aes decryptor;
     private readonly ParsingBuffer source;
+    private byte[] predecodedBytesBacker;
     private Memory<byte> predecodedBytes = Memory<byte>.Empty;
     private int blockSize;
 
@@ -25,13 +27,17 @@ internal class AesDecodeReader : IPdfStreamReader
         source = new ParsingBuffer(innerReader).WithDisposedDependency(innerReader);
         this.decryptor = decryptor;
         blockSize = decryptor.BlockSize / 8;
+        predecodedBytesBacker = ArrayPool<byte>.Shared.Rent(blockSize);
     }
 
     public void Dispose()
     {
         decryptor.Dispose();
         source.Dispose();
+        ArrayPool<byte>.Shared.Return(predecodedBytesBacker);
     }
+
+    Memory<byte> FreshPredecodedBytes() => predecodedBytesBacker.AsMemory(0, blockSize);
 
     public int Read(Span<byte> buffer)
     {
@@ -91,10 +97,9 @@ internal class AesDecodeReader : IPdfStreamReader
     private void TryDecodePartialBlock(ref Memory<byte> nextByte)
     {
         if (nextByte.IsEmpty || source.CurrentLength < (2 * blockSize)) return;
-        predecodedBytes = source.PeekMemory(blockSize);
-        Span<byte> target = stackalloc byte[blockSize];
-        var length = DecodeBlock(target);
-        target.CopyTo(predecodedBytes.Span);
+
+        predecodedBytes = FreshPredecodedBytes();
+        var length = DecodeBlock(predecodedBytes.Span);
         predecodedBytes = predecodedBytes[..length];
         TryWritePredecodedBytes(ref nextByte);
     }
@@ -121,7 +126,7 @@ internal class AesDecodeReader : IPdfStreamReader
            PaddingMode.PKCS7 : PaddingMode.None;
 
     void AdvanceBy(ref Memory<byte> target, int length) => target = target[length..];
-
+  
     private int CopyPreDecodedBytes(ref Memory<byte> nextByte)
     {
         var localSource = predecodedBytes.Span.TakeMax(nextByte.Length, out var len);
