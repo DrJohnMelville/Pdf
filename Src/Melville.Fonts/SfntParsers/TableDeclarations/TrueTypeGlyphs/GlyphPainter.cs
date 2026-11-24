@@ -71,4 +71,7 @@ public class TrueTypeGlyphSource: IGlyphSource, ISubGlyphRenderer
                 matrix, hMetrics[(int)glyph])
             .DrawGlyphAsync().CA();
     }
+
+    /// <inheritdoc/>
+    public void Dispose() { }
 }

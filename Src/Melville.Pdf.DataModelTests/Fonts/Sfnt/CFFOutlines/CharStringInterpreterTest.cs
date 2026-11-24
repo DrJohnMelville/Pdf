@@ -62,7 +62,7 @@ public class CharStringInterpreterTest: IDisposable
         ExecuteInstructionAsync(code, Matrix3x2.Identity);
     private async Task ExecuteInstructionAsync(string code, Matrix3x2 mat)
     {
-        var sut = await CreateAsync(code);
+        using var sut = await CreateAsync(code);
         await sut.RenderCffGlyphAsync(0, new MockSpanFilter(target.Object), mat);
     }
 

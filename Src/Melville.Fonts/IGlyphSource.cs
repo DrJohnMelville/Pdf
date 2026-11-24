@@ -5,7 +5,7 @@ namespace Melville.Fonts;
 /// <summary>
 /// This interface is used to retrieve individual glyphs from the font file  
 /// </summary>
-public interface IGlyphSource
+public interface IGlyphSource: IDisposable
 {
     /// <summary>
     /// The number of glyphs in the font.

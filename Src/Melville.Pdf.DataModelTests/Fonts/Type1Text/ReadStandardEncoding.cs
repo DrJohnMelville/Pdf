@@ -9,6 +9,7 @@ using Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ObjectRentals;
+using Moq;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Type1Text;
 
@@ -22,7 +23,9 @@ public class ReadStandardEncoding
         //     1000, "Fake Font", 0,
         //     new CffIndex(null!, glyphCount, 1, null), 0, 0, null!, charSetOffset, offset);
         return new(1000, "Fake Font",
-            new CffIndex(null!, glyphCount, 1, null), null!,
+            new CffIndex(Mock.Of<IMultiplexSource>(), glyphCount, 1, null), 
+            new GlyphSubroutineExecutor(new CffIndex(
+                Mock.Of<IMultiplexSource>(), 0,0,null)),
             new TopDictData(multiplexSource,0,0,0,charSetOffset, offset,0), CidToGlyphMappingStyle.Cff);
     }
 
@@ -563,7 +566,7 @@ public class ReadStandardEncoding
 
     private static async Task<ICmapImplementation> LoadCmapAsync(long index)
     {
-        var sut = FontWithEncodingOffset(index, 256, index);
+        using var sut = FontWithEncodingOffset(index, 256, index);
         var cmaps = await sut.GetCmapSourceAsync();
         cmaps.Count.Should().Be(1);
         var map = await cmaps.GetByIndexAsync(0);

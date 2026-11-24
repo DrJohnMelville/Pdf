@@ -23,6 +23,13 @@ internal readonly partial struct CffIndex: IDisposable
     [FromConstructor] private readonly byte offsetSize;
     [FromConstructor] private readonly ParseMapBookmark? bookmark;
 
+#if DEBUG
+    partial void OnConstructed()
+    {
+        ArgumentNullException.ThrowIfNull(source);
+    }
+#endif
+
     public void Dispose() => source.Dispose();
 
     /// <summary>

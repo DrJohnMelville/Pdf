@@ -14,4 +14,7 @@ internal partial class NullExecutorSelector :
     {
         throw new InvalidOperationException("Executed subr from an empty index.");
     }
+
+    /// <inheritdoc />
+    public void Dispose() { }
 }

@@ -6,14 +6,17 @@ using Melville.StreamInterfaces;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations.CffGlyphs;
 
-internal interface IGlyphSubroutineExecutor: IFontDictExecutorSelector
+internal interface IGlyphSubroutineExecutor: IFontDictExecutorSelector, IDisposable
 {
     ValueTask CallAsync(int subroutine, ICffInstructionExecutor executor);
 }
 
+#warning need to track down disposal of this class
 internal partial class GlyphSubroutineExecutor : IGlyphSubroutineExecutor
 {
     [FromConstructor] private readonly CffIndex subroutines;
+
+    public void Dispose() => subroutines.Dispose();
 
     public async ValueTask CallAsync(
         int subroutine, ICffInstructionExecutor executor)

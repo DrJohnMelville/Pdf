@@ -12,4 +12,8 @@ internal sealed partial class Type1SubrExecutor:IGlyphSubroutineExecutor
 
     public ValueTask CallAsync(int subroutine, ICffInstructionExecutor executor) => 
         executor.ExecuteInstructionSequenceAsync(subRoutines[subroutine]);
+
+    /// <inheritdoc />
+    public void Dispose() { }
+
 }

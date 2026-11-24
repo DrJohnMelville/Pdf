@@ -37,7 +37,7 @@ public class CffStringIndexTest: IDisposable
     [Arguments(393, "cde")]
     public async Task ReadNameAsync(int index, string expected)
     {
-        var indexSource = await NamesIndexAsync();
+        using var indexSource = await NamesIndexAsync();
         var sut = new CffStringIndex(indexSource);
         (await sut.GetNameAsync(index)).Should().Be(expected);
     }

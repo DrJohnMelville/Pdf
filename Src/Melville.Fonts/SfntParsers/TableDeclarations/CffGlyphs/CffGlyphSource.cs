@@ -44,6 +44,9 @@ public class CffGlyphSource : IGlyphSource
     }
 
     /// <inheritdoc />
+    public void Dispose() => glyphs.Dispose();
+
+    /// <inheritdoc />
     public int GlyphCount => (int)glyphs.Length;
 
     /// <inheritdoc />
