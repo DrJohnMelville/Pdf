@@ -35,7 +35,7 @@ public class HomeViewModel
         var map = ParseMap.CreateNew();
         using (var src = await file.OpenRead())
         {
-            await map.SetDataAsync(src.AsStreamReader());
+            await map.SetDataAsync(src);
         }
 
         var multiplexSource = MultiplexSourceFactory.Create(await file.OpenRead());

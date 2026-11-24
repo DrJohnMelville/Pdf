@@ -13,6 +13,7 @@ internal class SingleBufferSeekableMultiplexSource : IndexedMultiplexSource, IHa
     public SingleBufferSeekableMultiplexSource(ReaderWithLength source)
     {
         this.source = source;
+        sourceBuffer = ArrayPool<byte>.Shared.Rent((int)source.Length);
         Length = source.Length;
     }
 
