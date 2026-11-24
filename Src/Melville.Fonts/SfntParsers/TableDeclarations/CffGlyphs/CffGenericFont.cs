@@ -110,7 +110,7 @@ internal partial class CffGenericFont :
     public (int platform, int encoding) GetPlatformEncoding(int index) => (4, 0);
     public float GlyphWidth(ushort glyph) => 0f;
 
-    public void Dispose()
+    public override void Dispose()
     {
         topDictData.Dispose();
         charStringIndex.Dispose();

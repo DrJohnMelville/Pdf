@@ -58,7 +58,7 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose() => source.Dispose();
+    public override void Dispose() => source.Dispose();
 
     /// <summary>
     /// These are the tables that make up the font.

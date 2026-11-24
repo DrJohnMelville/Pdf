@@ -42,5 +42,6 @@ public class CffParserTest:IDisposable
     {
         var gf = await RootFontParser.ParseAsync(source);
         gf.Count.Should().Be(1);
+        gf[0].Dispose();
     }
 }

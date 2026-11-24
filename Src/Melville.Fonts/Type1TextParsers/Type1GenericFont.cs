@@ -121,5 +121,5 @@ public partial class Type1GenericFont: ListOf1GenericFont,
     public override CidToGlyphMappingStyle TypeGlyphMapping => CidToGlyphMappingStyle.TrueType;
 
     /// <inheritdoc />
-    public void Dispose() { }
+    public override void Dispose() { }
 }

@@ -45,4 +45,7 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
 
     /// <inheritdoc />
     public abstract CidToGlyphMappingStyle TypeGlyphMapping { get; }
+
+    /// <inheritdoc />
+    public abstract void Dispose();
 }
