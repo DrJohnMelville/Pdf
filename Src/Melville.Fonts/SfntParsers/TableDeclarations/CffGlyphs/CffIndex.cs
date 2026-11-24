@@ -16,12 +16,14 @@ internal readonly partial struct DisposableSequence : IDisposable
     public void Dispose() => holder.Dispose();
 }
 
-internal readonly partial struct CffIndex
+internal readonly partial struct CffIndex: IDisposable
 {
     [FromConstructor] private readonly IMultiplexSource source;
     [FromConstructor] public uint Length { get; }
     [FromConstructor] private readonly byte offsetSize;
     [FromConstructor] private readonly ParseMapBookmark? bookmark;
+
+    public void Dispose() => source.Dispose();
 
     /// <summary>
     /// Get an item from the index

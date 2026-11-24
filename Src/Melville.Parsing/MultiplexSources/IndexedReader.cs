@@ -59,7 +59,7 @@ internal class IIndexedReaderWithBuffer(IndexedMultiplexSourceWithData source, l
         IndexedReader(source, _basePosition), IHasDataAsReadOnlyMemory
 {
     public ReadOnlyMemory<byte> AsReadOnlyMemory() =>
-        source.AsReadOnlyMemory().Slice((int)basePosition);
+        source.AsReadOnlyMemory().Slice((int)(basePosition + Position));
 }
 
 [IntersectionType]

@@ -87,23 +87,26 @@ public partial class Tokenizer : ITokenSource
 
     private bool TryParseBuffer(out PostscriptValue postscriptValue)
     {
-        EnsureTerminalCr();
-        var buffer = new SpanParsingBuffer(CodeSource.Peek());
+        var span = CodeSource.Peek();
+        if (span.Length > 0 && CodeSource.DoneReadingSource && span.IndexOfAny(CharacterClassifier.WhitespaceSearchValues) < 0)
+        {
+            Span<byte> sp2 = stackalloc byte[span.Length + 1];
+            span.CopyTo(sp2);
+            sp2[^1] = (byte)'\n';
+            return InnerTryParseBuffer(sp2, out postscriptValue);
+        }
+        return InnerTryParseBuffer(span, out postscriptValue);
+    }
+
+    private bool InnerTryParseBuffer(ReadOnlySpan<byte> span, out PostscriptValue postscriptValue)
+    {
+        var buffer = new SpanParsingBuffer(span);
         var parsed = (buffer.TryGetPostscriptToken(out postscriptValue));
-        CodeSource.Advance((int)buffer.RelativePosition);
+        CodeSource.Advance(Math.Min((int)buffer.RelativePosition, CodeSource.CurrentLength)); // there may be an extra character on the end.
         if (parsed) return true;
         if (!CodeSource.DoneReadingSource) return false;
         postscriptValue = PostscriptValueFactory.CreateNull();
         return true;
-    }
-
-    private void EnsureTerminalCr()
-    {
-        if (CodeSource.DoneReadingSource && 
-            CodeSource.Peek() is not ([] or [..,(byte)'\r']))
-        {
-            CodeSource.AppendBytes((byte)'\r');
-        }
     }
 
     /// <summary>

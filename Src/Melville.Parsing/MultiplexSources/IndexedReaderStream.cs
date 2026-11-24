@@ -11,7 +11,7 @@ internal class IndexedReaderStreamWithBuffer(IndexedMultiplexSourceWithData sour
     IndexedReaderStream(source, position), IHasDataAsReadOnlyMemory, IMultiplexSource
 {
     public ReadOnlyMemory<byte> AsReadOnlyMemory() =>
-        source.AsReadOnlyMemory().Slice((int)basePosition);
+        source.AsReadOnlyMemory().Slice((int)(basePosition + Position) );
 }
 
 internal class IndexedReaderStream : 

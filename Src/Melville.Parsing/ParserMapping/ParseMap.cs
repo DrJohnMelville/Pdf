@@ -164,9 +164,9 @@ public static class ParseMapSetDataOperations
         (s as IDisposable)?.Dispose();
     }
 #else
-    public static ValueTask SetDataAsync(this ParseMap? map, Stream s)
+    public static ValueTask SetDataAsync(this ParseMap? map, IAsyncReader s)
     {
-        s.Dispose();
+        (s as IDisposable)?.Dispose();
         return ValueTask.CompletedTask;
     }
 #endif

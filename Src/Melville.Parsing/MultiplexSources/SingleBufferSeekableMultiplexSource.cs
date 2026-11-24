@@ -60,6 +60,7 @@ internal class SingleBufferSeekableMultiplexSource : IndexedMultiplexSource, IHa
         if (sourceBuffer.Length is 0) return;
         ArrayPool<byte>.Shared.Return(sourceBuffer);
         sourceBuffer = [];
+        (source.Value as IDisposable)?.Dispose();
     }
 }
 

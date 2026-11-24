@@ -90,5 +90,6 @@ internal class MultiBufferMultiplexSource(IAsyncReader reader) : IndexedMultiple
         {
             ArrayPool<byte>.Shared.Return(buf);
         }
+        (reader as IDisposable)?.Dispose();
     }
 }

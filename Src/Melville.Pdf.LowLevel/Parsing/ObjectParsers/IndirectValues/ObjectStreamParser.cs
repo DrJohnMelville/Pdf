@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.IStreamAdaptors;
+﻿using Melville.Hacks.Reflection;
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -67,6 +68,8 @@ internal class ObjectStreamParser(
         private async Task<PdfIndirectObject> ReadValueAsync(RootObjectParser rootObjectParser, int i)
         {
             limiter.LengthLimit = initialOffset + numbers[LengthIndex(i + 1)];
+#warning we need to replace reflection with an api here.
+            pr.Buffer.SetProperty("DoneReadingSource", false);
             await pr.Buffer.AdvanceToRelativePositionAsync(initialOffset + numbers[LengthIndex(i)]);
             var value = await rootObjectParser.ParseAsync().CA();
             return value;
