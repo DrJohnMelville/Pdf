@@ -55,7 +55,7 @@ internal abstract partial class CountedMultiplexSource
     private readonly struct CreationInfo()
     {
         private readonly string testRunning = RequireDisposal.TestNameIdentifier();
-        private readonly StackTrace stack = new StackTrace(2);
+        private readonly StackTrace stack = new StackTrace(2,true);
         public override string ToString() => $"""
             Test Running: {testRunning},
             Created at:

@@ -29,7 +29,8 @@ public class CharSetReaderTest
         using var source = MultiplexSourceFactory.Create(hexBytes.BitsFromHex());
         using var pipe = source.ParsingBufferFrom(0);
 
-        var target = new StringTarget(new CffStringIndex(await NamesIndexAsync()), 
+        using  CffIndex customStrings = await NamesIndexAsync();
+        var target = new StringTarget(new CffStringIndex(customStrings), 
             length);
         return (await new CharSetReader<StringTarget>(pipe, target)
             .ReadCharSetAsync().CA()).Result;

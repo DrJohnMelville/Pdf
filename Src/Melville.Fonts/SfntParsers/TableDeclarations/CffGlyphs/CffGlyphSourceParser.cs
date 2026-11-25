@@ -19,12 +19,12 @@ internal readonly struct CffGlyphSourceParser(
         await pipe.AdvanceToRelativePositionAsync(headerSize).CA();
         pipe.LogParsePosition($"Skipped Space after the Header");
         pipe.PeerIndentParseMap("Name Index");
-        var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        using var nameIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         pipe.PeerIndentParseMap("Top Index");
-        var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        using var topIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var stringIndexOffset = pipe.RelativePosition;
         pipe.PeerIndentParseMap("String Index");
-        var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
+        using var stringIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         pipe.PeerIndentParseMap("Global Subr Index");
         var globalSubrIndex = await new CFFIndexParser(source, pipe).ParseCff1Async().CA();
         var globalSubroutineExecutor = new GlyphSubroutineExecutor(globalSubrIndex);

@@ -31,10 +31,10 @@ public class CffParserTest:IDisposable
     [Test]
     public async Task ParseCFFStreamAsync()
     {
-        var table = await 
-            (await new CffGlyphSourceParser(source, 1).ParseGenericFontAsync())[0]
-            .GetGlyphSourceAsync();
+        using var genericFont = (await new CffGlyphSourceParser(source, 1).ParseGenericFontAsync())[0];
+        var table = await genericFont.GetGlyphSourceAsync();
         table.GlyphCount.Should().Be(2);
+        genericFont.Dispose();
     }
 
     [Test]
