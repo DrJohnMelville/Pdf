@@ -10,6 +10,7 @@ using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.ParserMapping;
 using Melville.Pdf.LowLevelViewerParts.FontViewers;
 using Melville.StreamInterfaces.Streams;
+using Melville.StreamInterfaces;
 
 namespace Melville.FontViewer.Home;
 
@@ -40,7 +41,7 @@ public class HomeViewModel
 
         var multiplexSource = MultiplexSourceFactory.Create(await file.OpenRead());
         map.AddAlias(multiplexSource);
-        var fonts = await RootFontParser.ParseAsync(multiplexSource);   
+        var fonts = await RootFontParser.ParseAsync(multiplexSource).CA();   
         map.UnRegister();
         window.NavigateTo(new MultiFontViewModel(fonts, map));
     }

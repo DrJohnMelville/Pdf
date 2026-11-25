@@ -22,14 +22,19 @@ public static class RootFontParser
     public static async Task<IReadOnlyList<IGenericFont>> ParseAsync(IMultiplexSource src)
     {
         uint tag;
+        using var _ = Force.Using(src.ReaderFrom(0), out var reader);
+        using var buffer = new PooledBuffer<byte>(4);
+        await reader.ReadExactAsync(buffer.AsMemory(0, 4));
+        tag = BinaryPrimitives.ReadUInt32BigEndian(buffer.AsSpan(0, 4));
+        return tag switch
         {
-            using var _ = Force.Using(src.ReaderFrom(0), out var reader);
-            using var buffer = new PooledBuffer<byte>(4);
-            await reader.ReadExactAsync(buffer.AsMemory(0, 4));
-            tag = BinaryPrimitives.ReadUInt32BigEndian(buffer.AsSpan(0, 4));
-        }
-
-        return await ParseFontTypeAsync(src, tag).CA();
+            openTypeFmt or ottoFmt or trueFmt or typ1Fmt => await new SfntParser(src).ParseAsync(0),
+            ttcfFmt => await new FontCollectionParser(src).ParseAsync(),
+            CffFmt1 or CffFmt2 or CffFmt3 or CffFmt4 =>
+                await new CffGlyphSourceParser(src, 1000).ParseGenericFontAsync(),
+            var x when (x & 0xFFFF0000) == Type1Format => await new Type1Parser(src).ParseAsync(),
+            _ => []
+        };
     }
 
     private const uint openTypeFmt = 0x00_01_00_00;
@@ -43,17 +48,4 @@ public static class RootFontParser
     private const uint CffFmt4 = 0x01_00_04_04;
     private const uint Type1Format = 0x25_21_00_00;
 
-    private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
-        IMultiplexSource src, ulong tag)
-    {
-       return tag switch
-        {
-            openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
-            ttcfFmt => new FontCollectionParser(src).ParseAsync(),
-            CffFmt1 or CffFmt2 or CffFmt3 or CffFmt4 => 
-                new CffGlyphSourceParser(src, 1000).ParseGenericFontAsync(),
-            var x when (x & 0xFFFF0000) == Type1Format => new Type1Parser(src).ParseAsync(),
-            _ => new([])
-        };
-    }
 }

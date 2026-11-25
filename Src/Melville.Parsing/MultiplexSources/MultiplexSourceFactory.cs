@@ -20,7 +20,7 @@ public static class MultiplexSourceFactory
     public static IMultiplexSource Create(Stream source) =>
         source switch
         {
-            IMultiplexSource ims => ims, 
+           IMultiplexSource ims => ims, 
             IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()), 
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
