@@ -17,7 +17,7 @@ internal readonly struct Cff2GlyphSourceParser(IMultiplexSource source)
         var globalSubrs = await new CFFIndexParser(source, pipe).ParseCff2Async().CA();
 
 
-        var glyphsource = source.OffsetFrom((uint)topDict.CharStringOffset);
+        using var glyphsource = source.OffsetFrom((uint)topDict.CharStringOffset);
         using var glyphPipe = glyphsource.ParsingBufferFrom(0);
         var glyphs = await new CFFIndexParser(
             glyphsource, glyphPipe).ParseCff2Async().CA();

@@ -11,7 +11,8 @@ internal class ParsedCmap(IMultiplexSource source, CmapTablePointer[] subtables)
 
     public ValueTask<ICmapImplementation> GetSubtableAsync(CmapTablePointer pointer)
     {
-        return GetSubtableAsync(source.OffsetFrom(pointer.Offset));
+        using IMultiplexSource localSource = source.OffsetFrom(pointer.Offset);
+        return GetSubtableAsync(localSource);
     }
 
     private async ValueTask<ICmapImplementation> GetSubtableAsync(IMultiplexSource input)

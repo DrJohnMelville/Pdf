@@ -1,4 +1,5 @@
 ﻿using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using System.Buffers;
 
 namespace Melville.Parsing.MultiplexSources;
@@ -57,11 +58,7 @@ internal class MultiBufferMultiplexSource(IAsyncReader reader) : IndexedMultiple
         }
     }
 
-    int Read(Memory<byte> memory)
-    {
-        if (reader is ISyncReader syncRead) return syncRead.Read(memory.Span);
-        return  reader.ReadAsync(memory).GetAwaiter().GetResult();
-    }
+    int Read(Memory<byte> memory) => reader.AsISyncReader().Read(memory.Span);
 
     public override int Read(long position, in Span<byte> buffer)
     {
