@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net11.0</TargetFramework>
+		<TargetFramework>net11.0-windows10.0.19041.0</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<UseAppHost>true</UseAppHost>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,8 +27,10 @@
 		</ProjectReference>
 		<ProjectReference Include="..\Melville.Fonts\Melville.Fonts.csproj" />
 		<ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.ComparingReader\Melville.Pdf.ComparingReader.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.LowLevelViewer\Melville.Pdf.LowLevelViewer.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
