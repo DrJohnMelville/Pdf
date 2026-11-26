@@ -13,6 +13,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.StreamInterfaces;
+using System;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -37,7 +38,7 @@ internal readonly partial struct RealizedFontFactory
 
     private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index)
     {
-        var fontSource = MultiplexSourceFactory.Create(source);
+        var fontSource = MultiplexSourceFactory.Create(source.AsReaderInefficient());
         source.AddParseMapAlias(fontSource);
         var font = await RootFontParser.ParseAsync(fontSource).CA();
         return font[index];

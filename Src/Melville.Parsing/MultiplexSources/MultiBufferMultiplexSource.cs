@@ -70,7 +70,7 @@ internal class MultiBufferMultiplexSource(IAsyncReader reader) : IndexedMultiple
     {
         var (line, col) = ComputePosition(position);
         var length = (line + 1) == buffers.Count ? lastEndPoint : rowWidth;
-        var source = buffers[line].AsSpan(0, length).TakeMax(buffer.Length, out var copyLength);
+        var source = buffers[line].AsSpan(col, length-col).TakeMax(buffer.Length, out var copyLength);
         source.CopyTo(buffer);
         return copyLength;
     }
