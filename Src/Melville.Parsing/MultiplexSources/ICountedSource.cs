@@ -25,5 +25,14 @@ internal readonly partial struct CountedSourceTicket
     public bool HasNonce(int candidate) => nonce == candidate;
 
     public bool IsEmpty => source is null;
+
+#if DEBUG
+    private static uint nextSerial = 0;
+    private readonly uint serial = Interlocked.Increment(ref nextSerial);
+    public override string ToString()
+    {
+        return $"Ticket Id: {serial} Target: {source}";
+    }
+#endif
 }
 

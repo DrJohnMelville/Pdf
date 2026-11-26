@@ -52,12 +52,13 @@ internal abstract partial class CountedMultiplexSource
         }
     }
 
-    private readonly struct CreationInfo()
+    private readonly struct CreationInfo(string ticket)
     {
         private readonly string testRunning = RequireDisposal.TestNameIdentifier();
         private readonly StackTrace stack = new StackTrace(2,true);
         public override string ToString() => $"""
             Test Running: {testRunning},
+            Ticket: {ticket}
             Created at:
             {stack}
             """;
@@ -71,9 +72,10 @@ internal abstract partial class CountedMultiplexSource
         public override T IssueTicket<T>(CountedMultiplexSource parent, T rawItem)
         {
             if (rawItem is null) return rawItem;
-            if (!readers.TryAdd(rawItem, new ()))
+            base.IssueTicket(parent, rawItem);
+            if (!readers.TryAdd(rawItem, new ((rawItem as IHasSourceTicket)?.SourceTicket.ToString() ?? "No Ticket")))
                 throw new InvalidOperationException("Inserted the same reader twice.");
-            return base.IssueTicket(parent, rawItem);
+            return rawItem;
         }
 
         public override void CancelTicket(CountedMultiplexSource parent, IHasSourceTicket item)

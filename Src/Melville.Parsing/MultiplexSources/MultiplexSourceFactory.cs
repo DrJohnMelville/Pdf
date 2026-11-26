@@ -25,7 +25,7 @@ public static class MultiplexSourceFactory
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
             {CanSeek: false} => MakeStreamSeekableSource.Create(source),
-            { Length: >0} => new SingleBufferSeekableMultiplexSource(source.AsStreamReader()),
+            { Length: >0} => new SingleBufferSeekableMultiplexSource(source.AsStreamReader(true)),
             //_ => new MultiplexedStream(source)
             _ => new MultiBufferMultiplexSource(source.AsStreamReader())
 

@@ -8,6 +8,9 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
     private volatile int pendingReaders;
     private int serialNumber = ICountedSource.NextNonce();
 
+    public override string ToString() =>
+        $"({serialNumber}) {base.ToString()}";
+
 #if DEBUG
     private static readonly LightDebugCountingStrategy ProductionCounter = new();
 //    private ProductionCountingStrategy counter = ProductionCounter;
@@ -51,11 +54,15 @@ internal abstract partial class CountedMultiplexSource : IMultiplexSource, ICoun
         return state == CountedSourceState.Open || pendingReaders > 0;
     }
 
-    public Stream ReadFrom(long position) => 
-        counter.IssueTicket(this, ReadFromOverride(position));
+    public Stream ReadFrom(long position)
+    {
+        return counter.IssueTicket(this, ReadFromOverride(position));
+    }
 
-    public IMultiplexReader ReaderFrom(long position) =>
-        counter.IssueTicket(this, ReaderFromOverride(position));
+    public IMultiplexReader ReaderFrom(long position)
+    {
+        return counter.IssueTicket(this, ReaderFromOverride(position));
+    }
 
     public void TryRelease(IHasSourceTicket item) => counter.CancelTicket(this, item);
 
