@@ -24,21 +24,21 @@ internal readonly partial struct RealizedFontFactory
     public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream, ParseMap? map)
     {
         await map.SetDataAsync(pdfStream).CA();
-        var source = await pdfStream.StreamContentAsync().CA();
+        var source = await pdfStream.ReaderForContentAsync().CA();
         map?.AddAlias(source);
         return await FromCSharpStreamAsync(source).CA();
     }
     
     public async ValueTask<IRealizedFont> FromCSharpStreamAsync(
-        Stream source, int index = 0)
+        IAsyncReader source, int index = 0)
     {
         var iFace = await StreamToGenericFontMFAsync(source, index).CA();
         return await FontFromFaceAsync(iFace).CA();
     }
 
-    private static async Task<IGenericFont> StreamToGenericFontMFAsync(Stream source, int index)
+    private static async Task<IGenericFont> StreamToGenericFontMFAsync(IAsyncReader source, int index)
     {
-        var fontSource = MultiplexSourceFactory.Create(source.AsReaderInefficient());
+        var fontSource = MultiplexSourceFactory.Create(source);
         source.AddParseMapAlias(fontSource);
         var font = await RootFontParser.ParseAsync(fontSource).CA();
         return font[index];

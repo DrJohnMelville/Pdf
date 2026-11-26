@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
+using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.ParsingBuffers;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -126,6 +127,10 @@ public static partial class ParseMappingMethods
                """)]
     [Conditional("DEBUG")]
     public static void AddParseMapAlias(this IMultiplexSource s, object alias) =>
+        ParseMapRegistry.FindMap(s)?.AddAlias(alias);
+
+    [Conditional("DEBUG")]
+    public static void AddParseMapAlias(this IAsyncReader s, object alias) =>
         ParseMapRegistry.FindMap(s)?.AddAlias(alias);
 
     /// <summary>

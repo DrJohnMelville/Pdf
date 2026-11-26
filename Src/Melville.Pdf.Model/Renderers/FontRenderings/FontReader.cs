@@ -75,5 +75,5 @@ public readonly struct FontReader
 internal static class MapDefaultFontReferenceToFont
 {
     public static ValueTask<IRealizedFont> ToFontAsync(this DefaultFontReference reference, RealizedFontFactory factory) =>
-        factory.FromCSharpStreamAsync(reference.Source, reference.Index);
+        factory.FromCSharpStreamAsync(reference.Source.AsReaderInefficient(), reference.Index);
 }
