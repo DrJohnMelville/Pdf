@@ -1,86 +1,76 @@
 ﻿using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.ReaderExtensions;
 using Melville.StreamInterfaces;
 using Melville.StreamInterfaces.Memory;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Melville.Parsing.Streams;
 
 /// <summary>
 /// This is struct is used to allow many different types to convert implicitly to a multibufferstream
 /// </summary>
-public readonly struct MultiBufferStreamSource(byte[] source)
+[Union]
+public readonly struct MultiBufferStreamSource : IUnion
 {
-    /// <summary>
-    /// The source of the bits for the source
-    /// </summary>
-    public byte[] Source { get; } = source;
+    private readonly byte[] value;
+
+    public object? Value => throw new NotImplementedException();
+
+    public ReadOnlyMemory<byte> AsMemory() => value;
+    public byte[] Buffer => value;
 
     /// <summary>
-    /// The MultiBufferStream that contains the data.
+    /// Implicitly convert a value tp byte[] and store
     /// </summary>
-    public Stream Stream
-    {
-        get
-        {
-            return new MemoryStream(Source);
-        }
+    /// <param name="value">The value to store</param>
+    public MultiBufferStreamSource(byte[] value) => this.value = value;
+
+    /// <summary>
+    /// Implicitly convert a value tp byte[] and store
+    /// </summary>
+    /// <param name="value">The value to store</param>
+    public MultiBufferStreamSource(string value) : this(Encoding.ASCII.GetBytes(value))
+    { }
+
+    /// <summary>
+    /// Implicitly convert a value tp byte[] and store
+    /// </summary>
+    /// <param name="value">The value to store</param>
+    public MultiBufferStreamSource(IAsyncReader reader) : this(
+        new AsyncReaderToByteArray(reader, false).Read().Item1)
+    { }
+
+    /// <summary>
+    /// Implicitly convert a value to byte[] and store
+    /// </summary>
+    /// <param name="value">The value to store</param>
+    public MultiBufferStreamSource(Stream reader) : this(
+        AsMemoryStream(reader).ToArray())
+    { }
+    /// <summary>
+    /// Implicitly convert a value to byte[] and store
+    /// </summary>
+    /// <param name="value">The value to store</param>
+    public MultiBufferStreamSource(params Span<Stream> reader) : this(
+        AsMemoryStream(reader).ToArray())
+    { 
     }
 
-    /// <summary>
-    /// Implicitly convert a stream to a MultiBufferStreamSource
-    /// </summary>
-    /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(Stream mbs)
+    static MemoryStream AsMemoryStream(params Span<Stream> reader)
     {
-        long length;
-        try
+        if (reader is [MemoryStream ms]) return ms;
+        var ms2 = new MemoryStream();
+        foreach (var item in reader)
         {
-            length = mbs.Length;
+            item.CopyTo(ms2);
+            item.Dispose();
         }
-        catch (Exception)
-        {
+        ms2.Seek(0, SeekOrigin.Begin);
+        return ms2;
 
-            length = 0;
-        }
-        using var str = length> 0 ?new MemoryStream((int)mbs.Length):new MemoryStream();
-        mbs.CopyTo(str);
-        mbs.Dispose();
-        return new(str.ToArray());
     }
 
-    public static implicit operator MultiBufferStreamSource(Stream[] streams)
-    {
-        using var str = new MemoryStream();
-        foreach(var mbs in streams)
-        {
-            mbs.CopyTo(str);
-            mbs.Dispose();
-        }
-        return new(str.ToArray());
-    }
-
-    /// <summary>
-    /// Implicitly convert a byte array to a MultiBufferStreamSource
-    /// </summary>
-    /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(byte[] mbs) => 
-        new(mbs);
-    /// <summary>
-    /// Implicitly convert a string to a MultiBufferStreamSource
-    /// </summary>
-    /// <param name="mbs">The source data</param>
-    public static implicit operator MultiBufferStreamSource(string mbs) => 
-        new(ToBytes(mbs));
-
-    private static byte[] ToBytes(string mbs)
-    {
-        var ret = new byte[mbs.Length];
-        for (int i = 0; i < ret.Length; i++)
-        {
-            ret[i] = (byte)mbs[i];
-        }
-
-        return ret;
-    }
-}
+};

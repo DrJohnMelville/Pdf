@@ -52,7 +52,7 @@ public enum PatternTileType
 /// </summary>
 public class TilePatternCreator : ContentStreamCreator
 {
-    private Stream? content;
+    private byte[]? content;
 
     /// <summary>
     /// Create a TilePatternCreator
@@ -95,7 +95,7 @@ public class TilePatternCreator : ContentStreamCreator
     {
         if (content != null)
             throw new InvalidOperationException("Tile Pattern may have only 1 content stream");
-        content = data.Stream;
+        content = data.Buffer;
     }
 
     /// <inheritdoc />

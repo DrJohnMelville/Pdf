@@ -1,4 +1,5 @@
 ﻿using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Adapters;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -15,6 +16,22 @@ namespace Melville.Parsing.ReaderExtensions;
 public readonly struct AsyncReaderToByteArray(IAsyncReader reader, bool rentFinalBuffer = true)
 {
     private readonly List<byte[]> Buffers = new();
+
+    /// <summary>
+    /// Get the bytes
+    /// </summary>
+    /// <returns>A pair containing the byte array and an int of the number of bytes used.  If the
+    /// buffer is not rented from the ArrayPool, it will be precisely the correct size.</returns>
+    public (byte[], int) Read()
+    {
+        while (true)
+        {
+            var buffer = AllocateInitialBuffer();
+            var length = reader.AsISyncReader().ReadAtLeast(buffer, buffer.Length, false);
+            if (length < buffer.Length) return MakeFinalBuffer(buffer, length);
+            Buffers.Add(buffer);
+        }
+    }
 
     /// <summary>
     /// Get the bytes

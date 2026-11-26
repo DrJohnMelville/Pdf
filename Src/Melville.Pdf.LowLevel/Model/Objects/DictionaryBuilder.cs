@@ -108,7 +108,7 @@ public readonly struct DictionaryBuilder
     /// <param name="format">The format in which the data is provided.</param>
     /// <returns>The created stream.</returns>
     public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
-        new(new LiteralStreamSource(stream.Stream, format), AsArray());
+        new(new LiteralStreamSource(stream.Buffer , format), AsArray());
     internal PdfStream AsStream(IStreamDataSource source) =>
         new(source, AsArray());
     

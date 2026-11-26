@@ -14,7 +14,7 @@ internal class LiteralStreamSource(MultiBufferStreamSource source, StreamFormat 
 
     // this needs to ignore the streamLength parameter or else the writers do not work.
     public IPdfStreamReader OpenRawReader(long streamLength) =>
-        new PdfMemoryReader(source.Source.AsMemory());
+        new PdfMemoryReader(source.AsMemory());
 
     public IPdfStreamReader WrapStreamWithDecryptor(
         IPdfStreamReader encryptedStream, PdfDirectObject cryptFilterName) =>

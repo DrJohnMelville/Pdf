@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.StreamInterfaces;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.FormReader.AcroForms;
 
@@ -118,9 +119,9 @@ internal class AcroFieldFactory
 
     private static async Task<XElement> ReadXmlFromIndirectObjectAsync(PdfIndirectObject template)
     {
-        var reader = XmlReader.Create(await (await template.LoadValueAsync().CA())
-                .Get<PdfStream>().StreamContentAsync().CA(), 
-            new XmlReaderSettings(){Async = true});
+        PdfDirectObject directTemplate = await template.LoadValueAsync().CA();
+        Stream templatStream = (await directTemplate.Get<PdfStream>().ReaderForContentAsync().CA()).AsStream();
+        var reader = XmlReader.Create(templatStream, new XmlReaderSettings(){Async = true});
         await reader.MoveToContentAsync().CA();
         return (XElement)await XNode.ReadFromAsync(reader, CancellationToken.None).CA();
     }
