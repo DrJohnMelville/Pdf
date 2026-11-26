@@ -3,6 +3,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.FontLibrary.Cjk;
 
@@ -36,7 +37,7 @@ public class SelfContainedCjkFonts(IDefaultFontMapper latinFonts): IDefaultFontM
 
     private ValueTask<DefaultFontReference> SystemFontAsync(string fileName, int ordering) =>
         new(new DefaultFontReference(
-            FontStream(fileName) ??
+            FontStream(fileName).AsSeekableStreamReader() ??
             throw new InvalidOperationException("Cannot find font resource: " + fileName), ordering));
 
     private Stream? FontStream(string fileName) =>

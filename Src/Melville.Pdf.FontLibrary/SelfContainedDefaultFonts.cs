@@ -3,6 +3,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.FontLibrary;
 
@@ -43,7 +44,7 @@ public partial class SelfContainedDefaultFonts: IDefaultFontMapper
 
     private ValueTask<DefaultFontReference> SystemFontAsync(string fileName) =>
         new( new DefaultFontReference(
-            FontStream(fileName) ??
+            FontStream(fileName)?.AsSeekableStreamReader() ??
             throw new InvalidOperationException("Cannot find font resource: " + fileName), 0));
 
     private Stream? FontStream(string fileName) => 

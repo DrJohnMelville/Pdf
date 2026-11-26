@@ -18,7 +18,7 @@ public readonly partial struct DefaultFontReference
     /// <summary>
     /// The stream from which the font can be read.
     /// </summary>
-    [FromConstructor] public Stream Source { get; }
+    [FromConstructor] public IAsyncReader Source { get; }
     /// <summary>
     /// The index of the font within the stream.
     /// </summary>

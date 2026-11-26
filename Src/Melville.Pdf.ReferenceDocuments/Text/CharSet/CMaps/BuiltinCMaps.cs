@@ -3,6 +3,7 @@ using Melville.Pdf.FontLibrary;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.ReferenceDocuments.Graphics;
+using Melville.StreamInterfaces.Streams;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.CharSet.CMaps;
 
@@ -63,7 +64,7 @@ public abstract partial class BuiltinCMaps : Card3x5
             .WithItem(KnownNames.Subtype, KnownNames.OpenType)
             .AsStream(SelfContainedDefaultFonts.Instance
                 .FontFromNameAsync(KnownNames.TimesRoman, FontFlags.Serif)
-                .GetAwaiter().GetResult().Source));
+                .GetAwaiter().GetResult().Source.AsStream()));
         var cidSystemInfo = register.Add(new   DictionaryBuilder()
             .WithItem(KnownNames.Ordering, "Identity")
             .WithItem(KnownNames.Registry, "Adobe")
