@@ -37,7 +37,7 @@ public readonly partial struct DeepCopy
     private ValueTask<PdfIndirectObject> CloneDirectValueAsync(PdfDirectObject value) => value switch
     {
         var x when x.TryGet(out PdfArray? arr) => DuplicateArrayAsync(arr),
-        var x when x.TryGet(out PdfStream? str) => DuplicateStreamAsync(str),
+        var x when x.TryGet(out PdfStream? str) => DuplicateSreamAsync(str),
         var x when x.TryGet(out PdfDictionary? dict) => DuplicateDictionaryAsync(dict),
         _ => new(value)
     };
@@ -45,9 +45,9 @@ public readonly partial struct DeepCopy
     private async ValueTask<PdfIndirectObject> DuplicateDictionaryAsync(PdfDictionary value) =>
         (await DuplicateDictionaryBuilderAsync(value).CA()).AsDictionary();
 
-    private async ValueTask<PdfIndirectObject> DuplicateStreamAsync(PdfStream value) => 
+    private async ValueTask<PdfIndirectObject> DuplicateSreamAsync(PdfStream value) => 
         (await DuplicateDictionaryBuilderAsync(value).CA())
-        .AsStream(await value.StreamContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);
+        .AsStream(await value.ReaderForContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);
 
     private async Task<DictionaryBuilder> DuplicateDictionaryBuilderAsync(PdfDictionary value)
     {
