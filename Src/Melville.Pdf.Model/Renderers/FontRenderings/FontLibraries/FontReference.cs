@@ -7,8 +7,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 
 internal record FontReference(string FileName, int Index)
 {
-    private IAsyncReader FontAsStream() =>
-        FileIStreamFactory.File(FileName, FileMode.Open, FileShare.Read).Reader();
+    private IAsyncReader FontAsStream()
+    {
+        FileReader fileReader = FileIStreamFactory.File(FileName, FileMode.Open, FileShare.Read).Reader();
+        return fileReader;
+    }
 
     public DefaultFontReference AsDefaultFontReference() => new(FontAsStream(), Index);
 

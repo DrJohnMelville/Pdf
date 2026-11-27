@@ -20,12 +20,12 @@ public static class MultiplexSourceFactory
     public static IMultiplexSource Create(Stream source) =>
         source switch
         {
-           IMultiplexSource ims => ims, 
-            IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()), 
+            IMultiplexSource ims => ims,
+            IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()),
             MemoryStream ms => Create(ms),
             FileStream fs => Create(fs),
-            {CanSeek: false} => MakeStreamSeekableSource.Create(source),
-            { Length: >0} => new SingleBufferSeekableMultiplexSource(source.AsStreamReader(true)),
+            { CanSeek: false } => MakeStreamSeekableSource.Create(source),
+            { Length: > 0 } => new SingleBufferSeekableMultiplexSource(source.AsStreamReader(true)),
             //_ => new MultiplexedStream(source)
             _ => new MultiBufferMultiplexSource(source.AsStreamReader())
 
@@ -36,11 +36,18 @@ public static class MultiplexSourceFactory
         {
             IMultiplexSource ims => ims,
             IHasDataAsReadOnlyMemory hdr => Create(hdr.AsReadOnlyMemory()),
-            IHasFileHandle hfr => new FileMultiplexer(hfr.FileHandle),
-            _ when MultiplexedReaderSource.TryCreateFrom(source, out var i)  => 
+            IHasFileHandle hfr => CreateFileMultiplexerFrom(hfr),
+            _ when MultiplexedReaderSource.TryCreateFrom(source, out var i) =>
                  new ReaderToMultiplexedSource(i),
             _ => new MultiBufferMultiplexSource(source)
         };
+
+    private static FileMultiplexer CreateFileMultiplexerFrom(IHasFileHandle hfr)
+    {
+        FileMultiplexer ret = new(hfr.FileHandle);
+        (hfr as IDisposable)?.Dispose();
+        return ret;
+    }
 
 
     /// <summary>
@@ -55,7 +62,7 @@ public static class MultiplexSourceFactory
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(MemoryStream source) => 
+    public static IMultiplexSource Create(MemoryStream source) =>
         Create(MemoryStreamToMemory(source));
 
     /// <summary>
@@ -82,7 +89,7 @@ public static class MultiplexSourceFactory
     /// </summary>
     /// <param name="source">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
-    public static IMultiplexSource Create(ReadOnlySpan<byte> source) => 
+    public static IMultiplexSource Create(ReadOnlySpan<byte> source) =>
         Create(source.ToArray());
 
     /// <summary>

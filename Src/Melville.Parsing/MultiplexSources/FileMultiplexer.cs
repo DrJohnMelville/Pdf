@@ -11,7 +11,9 @@ internal class FileMultiplexer : IndexedMultiplexSource
 {
     private SafeFileHandle handle;
    
-    public FileMultiplexer(FileStream stream): this(stream.SafeFileHandle) { }
+    public FileMultiplexer(FileStream stream): this(stream.SafeFileHandle) {
+        stream.Dispose();
+    }
     public FileMultiplexer(SafeFileHandle streamHandle)
     {
         handle = streamHandle;        
