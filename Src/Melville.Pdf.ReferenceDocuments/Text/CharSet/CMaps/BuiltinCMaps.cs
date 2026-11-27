@@ -64,7 +64,7 @@ public abstract partial class BuiltinCMaps : Card3x5
             .WithItem(KnownNames.Subtype, KnownNames.OpenType)
             .AsStream(SelfContainedDefaultFonts.Instance
                 .FontFromNameAsync(KnownNames.TimesRoman, FontFlags.Serif)
-                .GetAwaiter().GetResult().Source.AsStream()));
+                .GetAwaiter().GetResult().Source));
         var cidSystemInfo = register.Add(new   DictionaryBuilder()
             .WithItem(KnownNames.Ordering, "Identity")
             .WithItem(KnownNames.Registry, "Adobe")
