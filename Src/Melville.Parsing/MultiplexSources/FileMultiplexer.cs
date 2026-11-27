@@ -23,7 +23,13 @@ internal class FileMultiplexer : IndexedMultiplexSource
             throw new IOException("Failed to attach to file handle");
     }
 
-    protected override void CleanUp() => handle.DangerousRelease();
+    bool disposed;
+    protected override void CleanUp()
+    {
+        if (disposed) return;
+        disposed = true;
+        handle.DangerousRelease();
+    }
 
     public override long Length => RandomAccess.GetLength(handle);
 

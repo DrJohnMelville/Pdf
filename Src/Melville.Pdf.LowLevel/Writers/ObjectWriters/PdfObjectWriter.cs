@@ -92,10 +92,10 @@ internal class PdfObjectWriter
         target.Advance(literal.Length);
     }
 
-    public async ValueTask CopyFromStreamAsync(Stream stream)
+    public async ValueTask CopyFromStreamAsync(IAsyncReader stream)
     {
         await target.FlushAsync().CA();
-        await stream.CopyToAsync(target).CA();
+        await stream.AsStreamInefficient().CopyToAsync(target).CA();
     }
 
     public ValueTask WriteTopLevelDeclarationAsync(

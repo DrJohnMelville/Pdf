@@ -142,12 +142,16 @@ public abstract partial class StreamTestBase
     private ValueTask<PdfStream> StreamWithEncodedBackEndAsync() =>
          ToStreamWithEncodedBackEndAsync(StreamWithPlainTextBacking());
 
-    private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str) =>
-        new DictionaryBuilder(str.RawItems).AsStream(
-            (await str.StreamEncryptedContentAsync(
-                StreamFormat.DiskRepresentation, NullSecurityHandler.Instance, null))
-            .AsStreamInefficient(),
-            StreamFormat.DiskRepresentation);
+    private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str)
+    {
+        using IPdfStreamReader encodedContent = await str.StreamEncryptedContentAsync(
+                        StreamFormat.DiskRepresentation, NullSecurityHandler.Instance, null);
+        PdfStream ret = new DictionaryBuilder(str.RawItems).AsStream(
+                    encodedContent,
+                    StreamFormat.DiskRepresentation);
+      
+        return ret;
+    }
 
 
     [Test]
