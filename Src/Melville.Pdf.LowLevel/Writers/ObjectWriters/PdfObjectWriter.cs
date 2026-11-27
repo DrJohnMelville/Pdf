@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-
+using Melville.Parsing.IStreamAdaptors;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -95,7 +95,15 @@ internal class PdfObjectWriter
     public async ValueTask CopyFromStreamAsync(IAsyncReader stream)
     {
         await target.FlushAsync().CA();
+#if false
         await stream.AsStreamInefficient().CopyToAsync(target).CA();
+#else
+        while ((await stream.ReadAsync(target.GetMemory())) is > 0 and var len)
+        {
+            target.Advance(len);
+            await target.FlushAsync().CA();
+        }
+#endif
     }
 
     public ValueTask WriteTopLevelDeclarationAsync(

@@ -17,19 +17,3 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 public interface IPdfStreamReader : IAsyncReader, ISyncReader, IDisposable
 {
 }
-
-/// <summary>
-/// Shim code for transitioning streams to readers.
-/// </summary>
-public static class ReaderStreamBridge
-{
-
-    extension (IAsyncReader self)
-    {
-        /// <summary>
-        /// Shim code for transitioning streams to readers.
-        /// </summary>
-        [Obsolete("This is for the stream / reader transition only/")]
-        public Stream AsStreamInefficient() => self.AsStream();
-    }
-}
